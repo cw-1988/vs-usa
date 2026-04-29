@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import struct
 from pathlib import Path
 
@@ -43,7 +44,7 @@ OPCODES = {
     0x21: ("Opcode21", 0x06),
     0x22: ("ModelAnimate", 0x06),
     0x23: ("ModelSetAnimations", 0x05),
-    0x24: ("Opcode24", 0x07),
+    0x24: ("ActorSfxPanVolumeControl", 0x07),
     0x25: ("Opcode25", 0x09),
     0x26: ("ModelPosition", 0x0C),
     0x27: ("Opcode27", 0x07),
@@ -107,8 +108,8 @@ OPCODES = {
     0x61: ("Opcode61", 0x03),
     0x62: ("Opcode62", 0x02),
     0x63: ("Opcode63", 0x01),
-    0x64: ("Opcode64", 0x02),
-    0x65: ("Opcode65", 0x02),
+    0x64: ("ClearRoomGeometryFlag100", 0x02),
+    0x65: ("SetRoomGeometryFlag100", 0x02),
     0x66: ("Opcode66", 0x03),
     0x67: ("Opcode67", 0x05),
     0x68: ("LoadRoom", 0x0A),
@@ -127,7 +128,7 @@ OPCODES = {
     0x75: ("WaitForRoomSection10", 0x01),
     0x76: ("FreeRoomSection10", 0x01),
     0x77: ("Opcode77", 0x05),
-    0x78: ("Opcode78", 0x02),
+    0x78: ("EnableRoomMechanismUpdates", 0x02),
     0x79: ("RoomMechanismControl", 0x03),
     0x7A: ("Opcode7A", 0x02),
     0x7B: ("Opcode7B", 0x05),
@@ -164,7 +165,7 @@ OPCODES = {
     0x9A: ("Opcode9A", 0x03),
     0x9B: ("Opcode9B", 0x05),
     0x9C: ("Opcode9C", 0x05),
-    0x9D: ("LoadSoundFile2", 0x02),
+    0x9D: ("LoadSoundFileById", 0x02),
     0x9E: ("ProcessSoundQueue", 0x01),
     0x9F: ("Opcode9F", 0x02),
     0xA0: ("OpcodeA0", 0x05),
@@ -360,6 +361,42 @@ TBL_DOUBLE = {
 }
 
 
+def load_room_name_index() -> tuple[dict[str, dict[str, int | str]], dict[tuple[int, int], dict[str, int | str]]]:
+    by_map: dict[str, dict[str, int | str]] = {}
+    by_zone_room: dict[tuple[int, int], dict[str, int | str]] = {}
+    index_path = Path(__file__).with_name("room_names.tsv")
+    if not index_path.exists():
+        return by_map, by_zone_room
+
+    def get_field(row: dict[str, str], *names: str) -> str:
+        for name in names:
+            value = row.get(name)
+            if value is not None:
+                return value
+        raise KeyError(f"Missing expected column(s): {', '.join(names)}")
+
+    with index_path.open("r", encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f, delimiter="\t")
+        for row in reader:
+            area_id_raw = get_field(row, "AreaId", "area_id").strip()
+            record: dict[str, int | str] = {
+                "map_id": get_field(row, "MapId", "map_id"),
+                "zone_id": int(get_field(row, "ZoneId", "zone_id")),
+                "room_id": int(get_field(row, "RoomId", "room_id")),
+                "area": get_field(row, "AreaName", "area"),
+                "room_name": get_field(row, "RoomName", "room_name"),
+            }
+            if area_id_raw:
+                record["area_id"] = int(area_id_raw)
+            by_map[str(record["map_id"])] = record
+            by_zone_room[(int(record["zone_id"]), int(record["room_id"]))] = record
+
+    return by_map, by_zone_room
+
+
+ROOM_INDEX_BY_MAP, ROOM_INDEX_BY_ZONE_ROOM = load_room_name_index()
+
+
 def u16(data: bytes, offset: int) -> int:
     return struct.unpack_from("<H", data, offset)[0]
 
@@ -426,7 +463,19 @@ def fmt_signed_pair(lo: int, hi: int) -> int:
     return struct.unpack("<h", bytes([lo, hi]))[0]
 
 
-def format_opcode(op: int, args: bytes, dialogs: list[str]) -> str:
+def format_room_ref(record: dict[str, int | str]) -> str:
+    return (
+        f"map={record['map_id']}, area={record['area']}, "
+        f"name={record['room_name']}"
+    )
+
+
+def format_opcode(
+    op: int,
+    args: bytes,
+    dialogs: list[str],
+    room_index_by_zone_room: dict[tuple[int, int], dict[str, int | str]],
+) -> str:
     if op == 0x10 and len(args) == 10:
         return (
             f"idDlg={args[0]}, style={args[1]}, x={args[2]}, y={args[4]}, "
@@ -441,6 +490,11 @@ def format_opcode(op: int, args: bytes, dialogs: list[str]) -> str:
         return f"idChr={args[0]}, unk1={args[1]}, idSHP={args[2]}, raw=[{fmt_default(args[3:])}]"
     if op == 0x22 and len(args) == 5:
         return f"idChr={args[0]}, unk1={args[1]}, idAnim={args[2]}, raw=[{fmt_default(args[3:])}]"
+    if op == 0x24 and len(args) == 6:
+        return (
+            f"idChr={args[0]}, unk1={args[1]}, mode={args[2]}, "
+            f"pan={args[3]}, volume={args[4]}, duration={args[5]}"
+        )
     if op == 0x26 and len(args) == 11:
         px = fmt_signed_pair(args[2], args[3])
         py = fmt_signed_pair(args[4], args[5])
@@ -477,11 +531,20 @@ def format_opcode(op: int, args: bytes, dialogs: list[str]) -> str:
     if op == 0x58 and len(args) == 1:
         return f"idMode={args[0]}"
     if op == 0x68 and len(args) == 9:
-        return f"idZone={args[0]}, idRoom={args[1]}, raw=[{fmt_default(args[2:])}]"
+        room_ref = room_index_by_zone_room.get((args[0], args[1]))
+        if room_ref is None:
+            return f"idZone={args[0]}, idRoom={args[1]}, raw=[{fmt_default(args[2:])}]"
+        return (
+            f"idZone={args[0]}, idRoom={args[1]}, "
+            f"destination=[{format_room_ref(room_ref)}], raw=[{fmt_default(args[2:])}]"
+        )
     if op == 0x69:
         return f"raw=[{fmt_default(args)}]"
     if op == 0x6D and len(args) == 1:
         return f"raw={args[0]}"
+    if op == 0x78 and len(args) == 1:
+        enabled = args[0] ^ 1
+        return f"enabled={enabled}"
     if op == 0x79 and len(args) == 2:
         action = {
             0: "trigger",
@@ -531,20 +594,31 @@ def disassemble(mpd_path: Path) -> str:
     dialog_limit = min(dialog_limit_candidates) if dialog_limit_candidates else len(section)
     dialogs = parse_dialogs(section, ptr_dialog, dialog_limit) if ptr_dialog else []
 
-    lines = [
-        f"# {mpd_path.name}",
-        f"script_section_offset=0x{ptr_script:X}",
-        f"script_section_length=0x{len_script:X} ({len_script})",
-        "",
-        "[script_header]",
-        f"section_len=0x{section_len:X}",
-        f"ptr_dialog_text=0x{ptr_dialog:X}",
-        f"ptr_unknown1=0x{ptr_unknown1:X}",
-        f"ptr_unknown2=0x{ptr_unknown2:X}",
-        f"unknown_words=[0x{unk1:X}, 0x{unk2:X}, 0x{unk3:X}, 0x{unk4:X}]",
-        "",
-        "[opcodes]",
-    ]
+    map_id = mpd_path.stem.upper()
+    room_meta = ROOM_INDEX_BY_MAP.get(map_id)
+
+    lines = [f"# {mpd_path.name}"]
+    if room_meta is not None:
+        lines.append(
+            "# "
+            f"{room_meta['area']} / {room_meta['room_name']} "
+            f"(zone={room_meta['zone_id']}, room={room_meta['room_id']}, map={room_meta['map_id']})"
+        )
+    lines.extend(
+        [
+            f"script_section_offset=0x{ptr_script:X}",
+            f"script_section_length=0x{len_script:X} ({len_script})",
+            "",
+            "[script_header]",
+            f"section_len=0x{section_len:X}",
+            f"ptr_dialog_text=0x{ptr_dialog:X}",
+            f"ptr_unknown1=0x{ptr_unknown1:X}",
+            f"ptr_unknown2=0x{ptr_unknown2:X}",
+            f"unknown_words=[0x{unk1:X}, 0x{unk2:X}, 0x{unk3:X}, 0x{unk4:X}]",
+            "",
+            "[opcodes]",
+        ]
+    )
 
     offset = 0x10
     while offset < ptr_dialog:
@@ -555,7 +629,7 @@ def disassemble(mpd_path: Path) -> str:
             lines.append(f"{offset:04X}: {hex_bytes(raw[:1])}  {name}  ; size=0 in current docs, cannot advance safely")
             break
         args = section[offset + 1 : offset + size]
-        rendered = format_opcode(op, args, dialogs)
+        rendered = format_opcode(op, args, dialogs, ROOM_INDEX_BY_ZONE_ROOM)
         lines.append(f"{offset:04X}: {hex_bytes(raw):<35} {name}({rendered})")
         offset += size
 
@@ -572,31 +646,78 @@ def disassemble(mpd_path: Path) -> str:
 
 def collect_inputs(path: Path) -> list[Path]:
     if path.is_file():
-        return [path]
+        raise ValueError(
+            "Single-file decode is no longer supported. Pass a directory containing MAP*.MPD files."
+        )
     if path.is_dir():
         return sorted(path.glob("MAP*.MPD"))
     raise FileNotFoundError(f"Input path not found: {path}")
 
 
-def output_path_for(input_path: Path, source_root: Path, output_root: Path) -> Path:
-    try:
-        rel = input_path.relative_to(source_root)
-        stem = rel.stem
-    except ValueError:
-        stem = input_path.stem
-    return output_root / f"{stem}_script.txt"
+def sanitize_path_component(value: str, fallback: str) -> str:
+    invalid = '<>:"/\\|?*'
+    sanitized = "".join("-" if ch in invalid else ch for ch in value)
+    sanitized = " ".join(sanitized.split()).strip(" .")
+    if not sanitized:
+        sanitized = fallback
+
+    reserved = {
+        "CON",
+        "PRN",
+        "AUX",
+        "NUL",
+        "COM1",
+        "COM2",
+        "COM3",
+        "COM4",
+        "COM5",
+        "COM6",
+        "COM7",
+        "COM8",
+        "COM9",
+        "LPT1",
+        "LPT2",
+        "LPT3",
+        "LPT4",
+        "LPT5",
+        "LPT6",
+        "LPT7",
+        "LPT8",
+        "LPT9",
+    }
+    if sanitized.upper() in reserved:
+        sanitized = f"_{sanitized}"
+    return sanitized
+
+
+def output_path_for(input_path: Path, output_root: Path) -> Path:
+    map_id = input_path.stem.upper()
+    file_map_id = map_id[3:] if map_id.startswith("MAP") else map_id
+    room_meta = ROOM_INDEX_BY_MAP.get(map_id)
+    if room_meta is None:
+        area_id = "24"
+        area_name = "Unmapped"
+        room_name = "Unknown Room"
+    else:
+        area_id = str(room_meta.get("area_id", room_meta["zone_id"]))
+        area_name = str(room_meta["area"])
+        room_name = str(room_meta["room_name"])
+
+    area_dir = sanitize_path_component(f"{area_id}-{area_name}", f"{area_id}-Unmapped")
+    room_stem = sanitize_path_component(room_name, map_id)
+    return output_root / area_dir / f"{file_map_id}-{room_stem}.txt"
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Disassemble the ScriptSection of one MPD file or a directory of MAP*.MPD files."
+        description="Disassemble the ScriptSection of MAP*.MPD files in batch mode."
     )
-    parser.add_argument("mpd", type=Path, help="Path to MAPxxx.MPD or a directory containing MAP*.MPD")
+    parser.add_argument("mpd", type=Path, help="Path to a directory containing MAP*.MPD files")
     parser.add_argument(
         "-o",
         "--output",
         type=Path,
-        help="Write output to this file (single input) or directory (batch input)",
+        help="Write output to this directory",
     )
     args = parser.parse_args()
 
@@ -604,37 +725,25 @@ def main() -> None:
     if not inputs:
         raise FileNotFoundError(f"No MAP*.MPD files found in: {args.mpd}")
 
-    batch_mode = len(inputs) > 1 or args.mpd.is_dir()
-    if batch_mode:
-        output_root = args.output if args.output else Path("decoded_scripts")
-        output_root.mkdir(parents=True, exist_ok=True)
-        written = 0
-        skipped: list[tuple[Path, str]] = []
-        for mpd_path in inputs:
-            try:
-                text = disassemble(mpd_path)
-            except ValueError as exc:
-                skipped.append((mpd_path, str(exc)))
-                continue
-            out_path = output_path_for(mpd_path, args.mpd if args.mpd.is_dir() else mpd_path.parent, output_root)
-            out_path.write_text(text, encoding="utf-8")
-            written += 1
-        print(f"Wrote {written} decoded scripts to {output_root}")
-        if skipped:
-            print(f"Skipped {len(skipped)} files:")
-            for mpd_path, reason in skipped:
-                print(f"  {mpd_path.name}: {reason}")
-        return
-
-    text = disassemble(inputs[0])
-    if args.output:
-        if args.output.exists() and args.output.is_dir():
-            out_path = output_path_for(inputs[0], inputs[0].parent, args.output)
-            out_path.write_text(text, encoding="utf-8")
-        else:
-            args.output.write_text(text, encoding="utf-8")
-    else:
-        print(text)
+    output_root = args.output if args.output else Path("decoded_scripts")
+    output_root.mkdir(parents=True, exist_ok=True)
+    written = 0
+    skipped: list[tuple[Path, str]] = []
+    for mpd_path in inputs:
+        try:
+            text = disassemble(mpd_path)
+        except ValueError as exc:
+            skipped.append((mpd_path, str(exc)))
+            continue
+        out_path = output_path_for(mpd_path, output_root)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(text, encoding="utf-8")
+        written += 1
+    print(f"Wrote {written} decoded scripts to {output_root}")
+    if skipped:
+        print(f"Skipped {len(skipped)} files:")
+        for mpd_path, reason in skipped:
+            print(f"  {mpd_path.name}: {reason}")
 
 
 if __name__ == "__main__":

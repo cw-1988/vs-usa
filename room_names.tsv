@@ -1,0 +1,409 @@
+MapId	ZoneId	RoomId	AreaId	RoomType	AreaName	RoomName
+MAP009	9	1	1	Playable	Wine Cellar	Entrance to Darkness
+MAP010	9	2	1	Playable	Wine Cellar	Room of Cheap Red Wine
+MAP011	9	3	1	Playable	Wine Cellar	Room of Cheap White Wine
+MAP012	9	4	1	Playable	Wine Cellar	Hall of Struggle
+MAP013	9	5	1	Playable	Wine Cellar	Smokebarrel Stair
+MAP014	9	6	1	Playable	Wine Cellar	Wine Guild Hall
+MAP015	9	7	1	Playable	Wine Cellar	Wine Magnate's Chambers
+MAP016	9	8	1	Playable	Wine Cellar	Fine Vintage Vault
+MAP017	9	9	1	Playable	Wine Cellar	Chamber of Fear
+MAP018	9	10	1	Playable	Wine Cellar	The Reckoning Room
+MAP019	9	11	1	Playable	Wine Cellar	A Laborer's Thirst
+MAP020	9	12	1	Playable	Wine Cellar	The Rich Drown in Wine
+MAP021	9	13	1	Playable	Wine Cellar	Room of Rotten Grapes
+MAP022	9	14	1	Playable	Wine Cellar	Chamber of Fear (after the quake)
+MAP024	9	16	1	Playable	Wine Cellar	The Greedy One's Den
+MAP027	9	17	1	Playable	Wine Cellar	Worker's Breakroom
+MAP409	9	18	1	Playable	Wine Cellar	Blackmarket of Wines
+MAP412	9	19	1	Playable	Wine Cellar	Room of Rotten Grapes (after defeating Lich)
+MAP025	11	1	1	Playable	Wine Cellar	The Hero's Winehall
+MAP026	12	1	1	Playable	Wine Cellar	The Gallows
+MAP408	12	1	1	Playable	Wine Cellar	The Gallows (Mino Zombie, new chest)
+MAP028	13	1	2	Playable	Catacombs	Hall of Sworn Revenge
+MAP029	13	2	2	Playable	Catacombs	The Last Blessing
+MAP030	13	3	2	Playable	Catacombs	The Weeping Corridor
+MAP031	13	4	2	Playable	Catacombs	Persecution Hall
+MAP032	13	5	2	Playable	Catacombs	The Lamenting Mother
+MAP033	13	6	2	Playable	Catacombs	Rodent-Ridden Chamber
+MAP034	13	7	2	Playable	Catacombs	Shrine to the Martyrs
+MAP036	13	9	2	Playable	Catacombs	Hall of Dying Hope
+MAP037	13	10	2	Playable	Catacombs	Bandits' Hideout
+MAP038	13	11	2	Playable	Catacombs	The Bloody Hallway
+MAP039	13	12	2	Playable	Catacombs	Faith Overcame Fear
+MAP040	13	13	2	Playable	Catacombs	The Withered Spring
+MAP041	13	14	2	Playable	Catacombs	Repent, O ye Sinners
+MAP042	13	15	2	Playable	Catacombs	The Reaper's Victims
+MAP043	13	16	2	Playable	Catacombs	The Last Stab of Hope
+MAP044	13	17	2	Playable	Catacombs	Hallway of Heroes
+MAP045	13	18	2	Playable	Catacombs	The Lamenting Mother (after the quake)
+MAP046	14	1	2	Playable	Catacombs	The Beast's Domain
+MAP205	42	1	2	Playable	Catacombs	"Workshop ""Work of Art"""
+MAP047	15	1	3	Playable	Sanctum	Prisoners' Niche
+MAP048	15	2	3	Playable	Sanctum	Corridor of the Clerics
+MAP049	15	3	3	Playable	Sanctum	Priests' Confinement
+MAP050	15	4	3	Playable	Sanctum	Alchemists' Laboratory
+MAP051	15	5	3	Playable	Sanctum	Theology Classroom
+MAP052	15	6	3	Playable	Sanctum	Shrine of the Martyrs
+MAP053	15	7	3	Playable	Sanctum	Advent Ground
+MAP054	15	8	3	Playable	Sanctum	Passage of the Refugees
+MAP055	15	9	3	Playable	Sanctum	Passage of the Refugees (after cloudstone activated)
+MAP057	15	11	3	Playable	Sanctum	Stairway to the Light
+MAP058	15	12	3	Playable	Sanctum	Hallowed Hope
+MAP059	15	13	3	Playable	Sanctum	The Academia Corridor
+MAP060	16	1	3	Playable	Sanctum	Hall of Sacrilege
+MAP061	17	1	3	Playable	Sanctum	The Cleansing Chantry
+MAP147	32	1	4	Playable	Town Center West	Rue Vermillion
+MAP148	32	2	4	Playable	Town Center West	The Rene Coastroad
+MAP149	32	3	4	Playable	Town Center West	Rue Mal Fallde
+MAP150	32	4	4	Playable	Town Center West	Tircolas Flow
+MAP151	32	5	4	Playable	Town Center West	Glacialdra Kirk Ruins
+MAP152	32	6	4	Playable	Town Center West	Rue Bouquet
+MAP153	32	7	4	Playable	Town Center West	Villeport Way
+MAP154	32	8	4	Playable	Town Center West	Rue Sant D'alsa
+MAP173	34	1	4	Playable	Town Center West	Dinas Walk
+MAP206	43	1	4	Playable	Town Center West	"Workshop ""Magic Hammer"""
+MAP105	28	1	5	Playable	City Walls West	Students of Death
+MAP106	28	2	5	Playable	City Walls West	The Gabled Hall
+MAP107	28	3	5	Playable	City Walls West	Where the Master Fell
+MAP260	50	1	6	Playable	Abandoned Mines B1	Dreamers' Entrance
+MAP261	50	2	6	Playable	Abandoned Mines B1	Miners' Resting Hall
+MAP262	50	3	6	Playable	Abandoned Mines B1	The Crossing
+MAP263	50	4	6	Playable	Abandoned Mines B1	Conflict and Accord
+MAP264	50	5	6	Playable	Abandoned Mines B1	The Suicide King
+MAP265	50	6	6	Playable	Abandoned Mines B1	The End of the Line
+MAP266	50	7	6	Playable	Abandoned Mines B1	The Battle's Beginning
+MAP267	50	8	6	Playable	Abandoned Mines B1	What Lies Ahead?
+MAP268	50	9	6	Playable	Abandoned Mines B1	The Fruits of Friendship
+MAP269	50	10	6	Playable	Abandoned Mines B1	The Earthquake's Mark
+MAP270	50	11	6	Playable	Abandoned Mines B1	Coal Mine Storage
+MAP271	50	12	6	Playable	Abandoned Mines B1	The Passion of Lovers
+MAP272	50	13	6	Playable	Abandoned Mines B1	The Hall of Hope
+MAP273	50	14	6	Playable	Abandoned Mines B1	The Dark Tunnel
+MAP274	50	15	6	Playable	Abandoned Mines B1	Rust in Peace
+MAP275	50	16	6	Playable	Abandoned Mines B1	Everwant Passage
+MAP276	50	17	6	Playable	Abandoned Mines B1	Mining Regrets
+MAP277	50	18	6	Playable	Abandoned Mines B1	The Smeltry
+MAP278	50	19	6	Playable	Abandoned Mines B1	Clash of Hyaenas
+MAP279	50	20	6	Playable	Abandoned Mines B1	Greed Knows No Bounds
+MAP280	50	21	6	Playable	Abandoned Mines B1	Live Long and Prosper
+MAP281	50	22	6	Playable	Abandoned Mines B1	Pray to the Mineral Gods
+MAP282	50	23	6	Playable	Abandoned Mines B1	Traitor's Parting
+MAP283	50	24	6	Playable	Abandoned Mines B1	Escapeway
+MAP210	47	1	7	Playable	Undercity West	"Workshop ""Godhands"""
+MAP220	48	1	7	Playable	Undercity West	The Bread Peddler's Way
+MAP221	48	2	7	Playable	Undercity West	Way of the Mother Lode
+MAP222	48	3	7	Playable	Undercity West	Sewer of Ravenous Rats
+MAP223	48	4	7	Playable	Undercity West	Underdark Fishmarket
+MAP224	48	5	7	Playable	Undercity West	The Sunless Way
+MAP225	48	6	7	Playable	Undercity West	Remembering Days of Yore
+MAP226	48	7	7	Playable	Undercity West	Where the Hunter Climbed
+MAP227	48	8	7	Playable	Undercity West	Larder for a Lean Winter
+MAP228	48	9	7	Playable	Undercity West	Hall of Poverty
+MAP229	48	10	7	Playable	Undercity West	The Washing-Woman's Way
+MAP230	48	11	7	Playable	Undercity West	Beggars of the Mouthharp
+MAP231	48	12	7	Playable	Undercity West	Corner of the Wretched
+MAP232	48	13	7	Playable	Undercity West	Path to the Greengrocer
+MAP233	48	14	7	Playable	Undercity West	Crossroads of Rest
+MAP234	48	15	7	Playable	Undercity West	Path of the Children
+MAP235	48	16	7	Playable	Undercity West	Fear of the Fall
+MAP236	48	17	7	Playable	Undercity West	Sinner's Corner
+MAP237	48	18	7	Playable	Undercity West	Nameless Dark Oblivion
+MAP238	48	19	7	Playable	Undercity West	Corner of Prayers
+MAP239	48	20	7	Playable	Undercity West	Hope Obstructed
+MAP240	48	21	7	Playable	Undercity West	The Children's Hideout
+MAP241	48	22	7	Playable	Undercity West	The Crumbling Market
+MAP242	48	23	7	Playable	Undercity West	Tears from Empty Sockets
+MAP243	48	24	7	Playable	Undercity West	Where Flood Waters Ran
+MAP244	48	25	7	Playable	Undercity West	The Body Fragile Yields
+MAP245	48	26	7	Playable	Undercity West	Salvation for the Mother
+MAP246	48	27	7	Playable	Undercity West	Bite the Master's Wounds
+MAP179	40	1	8	Playable	Snowfly Forest	The Hunt Begins
+MAP180	40	2	8	Playable	Snowfly Forest	Which Way Home
+MAP181	40	3	8	Playable	Snowfly Forest	The Giving Trees
+MAP182	40	4	8	Playable	Snowfly Forest	The Wounded Boar
+MAP183	40	5	8	Playable	Snowfly Forest	Golden Egg Way
+MAP184	40	6	8	Playable	Snowfly Forest	The Birds and the Bees
+MAP185	40	7	8	Playable	Snowfly Forest	The Woodcutter's Run
+MAP186	40	8	8	Playable	Snowfly Forest	The Wolves' Choice
+MAP187	40	9	8	Playable	Snowfly Forest	Howl of the Wolf King
+MAP188	40	10	8	Playable	Snowfly Forest	Fluttering Hope
+MAP189	40	11	8	Playable	Snowfly Forest	Traces of the Beast
+MAP190	40	12	8	Playable	Snowfly Forest	The Yellow Wood
+MAP191	40	13	8	Playable	Snowfly Forest	They Also Feed
+MAP192	40	14	8	Playable	Snowfly Forest	Where Soft Rains Fell
+MAP193	40	15	8	Playable	Snowfly Forest	The Spirit Trees
+MAP194	40	16	8	Playable	Snowfly Forest	The Silent Hedges
+MAP195	40	17	8	Playable	Snowfly Forest	Lamenting to the Moon
+MAP196	40	18	8	Playable	Snowfly Forest	The Hollow Hills
+MAP197	40	19	8	Playable	Snowfly Forest	Running with the Wolves
+MAP198	40	20	8	Playable	Snowfly Forest	You Are the Prey
+MAP199	40	21	8	Playable	Snowfly Forest	The Secret Path
+MAP200	40	22	8	Playable	Snowfly Forest	The Faerie Circle
+MAP201	40	23	8	Playable	Snowfly Forest	Return to the Land
+MAP202	40	24	8	Playable	Snowfly Forest	Forest River
+MAP203	40	25	8	Playable	Snowfly Forest	Hewn from Nature
+MAP204	40	26	8	Playable	Snowfly Forest	The Wood Gate
+MAP348	41	1	8	Playable	Snowfly Forest East	Steady the Boar-Spears
+MAP349	41	2	8	Playable	Snowfly Forest East	The Boar's Revenge
+MAP350	41	3	8	Playable	Snowfly Forest East	Nature's Womb
+MAP108	28	4	9	Playable	City Walls South	The Weeping Boy
+MAP109	28	5	9	Playable	City Walls South	Swords for the Land
+MAP110	28	6	9	Playable	City Walls South	In Wait of the Foe
+MAP111	28	7	9	Playable	City Walls South	Where Weary Riders Rest
+MAP112	28	8	9	Playable	City Walls South	The Boy's Training Room
+MAP124	29	1	10	Playable	The Keep	The Warrior's Rest
+MAP126	29	3	10	Playable	The Keep	The Soldier's Bedding
+MAP127	29	4	10	Playable	The Keep	A Storm of Arrows
+MAP128	29	5	10	Playable	The Keep	Urge the Boy On
+MAP129	29	6	10	Playable	The Keep	A Taste of the Spoils
+MAP130	29	7	10	Playable	The Keep	Wiping Blood from Blades
+MAP359	55	1	11	Playable	Iron Maiden B1	The Cage
+MAP360	55	2	11	Playable	Iron Maiden B1	The Cauldron
+MAP361	55	3	11	Playable	Iron Maiden B1	Wooden Horse
+MAP362	55	4	11	Playable	Iron Maiden B1	Starvation
+MAP363	55	5	11	Playable	Iron Maiden B1	The Breast Ripper
+MAP364	55	6	11	Playable	Iron Maiden B1	The Pear
+MAP365	55	7	11	Playable	Iron Maiden B1	The Whirligig
+MAP366	55	8	11	Playable	Iron Maiden B1	Spanish Tickler
+MAP367	55	9	11	Playable	Iron Maiden B1	Heretic's Fork
+MAP368	55	10	11	Playable	Iron Maiden B1	The Chair of Spikes
+MAP369	55	11	11	Playable	Iron Maiden B1	Blooding
+MAP370	55	12	11	Playable	Iron Maiden B1	Bootikens
+MAP371	55	13	11	Playable	Iron Maiden B1	Burial
+MAP372	55	14	11	Playable	Iron Maiden B1	Burning
+MAP373	55	15	11	Playable	Iron Maiden B1	Cleansing the Soul
+MAP374	55	16	11	Playable	Iron Maiden B1	The Garotte
+MAP375	55	17	11	Playable	Iron Maiden B1	Hanging
+MAP376	55	18	11	Playable	Iron Maiden B1	Impalement
+MAP377	55	19	11	Playable	Iron Maiden B1	Knotting
+MAP378	55	20	11	Playable	Iron Maiden B1	The Branks
+MAP379	55	21	11	Playable	Iron Maiden B1	The Wheel
+MAP380	55	22	11	Playable	Iron Maiden B1	The Judas Cradle
+MAP381	55	23	11	Playable	Iron Maiden B1	The Ducking Stool
+MAP155	32	9	12	Playable	Town Center South	Valdiman Gates
+MAP156	32	10	12	Playable	Town Center South	Rue Faltes
+MAP157	32	11	12	Playable	Town Center South	Forcas Rise
+MAP158	32	12	12	Playable	Town Center South	Rue Aliano
+MAP159	32	13	12	Playable	Town Center South	Rue Volnac
+MAP160	32	14	12	Playable	Town Center South	Rue Morgue
+MAP174	35	1	12	Playable	Town Center South	Zebel's Walk
+MAP176	37	1	12	Playable	Town Center South	The House Khazabas
+MAP113	28	9	13	Playable	City Walls East	Train and Grow Strong
+MAP114	28	10	13	Playable	City Walls East	The Squire's Gathering
+MAP115	28	11	13	Playable	City Walls East	The Invaders are Found
+MAP116	28	12	13	Playable	City Walls East	The Dream-Weavers
+MAP117	28	13	13	Playable	City Walls East	The Cornered Savage
+MAP284	51	1	14	Playable	Abandoned Mines B2	Gambler's Passage
+MAP285	51	2	14	Playable	Abandoned Mines B2	Treaty Room
+MAP286	51	3	14	Playable	Abandoned Mines B2	The Miner's End
+MAP287	51	4	14	Playable	Abandoned Mines B2	Work, Then Die
+MAP288	51	5	14	Playable	Abandoned Mines B2	Bandits' Hollow
+MAP289	51	6	14	Playable	Abandoned Mines B2	Delusions of Happiness
+MAP290	51	7	14	Playable	Abandoned Mines B2	Dining in Darkness
+MAP291	51	8	14	Playable	Abandoned Mines B2	Subtellurian Horrors
+MAP292	51	9	14	Playable	Abandoned Mines B2	Hidden Resources
+MAP293	51	10	14	Playable	Abandoned Mines B2	Way of Lost Children
+MAP294	51	11	14	Playable	Abandoned Mines B2	Hall of the Empty Sconce
+MAP295	51	12	14	Playable	Abandoned Mines B2	Acolyte's Burial Vault
+MAP296	51	13	14	Playable	Abandoned Mines B2	Hall of Contemplation
+MAP297	51	14	14	Playable	Abandoned Mines B2	The Abandoned Catspaw
+MAP298	51	15	14	Playable	Abandoned Mines B2	Tomb of the Reborn
+MAP299	51	16	14	Playable	Abandoned Mines B2	The Fallen Bricklayer
+MAP300	51	17	14	Playable	Abandoned Mines B2	Crossing of Blood
+MAP301	51	18	14	Playable	Abandoned Mines B2	Fool's Gold, Fool's Loss
+MAP302	51	19	14	Playable	Abandoned Mines B2	Cry of the Beast
+MAP303	51	20	14	Playable	Abandoned Mines B2	Senses Lost
+MAP304	51	21	14	Playable	Abandoned Mines B2	Desire's Passage
+MAP305	51	22	14	Playable	Abandoned Mines B2	Kilroy Was Here
+MAP306	51	23	14	Playable	Abandoned Mines B2	Suicidal Desires
+MAP307	51	24	14	Playable	Abandoned Mines B2	The Ore of Legend
+MAP308	51	25	14	Playable	Abandoned Mines B2	Lambs to the Slaughter
+MAP309	51	26	14	Playable	Abandoned Mines B2	A Wager of Noble Gold
+MAP310	51	27	14	Playable	Abandoned Mines B2	The Lunatic Veins
+MAP410	51	28	14	Playable	Abandoned Mines B2	Corridor of Shade
+MAP411	51	29	14	Playable	Abandoned Mines B2	Revelation Shaft
+MAP207	44	1	15	Playable	Undercity East	"Workshop ""Keane's Crafts"""
+MAP247	49	1	15	Playable	Undercity East	Hall to a New World
+MAP248	49	2	15	Playable	Undercity East	Place of Free Words
+MAP249	49	3	15	Playable	Undercity East	Bazaar of the Bizarre
+MAP250	49	4	15	Playable	Undercity East	Noble Gold and Silk
+MAP251	49	5	15	Playable	Undercity East	A Knight Sells his Sword
+MAP252	49	6	15	Playable	Undercity East	Gemsword Blackmarket
+MAP253	49	7	15	Playable	Undercity East	The Pirate's Son
+MAP254	49	8	15	Playable	Undercity East	Sale of the Sword
+MAP255	49	9	15	Playable	Undercity East	Weapons Not Allowed
+MAP256	49	10	15	Playable	Undercity East	The Greengrocer's Stair
+MAP257	49	11	15	Playable	Undercity East	Where Black Waters Ran
+MAP258	49	12	15	Playable	Undercity East	Arms Against Invaders
+MAP259	49	13	15	Playable	Undercity East	Catspaw Blackmarket
+MAP162	32	16	16	Playable	Town Center East	Rue Lejour
+MAP163	32	17	16	Playable	Town Center East	Kesch Bridge
+MAP164	32	18	16	Playable	Town Center East	Rue Crimnade
+MAP165	32	19	16	Playable	Town Center East	Rue Fisserano
+MAP166	32	20	16	Playable	Town Center East	Shasras Hill Park
+MAP175	36	1	16	Playable	Town Center East	Gharmes Walk
+MAP177	38	1	16	Playable	Town Center East	The House Gilgitte
+MAP171	39	1	16	Playable	Town Center East	Plateia Lumitar
+MAP208	45	1	16	Playable	Town Center East	"Workshop ""Metal Works"""
+MAP209	46	1	16	Playable	Town Center East	"Workshop ""Junction Point"""
+MAP118	28	14	17	Playable	City Walls North	Traces of Invasion Past
+MAP119	28	15	17	Playable	City Walls North	From Squire to Knight
+MAP120	28	16	17	Playable	City Walls North	Be for Battle Prepared
+MAP121	28	17	17	Playable	City Walls North	Destruction and Rebirth
+MAP122	28	18	17	Playable	City Walls North	From Boy to Hero
+MAP123	28	19	17	Playable	City Walls North	A Welcome Invasion
+MAP311	53	1	18	Playable	Limestone Quarry	Dark Abhors Light
+MAP312	53	2	18	Playable	Limestone Quarry	Dream of the Holy Land
+MAP313	53	3	18	Playable	Limestone Quarry	The Ore Road
+MAP314	53	4	18	Playable	Limestone Quarry	Atone for Eternity
+MAP315	53	5	18	Playable	Limestone Quarry	The Air Stirs
+MAP316	53	6	18	Playable	Limestone Quarry	Bonds of Friendship
+MAP317	53	7	18	Playable	Limestone Quarry	Stair to Sanctuary
+MAP318	53	8	18	Playable	Limestone Quarry	The Fallen Hall
+MAP319	53	9	18	Playable	Limestone Quarry	The Rotten Core
+MAP320	53	10	18	Playable	Limestone Quarry	Bacchus is Cheap
+MAP321	53	11	18	Playable	Limestone Quarry	Screams of the Wounded
+MAP322	53	12	18	Playable	Limestone Quarry	The Ore-Bearers
+MAP323	53	13	18	Playable	Limestone Quarry	The Dreamer's Climb
+MAP324	53	14	18	Playable	Limestone Quarry	Sinner's Sustenence
+MAP325	53	15	18	Playable	Limestone Quarry	The Timely Dew of Sleep
+MAP326	53	16	18	Playable	Limestone Quarry	Companions in Arms
+MAP327	53	17	18	Playable	Limestone Quarry	The Auction Block
+MAP328	53	18	18	Playable	Limestone Quarry	Ascension
+MAP329	53	19	18	Playable	Limestone Quarry	Where the Serpent Hunts
+MAP330	53	20	18	Playable	Limestone Quarry	Ants Prepare for Winter
+MAP331	53	21	18	Playable	Limestone Quarry	Drowned in Fleeting Joy
+MAP332	53	22	18	Playable	Limestone Quarry	The Laborer's Bonfire
+MAP333	53	23	18	Playable	Limestone Quarry	Stone and Sulfurous Fire
+MAP334	53	24	18	Playable	Limestone Quarry	Torture Without End
+MAP335	53	25	18	Playable	Limestone Quarry	Way Down
+MAP336	53	26	18	Playable	Limestone Quarry	Excavated Hollow
+MAP337	53	27	18	Playable	Limestone Quarry	Parting Regrets
+MAP338	53	28	18	Playable	Limestone Quarry	Corridor of Tales
+MAP339	53	29	18	Playable	Limestone Quarry	Dust Shall Eat the Days
+MAP340	53	30	18	Playable	Limestone Quarry	Hall of the Wage-Paying
+MAP341	53	31	18	Playable	Limestone Quarry	Limestone Quarry: unused room
+MAP342	53	32	18	Playable	Limestone Quarry	Tunnel of the Heartless
+MAP139	30	1	19	Playable	Temple of Kiltia	The Dark Coast
+MAP140	30	2	19	Playable	Temple of Kiltia	Hall of Prayer
+MAP141	30	3	19	Playable	Temple of Kiltia	Those who Drink the Dark
+MAP142	30	4	19	Playable	Temple of Kiltia	The Chapel of Meschaunce
+MAP143	30	5	19	Playable	Temple of Kiltia	The Resentful Ones
+MAP144	30	6	19	Playable	Temple of Kiltia	Those who Fear the Light
+MAP145	31	1	19	Playable	Temple of Kiltia	Chamber of Reason
+MAP146	31	2	19	Playable	Temple of Kiltia	Exit to City Center
+MAP351	52	1	20	Playable	Escapeway	Shelter From the Quake
+MAP352	52	2	20	Playable	Escapeway	Buried Alive
+MAP353	52	3	20	Playable	Escapeway	Movement of Fear
+MAP354	52	4	20	Playable	Escapeway	Facing Your Illusions
+MAP355	52	5	20	Playable	Escapeway	The Darkness Drinks
+MAP356	52	6	20	Playable	Escapeway	Fear and Loathing
+MAP357	52	7	20	Playable	Escapeway	Blood and the Beast
+MAP358	52	8	20	Playable	Escapeway	Where Body and Soul Part
+MAP343	54	1	21	Playable	Forgotten Pathway	Stair to the Sinners
+MAP344	54	2	21	Playable	Forgotten Pathway	Slaugher of the Innocent
+MAP345	54	3	21	Playable	Forgotten Pathway	The Fallen Knight
+MAP346	54	4	21	Playable	Forgotten Pathway	The Oracle Sins No More
+MAP347	54	5	21	Playable	Forgotten Pathway	Awaiting Retribution
+MAP382	56	1	22	Playable	Iron Maiden B2	The Eunics' Lot
+MAP383	56	2	22	Playable	Iron Maiden B2	Ordeal By Fire
+MAP384	56	3	22	Playable	Iron Maiden B2	Tablillas
+MAP385	56	4	22	Playable	Iron Maiden B2	The Oven at Neisse
+MAP386	56	5	22	Playable	Iron Maiden B2	Strangulation
+MAP387	56	6	22	Playable	Iron Maiden B2	Pressing
+MAP388	56	7	22	Playable	Iron Maiden B2	The Strappado
+MAP389	56	8	22	Playable	Iron Maiden B2	The Mind Burns
+MAP390	56	9	22	Playable	Iron Maiden B2	Thumbscrews
+MAP391	56	10	22	Playable	Iron Maiden B2	The Rack
+MAP392	56	11	22	Playable	Iron Maiden B2	The Saw
+MAP393	56	12	22	Playable	Iron Maiden B2	Ordeal By Water
+MAP394	56	13	22	Playable	Iron Maiden B2	The Cold's Bridle
+MAP395	56	14	22	Playable	Iron Maiden B2	Brank
+MAP396	56	15	22	Playable	Iron Maiden B2	The Shin-Vice
+MAP397	56	16	22	Playable	Iron Maiden B2	Squassation
+MAP398	56	17	22	Playable	Iron Maiden B2	The Spider
+MAP399	56	18	22	Playable	Iron Maiden B2	Lead Sprinkler
+MAP400	56	19	22	Playable	Iron Maiden B2	Pendulum
+MAP401	56	20	22	Playable	Iron Maiden B2	Dragging
+MAP402	56	21	22	Playable	Iron Maiden B2	Tongue Slicer
+MAP403	56	22	22	Playable	Iron Maiden B2	Tormentum Insomniae
+MAP404	56	23	22	Playable	Iron Maiden B3	The Iron Maiden
+MAP405	56	24	22	Playable	Iron Maiden B3	Saint Elmo's Belt
+MAP406	56	25	22	Playable	Iron Maiden B3	Judgement
+MAP407	56	26	22	Playable	Iron Maiden B3	Dunking the Witch
+MAP063	22	1	23	Playable	Great Cathedral B1	Sanity and Madness
+MAP067	22	5	23	Playable	Great Cathedral B1	Truth and Lies
+MAP069	22	7	23	Playable	Great Cathedral B1	Order and Chaos
+MAP070	22	8	23	Playable	Great Cathedral B1	The Victor's Laurels
+MAP071	22	9	23	Playable	Great Cathedral B1	Struggle for the Soul
+MAP072	22	10	23	Playable	Great Cathedral B1	An Offering of Souls
+MAP074	23	2	23	Playable	Great Cathedral L2	He Screams for Mercy
+MAP075	23	3	23	Playable	Great Cathedral L2	Light and Dark Wage War
+MAP076	23	4	23	Playable	Great Cathedral L2	Abasement from Above
+MAP077	23	5	23	Playable	Great Cathedral L3	The Heretics' Story
+MAP078	23	6	23	Playable	Great Cathedral L3	The Wine-Lecher's Fall
+MAP079	24	1	23	Playable	Great Cathedral L1	The Flayed Confessional
+MAP080	24	2	23	Playable	Great Cathedral L1	Monk's Leap
+MAP081	24	3	23	Playable	Great Cathedral L1	Where Darkness Spreads
+MAP082	24	4	23	Playable	Great Cathedral L1	Hieratic Recollections
+MAP083	24	5	23	Playable	Great Cathedral L1	A Light in the Dark
+MAP084	24	6	23	Playable	Great Cathedral L1	The Poisoned Chapel
+MAP085	24	7	23	Playable	Great Cathedral L1	Sin and Punishment
+MAP086	24	8	23	Playable	Great Cathedral L1	Cracked Pleasures
+MAP087	24	9	23	Playable	Great Cathedral L1	Into Holy Battle
+MAP088	24	10	23	Playable	Great Cathedral L2	Maelstrom of Malice
+MAP089	24	11	23	Playable	Great Cathedral L2	The Acolyte's Weakness
+MAP090	24	12	23	Playable	Great Cathedral L2	The Hall of Broken Vows
+MAP091	24	13	23	Playable	Great Cathedral L2	The Melodics of Madness
+MAP092	24	14	23	Playable	Great Cathedral L2	Free from Base Desires
+MAP093	24	15	23	Playable	Great Cathedral L2	The Convent Room
+MAP094	24	16	23	Playable	Great Cathedral L3	Hopes of the Idealist
+MAP095	25	1	23	Playable	Great Cathedral L2	An Arrow into Darkness
+MAP096	25	2	23	Playable	Great Cathedral L2	What Ails You, Kills You
+MAP097	25	3	23	Playable	Great Cathedral L3	Where the Soul Rots
+MAP098	25	4	23	Playable	Great Cathedral L3	Despair of the Fallen
+MAP099	25	5	23	Playable	Great Cathedral L4	The Atrium
+MAP427	96	1	25	Debug	Debug	Debug pathfinding
+MAP428	97	1	25	Debug	Debug	Debug
+MAP429	98	1	25	Debug	Debug	Debug
+MAP430	99	1	25	Debug	Debug	Debug AI
+MAP000	100	1	25	Debug	Debug	Debug traps, goto degub room
+MAP506	250	1	25	Debug	Debug	Debug room (MAPs)
+MAP023	9	15	1	Cutscene	Wine Cellar	Ashley and Merlose at the Wine Cellar gate
+MAP211	10	1	1	Cutscene	Wine Cellar	Ashley and Merlose outside the Wine Cellar gate
+MAP035	13	8	2	Cutscene	Catacombs	unused room
+MAP056	15	10	3	Cutscene	Sanctum	unused room
+MAP125	29	2	10	Cutscene	The Keep	Keep: unused room
+MAP161	32	15	12	Cutscene	Town Center South	unused room
+MAP167	32	21	16	Cutscene	Town Center East	unused room
+MAP168	32	22	16	Cutscene	Town Center East	unused room
+MAP169	32	23	16	Cutscene	Town Center East	unused room
+MAP170	32	24	16	Cutscene	Town Center East	unused room
+MAP064	22	2	23	Cutscene	Great Cathedral	unused room
+MAP065	22	3	23	Cutscene	Great Cathedral	unused room
+MAP066	22	4	23	Cutscene	Great Cathedral	unused room
+MAP068	22	6	23	Cutscene	Great Cathedral	unused room
+MAP073	23	1	23	Cutscene	Great Cathedral	unused room
+MAP100	26	1	23	Cutscene	Great Cathedral	Ashley finds Sydney in the Cathedral
+MAP101	27	1	23	Cutscene	Great Cathedral	"Guildestern's ""ascension"""
+MAP102	27	2	23	Cutscene	Great Cathedral	Ashley fights Guildestern, part 2
+MAP103	57	1	23	Cutscene	Great Cathedral	Hardin's past
+MAP104	58	1	23	Cutscene	Great Cathedral	Joshua's dream
+MAP413	59	1	23	Cutscene	Great Cathedral	Sydney reaches Hardin and Guildestern
+MAP131	60	1	23	Cutscene	Great Cathedral	Escape from Leà Monde
+MAP132	61	1	23	Cutscene	Great Cathedral	Collapse of Leà Monde
+MAP133	62	1	23	Cutscene	Great Cathedral	Collapse of Leà Monde
+MAP134	63	1	23	Cutscene	Great Cathedral	Collapse of Leà Monde
+MAP135	64	1	23	Cutscene	Great Cathedral	Collapse of Leà Monde
+MAP136	65	1	23	Cutscene	Great Cathedral	Big Bang
+MAP137	66	1	23	Cutscene	Great Cathedral	Hardin dies
+MAP138	67	1	23	Cutscene	Great Cathedral	Bardorba reunion
+MAP178	68	1	23	Cutscene	Great Cathedral	So began the story of the vagrant
+MAP414	69	1	23	Cutscene	Great Cathedral	Merlose questions Hardin
+MAP415	70	1	23	Cutscene	Great Cathedral	The Dark tempts Ashley
+MAP062	18	1	24	Cutscene	Unmapped	Bardorba and Rosencrantz
+MAP212	19	1	24	Cutscene	Unmapped	Ashley's flashback
+MAP213	20	1	24	Cutscene	Unmapped	VKP briefing
+MAP214	21	1	24	Cutscene	Unmapped	Ashley meets Merlose outside manor
+MAP172	33	1	24	Cutscene	Unmapped	Merlose finds corpses at Leà Monde's entrance
