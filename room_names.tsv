@@ -283,7 +283,7 @@ MAP337	53	27	18	Playable	Limestone Quarry	Parting Regrets
 MAP338	53	28	18	Playable	Limestone Quarry	Corridor of Tales
 MAP339	53	29	18	Playable	Limestone Quarry	Dust Shall Eat the Days
 MAP340	53	30	18	Playable	Limestone Quarry	Hall of the Wage-Paying
-MAP341	53	31	18	Playable	Limestone Quarry	Limestone Quarry: unused room
+MAP341	53	31	18	Playable	Limestone Quarry	unused room
 MAP342	53	32	18	Playable	Limestone Quarry	Tunnel of the Heartless
 MAP139	30	1	19	Playable	Temple of Kiltia	The Dark Coast
 MAP140	30	2	19	Playable	Temple of Kiltia	Hall of Prayer
@@ -374,7 +374,7 @@ MAP023	9	15	1	Cutscene	Wine Cellar	Ashley and Merlose at the Wine Cellar gate
 MAP211	10	1	1	Cutscene	Wine Cellar	Ashley and Merlose outside the Wine Cellar gate
 MAP035	13	8	2	Cutscene	Catacombs	unused room
 MAP056	15	10	3	Cutscene	Sanctum	unused room
-MAP125	29	2	10	Cutscene	The Keep	Keep: unused room
+MAP125	29	2	10	Cutscene	The Keep	unused room
 MAP161	32	15	12	Cutscene	Town Center South	unused room
 MAP167	32	21	16	Cutscene	Town Center East	unused room
 MAP168	32	22	16	Cutscene	Town Center East	unused room

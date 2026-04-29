@@ -1,7 +1,9 @@
-_refs
+_refs/*
+!_refs/README.md
 __pycache__
 Game Data/*
 !Game Data/your-data-here.txt
 .codex_tmp
 decoded_scripts/*
 !decoded_scripts/map-script-files-will-end-up-here.txt
+tools
