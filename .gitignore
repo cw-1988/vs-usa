@@ -1,4 +1,5 @@
-decoded_scripts
 _refs
 __pycache__
-Game Folder
+Game Data
+.codex_tmp
+decoded_scripts
