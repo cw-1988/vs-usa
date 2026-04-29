@@ -1,0 +1,277 @@
+## Vagrant Story Script Opcode Findings
+
+This note collects high-confidence opcode findings that appear to improve on the
+current public table at Data Crystal:
+
+- Source: <https://datacrystal.tcrf.net/wiki/Vagrant_Story/Script_Opcodes>
+- Checked on: 2026-04-29
+
+The goal is to keep this contribution set conservative: only names with a clear
+code-path or script-usage proof are listed as confirmed. Anything still fuzzy
+should stay tentative in upstream comments and PR text.
+
+### Confidence guide
+
+Use this quick rubric when judging an opcode name:
+
+- `Confirmed`: the handler body is readable and the behavior matches real script
+  usage.
+- `Strong`: the handler target is clear and the likely subsystem is clear, but
+  one part of the user-facing meaning still needs proof.
+- `Tentative`: the opcode has been narrowed down to a subsystem or helper path,
+  but the final script-friendly name would still be guesswork.
+
+For this note, `rood-reverse` is the better source for opcode work than Data
+Crystal when a handler is actually decompiled. Data Crystal is still useful as a
+legacy address table, but its names should be treated as historical notes until
+the code body agrees.
+
+### Confirmed improvements
+
+#### Opcode `0x24`
+
+- Data Crystal: unnamed (`800b77dc`)
+- Confirmed name: `ActorSfxPanVolumeControl`
+- Confidence: `Confirmed`
+
+Why:
+
+- This opcode stores a little sound-control state on an actor.
+- That stored state is later read by the sound code that decides where a sound
+  should come from and how loud it should be.
+- There is also a cleanup path that clears the same state again, which matches
+  the idea of a temporary actor sound override rather than a one-shot trigger.
+
+Current best script-level interpretation:
+
+- `mode 0`: clear actor SFX spatial override state
+- `mode 1`: set or pulse an override
+- `mode 2`: set the default/basis used by later `mode 1` updates
+
+The exact field names for the three control bytes may still deserve refinement,
+but the subsystem identity is high-confidence.
+
+#### Opcode `0x78`
+
+- Data Crystal: unnamed (`800ba0e4`)
+- Confirmed name: `EnableRoomMechanismUpdates`
+- Confidence: `Confirmed`
+
+Why:
+
+- This opcode flips the room mechanism update loop on or off.
+- In scripts it appears right where cutscenes take control away from normal room
+  logic, then appears again when normal room behavior is handed back.
+- It sits right next to the room mechanism control opcode, so it is clearly part
+  of the same subsystem.
+
+Important detail:
+
+- The script byte is inverted by the handler, so `1` means disabled and `0`
+  means enabled.
+
+#### Opcode `0x79`
+
+- Data Crystal: unnamed (`800ba194`)
+- Confirmed name: `RoomMechanismControl`
+- Confidence: `Confirmed`
+
+Why:
+
+- One sub-command tells the game to fire a room mechanism by id.
+- The other sub-command flips that mechanism between enabled and disabled.
+- The same code path is used by doors, locks, and other room objects, so this
+  is not just a cutscene-only special case.
+
+Current best script-level interpretation:
+
+- `79 00 xx`: trigger room mechanism `xx`
+- `79 01 xx`: toggle room mechanism `xx`
+
+### Other confirmed names worth upstreaming
+
+These were also validated locally and are stronger than the older public table:
+
+- `0x2E -> ModelScale`
+- `0x31 -> ModelTint`
+- `0x39 -> ModelLookAtPosition`
+- `0x74 -> LoadRoomSection10`
+- `0x75 -> WaitForRoomSection10`
+- `0x76 -> FreeRoomSection10`
+- `0x7C -> SetFirstPersonView`
+- `0x85 -> LoadSfxSlot`
+- `0x86 -> FreeSfxSlot`
+- `0x88 -> SetCurrentSfx`
+- `0x90 -> LoadMusicSlot`
+- `0x91 -> FreeMusic`
+- `0x99 -> ClearMusicLoadSlot`
+- `0x9D -> LoadSoundFileById`
+- `0x9E -> ProcessSoundQueue`
+- `0xF4 -> ScriptCallSlotActive`
+- `0xF5 -> ScriptCall`
+- `0xF6 -> ScriptReturn`
+
+#### Note on opcode `0x9D`
+
+The `2` suffix is not justified anymore.
+
+Why:
+
+- This opcode directly tells the sound system which sound file id to load.
+- A different older opcode reaches the same loader indirectly through the
+  current music slot, so there really are two load styles here.
+- In real scripts, `9D xx` is usually followed by `9E`, and the same `xx` often
+  shows up later as the music-load slot id. That fits a direct “queue this sound
+  file id” interpretation much better than a pitch control.
+
+Current best local rename:
+
+- `0x9D -> LoadSoundFileById`
+
+That keeps the important distinction from the older helper-backed sound-file
+loader while making it explicit that the script operand is the file id.
+
+### Confirmed helper-level behavior
+
+These are worth tightening locally even if the final script-friendly name should
+stay a little conservative.
+
+#### Opcodes `0x64` and `0x65`
+
+- Confidence: `Confirmed` at helper level, `Tentative` at script-friendly level
+
+Current narrow:
+
+- `0x64` goes straight to `func_80091998(arg0[1])`.
+- That helper resolves a room geometry entry and clears flag `0x100`.
+- `0x65` goes straight to `func_800919D8(arg0[1])`.
+- That helper resolves the same kind of room geometry entry and sets flag
+  `0x100`.
+- The same flag is also initialised from room section `12`, so this is clearly a
+  room-geometry state bit rather than an actor, camera, or sound control.
+
+Best safe local names for tooling:
+
+- `0x64 -> ClearRoomGeometryFlag100`
+- `0x65 -> SetRoomGeometryFlag100`
+
+Why not use show/hide yet:
+
+- The exact gameplay meaning of geometry flag `0x100` still needs one more pass
+  through the geometry consumers.
+- That means older guesses like `0x64 = enable/show` and `0x65 = disable/hide`
+  are still too aggressive.
+- What is actually proven right now is the polarity of the bit operation:
+  `0x64` clears the flag and `0x65` sets it.
+
+### Still tentative
+
+These are narrowed down, but should not be hard-renamed upstream without one
+more proof pass:
+
+- `0x7A`
+- `0xE2`
+- `0xE3`
+- `0xEF`
+
+#### Opcode `0x7A`
+
+- Confidence: `Strong`
+
+Current narrow:
+
+- It is part of the room audio subsystem, not a generic visual toggle.
+- `vs_battle_roomData.section14` is the room `AKAO` section in the room header
+  struct, so this handler is explicitly tied to room sound data.
+- When `7A 01` succeeds, it saves the current persistent room ambient sound id
+  and clears it via `func_800913BC(-1)`.
+- When `7A 00` runs later, it restores that saved ambient sound id.
+- In scripts it commonly brackets cutscene takeover and cleanup. `MAP001`,
+  `MAP006`, `MAP062`, and `MAP138` are good local examples.
+
+Best interpretation so far:
+
+- `SuspendRoomAmbientSound`
+
+Why still tentative:
+
+- Rooms with an actual AKAO section and rooms that fall back to the persistent
+  ambient-sfx path do not behave through the exact same implementation path.
+- So the subsystem identity is strong, but the final upstream name should still
+  describe the shared user-facing effect rather than overfit one implementation
+  detail.
+
+#### Opcode `0xE2`
+
+- Confidence: `Tentative`
+
+Current narrow:
+
+- This opcode starts a timed angle-style tween.
+- The tween updates one specific camera field over time instead of moving the
+  whole camera position directly.
+- Script usage also fits that: it commonly appears around camera staging rather
+  than around actor or room control.
+
+Best interpretation so far:
+
+- This is a real angular tween on the camera state, and `CameraRollTween` is a
+  plausible eventual rename.
+
+Why still tentative:
+
+- `_camera.t2.unk5C` is not formally named in the decomp yet, so the exact
+  axis should still be proven once more before upstreaming.
+
+#### Opcode `0xE3`
+
+- Confidence: `Tentative`
+
+Current narrow:
+
+- It uses the same tween machinery as `0xE2`, but writes to a different target.
+- In scripts it lives much closer to the visual-effect block than to normal
+  camera positioning commands.
+- That makes it look like an effect-side angle or phase control, not a basic
+  “move camera here” opcode.
+
+Best interpretation so far:
+
+- It is another angular tween, but likely for a post-process or screen-effect
+  subsystem rather than the main camera look-at/position path.
+
+Why still tentative:
+
+- The consumer of `D_800F1A2C` is still hidden behind nonmatching code, so the
+  user-facing feature name is not nailed down.
+
+#### Opcode `0xEF`
+
+- Confidence: `Tentative`
+
+Current narrow:
+
+- It behaves like part of the same visual-effect cluster as the nearby `E`-range
+  opcodes.
+- In scripts it shows up in little timed bursts, which feels like effect tuning
+  rather than logic flow or object control.
+- Its arguments also look like “set up a short ramp” values, not ids, flags, or
+  jump targets.
+
+Best interpretation so far:
+
+- It is probably one of the timed screen-effect parameter tween initialisers.
+
+Why still tentative:
+
+- The exact destination fields for `0xEF` are still hidden in nonmatching code,
+  so naming it more specifically would be premature.
+
+### Suggested upstream patch shape
+
+Keep the contribution in small pieces:
+
+1. Add comments around the matched handlers in `4A0A8.c` and `146C.c`.
+2. Rename script-decoder mnemonics in local tooling and include evidence in PR
+   text.
+3. Keep speculative opcodes out of the first PR.
