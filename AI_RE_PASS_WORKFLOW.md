@@ -10,6 +10,13 @@ stay general to the workspace, not tied to one opcode or one ongoing thread.
 If a capable model choice is available, prefer `gpt-5.4` with high reasoning
 effort for this pass.
 
+## Code Exploration Policy
+Always use jCodemunch-MCP tools — never fall back to Read, Grep, Glob, or Bash for code exploration.
+- Before reading a file: use get_file_outline or get_file_content
+- Before searching: use search_symbols or search_text
+- Before exploring structure: use get_file_tree or get_repo_outline
+- Call resolve_repo with the current directory first; if not indexed, call index_folder.
+
 ## Mission
 
 Complete one focused reverse-engineering pass that:
@@ -84,13 +91,19 @@ when `commit_mode = "auto"`.
 
 Choose tools based on the question instead of forcing one workflow every time.
 
-### `rg`
+### `jcodemunch-mcp`
 
-Use `rg` first for:
+Use `jcodemunch-mcp` first for code and text search/navigation:
 
-- finding opcode names or placeholders in repo files
-- pulling repeated decoded-script contexts
-- locating handler names, globals, and symbols in `_refs/rood-reverse`
+- `search_text` for opcode names/placeholders and repeated decoded-script context
+- `search_symbols` for handlers, globals, and symbol discovery in `_refs/rood-reverse`
+- `find_references` / `find_importers` for follow-through impact and usage paths
+
+Preferred session opening flow:
+
+1. `resolve_repo { "path": "." }`
+2. if needed, `index_folder { "path": "." }`
+3. `plan_turn { "repo": ".", "query": "<your pass question>", "model": "<active model id>" }`
 
 ### `dump_mpd_script.py`
 
@@ -225,9 +238,18 @@ Examples:
 
 Good patterns:
 
-```powershell
-rg -n "Opcode..|Camera|ScreenEffect|Ambient|Dialog|Model" decoded_scripts
-rg -n "^[0-9A-F]{4}: [0-9A-F]{2} " decoded_scripts -S
+```text
+search_text {
+  "query": "Opcode..|Camera|ScreenEffect|Ambient|Dialog|Model",
+  "path": "decoded_scripts",
+  "regex": true
+}
+
+search_text {
+  "query": "^[0-9A-F]{4}: [0-9A-F]{2} ",
+  "path": "decoded_scripts",
+  "regex": true
+}
 ```
 
 For opcode work, compare multiple rooms and preserve:
@@ -242,8 +264,18 @@ For opcode work, compare multiple rooms and preserve:
 
 Use the dispatch table before inferring from source order.
 
-```powershell
-rg -n "_opcodeFunctionTable|vs_battle_script_|func_800" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt
+```text
+search_text {
+  "query": "_opcodeFunctionTable|vs_battle_script_|func_800",
+  "path": "_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c",
+  "regex": true
+}
+
+search_text {
+  "query": "_opcodeFunctionTable|vs_battle_script_|func_800",
+  "path": "_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt",
+  "regex": true
+}
 ```
 
 ### Step 4. Trace the consumer path
@@ -431,7 +463,7 @@ Do not:
 ## Short Version
 
 Pick one solid RE question. Use the best available tools for that question:
-repo scripts, `rg`, `_refs/rood-reverse`, `Ghidra`, or `PCSX-Redux`. Make the
+repo scripts, `jcodemunch-mcp`, `_refs/rood-reverse`, `Ghidra`, or `PCSX-Redux`. Make the
 smallest honest improvement that leaves the workspace better than before.
 Verify it. Commit the intended changes locally unless the config disables that.
 Stop without pushing.
