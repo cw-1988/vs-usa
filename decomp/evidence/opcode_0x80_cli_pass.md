@@ -50,6 +50,9 @@
 - `decomp/evidence/opcode_0x80_binary_address_scan.md`
 - `decomp/evidence/opcode_0x80_runtime_capture_plan.md`
 - `decomp/evidence/opcode_0x80_runtime_observation_template.json`
+- `decomp/evidence/opcode_0x80_runtime_observation.json`
+- `decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`
+- `decomp/evidence/opcode_0x80_runtime_support.md`
 
 ## Packet structure
 
@@ -77,8 +80,16 @@
 - `opcode_0x80_runtime_observation_template.json` is the structured handoff
   file for recording breakpoint hits, dump paths, and final runtime
   observations during that pass.
+- `opcode_0x80_runtime_observation.json` is the checked-in scaffolded
+  observation packet for the next runtime pass; it already carries the planned
+  breakpoints, expected dump paths, and current missing-snapshot checklist.
+- `opcode_0x80_runtime_snapshot_compare.json` is the generated compare report
+  that currently records the missing dump files and should refresh in place
+  once real RAM snapshots are added.
 - `opcode_0x80_runtime_support.md` is the generated runtime support note that
-  should be produced after the observation JSON is filled and finalized.
+  now doubles as a ready-to-use runtime checklist because it includes the
+  planned breakpoints and missing snapshot captures even before the dumps
+  exist.
 
 ## Static findings
 
@@ -158,4 +169,6 @@
   binary baseline with
   `decomp/verification/compare_opcode_table_snapshots.py`, and record the
   breakpoint results in
-  `decomp/evidence/opcode_0x80_runtime_observation_template.json`.
+  `decomp/evidence/opcode_0x80_runtime_observation.json`, then refresh the
+  compare report and support note in place with
+  `decomp/verification/finalize_runtime_observation.py --in-place`.

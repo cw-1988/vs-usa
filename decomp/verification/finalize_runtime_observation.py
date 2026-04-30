@@ -308,6 +308,25 @@ def render_breakpoint_lines(observation: dict[str, Any]) -> list[str]:
     return lines or ["- No breakpoint hits were recorded in the observation JSON yet."]
 
 
+def render_planned_breakpoint_lines(observation: dict[str, Any]) -> list[str]:
+    breakpoints = observation.get("breakpoints")
+    if not isinstance(breakpoints, list) or not breakpoints:
+        return ["- No planned breakpoints were recorded in the observation JSON."]
+
+    lines: list[str] = []
+    for entry in breakpoints:
+        if not isinstance(entry, dict):
+            continue
+        kind = entry.get("kind", "unknown")
+        address = entry.get("address") or entry.get("address_range") or "unknown"
+        purpose = entry.get("purpose")
+        line = f"- `{kind}` breakpoint at `{address}`"
+        if purpose:
+            line += f": {purpose}"
+        lines.append(line)
+    return lines or ["- No planned breakpoints were recorded in the observation JSON."]
+
+
 def render_dispatch_lines(observation: dict[str, Any]) -> list[str]:
     observations = observation.get("dispatch_observations")
     if not isinstance(observations, list) or not observations:
@@ -327,6 +346,29 @@ def render_dispatch_lines(observation: dict[str, Any]) -> list[str]:
     return lines or ["- No dispatch observations were recorded yet."]
 
 
+def render_table_mutation_lines(observation: dict[str, Any]) -> list[str]:
+    mutations = observation.get("table_mutations")
+    if not isinstance(mutations, list) or not mutations:
+        return ["- No table mutation observations were recorded yet."]
+
+    lines: list[str] = []
+    for entry in mutations:
+        if not isinstance(entry, dict):
+            continue
+        snapshot = entry.get("snapshot_label") or entry.get("label") or "unknown"
+        opcode = entry.get("opcode") or "unknown"
+        old_handler = entry.get("old_handler") or entry.get("expected_handler") or "unknown"
+        new_handler = entry.get("new_handler") or entry.get("observed_handler") or "unknown"
+        note = entry.get("note")
+        line = (
+            f"- `{snapshot}` changed opcode `{opcode}` from `{old_handler}` to `{new_handler}`"
+        )
+        if note:
+            line += f": {note}"
+        lines.append(line)
+    return lines or ["- No table mutation observations were recorded yet."]
+
+
 def render_snapshot_lines(compare_report: dict[str, Any]) -> list[str]:
     snapshots = compare_report["snapshots"]
     missing = compare_report["missing_snapshots"]
@@ -341,9 +383,11 @@ def render_snapshot_lines(compare_report: dict[str, Any]) -> list[str]:
         )
 
     for snapshot in missing:
-        lines.append(
-            f"- Missing snapshot file for `{snapshot['label']}`: `{snapshot['path']}`"
-        )
+        line = f"- Missing snapshot file for `{snapshot['label']}`: `{snapshot['path']}`"
+        capture_point = snapshot.get("capture_point")
+        if capture_point:
+            line += f" ({capture_point})"
+        lines.append(line)
 
     return lines or ["- No snapshot comparisons were generated."]
 
@@ -392,9 +436,17 @@ def build_support_note(
         "",
         *render_focus_lines(focus_summary),
         "",
+        "## Planned Breakpoints",
+        "",
+        *render_planned_breakpoint_lines(observation),
+        "",
         "## Breakpoint Hits",
         "",
         *render_breakpoint_lines(observation),
+        "",
+        "## Table Mutations",
+        "",
+        *render_table_mutation_lines(observation),
         "",
         "## Dispatch Observations",
         "",
@@ -427,7 +479,13 @@ def update_observation_payload(
     updated["comparison_summary"] = {
         "generated_utc": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "compared_snapshot_count": len(compare_report["snapshots"]),
+        "compared_snapshot_labels": [
+            snapshot["label"] for snapshot in compare_report["snapshots"]
+        ],
         "missing_snapshot_count": len(compare_report["missing_snapshots"]),
+        "missing_snapshot_labels": [
+            snapshot["label"] for snapshot in compare_report["missing_snapshots"]
+        ],
         "all_compared_snapshots_match_baseline": all(
             snapshot["changed_entries"] == 0 for snapshot in compare_report["snapshots"]
         )
@@ -436,6 +494,18 @@ def update_observation_payload(
         "any_focus_opcode_changed": any(
             item["changed_in_snapshots"] for item in focus_summary.values()
         ),
+        "planned_breakpoint_count": len(observation.get("breakpoints", []))
+        if isinstance(observation.get("breakpoints"), list)
+        else 0,
+        "recorded_breakpoint_hit_count": len(observation.get("breakpoint_hits", []))
+        if isinstance(observation.get("breakpoint_hits"), list)
+        else 0,
+        "recorded_table_mutation_count": len(observation.get("table_mutations", []))
+        if isinstance(observation.get("table_mutations"), list)
+        else 0,
+        "recorded_dispatch_count": len(observation.get("dispatch_observations", []))
+        if isinstance(observation.get("dispatch_observations"), list)
+        else 0,
         "focus_opcodes": focus_summary,
     }
     updated["conclusion"] = conclusion

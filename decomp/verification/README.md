@@ -25,6 +25,18 @@ Current runtime-pass helpers:
   packet, writes the compare report, and emits a short support note that is
   ready to link from the campaign ledger
 
+Recommended runtime handoff flow:
+
+- keep a checked-in observation scaffold under `decomp/evidence` so the next
+  `PCSX-Redux` pass starts from planned breakpoints, expected dump paths, and a
+  missing-snapshot checklist instead of a blank JSON file
+- rerun `finalize_runtime_observation.py --allow-missing-snapshots` whenever
+  the scaffold changes so the compare report and support note stay aligned with
+  the observation packet even before the real dumps exist
+- once dumps and breakpoint notes are recorded, rerun the same helper without
+  changing the artifact layout so the packet graduates from scaffold to runtime
+  evidence in place
+
 ## What To Catch Early
 
 Good verification scripts should flag:

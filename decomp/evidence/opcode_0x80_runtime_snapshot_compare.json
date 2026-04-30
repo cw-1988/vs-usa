@@ -1,0 +1,35 @@
+{
+  "observation_source": "decomp/evidence/opcode_0x80_runtime_observation.json",
+  "baseline_export": "decomp/evidence/inittbl_opcode_table.json",
+  "table_name": "INITBTL_opcode_table",
+  "binary_table_address": "0x800FAF7C",
+  "runtime_table_address": "0x800F4C28",
+  "entry_count": 256,
+  "pointer_size": 4,
+  "expected_size_bytes": 1024,
+  "focus_opcodes": [
+    "0x80",
+    "0x81",
+    "0x82"
+  ],
+  "expected_bin_path": null,
+  "snapshots": [],
+  "missing_snapshots": [
+    {
+      "index": 0,
+      "label": "after_init",
+      "path": "decomp/evidence/opcode_0x80_runtime_after_init.bin",
+      "resolved_path": "decomp/evidence/opcode_0x80_runtime_after_init.bin",
+      "capture_point": "Immediately after the INITBTL copy into 0x800F4C28",
+      "compare_report_path": null
+    },
+    {
+      "index": 1,
+      "label": "pre_dispatch",
+      "path": "decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin",
+      "resolved_path": "decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin",
+      "capture_point": "Late runtime state before any candidate 0x80-0x82 dispatch",
+      "compare_report_path": null
+    }
+  ]
+}

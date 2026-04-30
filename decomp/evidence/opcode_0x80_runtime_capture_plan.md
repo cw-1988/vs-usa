@@ -54,7 +54,26 @@ smallest capture plan that should settle it.
    - `decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin`
 8. If the table changes later, export another raw file at the mutation point.
 9. Record the breakpoint hits and dump paths in
-   `decomp/evidence/opcode_0x80_runtime_observation_template.json`.
+   `decomp/evidence/opcode_0x80_runtime_observation.json`.
+
+## Checked-in scaffold
+
+This repo now keeps a partially finalized observation scaffold at:
+
+- `decomp/evidence/opcode_0x80_runtime_observation.json`
+
+It already records the planned breakpoints, expected dump paths, and the
+current "missing snapshot" state, so the next runtime pass can update that
+file directly instead of starting from a blank template.
+
+If the scaffold ever needs to be regenerated from the untouched template, use:
+
+```powershell
+python decomp/verification/finalize_runtime_observation.py `
+  decomp/evidence/opcode_0x80_runtime_observation_template.json `
+  --allow-missing-snapshots `
+  --output-observation decomp/evidence/opcode_0x80_runtime_observation.json
+```
 
 ## Compare the dumps
 
@@ -80,8 +99,7 @@ updated JSON all agree:
 
 ```powershell
 python decomp/verification/finalize_runtime_observation.py `
-  decomp/evidence/opcode_0x80_runtime_observation_template.json `
-  --expected-bin decomp/evidence/opcode_runtime_expected_table.bin `
+  decomp/evidence/opcode_0x80_runtime_observation.json `
   --in-place
 ```
 
