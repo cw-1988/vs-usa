@@ -633,9 +633,16 @@ def format_opcode(
         far_clip = (args[0] << 7) if args[0] else 0x1000
         return f"farClip={far_clip}, easing={args[1]}, duration={args[2]}"
     if op == 0xED and len(args) == 4:
-        param0 = args[0] << 6
-        param1 = struct.unpack("<b", args[1:2])[0]
-        return f"param0={param0}, param1={param1}, easing={args[2]}, duration={args[3]}"
+        scale12 = args[0] << 6
+        signed_param = struct.unpack("<b", args[1:2])[0]
+        if scale12 == 0x1000:
+            scale_note = "neutral 1.000x"
+        else:
+            scale_note = f"{scale12 / 4096:.3f}x"
+        return (
+            f"scale12={scale12} ({scale_note}), signedParam={signed_param}, "
+            f"easing={args[2]}, duration={args[3]}"
+        )
     if op == 0xEF and len(args) == 5:
         control = struct.unpack("<H", args[2:4])[0]
         control_low = args[2]

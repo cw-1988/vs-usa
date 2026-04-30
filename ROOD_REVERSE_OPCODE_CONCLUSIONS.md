@@ -448,18 +448,32 @@ Current narrow:
 
 - This opcode, not `0xEF`, is the direct path that feeds
   `func_800F9BC0(arg0, arg1)` in `SCREFF2.PRG`.
-- The first script byte is promoted with `<< 6`, the second is treated as a
-  signed byte, and the last two bytes behave like easing and duration.
+- The first script byte is promoted with `<< 6` before entering the SCREFF2
+  setter, which makes it a 12-bit fixed-point scale-like value rather than a
+  plain flag or id byte.
+- Real script usage currently gives a stable neutral/reset form of
+  `ED 40 00 00 00`, i.e. `0x40 << 6 = 4096`, while the other sampled values
+  stay nearby at `3712`, `4672`, `4928`, `5056`, and `5120`.
+- The second script byte is treated as a signed byte, and the last two bytes
+  behave like easing and duration.
 - That makes it a two-parameter effect tween rather than general logic flow.
 
 Best safe local tooling name:
 
 - `ScreenEffectParamPairTween`
 
+Best safe local tooling rendering:
+
+- `scale12=<byte << 6>` with `4096` as the currently proven neutral/reset value
+- `signedParam=<s8>`
+
 Why still tentative:
 
 - The two destination fields in `SCREFF2` are still unnamed, so the exact
   player-visible feature behind the pair has not been nailed down yet.
+- The first field is now narrow enough to treat as a fixed-point scale-like
+  input in local decoder output, but the current evidence still does not prove
+  what the second signed field controls on screen.
 
 ### Suggested upstream patch shape
 
