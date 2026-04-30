@@ -21,20 +21,22 @@ Complete one focused pass that:
 It is fine for the result to be a tighter note, a safer name, or a confidence
 hold instead of a flashy rename. Accuracy matters more than novelty.
 
+Before starting, read
+[`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md).
+That file defines the local authority model:
+
+- the original binary and runtime behavior are the ground truth
+- our local decomp/evidence should be the authority for final conclusions
+- `_refs/rood-reverse` is a helper decomp, not a final source by itself
+
+For CLI-first decomp support and when to escalate to runtime, also read
+[`CLI_DECOMPILATION_WORKFLOW.md`](CLI_DECOMPILATION_WORKFLOW.md).
+
 ## Code Exploration Policy
 
-Use `jcodemunch-mcp` first for repo exploration.
-
-- start with `resolve_repo { "path": "." }`
-- if needed, call `index_folder { "path": "." }`
-- open with
-  `plan_turn { "repo": "<resolved repo id>", "query": "<pass question>", "model": "<active model id>" }`
-- use `get_file_outline` before opening files
-- use `search_symbols` for handlers, helpers, globals, and structs
-- use `search_text` for strings, configs, decoded output, and repeated context
-- use `find_references`, `check_references`, and `get_context_bundle` to trace
-  consumer paths
-- only use direct file reads when you are about to edit a specific file
+1. Use `jcodemunch-mcp` first for repo exploration. See [`AGENTS.md`](AGENTS.md) for how to use it.
+2. EXCLUSIVELY use that to find what you are looking for. Don't use rg, grep, bash, powershell or any other commands.
+3. Every time you think jcodemunch.mcp isnt up for the job make sure to use it to consult the md file.
 
 ## Main Lanes
 
@@ -61,14 +63,20 @@ Useful reference anchors inside `_refs/rood-reverse`:
 - `config/**/symbol_addrs.txt` and `splat.yaml` for lookup anchors
 - `assets/**/*.yaml` for strings and menu-side confirmation
 
+Treat those as lead-generating helpers. If a helper-decomp claim matters to the
+result, reconcile it against `Ghidra`, `PCSX-Redux`, or both before calling it
+final.
+
 ## Local Tools
 
 - `dump_mpd_script.py`: opcode meaning, argument layout, event sequencing,
   repeated room patterns
 - `analyze_room_graph.py`: room types, `sceneId`, `sectionF`, reachability,
   TSV refreshes
+- `decomp/verification`: local static reconciliation scripts before runtime
 - `Ghidra`: nonmatching code, xrefs, data layout, control flow
-- `PCSX-Redux`: runtime confirmation when static evidence is not enough
+- `PCSX-Redux`: last-resort conflict breaker when static evidence still
+  conflicts
 
 Common commands:
 
@@ -103,6 +111,8 @@ Before substantial work:
 4. read the current conclusions note before renaming anything
 5. avoid unrelated edits
 6. prefer one strong improvement over several weak ones
+7. if a helper decomp, dispatch table, and real script usage disagree, record
+   the conflict instead of forcing a clean rename
 
 If both this workspace and `_refs/rood-reverse` need updates, keep each repo's
 changes focused and report the exact commit message used for each one.
@@ -136,9 +146,10 @@ Examples:
 Use the most informative source for the question:
 
 - `decoded_scripts` for usage patterns
-- `_refs/rood-reverse` for handlers and consumers
-- `Ghidra` for gaps in matched code
-- `PCSX-Redux` for runtime proof
+- `_refs/rood-reverse` for candidate handlers, names, and consumers
+- `Ghidra` for binary tables, function boundaries, xrefs, and gaps in matched
+  code
+- `PCSX-Redux` for runtime proof and dispatch confirmation
 - `MAP*.MPD` and `SCEN*.ARM` for layout questions
 
 For opcode work, preserve repeated context, timing values, stepped scalars, and
@@ -151,11 +162,19 @@ cross-zone examples, and special cases such as scene `0`.
 
 Do not infer from proximity if a stronger anchor exists.
 
-- for opcodes, prefer the dispatch table and symbol-address anchors
+- for opcodes, prefer the dispatch table and symbol-address anchors, but do not
+  stop there if nearby orphan helpers or runtime behavior disagree
 - for room and scene work, prefer exact parser anchors such as
   `sectionB + 0x50`, `sectionF`, and `SCEN*.ARM` marker flags
 - for menu or sound work, cross-check matched source, config lookup anchors,
   and asset yaml names
+
+For any confidence-changing opcode pass, do one contradiction scan:
+
+1. check the real script contexts
+2. check the current handler or table mapping
+3. check nearby function-shaped candidates in the same address block
+4. check whether binary or runtime evidence is needed to break the tie
 
 ### 4. Trace the consumer path
 
@@ -165,6 +184,9 @@ the evidence.
 
 If code, strings, assets, and config disagree, document the disagreement
 instead of hiding it.
+
+If helper decompiled C and the stronger binary or runtime evidence disagree,
+prefer the stronger evidence and call out the helper-decomp mismatch explicitly.
 
 ### 5. Make the smallest honest update
 
@@ -183,6 +205,7 @@ Valid results include:
 A good pass usually updates one or more of:
 
 - [`dump_mpd_script.py`](dump_mpd_script.py)
+- [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md)
 - [`OPCODE_BEHAVIOR_REFERENCE.md`](OPCODE_BEHAVIOR_REFERENCE.md)
 - [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md)
 - [`GHIDRA_OPCODE_RE_WORKFLOW.md`](GHIDRA_OPCODE_RE_WORKFLOW.md)
@@ -205,6 +228,7 @@ Examples:
 - decoded output now renders a structure instead of a blob
 - a rename fits several real rooms
 - a helper rename matches implementation and local call sites
+- a helper-decomp claim survives binary or runtime reconciliation
 - timing or signedness matches raw bytes
 - runtime behavior matches the theory
 - room-graph counts or exclusions still make sense after a graph change
@@ -252,6 +276,8 @@ Do not:
 - fight headless Ghidra first
 - rename multiple weak opcodes in one pass
 - rename helpers based only on adjacency or vibes
+- treat helper decompiled C as final proof when the binary or runtime has not
+  been checked yet
 - treat a confidence bump as the default success condition
 - convert tentative notes into confident names without proof
 - leave unexplained experimental edits behind

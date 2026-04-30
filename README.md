@@ -33,8 +33,14 @@ That output is useful for:
 - [`room_names.tsv`](room_names.tsv): map, zone, area, and room name lookup table
 - [`decoded_scripts`](decoded_scripts): generated decoded script output
 - [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md): opcode conclusions and naming notes
+- [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md): local standards for
+  binary-first decompilation and helper-decomp verification
+- [`CLI_DECOMPILATION_WORKFLOW.md`](CLI_DECOMPILATION_WORKFLOW.md): CLI-first
+  decomp workflow and when runtime should break ties
 - [`ROOM_CONNECTION_FINDINGS.md`](ROOM_CONNECTION_FINDINGS.md): room and scene connectivity notes
 - [`VAGRANT_STORY_MODDING_OVERVIEW.md`](VAGRANT_STORY_MODDING_OVERVIEW.md): higher-level notes on the extracted disc contents
+- [`decomp`](decomp): tracked local decomp scripts, verification helpers, and
+  machine-readable evidence
 - [`Game Data`](Game%20Data): place the extracted USA disc contents here
 - [`tools`](tools): local reverse-engineering tools and debugger builds kept outside version control
 - [`_refs/README.md`](_refs/README.md): notes for external reference repos used alongside this workspace
@@ -61,7 +67,10 @@ In practice, `Ghidra` is where opcode handlers and control flow are studied, whi
 - [`_refs/rood-reverse`](_refs/rood-reverse): optional local clone of the upstream Vagrant Story decompilation project
 - upstream `rood-reverse`: <https://github.com/ser-pounce/rood-reverse>
 
-`rood-reverse` is especially useful for matching guessed opcode behavior to engine code and checking naming, function boundaries, and subsystem behavior.
+`rood-reverse` is especially useful for matching guessed opcode behavior to
+engine code and checking naming, function boundaries, and subsystem behavior.
+It should still be treated as a helper reference repo rather than final local
+ground truth; see [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md).
 
 ### Optional companion tools
 

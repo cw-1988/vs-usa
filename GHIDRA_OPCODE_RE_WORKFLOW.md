@@ -3,6 +3,13 @@
 This note is for the next opcode-reversing session so we can resume quickly
 instead of re-learning the same setup and toolchain friction.
 
+Read [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md) first.
+This workflow is about how to use `Ghidra` and local helper material well, not
+about treating helper decompiled C as final authority.
+
+For the CLI-first static pipeline, also read
+[`CLI_DECOMPILATION_WORKFLOW.md`](CLI_DECOMPILATION_WORKFLOW.md).
+
 Current local context:
 
 - workspace root: [`.`](.)
@@ -19,10 +26,10 @@ If the goal is to reverse more script opcodes fast, the best workflow is:
    [`dump_mpd_script.py`](dump_mpd_script.py)
    and [`decoded_scripts`](decoded_scripts).
 2. Use [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
-   as the main opcode-handler map.
+   as the main candidate opcode-handler map.
 3. Use
    [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
-   as the exact opcode dispatch table when source order is ambiguous.
+   as the current helper-decomp dispatch table when source order is ambiguous.
 4. Use
    [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)
    and [`146C.h`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)
@@ -30,8 +37,16 @@ If the goal is to reverse more script opcodes fast, the best workflow is:
 5. Use
    [`_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt)
    when a function is referenced but not easy to locate by browsing alone.
-6. Only drop into live Ghidra when the decomp leaves a real gap, especially for
-   nonmatching consumers.
+6. Use live `Ghidra` and `PCSX-Redux` whenever an opcode claim matters and the
+   helper decomp does not already agree cleanly with script usage, function
+   boundaries, and consumer paths.
+
+In normal cases, prefer:
+
+1. decoded scripts
+2. headless or scripted `Ghidra` exports
+3. local reconciliation scripts under [`decomp/verification`](decomp/verification)
+4. `PCSX-Redux` only if those still disagree
 
 That is the path that produced useful progress. The time sink was trying to
 force headless Ghidra automation before confirming the local project state.
@@ -60,13 +75,20 @@ Useful examples from this session:
 - `0xED` and `0xEF` both appear in short repeated bursts, but they do not drive
   the same target path
 
-### 2. Treat `4A0A8.c` as the opcode hub
+### 2. Treat `4A0A8.c` as the opcode hub, not the final truth
 
 The main file for script handler work is:
 
 - [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
 
 This is where the most useful wins came from.
+
+But remember:
+
+- it is still a helper decomp view
+- function order and boundaries can be incomplete
+- nearby orphan helpers can matter even if the current local headers or tables
+  do not mention them
 
 What to do there:
 
@@ -81,7 +103,7 @@ Examples from this session:
 - the timed effect cluster narrowed through `func_800BDAB4` and nearby update
   code
 
-### 2.5. Use `12AC.c` to prove the opcode-to-handler mapping
+### 2.5. Use `12AC.c` to propose the opcode-to-handler mapping
 
 File:
 
@@ -91,10 +113,17 @@ Why it mattered:
 
 - source order in `4A0A8.c` is not reliable enough by itself once multiple
   camera and effect helpers sit near each other
-- the dispatch table gives the exact byte-to-handler mapping without needing to
-  infer from nearby function order
+- the helper dispatch table is a strong local anchor before opening the binary
 
-Useful confirmed mappings from the current pass:
+Important caution:
+
+- do not call the helper table "exact" ground truth unless the binary table,
+  function boundaries, and runtime behavior all agree
+- if a helper table slot points to a stub but nearby function-shaped code and
+  real scripts strongly suggest meaningful behavior, escalate to `Ghidra` or
+  `PCSX-Redux` instead of forcing a downgrade
+
+Useful helper-table mappings from the current pass:
 
 - `0xE1 -> func_800BB450`
 - `0xE2 -> func_800BD444`
@@ -105,7 +134,8 @@ Useful confirmed mappings from the current pass:
 Important example:
 
 - `0xE1` no longer needs to be inferred from script pattern alone because the
-  table maps it directly to the wrapper that calls `func_8007DD50(arg0[1])`
+  helper table maps it directly to the wrapper that calls
+  `func_8007DD50(arg0[1])`
 
 ### 3. Use `146C.h` more aggressively
 
@@ -135,7 +165,7 @@ That made `0xE2` much stronger as a camera-angle-style tween because its target
 is a separate camera field immediately after pitch/yaw, not a generic room or
 actor value.
 
-### 4. Use the decomp config as a symbol index
+### 4. Use the decomp config as a symbol index, not a completeness guarantee
 
 Useful file:
 
@@ -153,6 +183,9 @@ Example:
   area
 - it exposes `_opcodeFunctionTable`, which is the easiest way to anchor the
   `INITBTL` dispatch table by address or symbol search
+
+But if a function-shaped block exists in source and does not appear in the
+symbol map, treat that as a warning sign to investigate further in `Ghidra`.
 
 ## Proven Local Workflow
 
@@ -219,6 +252,18 @@ That consumer-side tracing is what separated:
 - `camera-side angle tween`
 from
 - `screen-effect-side angle tween`
+
+### Step 4.5. Do a contradiction scan before changing confidence
+
+For disputed opcodes, check all of:
+
+1. the helper dispatch table
+2. the current handler body
+3. nearby helper candidates in the same address block
+4. real script usage
+5. binary or runtime confirmation when the first four disagree
+
+If those disagree, stop calling the current theory `Confirmed`.
 
 ### Step 5. Rename locally only when the script-facing meaning is honest
 
@@ -330,6 +375,10 @@ For opcode naming specifically:
 So the next session should only push harder on headless scripting if the source
 walk truly bottoms out.
 
+That does not mean `Ghidra` is optional when evidence conflicts.
+It means interactive or targeted binary inspection is more valuable than trying
+to automate the whole session up front.
+
 ## Best Ghidra Strategy Next Time
 
 ### Preferred path
@@ -341,6 +390,8 @@ walk truly bottoms out.
    fresh scratch project using the PSX loader rather than debugging the old
    project structure first.
 4. Use Ghidra mainly for:
+   - verifying dispatch-table bytes in the original binary
+   - checking whether function boundaries in the helper decomp are complete
    - xrefs to still-unnamed globals
    - browsing nonmatching consumers
    - checking data layout when decompiled source is partial
@@ -415,9 +466,11 @@ Most promising:
 
 1. Recover the exact control-word layout behind `0xEF`, especially slot and
    envelope selection.
-2. Confirm whether `0xE6` is best described as effect offset, drift, or some
+2. Reconcile disputed helper-table versus script-behavior cases such as
+   `0x80-0x84` against the binary and runtime.
+3. Confirm whether `0xE6` is best described as effect offset, drift, or some
    more specific render-space term.
-3. Use Ghidra xrefs to identify the real user-facing meaning of `D_800F1A2C`
+4. Use Ghidra xrefs to identify the real user-facing meaning of `D_800F1A2C`
    and the two `SCREFF2` parameter fields fed by `0xED`.
 
 Nice follow-up:
@@ -433,6 +486,7 @@ Do not begin by fighting headless Ghidra again unless there is a concrete reason
 The fastest route is:
 
 - decoded script pattern
-- matched handler
-- matched consumer
+- helper decomp candidate
+- binary or runtime check when needed
+- matched or recovered consumer
 - only then Ghidra for the remaining unnamed field
