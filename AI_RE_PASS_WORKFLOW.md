@@ -3,10 +3,9 @@
 This note is the execution brief for the next AI pass on the Vagrant Story
 script reverse-engineering workspace.
 
-The goal is to keep moving the reverse-engineering work forward in a useful,
-evidence-backed way without making the workflow feel cramped or mechanical.
-This file is meant to be general to the workspace, not just tied to one opcode
-or one specific ongoing thread.
+The goal is to keep the RE work moving in a useful, evidence-backed way
+without turning the workflow into a rigid checklist. This file is meant to
+stay general to the workspace, not tied to one opcode or one ongoing thread.
 
 If a capable model choice is available, prefer `gpt-5.4` with high reasoning
 effort for this pass.
@@ -16,15 +15,16 @@ effort for this pass.
 Complete one focused reverse-engineering pass that:
 
 1. identifies one concrete RE improvement
-2. updates the local tooling, notes, or supporting analysis to reflect that improvement
-3. verifies the change against real game data, source references, runtime behavior, or decoded output
-4. makes the AI's own conventional commit for each touched repo unless the
-   local config explicitly disables commits
-5. leaves the repo in a state where the user can review, undo, or amend the
-   local commit(s) before anything is pushed
+2. updates the local tooling, notes, or supporting analysis to reflect it
+3. verifies the change against real game data, source references, runtime
+   behavior, or decoded output
+4. makes its own conventional commit in each touched repo unless the local
+   config explicitly disables commits
+5. leaves the repo state easy for the user to review, undo, or amend locally
+   before anything is pushed
 
-Do not end with only vague conclusions. Convert the pass into code or note changes
-unless the evidence is too weak to justify a rename.
+Do not end with only vague conclusions. Turn the pass into code, tooling, or
+note changes unless the evidence is too weak to justify a concrete update.
 
 If a pass produces changes that belong in both this workspace and
 `_refs/rood-reverse`, treat that as normal. Keep each repo's changes focused,
@@ -62,9 +62,9 @@ exists. If it does not exist, fall back to
 [`AI_RE_PASS_WORKFLOW.config.example.toml`](AI_RE_PASS_WORKFLOW.config.example.toml)
 for the default behavior and expected keys.
 
-Current supported setting:
+Current supported configuration:
 
-- `commit_mode = "auto"`: make the conventional commit(s) yourself
+- `commit_mode = "auto"`: make the local conventional commit(s) yourself
 - `commit_mode = "no-commit"`: stage the intended changes and stop before
   `git commit`
 
@@ -130,17 +130,17 @@ clear implementation evidence. Do not use helper renames as a way to smuggle in
 a speculative script-facing interpretation.
 
 If a pass changes `_refs/rood-reverse`, add or update one short standalone
-conclusions note in that repo too. Prefer a root-level `*_CONCLUSIONS.md` file named
-for the subsystem, keep it tightly scoped to the current pass, and cite the
-source files that justify the nested-repo edits so the evidence travels with
-the upstreamable changes.
+conclusions note in that repo too. Prefer a root-level `*_CONCLUSIONS.md` file
+named for the subsystem, keep it tightly scoped to the current pass, and cite
+the source files that justify the nested-repo edits so the evidence travels
+with the upstreamable changes.
 
 ## Working Style
 
 Before doing anything substantial:
 
-1. Run `git status --short`.
-2. If you are going to touch a repo that already has pre-existing changes, say
+1. Run `git status --short` in each repo you might touch.
+2. If you are going to edit a repo that already has pre-existing changes, say
    this exact message to the user in all caps before stashing:
    `PRE-EXISTING LOCAL CHANGES DETECTED. I AM STASHING THEM BEFORE I START AND I WILL UNSTASH THEM AFTER I FINISH.`
 3. In each dirty repo you plan to edit, stash the pre-existing changes before
@@ -149,10 +149,10 @@ Before doing anything substantial:
 5. Avoid touching unrelated user changes.
 6. Prefer one strong improvement over five speculative ones.
 
-If the worktree is already dirty, do not revert it. Protect it with
+If a repo you need to edit is already dirty, do not revert it. Protect it with
 stash/unstash flow instead.
 
-## Choosing A Target
+## Choosing a Target
 
 Pick a tractable target with a good chance of producing a useful artifact in
 one pass.
@@ -248,7 +248,7 @@ For non-opcode work, the equivalent rule still applies:
 
 ### Step 5. Decide what kind of change is justified
 
-Only choose one of these as the main result:
+Choose one of these as the primary result:
 
 - `Confirmed rename`
 - `Confirmed helper/internal rename`
@@ -381,7 +381,8 @@ When the pass is complete, report:
 6. the exact conventional commit message for each touched repo
 7. the commit hash for each local commit, or explicit confirmation that commits
    were skipped because `commit_mode = "no-commit"`
-8. confirmation that any temporary stash was restored
+8. confirmation that any temporary stash was restored, or that no stash was
+   needed
 
 ## Avoid
 
