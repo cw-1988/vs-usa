@@ -49,11 +49,13 @@ Together those files define the local authority model:
 - helper-repo findings must be converted into local `decomp/` artifacts before
   they are used as pass evidence in the ledger or a proof packet
 
-## Code Exploration Policy
+## Exploration Notes
 
-1. Use `jcodemunch-mcp` first for repo exploration. See [`AGENTS.md`](AGENTS.md) for how to use it.
-2. EXCLUSIVELY use that to find what you are looking for. Don't use rg, grep, bash, powershell or any other commands.
-3. Every time you think jcodemunch.mcp isnt up for the job make sure to use it to consult the md file.
+1. Most campaign state for this repo lives in markdown notes and evidence
+   files, so read those directly first.
+2. Use `jcodemunch-mcp` when those notes point you into source code or when you
+   need symbol, dependency, or impact analysis.
+3. Do not force `plan_turn` or symbol-first tooling for markdown-only work.
 
 ## Main Lanes
 
