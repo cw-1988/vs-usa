@@ -9,9 +9,13 @@ Long term, that should make it possible to build more ambitious custom content t
 For substantial opcode or decomp work, start with
 [`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md). It is the cross-session
 campaign ledger and handoff entrypoint, and it should be read before
-[`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md) and
-[`CLI_DECOMPILATION_WORKFLOW.md`](CLI_DECOMPILATION_WORKFLOW.md) when choosing
-the next opcode/decomp pass.
+[`docs/workflows/DECOMPILATION_STRATEGY.md`](docs/workflows/DECOMPILATION_STRATEGY.md)
+and
+[`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md)
+when choosing the next opcode/decomp pass.
+
+For a minimal handoff set, use the `Next-Instance Starter Pack` near the top
+of [`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md).
 
 ## What the project does
 
@@ -41,13 +45,16 @@ That output is useful for:
 - [`decoded_scripts`](decoded_scripts): generated decoded script output
 - [`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md): cross-session campaign
   memory and handoff ledger for opcode/decomp work
-- [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md): opcode conclusions and naming notes
-- [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md): local standards for
+- [`docs`](docs): organized documentation tree for workflows, campaign notes,
+  and research notes
+- [`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md): grouped catalog of durable exports, proof packets, and verification helpers
+- [`docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md): opcode conclusions and naming notes
+- [`docs/workflows/DECOMPILATION_STRATEGY.md`](docs/workflows/DECOMPILATION_STRATEGY.md): local standards for
   binary-first decompilation and helper-decomp verification
-- [`CLI_DECOMPILATION_WORKFLOW.md`](CLI_DECOMPILATION_WORKFLOW.md): CLI-first
+- [`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md): CLI-first
   decomp workflow and when runtime should break ties
-- [`ROOM_CONNECTION_FINDINGS.md`](ROOM_CONNECTION_FINDINGS.md): room and scene connectivity notes
-- [`VAGRANT_STORY_MODDING_OVERVIEW.md`](VAGRANT_STORY_MODDING_OVERVIEW.md): higher-level notes on the extracted disc contents
+- [`docs/research/ROOM_CONNECTION_FINDINGS.md`](docs/research/ROOM_CONNECTION_FINDINGS.md): room and scene connectivity notes
+- [`docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md`](docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md): higher-level notes on the extracted disc contents
 - [`decomp`](decomp): tracked local decomp scripts, verification helpers, and
   machine-readable evidence
 - [`Game Data`](Game%20Data): place the extracted USA disc contents here
@@ -84,7 +91,8 @@ working tool checkouts.
 `rood-reverse` is especially useful for matching guessed opcode behavior to
 engine code and checking naming, function boundaries, and subsystem behavior.
 It should still be treated as a helper reference repo rather than final local
-ground truth; see [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md).
+ground truth; see
+[`docs/workflows/DECOMPILATION_STRATEGY.md`](docs/workflows/DECOMPILATION_STRATEGY.md).
 When a helper clue matters to a pass result, convert it into a local
 `decomp/` artifact before citing it as evidence.
 

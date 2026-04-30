@@ -22,16 +22,19 @@ It is fine for the result to be a tighter note, a safer name, or a confidence
 hold instead of a flashy rename. Accuracy matters more than novelty.
 
 Before starting, read
-[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md),
+[`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md),
+[`../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md),
 [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md), and
 [`CLI_DECOMPILATION_WORKFLOW.md`](CLI_DECOMPILATION_WORKFLOW.md).
 
 Use that sequence deliberately:
 
 1. `RE_CAMPAIGN_MEMORY.md`: current phase, priority targets, unresolved
-   conflicts, artifact index, and session handoff
-2. `DECOMPILATION_STRATEGY.md`: evidence authority and proof standards
-3. `CLI_DECOMPILATION_WORKFLOW.md`: default export, reconciliation, and runtime
+   conflicts, and session handoff
+2. `RE_CAMPAIGN_ARTIFACT_INDEX.md`: grouped export, proof-packet, and
+   verification-helper inventory
+3. `DECOMPILATION_STRATEGY.md`: evidence authority and proof standards
+4. `CLI_DECOMPILATION_WORKFLOW.md`: default export, reconciliation, and runtime
    escalation flow
 
 `RE_CAMPAIGN_MEMORY.md` is the cross-session campaign authority for in-progress
@@ -62,19 +65,19 @@ Together those files define the local authority model:
 Pick the lane that best matches the question.
 
 - Script and opcode work:
-  [`dump_mpd_script.py`](dump_mpd_script.py),
-  [`decoded_scripts`](decoded_scripts),
-  [`OPCODE_BEHAVIOR_REFERENCE.md`](OPCODE_BEHAVIOR_REFERENCE.md),
-  [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md),
+  [`../../dump_mpd_script.py`](../../dump_mpd_script.py),
+  [`../../decoded_scripts`](../../decoded_scripts),
+  [`../campaign/OPCODE_BEHAVIOR_REFERENCE.md`](../campaign/OPCODE_BEHAVIOR_REFERENCE.md),
+  [`../campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](../campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md),
   [`GHIDRA_OPCODE_RE_WORKFLOW.md`](GHIDRA_OPCODE_RE_WORKFLOW.md)
 - Room and scene work:
-  [`analyze_room_graph.py`](analyze_room_graph.py),
-  [`ROOM_CONNECTION_FINDINGS.md`](ROOM_CONNECTION_FINDINGS.md),
-  [`room_names.tsv`](room_names.tsv)
+  [`../../analyze_room_graph.py`](../../analyze_room_graph.py),
+  [`../research/ROOM_CONNECTION_FINDINGS.md`](../research/ROOM_CONNECTION_FINDINGS.md),
+  [`../../room_names.tsv`](../../room_names.tsv)
 - Broad engine and format work:
-  [`README.md`](README.md),
-  [`VAGRANT_STORY_MODDING_OVERVIEW.md`](VAGRANT_STORY_MODDING_OVERVIEW.md),
-  [`_refs/rood-reverse`](_refs/rood-reverse)
+  [`../../README.md`](../../README.md),
+  [`../research/VAGRANT_STORY_MODDING_OVERVIEW.md`](../research/VAGRANT_STORY_MODDING_OVERVIEW.md),
+  [`../../_refs/rood-reverse`](../../_refs/rood-reverse)
 
 Useful reference anchors inside `_refs/rood-reverse`:
 
@@ -111,9 +114,9 @@ python analyze_room_graph.py --update-tsv
 
 ## Local Config
 
-Read [`AI_RE_PASS_WORKFLOW.config.toml`](AI_RE_PASS_WORKFLOW.config.toml) if it
+Read [`../../AI_RE_PASS_WORKFLOW.config.toml`](../../AI_RE_PASS_WORKFLOW.config.toml) if it
 exists. Otherwise use
-[`AI_RE_PASS_WORKFLOW.config.example.toml`](AI_RE_PASS_WORKFLOW.config.example.toml).
+[`../../AI_RE_PASS_WORKFLOW.config.example.toml`](../../AI_RE_PASS_WORKFLOW.config.example.toml).
 
 Supported setting:
 
@@ -157,7 +160,7 @@ Do not rename something just to eliminate a placeholder.
 ### 0. Anchor on the ledger
 
 Before choosing a target, record the current campaign state from
-[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md):
+[`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md):
 
 - current phase
 - target or handoff step you are taking
@@ -258,17 +261,17 @@ Valid results include:
 
 A good pass usually updates one or more of:
 
-- [`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md)
-- [`dump_mpd_script.py`](dump_mpd_script.py)
+- [`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md)
+- [`../../dump_mpd_script.py`](../../dump_mpd_script.py)
 - [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md)
-- [`OPCODE_BEHAVIOR_REFERENCE.md`](OPCODE_BEHAVIOR_REFERENCE.md)
-- [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md)
+- [`../campaign/OPCODE_BEHAVIOR_REFERENCE.md`](../campaign/OPCODE_BEHAVIOR_REFERENCE.md)
+- [`../campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](../campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md)
 - [`GHIDRA_OPCODE_RE_WORKFLOW.md`](GHIDRA_OPCODE_RE_WORKFLOW.md)
-- [`analyze_room_graph.py`](analyze_room_graph.py)
-- [`ROOM_CONNECTION_FINDINGS.md`](ROOM_CONNECTION_FINDINGS.md)
-- [`room_names.tsv`](room_names.tsv)
-- [`README.md`](README.md)
-- [`VAGRANT_STORY_MODDING_OVERVIEW.md`](VAGRANT_STORY_MODDING_OVERVIEW.md)
+- [`../../analyze_room_graph.py`](../../analyze_room_graph.py)
+- [`../research/ROOM_CONNECTION_FINDINGS.md`](../research/ROOM_CONNECTION_FINDINGS.md)
+- [`../../room_names.tsv`](../../room_names.tsv)
+- [`../../README.md`](../../README.md)
+- [`../research/VAGRANT_STORY_MODDING_OVERVIEW.md`](../research/VAGRANT_STORY_MODDING_OVERVIEW.md)
 
 ## Verification
 
@@ -298,12 +301,14 @@ The pass is done when:
 2. the diff is focused
 3. verification is done
 4. `RE_CAMPAIGN_MEMORY.md` is updated in the relevant sections:
-   `Current Phase`, `Priority Targets`, `Known Conflicts`, `Artifacts Index`,
+   `Current Phase`, `Priority Targets`, `Known Conflicts`,
    `Session Handoff`, and optional `Completed Milestones`
-5. the AI commits locally when `commit_mode = "auto"`, or stages only when
+5. `RE_CAMPAIGN_ARTIFACT_INDEX.md` is updated if new durable artifacts were
+   added
+6. the AI commits locally when `commit_mode = "auto"`, or stages only when
    `commit_mode = "no-commit"`
-6. any temporary stash is restored
-7. the user gets a short conclusions summary plus the exact commit message for
+7. any temporary stash is restored
+8. the user gets a short conclusions summary plus the exact commit message for
    each touched repo
 
 Use conventional commits. Good shapes:

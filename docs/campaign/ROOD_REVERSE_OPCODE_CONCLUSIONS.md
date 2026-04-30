@@ -33,7 +33,7 @@ the code body agrees.
 ### Current coverage snapshot
 
 The current local decoder table in
-[`dump_mpd_script.py`](dump_mpd_script.py) now covers all `256` opcode slots,
+[`../../dump_mpd_script.py`](../../dump_mpd_script.py) now covers all `256` opcode slots,
 but only part of that table is meaningfully named:
 
 - named locally: `85 / 256`
@@ -366,7 +366,7 @@ but the subsystem identity is high-confidence.
 Why:
 
 - The matched opcode dispatch table in
-  [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
+  [`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
   maps `0x49` directly to the small readable handler now renamed
   `vs_battle_script_setJumpBackCounter`.
 - That handler only does one thing: when the first script byte is not `0xFF`,
@@ -395,7 +395,7 @@ Why:
 
 - The matched opcode dispatch table maps `0x4A` directly to the readable
   handler
-  [`vs_battle_script_jumpBackIf`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c),
+  [`vs_battle_script_jumpBackIf`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c),
   now tightened to `vs_battle_script_jumpBackIfCounter` in the nested repo.
 - When the first script byte is `0xFF`, the handler immediately returns
   `&arg0[-vs_battle_getShort(arg0 + 2)]`, which is an unconditional backward
@@ -459,7 +459,7 @@ Current best script-level interpretation:
 Why:
 
 - The matched opcode dispatch table in
-  [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
+  [`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
   maps `0xE1` directly to `func_800BB450`.
 - `func_800BB450` is a tiny wrapper that just calls `func_8007DD50(arg0[1])`.
 - `func_8007DD50` flips the effect runtime between active and shutdown states
@@ -482,13 +482,13 @@ Why:
 
 - The matched opcode dispatch table maps `0xE2` into the shared
   `vs_battle_script_setupAngleTween` handler in
-  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).
+  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).
 - The readable handler body switches on the opcode byte and routes `0xE2` into
   `D_800F4BA4->cameraAngleTween`.
 - The matched apply side later commits that tween through
   `func_8007AC94(D_800F4BA4->cameraAngleTween.currentValue)`.
 - `func_8007AC94` writes `_camera.t2.unk5C`, and the current
-  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)
+  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)
   layout now exposes named `pitch` and `yaw` fields immediately before that
   target. The paired getter masks the stored value with `& 0xFFF`, which fits
   the remaining camera-angle slot much better than a generic scalar.
@@ -514,16 +514,16 @@ Why:
 
 - The matched opcode dispatch table maps `0xE3` into the shared
   `vs_battle_script_setupAngleTween` handler in
-  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).
+  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).
 - The readable handler body switches on the opcode byte and routes `0xE3` into
   `D_800F4BA4->screenEffectAngleTween`, not the camera tween slot used by
   `0xE2`.
 - The matched apply side later commits that tween through
   `func_8007DDAC(D_800F4BA4->screenEffectAngleTween.currentValue)`.
-- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)
+- [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)
   shows `func_8007DDAC` as a dedicated persistent setter for the shared
   screen-effect angle scalar `D_800F1A2C`, and the ending-menu effect setup in
-  [`_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c`](_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c)
+  [`../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c`](../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c)
   resets that same setter alongside the shared screen-effect scale, color, and
   offset state.
 - A fresh local decode of `Game Data/MAP` currently finds 4 `E3` uses, all of
@@ -551,14 +551,14 @@ Why:
 
 - The matched dispatch table maps `0xE4` into the shared screen-effect helper
   family, and the matched apply side in
-  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
+  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
   sends the corresponding tween output through `func_8007DDB8`.
 - `func_8007DDB8` writes the two persistent screen-effect scale components in
-  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c),
+  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c),
   and the effect reset path restores those components to neutral `0x1000`,
   `0x1000`.
 - A direct non-script caller in
-  [`_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c`](_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c)
+  [`../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c`](../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c)
   uses the same setter with values like `0x1029` and `0x107A` before enabling
   the effect runtime, which matches a scale preset rather than ids or flags.
 - In decoded scripts, `E4 20 20` repeatedly lands on neutral `4096, 4096`,
@@ -577,10 +577,10 @@ Current best script-level interpretation:
 Why:
 
 - The same matched apply path in
-  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
+  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
   routes the `0xE6` tween state through `func_8007DDF8`.
 - `func_8007DDF8` stores the persistent screen-effect offset vector in
-  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c),
+  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c),
   and the effect reset path zeros that state.
 - Script operands are explicitly treated as signed bytes in the local decoder
   and show up in small ranges such as `-3`, `-1`, `0`, `1`, `2`, and `4`,
@@ -601,7 +601,7 @@ Current best script-level interpretation:
 Why:
 
 - The matched opcode dispatch table in
-  [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
+  [`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
   maps `0xE9` directly to `func_800BB3BC`.
 - `func_800BB3BC` converts the first script byte into either a preserved-facing
   sentinel (`0xFF -> -1`) or an 8-way facing override through `((arg0[1] + 4)
@@ -612,7 +612,7 @@ Why:
   the live camera state, and starts the camera tween helpers based on the
   transition distance.
 - The matched `vs_battle_initialiseCameraFromSpherical` body in
-  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)
+  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)
   shows the optional override behavior clearly: `mode 1` forces distance
   `0x600`, `mode 2` forces distance `0x900`, and `-1` preserves the current
   spherical camera state.
@@ -743,7 +743,7 @@ Current narrow:
 - The same flag is also initialised from room section `12`, so this is clearly a
   room-geometry state bit rather than an actor, camera, or sound control.
 - The matched section-12 helper `func_8008E224` in
-  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)
+  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)
   writes the same one-bit state and mirrors it into the linked geometry entry,
   which ties these opcodes to built-in room-object staging rather than an
   isolated debug flag.
@@ -753,10 +753,10 @@ Current narrow:
   framing, while the same geometry ids are later restored with `0x64`.
 - In the current decoded room set, the same geometry ids are toggled by both
   opcodes in 39 files, including
-  [`decoded_scripts/1-Wine Cellar/009-Entrance to Darkness.txt`](decoded_scripts/1-Wine%20Cellar/009-Entrance%20to%20Darkness.txt),
-  [`decoded_scripts/1-Wine Cellar/013-Smokebarrel Stair.txt`](decoded_scripts/1-Wine%20Cellar/013-Smokebarrel%20Stair.txt),
+  [`../../decoded_scripts/1-Wine Cellar/009-Entrance to Darkness.txt`](../../decoded_scripts/1-Wine%20Cellar/009-Entrance%20to%20Darkness.txt),
+  [`../../decoded_scripts/1-Wine Cellar/013-Smokebarrel Stair.txt`](../../decoded_scripts/1-Wine%20Cellar/013-Smokebarrel%20Stair.txt),
   and
-  [`decoded_scripts/10-The Keep/124-The Warrior's Rest.txt`](decoded_scripts/10-The%20Keep/124-The%20Warrior's%20Rest.txt).
+  [`../../decoded_scripts/10-The Keep/124-The Warrior's Rest.txt`](../../decoded_scripts/10-The%20Keep/124-The%20Warrior's%20Rest.txt).
 - A broad script scan currently finds `0x65` within six lines of
   `DisplayRoom` 611 times, versus 47 for `0x64`, which fits a temporary
   suppression/setup role better than a permanent state write.
@@ -791,7 +791,7 @@ Current narrow:
 
 - The matched opcode dispatch table routes `0x7A` directly to the readable
   handler body now named
-  [`vs_battle_script_setRoomAmbientSoundSuspended`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).
+  [`vs_battle_script_setRoomAmbientSoundSuspended`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).
 - When the script byte is nonzero, that handler latches a local "suspended"
   state and, if `func_8008E470()` passes, grabs the current ambient sound id
   through `func_800913BC(-1)` and clears playback by swapping in `-1`.
@@ -799,7 +799,7 @@ Current narrow:
   ambient sound id through `func_800913BC(savedId)` and clears the latched
   suspended state.
 - The sound helper in
-  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c)
+  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c)
   confirms `func_800913BC` is the persistent ambient-id swap path.
 - Real script usage still matches the user-facing idea: decoded rooms such as
   `MAP138`, `MAP062`, `MAP001`, and `MAP006` use `7A 01` near cutscene

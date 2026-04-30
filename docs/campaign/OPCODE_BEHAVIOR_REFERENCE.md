@@ -1,7 +1,7 @@
 # Vagrant Story Opcode Behavior Reference
 
 This reference mirrors the currently named entries in
-[`dump_mpd_script.py`](dump_mpd_script.py).
+[`../../dump_mpd_script.py`](../../dump_mpd_script.py).
 It is meant as a quick lookup table, not a replacement for the longer
 evidence notes in
 [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md).

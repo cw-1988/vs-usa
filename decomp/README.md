@@ -24,15 +24,17 @@ Those stay under ignored [`tools`](../tools).
 That means:
 
 - [`../RE_CAMPAIGN_MEMORY.md`](../RE_CAMPAIGN_MEMORY.md): campaign state,
-  priorities, conflict summaries, artifact links, and session handoff
+  priorities, conflict summaries, and session handoff
+- [`../docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](../docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md):
+  grouped catalog of durable exports, proof packets, and verification helpers
 - [`decomp`](.): implementation helpers and durable evidence artifacts
 
 ## Working Rule
 
 This folder should support the standards in:
 
-- [`../DECOMPILATION_STRATEGY.md`](../DECOMPILATION_STRATEGY.md)
-- [`../CLI_DECOMPILATION_WORKFLOW.md`](../CLI_DECOMPILATION_WORKFLOW.md)
+- [`../docs/workflows/DECOMPILATION_STRATEGY.md`](../docs/workflows/DECOMPILATION_STRATEGY.md)
+- [`../docs/workflows/CLI_DECOMPILATION_WORKFLOW.md`](../docs/workflows/CLI_DECOMPILATION_WORKFLOW.md)
 
 ## Watch-Outs
 

@@ -4,7 +4,7 @@ This note describes how to do most local decompilation work from the command
 line.
 
 Use this together with
-[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md) and
+[`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md) and
 [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md).
 
 The goal is simple:
@@ -39,22 +39,24 @@ evidence.
 
 ## Local Tracked Workspace
 
-Use the tracked [`decomp`](decomp) folder for local decompilation support code.
+Use the tracked [`../../decomp`](../../decomp) folder for local decompilation support code.
 
 Recommended responsibilities:
 
-- [`decomp/ghidra`](decomp/ghidra): scripts and notes for headless or scripted
+- [`../../decomp/ghidra`](../../decomp/ghidra): scripts and notes for headless or scripted
   `Ghidra` work
-- [`decomp/verification`](decomp/verification): Python verification scripts
+- [`../../decomp/verification`](../../decomp/verification): Python verification scripts
   that compare local notes, exported tables, and helper sources
-- [`decomp/evidence`](decomp/evidence): structured proof packets and exported
+- [`../../decomp/evidence`](../../decomp/evidence): structured proof packets and exported
   machine-readable facts
 
 Keep the split intentional:
 
-- [`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md): campaign state, priorities,
+- [`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md): campaign state, priorities,
   conflict summaries, artifact links, and handoff memory
-- [`decomp`](decomp): implementation helpers, exported evidence, and
+- [`../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md):
+  grouped export catalog, proof packets, and reusable verification helpers
+- [`../../decomp`](../../decomp): implementation helpers, exported evidence, and
   reconciliation outputs
 
 Do not put large binary tool installs here. Keep those under ignored `tools/`.
@@ -63,7 +65,7 @@ Do not put large binary tool installs here. Keep those under ignored `tools/`.
 
 ### 0. Anchor the pass in the ledger
 
-Before exporting anything, read [`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md)
+Before exporting anything, read [`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md)
 and decide:
 
 - which target or handoff step this pass is serving
@@ -77,8 +79,8 @@ target before the pass drifts.
 
 Use the local decoder and generated output first:
 
-- [`dump_mpd_script.py`](dump_mpd_script.py)
-- [`decoded_scripts`](decoded_scripts)
+- [`../../dump_mpd_script.py`](../../dump_mpd_script.py)
+- [`../../decoded_scripts`](../../decoded_scripts)
 
 Questions to answer before touching runtime:
 
@@ -146,7 +148,7 @@ scripted `PCSX-Redux` runtime path for:
 
 For the active `0x80` contradiction, the default runtime wrapper is:
 
-- [`decomp/verification/run_opcode_0x80_runtime_capture.ps1`](decomp/verification/run_opcode_0x80_runtime_capture.ps1)
+- [`../../decomp/verification/run_opcode_0x80_runtime_capture.ps1`](../../decomp/verification/run_opcode_0x80_runtime_capture.ps1)
 
 Use manual emulator interaction only if the scripted capture path cannot reach
 the required state yet.
@@ -177,7 +179,7 @@ work.
 
 ### Opcode table export
 
-Store as JSON under [`decomp/evidence`](decomp/evidence), for example:
+Store as JSON under [`../../decomp/evidence`](../../decomp/evidence), for example:
 
 ```text
 decomp/evidence/battle_opcode_table.json
@@ -193,8 +195,8 @@ Suggested fields:
   - `handler_address`
   - `handler_name`
 
-Register the finished export under `Artifacts Index -> Table exports` in
-[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md).
+Register the finished export under `Table Exports` in
+[`../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md).
 
 ### Function coverage export
 
@@ -209,9 +211,9 @@ Suggested fields:
 - `gaps`
 - `orphan_candidates`
 
-Register the finished export under `Artifacts Index -> Reconciliation reports`
-or a coverage-oriented artifact entry in
-[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md).
+Register the finished export under `Reconciliation Reports` or a
+coverage-oriented entry in
+[`../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md).
 
 ### Opcode proof packet
 
@@ -226,9 +228,10 @@ Suggested fields:
 - `status`
 - `open_conflicts`
 
-Register the proof packet under `Artifacts Index -> Proof packets`, then update
-the matching target row and any relevant conflict entry in
-[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md).
+Register the proof packet under `Proof Packets` in
+[`../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md),
+then update the matching target row and any relevant conflict entry in
+[`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md).
 
 ## Conflict States
 

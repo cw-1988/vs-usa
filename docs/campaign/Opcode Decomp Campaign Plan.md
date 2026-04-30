@@ -12,7 +12,7 @@ For this campaign, keep the authority chain explicit:
 
 - the original binary plus runtime behavior are the ground truth
 - artifacts under `decomp/` are the local evidence authority
-- [`_refs/rood-reverse`](_refs/rood-reverse) is hint-only and may suggest
+- [`../../_refs/rood-reverse`](../../_refs/rood-reverse) is hint-only and may suggest
   targets, addresses, or candidate meanings
 
 That means:
