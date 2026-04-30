@@ -9,6 +9,9 @@ param(
     [string[]]$SaveStateSearchRoots = @("decomp/evidence", ".codex_tmp", "."),
     [string[]]$SaveStatePatterns = @("*.p2s", "*.p2s.gz", "*.savestate", "*.savestate.gz", "*.state", "*.state.gz"),
     [switch]$KeepPreparedSaveState,
+    [string]$InputPlanPath,
+    [switch]$UseDefaultInputPlan,
+    [string]$DefaultInputPlanPath = "decomp/evidence/opcode_0x80_runtime_input_plan.json",
     [string]$Memcard1Path = "memcard1.mcd",
     [string]$Memcard2Path = "memcard2.mcd",
     [string]$LuaScript = "decomp/verification/pcsx_redux_opcode_0x80_capture.lua",
@@ -128,6 +131,146 @@ function Expand-GzipFile {
     }
 }
 
+function Get-ObjectPropertyValue {
+    param(
+        [Parameter(Mandatory = $true)]$Object,
+        [Parameter(Mandatory = $true)][string]$Name,
+        $Default = $null
+    )
+
+    if ($null -eq $Object) {
+        return $Default
+    }
+
+    $property = $Object.PSObject.Properties[$Name]
+    if ($null -eq $property) {
+        return $Default
+    }
+
+    if ($null -eq $property.Value) {
+        return $Default
+    }
+
+    return $property.Value
+}
+
+function Test-ObjectProperty {
+    param(
+        [Parameter(Mandatory = $true)]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    if ($null -eq $Object) {
+        return $false
+    }
+
+    return $null -ne $Object.PSObject.Properties[$Name]
+}
+
+function ConvertTo-NonNegativeInt {
+    param(
+        [Parameter(Mandatory = $true)]$Value,
+        [Parameter(Mandatory = $true)][string]$Label
+    )
+
+    $parsed = [int]$Value
+    if ($parsed -lt 0) {
+        throw "$Label must be >= 0."
+    }
+
+    return $parsed
+}
+
+function ConvertTo-PositiveInt {
+    param(
+        [Parameter(Mandatory = $true)]$Value,
+        [Parameter(Mandatory = $true)][string]$Label
+    )
+
+    $parsed = [int]$Value
+    if ($parsed -lt 1) {
+        throw "$Label must be >= 1."
+    }
+
+    return $parsed
+}
+
+function Prepare-InputPlan {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $resolvedPath = Resolve-RepoPath -Path $Path
+    Assert-Exists -Path $resolvedPath -Label "Input plan"
+
+    $plan = Get-Content -Raw -LiteralPath $resolvedPath | ConvertFrom-Json
+    $steps = @(Get-ObjectPropertyValue -Object $plan -Name "steps" -Default @())
+    if ($steps.Count -eq 0) {
+        throw "Input plan '$resolvedPath' does not define any steps."
+    }
+
+    $description = [string](Get-ObjectPropertyValue -Object $plan -Name "description" -Default "")
+    $padSlot = ConvertTo-PositiveInt -Value (Get-ObjectPropertyValue -Object $plan -Name "pad_slot" -Default 1) -Label "pad_slot"
+    $padNumber = ConvertTo-PositiveInt -Value (Get-ObjectPropertyValue -Object $plan -Name "pad_number" -Default 1) -Label "pad_number"
+    $initialDelayFrames = ConvertTo-NonNegativeInt -Value (Get-ObjectPropertyValue -Object $plan -Name "initial_delay_frames" -Default 0) -Label "initial_delay_frames"
+    $analogMode = [bool](Get-ObjectPropertyValue -Object $plan -Name "analog_mode" -Default $false)
+
+    $preparedDirectory = Join-Path $RepoRoot ".codex_tmp\pcsx-redux"
+    New-Item -ItemType Directory -Force -Path $preparedDirectory | Out-Null
+
+    $preparedPath = Join-Path $preparedDirectory ("opcode_0x80_input_plan-{0}.tsv" -f [Guid]::NewGuid().ToString("N"))
+    $lines = New-Object System.Collections.Generic.List[string]
+    $currentFrame = $initialDelayFrames
+    $stepIndex = 0
+
+    foreach ($step in $steps) {
+        $stepIndex += 1
+        $buttons = @(Get-ObjectPropertyValue -Object $step -Name "buttons" -Default @())
+        if ($buttons.Count -eq 0) {
+            throw "Input plan step $stepIndex has no buttons."
+        }
+
+        $buttonNames = @()
+        foreach ($button in $buttons) {
+            $buttonText = [string]$button
+            if ([string]::IsNullOrWhiteSpace($buttonText)) {
+                throw "Input plan step $stepIndex contains an empty button name."
+            }
+            $buttonNames += $buttonText.Trim().ToUpperInvariant()
+        }
+
+        $holdFrames = ConvertTo-NonNegativeInt -Value (Get-ObjectPropertyValue -Object $step -Name "hold_frames" -Default 8) -Label "hold_frames for step $stepIndex"
+        if ($holdFrames -eq 0) {
+            throw "Input plan step $stepIndex must hold at least one frame."
+        }
+
+        $waitFramesAfter = ConvertTo-NonNegativeInt -Value (Get-ObjectPropertyValue -Object $step -Name "wait_frames_after" -Default 30) -Label "wait_frames_after for step $stepIndex"
+        $startFrame = if (Test-ObjectProperty -Object $step -Name "start_frame") {
+            ConvertTo-NonNegativeInt -Value (Get-ObjectPropertyValue -Object $step -Name "start_frame") -Label "start_frame for step $stepIndex"
+        } else {
+            $currentFrame
+        }
+
+        $note = [string](Get-ObjectPropertyValue -Object $step -Name "note" -Default ("step {0}" -f $stepIndex))
+        $note = $note -replace "\r?\n", " "
+        $note = $note -replace "`t", " "
+
+        $lines.Add(("{0}`t{1}`t{2}`t{3}" -f $startFrame, $holdFrames, ($buttonNames -join ","), $note))
+        $currentFrame = $startFrame + $holdFrames + $waitFramesAfter
+    }
+
+    [System.IO.File]::WriteAllLines($preparedPath, $lines, [System.Text.Encoding]::ASCII)
+
+    return [pscustomobject]@{
+        SourcePath         = $resolvedPath
+        PreparedPath       = $preparedPath
+        Description        = $description
+        PadSlot            = $padSlot
+        PadNumber          = $padNumber
+        AnalogMode         = $analogMode
+        InitialDelayFrames = $initialDelayFrames
+        StepCount          = $stepIndex
+    }
+}
+
 function Prepare-SaveState {
     param([Parameter(Mandatory = $true)][string]$Path)
 
@@ -174,6 +317,7 @@ $preDispatchPath = Resolve-RepoPath -Path $PreDispatchPath
 $summaryPath = Resolve-RepoPath -Path $SummaryPath
 $saveStatePath = $null
 $saveStateInfo = $null
+$inputPlanInfo = $null
 $memcard1Path = $null
 $memcard2Path = $null
 
@@ -194,6 +338,10 @@ if (-not [string]::IsNullOrWhiteSpace($SaveStatePath) -and $UseNewestSaveState) 
     throw "Pass either -SaveStatePath or -UseNewestSaveState, not both."
 }
 
+if (-not [string]::IsNullOrWhiteSpace($InputPlanPath) -and $UseDefaultInputPlan) {
+    throw "Pass either -InputPlanPath or -UseDefaultInputPlan, not both."
+}
+
 $bootFlag = $null
 $bootPath = $null
 if (-not [string]::IsNullOrWhiteSpace($IsoPath)) {
@@ -206,10 +354,16 @@ if (-not [string]::IsNullOrWhiteSpace($IsoPath)) {
     Assert-Exists -Path $bootPath -Label "PS-X EXE"
 }
 
+$effectiveSaveStateSearchRoots = @($SaveStateSearchRoots)
+$pcsxReduxDirectory = Split-Path -Parent $pcsxReduxExe
+if ($pcsxReduxDirectory -and ($effectiveSaveStateSearchRoots -notcontains $pcsxReduxDirectory)) {
+    $effectiveSaveStateSearchRoots += $pcsxReduxDirectory
+}
+
 if ($UseNewestSaveState) {
-    $discoveredSaveState = Get-NewestSaveState -SearchRoots $SaveStateSearchRoots -Patterns $SaveStatePatterns
+    $discoveredSaveState = Get-NewestSaveState -SearchRoots $effectiveSaveStateSearchRoots -Patterns $SaveStatePatterns
     if (-not $discoveredSaveState) {
-        $roots = $SaveStateSearchRoots -join ", "
+        $roots = $effectiveSaveStateSearchRoots -join ", "
         $patterns = $SaveStatePatterns -join ", "
         throw "No save state matched patterns [$patterns] under [$roots]."
     }
@@ -218,6 +372,12 @@ if ($UseNewestSaveState) {
 } elseif (-not [string]::IsNullOrWhiteSpace($SaveStatePath)) {
     $saveStateInfo = Prepare-SaveState -Path $SaveStatePath
     $saveStatePath = $saveStateInfo.LoadPath
+}
+
+if ($UseDefaultInputPlan) {
+    $inputPlanInfo = Prepare-InputPlan -Path $DefaultInputPlanPath
+} elseif (-not [string]::IsNullOrWhiteSpace($InputPlanPath)) {
+    $inputPlanInfo = Prepare-InputPlan -Path $InputPlanPath
 }
 
 if (-not [string]::IsNullOrWhiteSpace($Memcard1Path)) {
@@ -257,6 +417,12 @@ $env:VS_OPCODE_QUIT_ON_CANDIDATE_HIT = if ($QuitOnCandidateHit) { "1" } else { "
 $env:VS_OPCODE_SAVE_STATE_PATH = if ($saveStatePath) { $saveStatePath } else { "" }
 $env:VS_OPCODE_SAVE_STATE_SOURCE_PATH = if ($saveStateInfo) { $saveStateInfo.SourcePath } else { "" }
 $env:VS_OPCODE_SAVE_STATE_WAS_DECOMPRESSED = if ($saveStateInfo -and $saveStateInfo.WasDecompressed) { "1" } else { "0" }
+$env:VS_OPCODE_INPUT_PLAN_PATH = if ($inputPlanInfo) { $inputPlanInfo.PreparedPath } else { "" }
+$env:VS_OPCODE_INPUT_PLAN_SOURCE_PATH = if ($inputPlanInfo) { $inputPlanInfo.SourcePath } else { "" }
+$env:VS_OPCODE_INPUT_PLAN_DESCRIPTION = if ($inputPlanInfo) { $inputPlanInfo.Description } else { "" }
+$env:VS_OPCODE_INPUT_PLAN_PAD_SLOT = if ($inputPlanInfo) { "$($inputPlanInfo.PadSlot)" } else { "" }
+$env:VS_OPCODE_INPUT_PLAN_PAD_NUMBER = if ($inputPlanInfo) { "$($inputPlanInfo.PadNumber)" } else { "" }
+$env:VS_OPCODE_INPUT_PLAN_ANALOG_MODE = if ($inputPlanInfo -and $inputPlanInfo.AnalogMode) { "1" } else { "0" }
 
 $args = @(
     "-portable",
@@ -293,6 +459,10 @@ if ($saveStatePath) {
         Write-Host "Prepared savestate: decompressed gzip payload for Lua loading."
     }
 }
+if ($inputPlanInfo) {
+    Write-Host "Input plan source: $($inputPlanInfo.SourcePath)"
+    Write-Host "Input plan steps: $($inputPlanInfo.StepCount)"
+}
 if ($memcard1Path) {
     Write-Host "Memcard1: $memcard1Path"
 }
@@ -319,10 +489,6 @@ try {
     & $pcsxReduxExe @args
     $lastExitCodeVariable = Get-Variable -Name LASTEXITCODE -ErrorAction SilentlyContinue
     $processExitCode = if ($lastExitCodeVariable) { [int]$lastExitCodeVariable.Value } else { 0 }
-} finally {
-    if ($saveStateInfo -and $saveStateInfo.PreparedPath -and -not $KeepPreparedSaveState) {
-        Remove-Item -LiteralPath $saveStateInfo.PreparedPath -ErrorAction SilentlyContinue
-    }
 }
 
 if (-not (Test-Path -LiteralPath $summaryPath)) {
@@ -395,6 +561,26 @@ if ($saveStateInfo) {
     )
 }
 
+$summaryInputPlan = Get-ObjectPropertyValue -Object $summary -Name "input_plan" -Default $null
+if ($summaryInputPlan -and ((Get-ObjectPropertyValue -Object $summaryInputPlan -Name "step_count" -Default 0) -gt 0)) {
+    $inputPlanNoteParts = @(
+        "Automated PCSX-Redux capture used input plan '$($summaryInputPlan.source_path)'",
+        "prepared_path=$($summaryInputPlan.prepared_path)",
+        "pad=$($summaryInputPlan.pad_slot)/$($summaryInputPlan.pad_number)",
+        "steps=$($summaryInputPlan.completed_steps)/$($summaryInputPlan.step_count)"
+    )
+
+    if ($summaryInputPlan.description) {
+        $inputPlanNoteParts += ("description=" + $summaryInputPlan.description)
+    }
+
+    Invoke-Recorder @(
+        $observationPath,
+        "add-note",
+        "--note", ($inputPlanNoteParts -join "; ")
+    )
+}
+
 $candidateHits = @()
 if ($summary.candidate_hits) {
     foreach ($property in $summary.candidate_hits.PSObject.Properties) {
@@ -464,6 +650,13 @@ if ((Test-Path -LiteralPath $afterInitPath) -and (Test-Path -LiteralPath $preDis
         "--replace-derived",
         "--finalize"
     )
+}
+
+if ($saveStateInfo -and $saveStateInfo.PreparedPath -and -not $KeepPreparedSaveState) {
+    Remove-Item -LiteralPath $saveStateInfo.PreparedPath -ErrorAction SilentlyContinue
+}
+if ($inputPlanInfo -and $inputPlanInfo.PreparedPath) {
+    Remove-Item -LiteralPath $inputPlanInfo.PreparedPath -ErrorAction SilentlyContinue
 }
 
 Write-Host "Capture summary recorded in $summaryPath"

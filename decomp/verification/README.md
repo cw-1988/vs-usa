@@ -32,14 +32,16 @@ Current runtime-pass helpers:
   ready to link from the campaign ledger
 - `pcsx_redux_opcode_0x80_capture.lua`: startup Lua automation for the current
   `0x80` runtime tie-breaker; it plants breakpoints, dumps the runtime table
-  from emulator memory, records save-state load events, and writes a compact
-  summary JSON
+  from emulator memory, records save-state load events, can replay a scripted
+  pad-input plan through the documented `PCSX.SIO0.slots[*].pads[*]`
+  overrides, and writes a compact summary JSON
 - `run_opcode_0x80_runtime_capture.ps1`: wrapper that launches `PCSX-Redux`
   with the capture Lua, then folds the resulting dumps and summary back into
   the checked-in observation packet via the existing recorder/finalizer; it
   can also auto-pick the newest nearby savestate and inflate gzip-compressed
   UI savestates into a temporary raw file that `PCSX.loadSaveState(file)` can
-  consume
+  consume, and it can prepare a checked-in JSON input plan into a Lua-friendly
+  schedule when cold-boot menu automation is the only available fallback
 
 Official `PCSX-Redux` references for this automation path:
 
@@ -61,7 +63,14 @@ Recommended runtime handoff flow:
 - when a nearer launch point exists, prefer passing `-SaveStatePath` or
   `-UseNewestSaveState` to that wrapper instead of cold-booting from disc
   again; the wrapper now handles the gzip-compressed savestates that the
-  `PCSX-Redux` UI writes and stages them into a raw temporary file for Lua
+  `PCSX-Redux` UI writes, searches the portable save directory next to
+  `pcsx-redux.exe`, and stages compressed UI savestates into a raw temporary
+  file for Lua
+- if no near-battle savestate exists yet, tune
+  `decomp/evidence/opcode_0x80_runtime_input_plan.json` and rerun the wrapper
+  with `-UseDefaultInputPlan` or `-InputPlanPath <json>` so the same scripted
+  flow can press through the menu path instead of falling back to a purely
+  manual debugger session
 - let `finalize_runtime_observation.py` refresh the reconstructed baseline blob
   and compare-report hashes in place, so the handoff packet preserves concrete
   byte-level artifacts even before live dumps exist

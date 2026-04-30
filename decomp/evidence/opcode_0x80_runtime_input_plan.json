@@ -1,0 +1,57 @@
+{
+  "description": "Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. Tune the frame waits after the first real run; this scaffold is intentionally conservative and assumes memcard-backed menu resume.",
+  "pad_slot": 1,
+  "pad_number": 1,
+  "analog_mode": false,
+  "initial_delay_frames": 720,
+  "steps": [
+    {
+      "buttons": [
+        "START"
+      ],
+      "hold_frames": 8,
+      "wait_frames_after": 240,
+      "note": "Dismiss the title or intro gate after fastboot settles."
+    },
+    {
+      "buttons": [
+        "CROSS"
+      ],
+      "hold_frames": 8,
+      "wait_frames_after": 180,
+      "note": "Advance from the title screen into the main menu."
+    },
+    {
+      "buttons": [
+        "DOWN"
+      ],
+      "hold_frames": 6,
+      "wait_frames_after": 24,
+      "note": "Move the highlight toward Continue or Load if the default cursor is elsewhere."
+    },
+    {
+      "buttons": [
+        "CROSS"
+      ],
+      "hold_frames": 8,
+      "wait_frames_after": 180,
+      "note": "Confirm the highlighted main-menu action."
+    },
+    {
+      "buttons": [
+        "CROSS"
+      ],
+      "hold_frames": 8,
+      "wait_frames_after": 240,
+      "note": "Confirm the selected save or submenu entry."
+    },
+    {
+      "buttons": [
+        "CROSS"
+      ],
+      "hold_frames": 8,
+      "wait_frames_after": 480,
+      "note": "Clear the next prompt and give the game time to finish loading."
+    }
+  ]
+}

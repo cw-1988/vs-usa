@@ -31,6 +31,21 @@ local function split_csv(raw)
     return items
 end
 
+local function split_tab_fields(raw)
+    local fields = {}
+    local start_index = 1
+    while true do
+        local tab_index = string.find(raw, "\t", start_index, true)
+        if tab_index == nil then
+            fields[#fields + 1] = string.sub(raw, start_index)
+            break
+        end
+        fields[#fields + 1] = string.sub(raw, start_index, tab_index - 1)
+        start_index = tab_index + 1
+    end
+    return fields
+end
+
 local function utc_now()
     return os.date("!%Y-%m-%dT%H:%M:%SZ")
 end
@@ -120,6 +135,12 @@ local config = {
     save_state_path = os.getenv("VS_OPCODE_SAVE_STATE_PATH"),
     save_state_source_path = os.getenv("VS_OPCODE_SAVE_STATE_SOURCE_PATH"),
     save_state_was_decompressed = parse_bool(os.getenv("VS_OPCODE_SAVE_STATE_WAS_DECOMPRESSED"), false),
+    input_plan_path = os.getenv("VS_OPCODE_INPUT_PLAN_PATH"),
+    input_plan_source_path = os.getenv("VS_OPCODE_INPUT_PLAN_SOURCE_PATH"),
+    input_plan_description = os.getenv("VS_OPCODE_INPUT_PLAN_DESCRIPTION"),
+    input_plan_pad_slot = parse_int(os.getenv("VS_OPCODE_INPUT_PLAN_PAD_SLOT"), 1),
+    input_plan_pad_number = parse_int(os.getenv("VS_OPCODE_INPUT_PLAN_PAD_NUMBER"), 1),
+    input_plan_analog_mode = parse_bool(os.getenv("VS_OPCODE_INPUT_PLAN_ANALOG_MODE"), false),
 }
 
 local state = {
@@ -146,6 +167,7 @@ local state = {
     quit_requested = false,
     exit_code = 0,
     save_state_load_count = 0,
+    input_plan = nil,
 }
 
 local function add_note(text)
@@ -215,6 +237,221 @@ local function dump_snapshot(label, path, reason)
     add_note("captured " .. label .. " snapshot via " .. reason)
 end
 
+local function queue_safe(label, func)
+    PCSX.nextTick(function()
+        local ok, err = pcall(func)
+        if not ok then
+            add_note("queued action failed for " .. label .. ": " .. tostring(err))
+        end
+    end)
+end
+
+local function get_input_pad()
+    local slots = PCSX.SIO0 and PCSX.SIO0.slots
+    if slots == nil then
+        return nil
+    end
+    local slot = slots[config.input_plan_pad_slot]
+    if slot == nil or slot.pads == nil then
+        return nil
+    end
+    return slot.pads[config.input_plan_pad_number]
+end
+
+local function clear_input_plan_overrides()
+    local plan = state.input_plan
+    if plan == nil or plan.active_buttons == nil then
+        return
+    end
+
+    local pad = get_input_pad()
+    if pad == nil then
+        return
+    end
+
+    for button_value in pairs(plan.active_buttons) do
+        pad.clearOverride(button_value)
+    end
+    plan.active_buttons = {}
+end
+
+local function reset_input_plan_progress()
+    local plan = state.input_plan
+    if plan == nil then
+        return
+    end
+
+    clear_input_plan_overrides()
+    plan.started_steps = 0
+    plan.completed_steps = 0
+    plan.finished_noted = false
+    for _, step in ipairs(plan.steps) do
+        step.started = false
+        step.completed = false
+    end
+end
+
+local function load_input_plan()
+    if config.input_plan_path == nil or config.input_plan_path == "" then
+        return nil
+    end
+
+    local handle, err = io.open(config.input_plan_path, "rb")
+    if not handle then
+        add_note("failed to open input plan: " .. tostring(err))
+        return nil
+    end
+
+    local button_constants = PCSX.CONSTS and PCSX.CONSTS.PAD and PCSX.CONSTS.PAD.BUTTON
+    local steps = {}
+    local line_number = 0
+    for raw_line in handle:lines() do
+        line_number = line_number + 1
+        if raw_line ~= "" then
+            local fields = split_tab_fields(raw_line)
+            if #fields < 3 then
+                add_note("ignoring malformed input plan line " .. tostring(line_number))
+            else
+                local start_frame = parse_int(fields[1], nil)
+                local duration_frames = parse_int(fields[2], nil)
+                local button_names = split_csv(fields[3])
+                local note = fields[4] or ("step " .. tostring(line_number))
+                local button_values = {}
+                local resolved_names = {}
+                local has_unknown_button = false
+
+                for _, button_name in ipairs(button_names) do
+                    local normalized_name = string.upper(button_name)
+                    local button_value = button_constants and button_constants[normalized_name] or nil
+                    if button_value == nil then
+                        add_note("input plan line " .. tostring(line_number) .. " references unknown button " .. normalized_name)
+                        has_unknown_button = true
+                    else
+                        button_values[#button_values + 1] = button_value
+                        resolved_names[#resolved_names + 1] = normalized_name
+                    end
+                end
+
+                if not has_unknown_button and start_frame ~= nil and duration_frames ~= nil and duration_frames > 0 and #button_values > 0 then
+                    steps[#steps + 1] = {
+                        line_number = line_number,
+                        start_frame = start_frame,
+                        duration_frames = duration_frames,
+                        button_names = resolved_names,
+                        button_values = button_values,
+                        note = note,
+                        started = false,
+                        completed = false,
+                    }
+                end
+            end
+        end
+    end
+    handle:close()
+
+    if #steps == 0 then
+        add_note("input plan did not yield any usable steps")
+        return nil
+    end
+
+    add_note(
+        "loaded input plan from "
+            .. (config.input_plan_source_path ~= "" and config.input_plan_source_path or config.input_plan_path)
+            .. " with "
+            .. tostring(#steps)
+            .. " step(s)"
+    )
+
+    return {
+        prepared_path = config.input_plan_path,
+        source_path = config.input_plan_source_path,
+        description = config.input_plan_description,
+        pad_slot = config.input_plan_pad_slot,
+        pad_number = config.input_plan_pad_number,
+        analog_mode = config.input_plan_analog_mode,
+        steps = steps,
+        active_buttons = {},
+        started_steps = 0,
+        completed_steps = 0,
+        initialized_pad = false,
+        finished_noted = false,
+    }
+end
+
+local function update_input_plan()
+    local plan = state.input_plan
+    if plan == nil then
+        return
+    end
+
+    local pad = get_input_pad()
+    if pad == nil then
+        if not plan.pad_missing_noted then
+            add_note(
+                "input plan could not find pad slot "
+                    .. tostring(plan.pad_slot)
+                    .. " pad "
+                    .. tostring(plan.pad_number)
+            )
+            plan.pad_missing_noted = true
+        end
+        return
+    end
+
+    if not plan.initialized_pad then
+        pad.setAnalogMode(plan.analog_mode)
+        plan.initialized_pad = true
+    end
+
+    local desired_buttons = {}
+    for index, step in ipairs(plan.steps) do
+        local end_frame = step.start_frame + step.duration_frames
+        if state.frame_count >= step.start_frame and state.frame_count < end_frame then
+            if not step.started then
+                step.started = true
+                plan.started_steps = plan.started_steps + 1
+                add_note(
+                    "input plan step "
+                        .. tostring(index)
+                        .. " started at frame "
+                        .. tostring(state.frame_count)
+                        .. ": "
+                        .. step.note
+                        .. " ["
+                        .. table.concat(step.button_names, "+")
+                        .. "]"
+                )
+            end
+            for button_index, button_value in ipairs(step.button_values) do
+                desired_buttons[button_value] = step.button_names[button_index]
+            end
+        elseif state.frame_count >= end_frame and not step.completed then
+            step.completed = true
+            plan.completed_steps = plan.completed_steps + 1
+            add_note("input plan step " .. tostring(index) .. " completed: " .. step.note)
+        end
+    end
+
+    for button_value in pairs(plan.active_buttons) do
+        if desired_buttons[button_value] == nil then
+            pad.clearOverride(button_value)
+            plan.active_buttons[button_value] = nil
+        end
+    end
+
+    for button_value, button_name in pairs(desired_buttons) do
+        if plan.active_buttons[button_value] == nil then
+            pad.setOverride(button_value)
+            plan.active_buttons[button_value] = button_name
+        end
+    end
+
+    if not plan.finished_noted and plan.completed_steps >= #plan.steps then
+        add_note("input plan finished all scheduled steps by frame " .. tostring(state.frame_count))
+        plan.finished_noted = true
+    end
+end
+
 local function write_summary()
     local payload = {
         started_utc = state.started_utc,
@@ -236,6 +473,17 @@ local function write_summary()
             was_decompressed = config.save_state_was_decompressed,
             load_count = state.save_state_load_count,
         },
+        input_plan = state.input_plan and {
+            prepared_path = state.input_plan.prepared_path,
+            source_path = state.input_plan.source_path,
+            description = state.input_plan.description,
+            pad_slot = state.input_plan.pad_slot,
+            pad_number = state.input_plan.pad_number,
+            analog_mode = state.input_plan.analog_mode,
+            step_count = #state.input_plan.steps,
+            started_steps = state.input_plan.started_steps,
+            completed_steps = state.input_plan.completed_steps,
+        } or nil,
     }
 
     local handle, err = io.open(config.summary_path, "wb")
@@ -253,6 +501,7 @@ local function request_quit(code, reason)
     end
     state.quit_requested = true
     state.exit_code = code
+    clear_input_plan_overrides()
     add_note(reason)
     write_summary()
     PCSX.quit(code)
@@ -260,6 +509,8 @@ end
 
 local breakpoints = {}
 local listeners = {}
+
+state.input_plan = load_input_plan()
 
 breakpoints[#breakpoints + 1] = PCSX.addBreakpoint(
     config.table_address,
@@ -271,12 +522,11 @@ breakpoints[#breakpoints + 1] = PCSX.addBreakpoint(
         if pc_value < config.min_write_pc then
             state.ignored_write_hit_count = state.ignored_write_hit_count + 1
             if state.ignored_write_hit_count == 1 then
-                add_note(
-                    "ignoring pre-runtime opcode-table write at "
-                        .. hex32(address)
-                        .. " from pc "
-                        .. hex32(pc_value)
-                )
+                local address_hex = hex32(address)
+                local pc_hex = hex32(pc_value)
+                queue_safe("ignored write note", function()
+                    add_note("ignoring pre-runtime opcode-table write at " .. address_hex .. " from pc " .. pc_hex)
+                end)
             end
             return
         end
@@ -285,12 +535,11 @@ breakpoints[#breakpoints + 1] = PCSX.addBreakpoint(
         state.saw_write = true
         state.last_write_cycle = tonumber(PCSX.getCPUCycles())
         if state.write_hit_count == 1 then
-            add_note(
-                "first opcode-table write hit at "
-                    .. hex32(address)
-                    .. " from pc "
-                    .. hex32(pc_value)
-            )
+            local address_hex = hex32(address)
+            local pc_hex = hex32(pc_value)
+            queue_safe("first write note", function()
+                add_note("first opcode-table write hit at " .. address_hex .. " from pc " .. pc_hex)
+            end)
         end
     end
 )
@@ -302,14 +551,17 @@ breakpoints[#breakpoints + 1] = PCSX.addBreakpoint(
     "runtime opcode reader",
     function()
         state.reader_hit_count = state.reader_hit_count + 1
-        if state.snapshots.after_init == nil then
-            dump_snapshot("after_init", config.after_init_path, "reader_breakpoint_fallback")
-        end
-        if state.snapshots.pre_dispatch == nil then
-            dump_snapshot("pre_dispatch", config.pre_dispatch_path, "reader_breakpoint")
-            state.pre_dispatch_frame = state.frame_count
-        end
-        add_note("reader breakpoint hit at " .. current_pc_hex())
+        local pc_hex = current_pc_hex()
+        queue_safe("reader breakpoint", function()
+            if state.snapshots.after_init == nil then
+                dump_snapshot("after_init", config.after_init_path, "reader_breakpoint_fallback")
+            end
+            if state.snapshots.pre_dispatch == nil then
+                dump_snapshot("pre_dispatch", config.pre_dispatch_path, "reader_breakpoint")
+                state.pre_dispatch_frame = state.frame_count
+            end
+            add_note("reader breakpoint hit at " .. pc_hex)
+        end)
     end
 )
 
@@ -330,13 +582,17 @@ local function add_candidate_breakpoint(address, label)
             entry.pcs[#entry.pcs + 1] = current_pc_hex()
             state.candidate_hits[key] = entry
             state.candidate_hit_count = state.candidate_hit_count + 1
-            if state.snapshots.pre_dispatch == nil then
-                dump_snapshot("pre_dispatch", config.pre_dispatch_path, "candidate_breakpoint")
-                state.pre_dispatch_frame = state.frame_count
-            end
-            add_note("candidate handler breakpoint hit at " .. key)
+            queue_safe("candidate breakpoint", function()
+                if state.snapshots.pre_dispatch == nil then
+                    dump_snapshot("pre_dispatch", config.pre_dispatch_path, "candidate_breakpoint")
+                    state.pre_dispatch_frame = state.frame_count
+                end
+                add_note("candidate handler breakpoint hit at " .. key)
+                if config.quit_on_candidate_hit then
+                    request_quit(0, "candidate handler breakpoint hit")
+                end
+            end)
             if config.quit_on_candidate_hit then
-                request_quit(0, "candidate handler breakpoint hit")
                 return false
             end
         end
@@ -349,7 +605,10 @@ if config.candidate_address ~= config.stub_address then
 end
 
 listeners[#listeners + 1] = PCSX.Events.createEventListener("Quitting", function()
-    write_summary()
+    queue_safe("quitting summary", function()
+        clear_input_plan_overrides()
+        write_summary()
+    end)
 end)
 
 listeners[#listeners + 1] = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
@@ -358,6 +617,7 @@ listeners[#listeners + 1] = PCSX.Events.createEventListener("ExecutionFlow::Save
     PCSX.nextTick(function()
         state.frame_count = 0
         state.pre_dispatch_frame = nil
+        reset_input_plan_progress()
         if state.snapshots.after_init == nil then
             dump_snapshot("after_init", config.after_init_path, "savestate_loaded")
         end
@@ -387,6 +647,8 @@ end
 function DrawImguiFrame()
     state.frame_count = state.frame_count + 1
     local cycles = tonumber(PCSX.getCPUCycles())
+
+    update_input_plan()
 
     if state.saw_write and state.snapshots.after_init == nil and state.last_write_cycle ~= nil then
         if cycles - state.last_write_cycle >= config.idle_cycles then

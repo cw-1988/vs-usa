@@ -47,7 +47,10 @@ Use:
 The wrapper launches a scriptable `PCSX-Redux` build with startup Lua, plants
 the known breakpoints, dumps the copied table directly from emulator memory,
 and records the resulting snapshot paths plus a compact automation summary back
-into `decomp/evidence/opcode_0x80_runtime_observation.json`.
+into `decomp/evidence/opcode_0x80_runtime_observation.json`. When no
+near-battle savestate exists yet, the same wrapper can now translate a
+checked-in JSON pad-input plan into a Lua replay schedule instead of leaving
+the cold-boot fallback entirely manual.
 
 Official `PCSX-Redux` docs that back this path:
 
@@ -87,24 +90,50 @@ pwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `
   -UseNewestSaveState
 ```
 
+When no savestate is available yet, tune the checked-in starter plan and use
+the same wrapper to replay a conservative title/menu sequence through the
+documented `PCSX.SIO0.slots[*].pads[*]` override API:
+
+```powershell
+pwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `
+  -IsoPath "Game Data/Vagrant Story (USA).cue" `
+  -UseDefaultInputPlan
+```
+
+The default scaffold lives at:
+
+- `decomp/evidence/opcode_0x80_runtime_input_plan.json`
+
+That JSON is intentionally a starter plan, not proof. Keep it checked in,
+tune the frame waits as real runs reveal the actual menu timing, and prefer a
+near-battle savestate again as soon as one exists.
+
 Savestate-specific behavior:
 
 - `-SaveStatePath` accepts either a raw savestate payload or a
   gzip-compressed `PCSX-Redux` UI savestate.
 - `-UseNewestSaveState` searches `decomp/evidence`, `.codex_tmp`, and repo
-  root for the newest `*.p2s`, `*.p2s.gz`, `*.savestate`, `*.savestate.gz`,
-  `*.state`, or `*.state.gz` file.
+  root plus the portable save directory next to `pcsx-redux.exe` for the
+  newest `*.p2s`, `*.p2s.gz`, `*.savestate`, `*.savestate.gz`, `*.state`, or
+  `*.state.gz` file.
 - gzip-compressed savestates are staged into `.codex_tmp/pcsx-redux/` before
   launch so Lua can feed an uncompressed file to `PCSX.loadSaveState(file)`.
 - the Lua capture script now records the savestate-load event and captures the
   earliest `after_init` fallback snapshot from the restored runtime state if a
   reader hit has not happened yet.
+- `-UseDefaultInputPlan` loads the checked-in
+  `decomp/evidence/opcode_0x80_runtime_input_plan.json` scaffold.
+- `-InputPlanPath` accepts a custom JSON plan with sequential button steps, so
+  pad/menu automation can still run through the wrapper when the fallback path
+  needs different timing or a different menu route.
 
 Expected outputs:
 
 - `decomp/evidence/opcode_0x80_runtime_after_init.bin`
 - `decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin`
 - `decomp/evidence/opcode_0x80_runtime_automation_summary.json`
+- optional replay metadata for `decomp/evidence/opcode_0x80_runtime_input_plan.json`
+  inside the automation summary and observation packet notes
 - refreshed `decomp/evidence/opcode_0x80_runtime_observation.json`
 - refreshed compare/support artifacts through the existing finalize flow
 
