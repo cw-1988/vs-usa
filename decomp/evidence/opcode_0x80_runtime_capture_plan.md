@@ -75,6 +75,19 @@ python decomp/verification/compare_opcode_table_snapshots.py `
   --output decomp/evidence/opcode_0x80_runtime_snapshot_compare.json
 ```
 
+Then finalize the observation packet so the compare report, support note, and
+updated JSON all agree:
+
+```powershell
+python decomp/verification/finalize_runtime_observation.py `
+  decomp/evidence/opcode_0x80_runtime_observation_template.json `
+  --expected-bin decomp/evidence/opcode_runtime_expected_table.bin `
+  --in-place
+```
+
+If one snapshot is still missing and you only want a partial handoff artifact,
+add `--allow-missing-snapshots`.
+
 ## Exit conditions
 
 The contradiction is statically resolved enough to treat runtime as decisive if
@@ -94,6 +107,7 @@ If the table changes or dispatch reaches a different handler, store:
 - the raw dump(s)
 - the comparison report
 - the filled observation template
+- the generated runtime support note
 - one short runtime support note summarizing the decisive hit
 
 Then update `RE_CAMPAIGN_MEMORY.md` before ending the pass.

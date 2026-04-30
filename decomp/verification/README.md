@@ -17,6 +17,14 @@ When runtime is finally justified, this folder can still narrow the ask by
 comparing exported RAM snapshots against a binary-derived baseline instead of
 leaving the runtime pass as a purely manual judgment call.
 
+Current runtime-pass helpers:
+
+- `compare_opcode_table_snapshots.py`: compares raw RAM dumps of a copied
+  opcode table against a binary-derived export baseline
+- `finalize_runtime_observation.py`: validates a filled runtime observation
+  packet, writes the compare report, and emits a short support note that is
+  ready to link from the campaign ledger
+
 ## What To Catch Early
 
 Good verification scripts should flag:

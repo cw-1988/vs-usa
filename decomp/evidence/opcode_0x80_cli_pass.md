@@ -23,6 +23,8 @@
 - `decomp/ghidra/DumpAddressAccesses.java`
 - `decomp/ghidra/TracePointerDerivedAccesses.java`
 - `decomp/verification/scan_mips_address_accesses.py`
+- `decomp/verification/compare_opcode_table_snapshots.py`
+- `decomp/verification/finalize_runtime_observation.py`
 
 ## Produced artifacts
 
@@ -75,6 +77,8 @@
 - `opcode_0x80_runtime_observation_template.json` is the structured handoff
   file for recording breakpoint hits, dump paths, and final runtime
   observations during that pass.
+- `opcode_0x80_runtime_support.md` is the generated runtime support note that
+  should be produced after the observation JSON is filled and finalized.
 
 ## Static findings
 

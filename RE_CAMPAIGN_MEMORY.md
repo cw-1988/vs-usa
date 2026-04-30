@@ -182,6 +182,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 - [`decomp/evidence/system_dat_header_words.json`](decomp/evidence/system_dat_header_words.json)
 - [`decomp/evidence/runtime_opcode_table_binary_scan.json`](decomp/evidence/runtime_opcode_table_binary_scan.json)
 - [`decomp/verification/compare_opcode_table_snapshots.py`](decomp/verification/compare_opcode_table_snapshots.py)
+- [`decomp/verification/finalize_runtime_observation.py`](decomp/verification/finalize_runtime_observation.py)
 
 ### Handler slices
 
@@ -208,20 +209,22 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 ## Session Handoff
 
-- `last completed step`: added a reusable runtime snapshot compare helper,
-  plus a focused `0x80` runtime capture plan and observation template, so the
-  next `PCSX-Redux` pass now has exact dump points, breakpoint targets, and a
-  scripted baseline-vs-RAM diff step for `0x800F4C28`
+- `last completed step`: added a reusable runtime-observation finalizer that
+  consumes the `0x80` capture template, regenerates the snapshot compare
+  report, and emits a ledger-ready runtime support note so the next
+  `PCSX-Redux` pass can land as structured local evidence instead of only
+  handwritten notes
 - `next recommended step`: run the capture plan in
   `decomp/evidence/opcode_0x80_runtime_capture_plan.md`, export at least an
   `after_init` and `pre_dispatch` dump from `0x800F4C28`, compare them with
-  `decomp/verification/compare_opcode_table_snapshots.py`, and record the
-  breakpoint hits in
+  `decomp/verification/finalize_runtime_observation.py --in-place`, and record
+  the breakpoint hits plus any dispatch targets in
   `decomp/evidence/opcode_0x80_runtime_observation_template.json`
 - `do not forget`: store the raw dump files and the compare report under
   `decomp/evidence`; if the table changes, capture the rewritten handler
   addresses for `0x80-0x82` explicitly rather than summarizing them only in
-  prose
+  prose, and keep the generated runtime support note linked alongside the
+  updated observation JSON
 
 ## Completed Milestones
 
@@ -301,5 +304,11 @@ Current phase: Pass 3 - Copy/patch reconciliation
   plan, and a structured observation template for the next `PCSX-Redux`
   session. Links:
   [`decomp/verification/compare_opcode_table_snapshots.py`](decomp/verification/compare_opcode_table_snapshots.py),
+  [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md),
+  [`decomp/evidence/opcode_0x80_runtime_observation_template.json`](decomp/evidence/opcode_0x80_runtime_observation_template.json)
+- `2026-04-30`: added a reusable runtime-observation finalizer so a filled
+  `PCSX-Redux` capture packet now auto-generates the compare report, support
+  note, and updated observation JSON in one step. Links:
+  [`decomp/verification/finalize_runtime_observation.py`](decomp/verification/finalize_runtime_observation.py),
   [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md),
   [`decomp/evidence/opcode_0x80_runtime_observation_template.json`](decomp/evidence/opcode_0x80_runtime_observation_template.json)

@@ -5,6 +5,9 @@
   "runtime_table_size_bytes": 1024,
   "baseline_export": "decomp/evidence/inittbl_opcode_table.json",
   "compare_helper": "decomp/verification/compare_opcode_table_snapshots.py",
+  "finalize_helper": "decomp/verification/finalize_runtime_observation.py",
+  "compare_report_path": "decomp/evidence/opcode_0x80_runtime_snapshot_compare.json",
+  "support_note_path": "decomp/evidence/opcode_0x80_runtime_support.md",
   "focus_opcodes": [
     "0x80",
     "0x81",
@@ -36,8 +39,7 @@
     {
       "label": "after_init",
       "path": "decomp/evidence/opcode_0x80_runtime_after_init.bin",
-      "capture_point": "Immediately after the INITBTL copy into 0x800F4C28",
-      "compare_report_path": "decomp/evidence/opcode_0x80_runtime_snapshot_compare.json"
+      "capture_point": "Immediately after the INITBTL copy into 0x800F4C28"
     },
     {
       "label": "pre_dispatch",
@@ -48,6 +50,7 @@
   "breakpoint_hits": [],
   "table_mutations": [],
   "dispatch_observations": [],
+  "comparison_summary": null,
   "conclusion": null,
   "notes": []
 }
