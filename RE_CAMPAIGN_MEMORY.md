@@ -83,7 +83,7 @@ Current phase: Pass 0 - Bootstrap and inventory
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `conflicted` | `INITBTL.PRG` battle opcode table export at `0x800FAF7C` | Static slot `0x800B66E4` vs nearby sound-shaped helper `0x800BA2E0` in `BATTLE.PRG` | `SoundEffects0` placeholder only | Is `0x80` a real stubbed slot, or does a copied runtime table later patch this family to a sound handler? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json) |
+| `opcode 0x80` | `conflicted` | `INITBTL.PRG` static table `D_800FAF7C`, copied into runtime heap table `D_800F4C28` by `_initScriptFunctionTable()` | Static slot `0x800B66E4` vs nearby sound-shaped helper `0x800BA2E0` in `BATTLE.PRG` | `SoundEffects0` placeholder only | Does any later runtime path rewrite or bypass the copied `D_800F4C28` entry for the `0x80-0x84` family? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json) |
 
 ## Known Conflicts
 
@@ -93,16 +93,20 @@ Current phase: Pass 0 - Bootstrap and inventory
   `0x80 -> 0x800B66E4`, and
   `decomp/evidence/battle_0x80_handler_slices.json` shows a real binary stub
   (`jr ra; clear v0`). `0x81` and `0x82` also share that same target.
+  `decomp/evidence/opcode_0x80_copy_path_static.md` now ties that export back
+  to the local `INITBTL.PRG` symbol `D_800FAF7C` and shows
+  `_initScriptFunctionTable()` copying the full table into runtime buffer
+  `D_800F4C28` during battle bootstrap.
 - What competing evidence says:
   `decomp/evidence/battle_sound_candidate_slice.json` shows `0x800BA2E0`
   consuming the same four argument bytes and calling `vs_main_playSfx`, so a
   nearby sound-family implementation still looks plausible.
-- What is still missing: table ownership and copy/patch tracing from the
-  exported `INITBTL.PRG` table into the live runtime dispatch path for the
-  `0x80-0x84` family.
-- Is runtime justified yet: not yet. Finish static copy-site and patch-site
-  tracing first, then use `PCSX-Redux` only if the contradiction survives that
-  pass.
+- What is still missing: the live dispatch consumer for `D_800F4C28`, plus any
+  later patch writer or bypass path that could swap `0x80-0x84` away from the
+  copied `0x800B66E4` entries.
+- Is runtime justified yet: not yet. Static ownership and the init-time copy
+  are now confirmed, so the next step is still static patch/consumer tracing
+  before using `PCSX-Redux` as a tie-breaker.
 
 ## Artifacts Index
 
@@ -117,7 +121,7 @@ Current phase: Pass 0 - Bootstrap and inventory
 
 ### Reconciliation reports
 
-- None yet.
+- [`decomp/evidence/opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md)
 
 ### Proof packets
 
@@ -125,11 +129,12 @@ Current phase: Pass 0 - Bootstrap and inventory
 
 ## Session Handoff
 
-- `last completed step`: registered the existing `0x80` static conflict and its
-  CLI artifacts in the master campaign ledger
-- `next recommended step`: finish Pass 0 inventory for every known
-  battle-script table owner and initializer, then trace the copy/patch path
-  that could affect the `0x80-0x84` family
+- `last completed step`: proved that `INITBTL.PRG` owns the static
+  `D_800FAF7C` battle opcode table and that `_initScriptFunctionTable()`
+  copies it into runtime heap buffer `D_800F4C28` during battle bootstrap
+- `next recommended step`: trace the live consumer of `D_800F4C28` and look
+  for any later patch writer or bypass path that could affect the `0x80-0x84`
+  family
 - `do not forget`: update this ledger before ending the next pass; no export,
   coverage note, or contradiction should live only in terminal output
 
@@ -147,3 +152,10 @@ Current phase: Pass 0 - Bootstrap and inventory
   [`decomp/evidence/inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json),
   [`decomp/evidence/battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json),
   [`decomp/evidence/battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json)
+- `2026-04-30`: tied the exported `INITBTL.PRG` opcode table back to its local
+  owner symbol and init-time heap copy path, narrowing the `0x80` conflict to
+  later runtime patch/bypass behavior. Links:
+  [`decomp/evidence/opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md),
+  [`decomp/evidence/inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json),
+  [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c),
+  [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/18.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/18.c)
