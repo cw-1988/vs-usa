@@ -6,8 +6,8 @@ It is meant as a quick lookup table, not a replacement for the longer
 evidence notes in
 [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md).
 
-- named locally: `84 / 256` opcode slots
-- still placeholder-named: `172 / 256` opcode slots
+- named locally: `85 / 256` opcode slots
+- still placeholder-named: `171 / 256` opcode slots
 - table below includes only the currently named entries; unresolved `OpcodeXX`
   slots are listed after it
 
@@ -60,6 +60,7 @@ evidence notes in
 | `0x79` | `RoomMechanismControl` | `action: u8, idMechanism: u8` | `0x03` | Trigger or toggle a room mechanism by id. |
 | `0x7A` | `SetRoomAmbientSoundSuspended` | `suspended: u8` | `0x02` | Suspend or restore room ambient playback on the proven persistent-ambient path. |
 | `0x7C` | `SetFirstPersonView` | `raw: u8` | `0x02` | Toggle or stage first-person camera/view mode. |
+| `0x80` | `SoundEffects0` | `raw: u8[4]` | `0x05` | Tentative sound-family placeholder; direct dispatch and nearby handler evidence still disagree. |
 | `0x85` | `LoadSfxSlot` | `slot: u8, idSfx: u8` | `0x03` | Audio resource or playback control. |
 | `0x86` | `FreeSfxSlot` | `slot: u8` | `0x02` | Audio resource or playback control. |
 | `0x88` | `SetCurrentSfx` | `idSfx: u8` | `0x02` | Audio resource or playback control. |
@@ -127,7 +128,7 @@ These opcode slots still only have placeholder names in the local decoder:
 - `0x77`
 - `0x7B`
 - `0x7D-0x7F`
-- `0x80-0x84`
+- `0x81-0x84`
 - `0x87`
 - `0x89-0x8F`
 - `0x93-0x98`
