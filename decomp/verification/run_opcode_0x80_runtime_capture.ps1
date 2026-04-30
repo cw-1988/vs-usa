@@ -5,6 +5,10 @@ param(
     [string]$IsoPath,
     [string]$ExePath,
     [string]$SaveStatePath,
+    [switch]$UseNewestSaveState,
+    [string[]]$SaveStateSearchRoots = @("decomp/evidence", ".codex_tmp", "."),
+    [string[]]$SaveStatePatterns = @("*.p2s", "*.p2s.gz", "*.savestate", "*.savestate.gz", "*.state", "*.state.gz"),
+    [switch]$KeepPreparedSaveState,
     [string]$Memcard1Path = "memcard1.mcd",
     [string]$Memcard2Path = "memcard2.mcd",
     [string]$LuaScript = "decomp/verification/pcsx_redux_opcode_0x80_capture.lua",
@@ -38,6 +42,10 @@ function Resolve-RepoPath {
         return $resolved.Path
     }
 
+    if ([System.IO.Path]::IsPathRooted($Path)) {
+        return [System.IO.Path]::GetFullPath($Path)
+    }
+
     $absolute = Join-Path $RepoRoot $Path
     return [System.IO.Path]::GetFullPath($absolute)
 }
@@ -50,6 +58,104 @@ function Assert-Exists {
 
     if (-not (Test-Path -LiteralPath $Path)) {
         throw "$Label not found: $Path"
+    }
+}
+
+function Get-NewestSaveState {
+    param(
+        [Parameter(Mandatory = $true)][string[]]$SearchRoots,
+        [Parameter(Mandatory = $true)][string[]]$Patterns
+    )
+
+    $matches = @()
+    foreach ($root in $SearchRoots) {
+        $resolvedRoot = Resolve-RepoPath -Path $root
+        if (-not (Test-Path -LiteralPath $resolvedRoot)) {
+            continue
+        }
+
+        foreach ($pattern in $Patterns) {
+            $matches += Get-ChildItem -Path $resolvedRoot -Filter $pattern -File -Recurse -ErrorAction SilentlyContinue
+        }
+    }
+
+    return $matches |
+        Sort-Object LastWriteTimeUtc -Descending |
+        Select-Object -First 1
+}
+
+function Test-GzipFile {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $stream = [System.IO.File]::OpenRead($Path)
+    try {
+        if ($stream.Length -lt 2) {
+            return $false
+        }
+
+        return ($stream.ReadByte() -eq 0x1f) -and ($stream.ReadByte() -eq 0x8b)
+    } finally {
+        $stream.Dispose()
+    }
+}
+
+function Expand-GzipFile {
+    param(
+        [Parameter(Mandatory = $true)][string]$SourcePath,
+        [Parameter(Mandatory = $true)][string]$DestinationPath
+    )
+
+    Add-Type -AssemblyName System.IO.Compression
+
+    $sourceStream = [System.IO.File]::OpenRead($SourcePath)
+    try {
+        $gzipStream = [System.IO.Compression.GzipStream]::new(
+            $sourceStream,
+            [System.IO.Compression.CompressionMode]::Decompress
+        )
+        try {
+            $destinationStream = [System.IO.File]::Create($DestinationPath)
+            try {
+                $gzipStream.CopyTo($destinationStream)
+            } finally {
+                $destinationStream.Dispose()
+            }
+        } finally {
+            $gzipStream.Dispose()
+        }
+    } finally {
+        $sourceStream.Dispose()
+    }
+}
+
+function Prepare-SaveState {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $resolvedPath = Resolve-RepoPath -Path $Path
+    Assert-Exists -Path $resolvedPath -Label "Save state"
+
+    if (-not (Test-GzipFile -Path $resolvedPath)) {
+        return [pscustomobject]@{
+            SourcePath       = $resolvedPath
+            LoadPath         = $resolvedPath
+            PreparedPath     = $null
+            WasDecompressed  = $false
+        }
+    }
+
+    $preparedDirectory = Join-Path $RepoRoot ".codex_tmp\pcsx-redux"
+    New-Item -ItemType Directory -Force -Path $preparedDirectory | Out-Null
+
+    $baseName = [System.IO.Path]::GetFileNameWithoutExtension($resolvedPath)
+    $preparedName = "{0}-{1}.savestate" -f $baseName, [Guid]::NewGuid().ToString("N")
+    $preparedPath = Join-Path $preparedDirectory $preparedName
+    Expand-GzipFile -SourcePath $resolvedPath -DestinationPath $preparedPath
+
+    return [pscustomobject]@{
+        SourcePath       = $resolvedPath
+        LoadPath         = $preparedPath
+        PreparedPath     = $preparedPath
+        WasDecompressed  = $true
     }
 }
 
@@ -67,6 +173,7 @@ $afterInitPath = Resolve-RepoPath -Path $AfterInitPath
 $preDispatchPath = Resolve-RepoPath -Path $PreDispatchPath
 $summaryPath = Resolve-RepoPath -Path $SummaryPath
 $saveStatePath = $null
+$saveStateInfo = $null
 $memcard1Path = $null
 $memcard2Path = $null
 
@@ -83,6 +190,10 @@ if (-not [string]::IsNullOrWhiteSpace($IsoPath) -and -not [string]::IsNullOrWhit
     throw "Pass only one of -IsoPath or -ExePath."
 }
 
+if (-not [string]::IsNullOrWhiteSpace($SaveStatePath) -and $UseNewestSaveState) {
+    throw "Pass either -SaveStatePath or -UseNewestSaveState, not both."
+}
+
 $bootFlag = $null
 $bootPath = $null
 if (-not [string]::IsNullOrWhiteSpace($IsoPath)) {
@@ -95,9 +206,18 @@ if (-not [string]::IsNullOrWhiteSpace($IsoPath)) {
     Assert-Exists -Path $bootPath -Label "PS-X EXE"
 }
 
-if (-not [string]::IsNullOrWhiteSpace($SaveStatePath)) {
-    $saveStatePath = Resolve-RepoPath -Path $SaveStatePath
-    Assert-Exists -Path $saveStatePath -Label "Save state"
+if ($UseNewestSaveState) {
+    $discoveredSaveState = Get-NewestSaveState -SearchRoots $SaveStateSearchRoots -Patterns $SaveStatePatterns
+    if (-not $discoveredSaveState) {
+        $roots = $SaveStateSearchRoots -join ", "
+        $patterns = $SaveStatePatterns -join ", "
+        throw "No save state matched patterns [$patterns] under [$roots]."
+    }
+    $saveStateInfo = Prepare-SaveState -Path $discoveredSaveState.FullName
+    $saveStatePath = $saveStateInfo.LoadPath
+} elseif (-not [string]::IsNullOrWhiteSpace($SaveStatePath)) {
+    $saveStateInfo = Prepare-SaveState -Path $SaveStatePath
+    $saveStatePath = $saveStateInfo.LoadPath
 }
 
 if (-not [string]::IsNullOrWhiteSpace($Memcard1Path)) {
@@ -135,6 +255,8 @@ $env:VS_OPCODE_POST_READER_FRAMES = "$PostReaderFrames"
 $env:VS_OPCODE_MIN_WRITE_PC = $MinWritePc
 $env:VS_OPCODE_QUIT_ON_CANDIDATE_HIT = if ($QuitOnCandidateHit) { "1" } else { "0" }
 $env:VS_OPCODE_SAVE_STATE_PATH = if ($saveStatePath) { $saveStatePath } else { "" }
+$env:VS_OPCODE_SAVE_STATE_SOURCE_PATH = if ($saveStateInfo) { $saveStateInfo.SourcePath } else { "" }
+$env:VS_OPCODE_SAVE_STATE_WAS_DECOMPRESSED = if ($saveStateInfo -and $saveStateInfo.WasDecompressed) { "1" } else { "0" }
 
 $args = @(
     "-portable",
@@ -164,6 +286,12 @@ Write-Host "Boot source: $bootPath"
 Write-Host "Summary path: $summaryPath"
 if ($saveStatePath) {
     Write-Host "Save state: $saveStatePath"
+    if ($saveStateInfo.SourcePath -ne $saveStatePath) {
+        Write-Host "Save state source: $($saveStateInfo.SourcePath)"
+    }
+    if ($saveStateInfo.WasDecompressed) {
+        Write-Host "Prepared savestate: decompressed gzip payload for Lua loading."
+    }
 }
 if ($memcard1Path) {
     Write-Host "Memcard1: $memcard1Path"
@@ -187,9 +315,14 @@ try {
         $processExitCode = 0
     }
 } catch {
-    Write-Warning "Start-Process failed; falling back to direct launch semantics."
+    Write-Warning ("Start-Process failed; falling back to direct launch semantics. " + $_.Exception.Message)
     & $pcsxReduxExe @args
-    $processExitCode = $LASTEXITCODE
+    $lastExitCodeVariable = Get-Variable -Name LASTEXITCODE -ErrorAction SilentlyContinue
+    $processExitCode = if ($lastExitCodeVariable) { [int]$lastExitCodeVariable.Value } else { 0 }
+} finally {
+    if ($saveStateInfo -and $saveStateInfo.PreparedPath -and -not $KeepPreparedSaveState) {
+        Remove-Item -LiteralPath $saveStateInfo.PreparedPath -ErrorAction SilentlyContinue
+    }
 }
 
 if (-not (Test-Path -LiteralPath $summaryPath)) {
@@ -245,6 +378,20 @@ if ($summary.reader_hit_count -gt 0) {
         "--hit-count", "$($summary.reader_hit_count)",
         "--pc", $ReaderAddress,
         "--note", "Automated PCSX-Redux capture reached the recovered runtime opcode reader."
+    )
+}
+
+if ($saveStateInfo) {
+    $note = if ($saveStateInfo.WasDecompressed) {
+        "Automated PCSX-Redux capture loaded savestate source '$($saveStateInfo.SourcePath)' after inflating its gzip-compressed UI payload to a temporary raw file for PCSX.loadSaveState(file)."
+    } else {
+        "Automated PCSX-Redux capture loaded savestate '$($saveStateInfo.SourcePath)' directly."
+    }
+
+    Invoke-Recorder @(
+        $observationPath,
+        "add-note",
+        "--note", $note
     )
 }
 

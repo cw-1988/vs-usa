@@ -73,6 +73,33 @@ pwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `
   -IsoPath "<path-to-disc-image>"
 ```
 
+When a nearer launch state exists, prefer resuming from that state instead of
+repeating a cold boot. The wrapper now supports both explicit savestate paths
+and "pick the newest nearby state" flow:
+
+```powershell
+pwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `
+  -IsoPath "Game Data/Vagrant Story (USA).cue" `
+  -SaveStatePath "decomp/evidence/opcode_0x80_near_battle.p2s.gz"
+
+pwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `
+  -IsoPath "Game Data/Vagrant Story (USA).cue" `
+  -UseNewestSaveState
+```
+
+Savestate-specific behavior:
+
+- `-SaveStatePath` accepts either a raw savestate payload or a
+  gzip-compressed `PCSX-Redux` UI savestate.
+- `-UseNewestSaveState` searches `decomp/evidence`, `.codex_tmp`, and repo
+  root for the newest `*.p2s`, `*.p2s.gz`, `*.savestate`, `*.savestate.gz`,
+  `*.state`, or `*.state.gz` file.
+- gzip-compressed savestates are staged into `.codex_tmp/pcsx-redux/` before
+  launch so Lua can feed an uncompressed file to `PCSX.loadSaveState(file)`.
+- the Lua capture script now records the savestate-load event and captures the
+  earliest `after_init` fallback snapshot from the restored runtime state if a
+  reader hit has not happened yet.
+
 Expected outputs:
 
 - `decomp/evidence/opcode_0x80_runtime_after_init.bin`
@@ -87,6 +114,9 @@ Operational assumptions:
 - run with the interpreter core plus debugger support
 - keep the output files under `decomp/evidence`
 - let the wrapper and recorder/finalizer own the observation packet updates
+- if a savestate is used, keep the original `.p2s` or `.gz` file as the
+  durable handoff artifact; the staged raw payload under `.codex_tmp` is only
+  a temporary loader aid
 
 ## Manual fallback checklist
 

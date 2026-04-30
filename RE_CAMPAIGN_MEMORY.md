@@ -224,16 +224,21 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 - `last completed step`: taught the compare/finalize runtime helpers to emit a
   reconstructed baseline table blob plus file size/hash metadata, then added a
-  no-HITL `PCSX-Redux` CLI capture wrapper plus startup Lua, cited the
-  official CLI/Lua/MIPS docs in the runtime notes, and recorded that a cold
-  boot from `Game Data/Vagrant Story (USA).cue` reaches startup Lua but still
-  times out before `0x800BFBB8`
+  no-HITL `PCSX-Redux` CLI capture wrapper plus startup Lua, recorded that a
+  cold boot from `Game Data/Vagrant Story (USA).cue` reaches startup Lua but
+  still times out before `0x800BFBB8`, and then upgraded that wrapper so the
+  next pass can resume from an explicit or auto-discovered near-battle
+  savestate, including gzip-compressed UI savestates that now get staged into
+  a temporary raw payload automatically
 - `next recommended step`: keep using
   `decomp/verification/run_opcode_0x80_runtime_capture.ps1` as the default
-  runtime path, but feed it a nearer launch state next: either a savestate
-  that resumes close to battle runtime or scripted pad/menu automation that
-  can reach the first `BATTLE.PRG` reader. Once the run reaches `0x800BFBB8`,
-  let the wrapper capture `after_init` and `pre_dispatch`, then
+  runtime path, but feed it a nearer launch state next: preferably drop a
+  near-battle `PCSX-Redux` savestate under `decomp/evidence` and use
+  `-UseNewestSaveState`, or pass `-SaveStatePath` directly if the handoff file
+  lives elsewhere. If no savestate is available yet, scripted pad/menu
+  automation is still the fallback branch. Once the run reaches `0x800BFBB8`,
+  let the wrapper capture the restored-state `after_init` fallback and the
+  later `pre_dispatch`, then
   compare/finalize in place with
   `decomp/verification/finalize_runtime_observation.py --in-place`;
   if the compare report changes `0x80-0x82`, immediately run
@@ -246,8 +251,10 @@ Current phase: Pass 3 - Copy/patch reconciliation
   prose, prefer the compare-import helper over hand-editing those mutation
   rows, keep the generated runtime support note linked alongside the updated
   observation JSON, keep the regenerated baseline blob with the packet so the
-  recorded hashes stay meaningful, use the recorder helper instead of leaving
-  evidence only in emulator UI state, and refresh the scaffolded
+  recorded hashes stay meaningful, preserve the original savestate file as the
+  handoff artifact if one is used because the staged raw payload under
+  `.codex_tmp/pcsx-redux` is temporary, use the recorder helper instead of
+  leaving evidence only in emulator UI state, and refresh the scaffolded
   compare/support files instead of creating parallel ad-hoc notes
 
 ## Completed Milestones
@@ -383,3 +390,12 @@ Current phase: Pass 3 - Copy/patch reconciliation
   [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),
   [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json),
   [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
+- `2026-04-30`: made the automated `PCSX-Redux` runtime path savestate-ready
+  for the next `0x80` pass by teaching the wrapper to auto-discover newer
+  nearby savestates, inflate gzip-compressed UI savestates into a temporary raw
+  loader payload, and record save-state load events plus an early restored
+  snapshot in the Lua summary flow. Links:
+  [`decomp/verification/run_opcode_0x80_runtime_capture.ps1`](decomp/verification/run_opcode_0x80_runtime_capture.ps1),
+  [`decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](decomp/verification/pcsx_redux_opcode_0x80_capture.lua),
+  [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md),
+  [`decomp/verification/README.md`](decomp/verification/README.md)

@@ -32,10 +32,14 @@ Current runtime-pass helpers:
   ready to link from the campaign ledger
 - `pcsx_redux_opcode_0x80_capture.lua`: startup Lua automation for the current
   `0x80` runtime tie-breaker; it plants breakpoints, dumps the runtime table
-  from emulator memory, and writes a compact summary JSON
+  from emulator memory, records save-state load events, and writes a compact
+  summary JSON
 - `run_opcode_0x80_runtime_capture.ps1`: wrapper that launches `PCSX-Redux`
   with the capture Lua, then folds the resulting dumps and summary back into
-  the checked-in observation packet via the existing recorder/finalizer
+  the checked-in observation packet via the existing recorder/finalizer; it
+  can also auto-pick the newest nearby savestate and inflate gzip-compressed
+  UI savestates into a temporary raw file that `PCSX.loadSaveState(file)` can
+  consume
 
 Official `PCSX-Redux` references for this automation path:
 
@@ -54,6 +58,10 @@ Recommended runtime handoff flow:
 - prefer `run_opcode_0x80_runtime_capture.ps1` as the default runtime capture
   path for the current `0x80` contradiction so breakpoint setup, RAM dumps, and
   observation-packet updates happen through one scripted flow
+- when a nearer launch point exists, prefer passing `-SaveStatePath` or
+  `-UseNewestSaveState` to that wrapper instead of cold-booting from disc
+  again; the wrapper now handles the gzip-compressed savestates that the
+  `PCSX-Redux` UI writes and stages them into a raw temporary file for Lua
 - let `finalize_runtime_observation.py` refresh the reconstructed baseline blob
   and compare-report hashes in place, so the handoff packet preserves concrete
   byte-level artifacts even before live dumps exist

@@ -118,6 +118,8 @@ local config = {
     min_write_pc = parse_int(os.getenv("VS_OPCODE_MIN_WRITE_PC"), 0x80000000),
     quit_on_candidate_hit = parse_bool(os.getenv("VS_OPCODE_QUIT_ON_CANDIDATE_HIT"), true),
     save_state_path = os.getenv("VS_OPCODE_SAVE_STATE_PATH"),
+    save_state_source_path = os.getenv("VS_OPCODE_SAVE_STATE_SOURCE_PATH"),
+    save_state_was_decompressed = parse_bool(os.getenv("VS_OPCODE_SAVE_STATE_WAS_DECOMPRESSED"), false),
 }
 
 local state = {
@@ -143,6 +145,7 @@ local state = {
     notes = {},
     quit_requested = false,
     exit_code = 0,
+    save_state_load_count = 0,
 }
 
 local function add_note(text)
@@ -227,6 +230,12 @@ local function write_summary()
         candidate_hits = state.candidate_hits,
         notes = state.notes,
         exit_code = state.exit_code,
+        save_state = {
+            requested_path = config.save_state_path,
+            source_path = config.save_state_source_path,
+            was_decompressed = config.save_state_was_decompressed,
+            load_count = state.save_state_load_count,
+        },
     }
 
     local handle, err = io.open(config.summary_path, "wb")
@@ -343,12 +352,33 @@ listeners[#listeners + 1] = PCSX.Events.createEventListener("Quitting", function
     write_summary()
 end)
 
+listeners[#listeners + 1] = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
+    state.save_state_load_count = state.save_state_load_count + 1
+    add_note("savestate load event observed")
+    PCSX.nextTick(function()
+        state.frame_count = 0
+        state.pre_dispatch_frame = nil
+        if state.snapshots.after_init == nil then
+            dump_snapshot("after_init", config.after_init_path, "savestate_loaded")
+        end
+    end)
+end)
+
 if config.save_state_path ~= nil and config.save_state_path ~= "" then
     local ok, err = pcall(function()
-        PCSX.loadSaveState(config.save_state_path)
+        local save_state_file = Support.File.open(config.save_state_path)
+        PCSX.loadSaveState(save_state_file)
+        save_state_file:close()
     end)
     if ok then
-        add_note("loaded savestate " .. config.save_state_path)
+        local load_note = "loaded savestate " .. config.save_state_path
+        if config.save_state_source_path ~= nil and config.save_state_source_path ~= "" then
+            load_note = load_note .. " (source " .. config.save_state_source_path .. ")"
+        end
+        if config.save_state_was_decompressed then
+            load_note = load_note .. " via decompressed gzip staging"
+        end
+        add_note(load_note)
     else
         add_note("failed to load savestate " .. config.save_state_path .. ": " .. tostring(err))
     end
