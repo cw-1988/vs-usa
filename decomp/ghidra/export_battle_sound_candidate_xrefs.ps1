@@ -1,8 +1,10 @@
 param(
     [string]$BinaryPath = "Game Data/BATTLE/BATTLE.PRG",
-    [string]$OutputPath = "decomp/evidence/battle_0x80_sound_cluster_slices.json",
+    [string]$OutputPath = "decomp/evidence/battle_sound_candidate_xrefs.json",
     [string]$BaseAddress = "0x80068800",
-    [int]$InstructionCount = 16,
+    [string]$TargetAddress = "0x800BA2E0",
+    [int]$BeforeCount = 1,
+    [int]$AfterCount = 2,
     [string]$ProjectRoot = ".codex_tmp/ghidra-scratch"
 )
 
@@ -13,17 +15,10 @@ Invoke-GhidraHeadlessExport `
     -OutputPath $OutputPath `
     -BaseAddress $BaseAddress `
     -BlockName "BATTLE" `
-    -PostScript "DumpInstructions.java" `
+    -PostScript "DumpXrefs.java" `
     -PostScriptArguments @(
-        "0x800B66E4",
-        "0x800BA2E0",
-        "0x800BA35C",
-        "0x800BA39C",
-        "0x800BA3E4",
-        "0x800BA404",
-        "0x800BA444",
-        "0x800BA470",
-        "0x800BA494",
-        "$InstructionCount"
+        $TargetAddress,
+        "$BeforeCount",
+        "$AfterCount"
     ) `
     -ProjectRoot $ProjectRoot

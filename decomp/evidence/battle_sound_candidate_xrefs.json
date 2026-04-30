@@ -1,0 +1,20 @@
+{
+  "program_name": "BATTLE.PRG",
+  "target": "800ba2e0",
+  "before_count": 1,
+  "after_count": 2,
+  "xrefs": [
+    {
+      "from_address": "800e9f30",
+      "reference_type": "DATA",
+      "function_name": null,
+      "function_entry": null,
+      "instructions": [
+          {
+            "address": "800e9f30",
+            "text": null
+          }
+      ]
+    }
+  ]
+}

@@ -18,6 +18,8 @@
 - `decomp/evidence/inittbl_opcode_table_xrefs.json`
 - `decomp/evidence/battle_0x80_handler_slices.json`
 - `decomp/evidence/battle_sound_candidate_slice.json`
+- `decomp/evidence/battle_sound_candidate_xrefs.json`
+- `decomp/evidence/battle_sound_dispatch_table.json`
 - `decomp/evidence/battle_0x80_sound_cluster_slices.json`
 
 ## Packet structure
@@ -56,19 +58,29 @@
 
 ## Conflicting nearby evidence
 
-- `battle_sound_candidate_slice.json` still keeps `0x800BA2E0` plausible as a
-  sound-shaped candidate because it consumes the same four-byte argument block.
-- `battle_0x80_sound_cluster_slices.json` also shows the exported table already
-  moving into a visible contiguous sound-family neighborhood at `0x83+`.
-- That weakens the idea that `0x800BA2E0` must be a hidden replacement for the
-  copied `0x80` slot, but it does not fully rule it out.
+- `battle_sound_candidate_slice.json` still shows `0x800BA2E0` consuming the
+  same four-byte argument block as the visible sound family.
+- `battle_sound_candidate_xrefs.json` now recovers a direct local data xref
+  from `0x800E9F30 -> 0x800BA2E0`.
+- `battle_sound_dispatch_table.json` then exports that `0x800E9F30` table as
+  an eight-entry local `BATTLE.PRG` handler family containing `0x800BA2E0`,
+  `0x800BA35C`, `0x800BA39C`, and the already-visible `0x800BA3E4+`
+  neighborhood.
+- `battle_0x80_sound_cluster_slices.json` now covers that fuller local family,
+  which makes `0x800BA2E0` look like a member of a separate sound
+  subdispatch block rather than a hidden replacement for the copied `0x80`
+  slot.
 - See `opcode_0x80_sound_cluster_static.md` for the local neighborhood case.
 
 ## Current conclusion
 
-- `0x80` is still **conflicted**, not confirmed.
+- `0x80` is still **in progress**, not confirmed.
 - Local binary evidence now proves both the copied initial dispatch slot
   (`0x800B66E4`) and the init-time table copy into runtime slot `0x800F4C28`.
 - The nearby sound-shaped helper keeps `SoundEffects0` plausible as a working
-  placeholder, but the local static picture currently favors "`0x80-0x82` are
-  real copied stubs, while the visible sound-control family begins at `0x83+`."
+  placeholder, but the local static picture now favors "`0x80-0x82` are real
+  copied stubs, while `0x800BA2E0` belongs to a separate local sound
+  subdispatch family that also contains the visible `0x83+` handlers."
+- The remaining unresolved question is no longer "is `0x800BA2E0` secretly the
+  real `0x80` target?" but "does any later runtime path rewrite or bypass the
+  copied `0x800F4C28` slot before dispatch?"

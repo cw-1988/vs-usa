@@ -1,0 +1,74 @@
+{
+  "program_name": "BATTLE.PRG",
+  "program_path": "/BATTLE.PRG",
+  "table_name": "battle_sound_dispatch_table",
+  "table_address": "0x800E9F30",
+  "entry_count": 8,
+  "pointer_size": 4,
+  "entries": [
+    {
+      "index": 0,
+      "opcode": "0x00",
+      "entry_address": "800e9f30",
+      "handler_address": "0x800BA2E0",
+      "handler_name": "LAB_800ba2e0",
+      "function_entry": "800ba2e0"
+    },
+    {
+      "index": 1,
+      "opcode": "0x01",
+      "entry_address": "800e9f34",
+      "handler_address": "0x800BA35C",
+      "handler_name": "LAB_800ba35c",
+      "function_entry": "800ba35c"
+    },
+    {
+      "index": 2,
+      "opcode": "0x02",
+      "entry_address": "800e9f38",
+      "handler_address": "0x800BA39C",
+      "handler_name": "LAB_800ba39c",
+      "function_entry": "800ba39c"
+    },
+    {
+      "index": 3,
+      "opcode": "0x03",
+      "entry_address": "800e9f3c",
+      "handler_address": "0x800BA3E4",
+      "handler_name": "LAB_800ba3e4",
+      "function_entry": "800ba3e4"
+    },
+    {
+      "index": 4,
+      "opcode": "0x04",
+      "entry_address": "800e9f40",
+      "handler_address": "0x800BA404",
+      "handler_name": "LAB_800ba404",
+      "function_entry": "800ba404"
+    },
+    {
+      "index": 5,
+      "opcode": "0x05",
+      "entry_address": "800e9f44",
+      "handler_address": "0x800BA444",
+      "handler_name": "LAB_800ba444",
+      "function_entry": "800ba444"
+    },
+    {
+      "index": 6,
+      "opcode": "0x06",
+      "entry_address": "800e9f48",
+      "handler_address": "0x800BA470",
+      "handler_name": "LAB_800ba470",
+      "function_entry": "800ba470"
+    },
+    {
+      "index": 7,
+      "opcode": "0x07",
+      "entry_address": "800e9f4c",
+      "handler_address": "0x800BA494",
+      "handler_name": "LAB_800ba494",
+      "function_entry": "800ba494"
+    }
+  ]
+}

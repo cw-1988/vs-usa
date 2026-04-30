@@ -23,7 +23,7 @@ claims.
 
 ## Current Phase
 
-Current phase: Pass 0 - Bootstrap and inventory
+Current phase: Pass 3 - Copy/patch reconciliation
 
 ## Status Legend
 
@@ -96,11 +96,11 @@ Current phase: Pass 0 - Bootstrap and inventory
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `conflicted` | `INITBTL.PRG` static table at `0x800FAF7C`, copied into runtime slot `0x800F4C28` by the locally dumped init-time routine at `0x800FAAAC` | Static slot `0x800B66E4`; nearby `0x800BA2E0` and `0x800BA404+` form a local sound-shaped neighborhood, but not a direct exported `0x80` target | `SoundEffects0` placeholder only | Does any later runtime path rewrite or bypass the copied `0x800F4C28` entry, or can xref recovery pin `0x800BA2E0` to the visible `0x83+` neighborhood instead? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json), [`battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json) |
+| `opcode 0x80` | `in_progress` | `INITBTL.PRG` static table at `0x800FAF7C`, copied into runtime slot `0x800F4C28` by the locally dumped init-time routine at `0x800FAAAC` | Static slot `0x800B66E4`; former competing helper `0x800BA2E0` is now anchored to a local `BATTLE.PRG` sound subdispatch table at `0x800E9F30` with siblings `0x800BA35C/39C/3E4/404/444/470/494` | `SoundEffects0` placeholder only | Does any later runtime path rewrite or bypass the copied `0x800F4C28` entry before dispatch, now that local `BATTLE.PRG` evidence places `0x800BA2E0` inside its own sound-family subdispatch table? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json), [`battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json), [`battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json), [`battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json) |
 
 ## Known Conflicts
 
-### `0x80`: static stub entry vs nearby sound playback helper
+### `0x80`: copied initial stub vs possible later runtime rewrite/bypass
 
 - What static evidence says: `decomp/evidence/inittbl_opcode_table.json` maps
   `0x80 -> 0x800B66E4`, and
@@ -109,22 +109,23 @@ Current phase: Pass 0 - Bootstrap and inventory
   `decomp/evidence/inittbl_0x80_copy_slice.json` shows a local init-time
   routine allocating `0x400` bytes, storing the destination in `0x800F4C28`,
   and copying `0x400` bytes from `0x800FAF7C`, so the stubbed table state is
-  also the proven initial runtime state.
+  also the proven initial runtime state. `decomp/evidence/battle_sound_candidate_xrefs.json`
+  and `decomp/evidence/battle_sound_dispatch_table.json` now place
+  `0x800BA2E0` into a local `BATTLE.PRG` eight-entry subdispatch table at
+  `0x800E9F30`, alongside `0x800BA35C`, `0x800BA39C`, and the visible
+  `0x800BA3E4+` sound-family neighborhood.
 - What competing evidence says:
-  `decomp/evidence/battle_sound_candidate_slice.json` shows `0x800BA2E0`
-  consuming the same four argument bytes and calling `0x80045754`, so a
-  nearby sound-family implementation still looks plausible. But
-  `decomp/evidence/opcode_0x80_sound_cluster_static.md` now shows that the
-  exported table already transitions from the `0x80-0x82` stub cluster into a
-  contiguous local sound-shaped handler family at `0x83+`, which weakens the
-  idea that `0x800BA2E0` must be a hidden replacement for `0x80`.
+  There is no longer a strong static case that `0x800BA2E0` is the hidden
+  direct `0x80` target. The remaining contradiction is only the unproven
+  possibility that some later runtime path rewrites or bypasses the copied
+  `0x800F4C28` slot before execution.
 - What is still missing: the live dispatch consumer for `0x800F4C28`, plus any
   later patch writer or bypass path that could swap `0x80-0x84` away from the
-  copied `0x800B66E4` entries, or a direct caller xref that pins
-  `0x800BA2E0` to the visible `0x83+` neighborhood.
+  copied `0x800B66E4` entries.
 - Is runtime justified yet: not yet. Local static evidence now proves the
-  copied initial table state, so the next step is still xref/patch tracing
-  before using `PCSX-Redux` as a tie-breaker.
+  copied initial table state and anchors `0x800BA2E0` to a separate local
+  sound-family table, so the next step is still xref/patch tracing before
+  using `PCSX-Redux` as a tie-breaker.
 
 ## Artifacts Index
 
@@ -132,6 +133,8 @@ Current phase: Pass 0 - Bootstrap and inventory
 
 - [`decomp/evidence/inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json)
 - [`decomp/evidence/inittbl_opcode_table_xrefs.json`](decomp/evidence/inittbl_opcode_table_xrefs.json)
+- [`decomp/evidence/battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json)
+- [`decomp/evidence/battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json)
 
 ### Handler slices
 
@@ -152,14 +155,15 @@ Current phase: Pass 0 - Bootstrap and inventory
 ## Session Handoff
 
 - `last completed step`: rebuilt the `0x80` copy-path and sound-neighborhood
-  notes from local binary exports and instruction dumps, without treating
-  helper source as evidence authority
-- `next recommended step`: recover xrefs for the runtime dispatch path or for
-  callers of `0x800BA2E0` so the `0x80` conflict can be downgraded from
-  "competing semantic candidate" to either "adjacent helper only" or
-  `runtime_needed`
+  notes from local binary exports and instruction dumps, then anchored
+  `0x800BA2E0` to the local `0x800E9F30` sound subdispatch table without
+  treating helper source as evidence authority
+- `next recommended step`: recover the live dispatch consumer for `0x800F4C28`
+  or a later static patch writer/bypass path, now that the `0x800BA2E0`
+  sound-family ambiguity has been downgraded by local table evidence
 - `do not forget`: update this ledger before ending the next pass; no export,
-  coverage note, or contradiction should live only in terminal output
+  coverage note, or contradiction should live only in terminal output; keep
+  runtime as a late tie-breaker only after static `0x800F4C28` tracing stalls
 
 ## Completed Milestones
 
@@ -181,4 +185,10 @@ Current phase: Pass 0 - Bootstrap and inventory
   [`decomp/evidence/opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md),
   [`decomp/evidence/opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md),
   [`decomp/evidence/inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json),
+  [`decomp/evidence/battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json)
+- `2026-04-30`: recovered a direct local xref from `0x800E9F30` to
+  `0x800BA2E0`, exported the surrounding eight-entry `BATTLE.PRG`
+  sound-dispatch table, and expanded the local sound-family slice set. Links:
+  [`decomp/evidence/battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json),
+  [`decomp/evidence/battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json),
   [`decomp/evidence/battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json)
