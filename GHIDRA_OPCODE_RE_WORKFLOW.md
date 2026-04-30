@@ -176,7 +176,7 @@ Use the decoded scripts to gather multiple contexts before opening more code.
 Good quick approach:
 
 ```powershell
-rg -n "Opcode7A|SetScreenEffectEnabled|CameraRollTween|ScreenEffectAngleTween|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|OpcodeEF" decoded_scripts
+rg -n "Opcode7A|SetScreenEffectEnabled|CameraRollTween|ScreenEffectAngleTween|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|ScreenEffectWaveformInit|OpcodeEF" decoded_scripts
 ```
 
 If the current local names differ, search by raw opcode byte or the old name.
@@ -230,8 +230,9 @@ Good examples from this session:
 
 What stayed conservative:
 
-- `0xEF` stayed unresolved in the decoder because the effect cluster is real,
-  but the final user-facing waveform label is not nailed down yet
+- `0xEF` now uses the local decoder name `ScreenEffectWaveformInit`, but it is
+  still not hard-renamed upstream because the final user-facing waveform label
+  is not nailed down yet
 
 ## Ghidra Setup Notes
 
@@ -386,7 +387,7 @@ Use these first:
 rg -n "_opcodeFunctionTable|func_800BB450|func_800BD444|func_800BD6C4|func_800BDC9C" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt
 rg -n "0x7A|0xE2|0xE3|0xED|0xEF" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c
 rg -n "func_8007AC94|func_8007DDAC|func_8007DDB8|func_8007DDD4|func_8007DDF8|func_800F9BC0|func_800BE180|unk5C|D_800F1A2C" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c _refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c
-rg -n "Opcode7A|SetScreenEffectEnabled|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|OpcodeEF|CameraRollTween|ScreenEffectAngleTween" decoded_scripts
+rg -n "Opcode7A|SetScreenEffectEnabled|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|ScreenEffectWaveformInit|OpcodeEF|CameraRollTween|ScreenEffectAngleTween" decoded_scripts
 ```
 
 If looking for the next best unknown after this session, inspect nearby `E`-range

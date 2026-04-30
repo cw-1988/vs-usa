@@ -365,12 +365,16 @@ Best interpretation so far:
 
 - It is probably a screen-effect waveform or oscillation initializer.
 
+Best safe local tooling name:
+
+- `ScreenEffectWaveformInit`
+
 Why still tentative:
 
 - The exact destination fields and user-facing effect name are still hidden in
   nonmatching code, so anything more specific would be premature.
 - The script-side arguments are structured enough to be worth preserving, but
-  not yet strongly enough named for a hard mnemonic rename.
+  not yet strongly enough named for a hard upstream rename.
 
 Observed local argument patterns worth carrying forward:
 
@@ -381,6 +385,8 @@ Observed local argument patterns worth carrying forward:
   `0x0067`, `0x0097`, and `0x01A7`.
 - The first two bytes behave like small scalar parameters. They are often
   pulsed in alternating pairs or stepped sequences rather than treated as ids.
+  The local decoder now renders them conservatively as `scalar0` and `scalar1`
+  to preserve that structure without overclaiming their final role.
 
 Useful script examples:
 

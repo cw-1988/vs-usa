@@ -247,7 +247,7 @@ OPCODES = {
     0xEC: ("CameraFarClip", 0x04),
     0xED: ("ScreenEffectParamPairTween", 0x05),
     0xEE: ("OpcodeEE", 0x00),
-    0xEF: ("OpcodeEF", 0x06),
+    0xEF: ("ScreenEffectWaveformInit", 0x06),
     0xF0: ("Wait", 0x02),
     0xF1: ("OpcodeF1", 0x02),
     0xF2: ("OpcodeF2", 0x05),
@@ -624,7 +624,7 @@ def format_opcode(
     if op == 0xEF and len(args) == 5:
         control = struct.unpack("<H", args[2:4])[0]
         return (
-            f"param0={args[0]}, param1={args[1]}, control=0x{control:04X}, "
+            f"scalar0={args[0]}, scalar1={args[1]}, controlWord=0x{control:04X}, "
             f"duration={args[4]}"
         )
     if op == 0xF0 and len(args) == 1:
