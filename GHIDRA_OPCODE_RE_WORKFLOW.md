@@ -198,7 +198,7 @@ Useful commands:
 
 ```powershell
 rg -n "_opcodeFunctionTable|func_800BB450|func_800BD444|func_800BD6C4|func_800BDC9C" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt
-rg -n "0x7A|0xE2|0xE3|0xED|0xEF|func_8007AC94|func_8007DDAC|func_8007DDB8|func_8007DDD4|func_8007DDF8|func_800F9BC0|func_800BE180" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c _refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c
+rg -n "0x7A|0xE2|0xE3|0xED|0xEF|func_8007AC94|func_8007DDAC|func_8007DDB8|func_8007DDD4|func_8007DDF8|vs_screff2_setParamPair|func_800BE180" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c _refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c
 ```
 
 ### Step 4. Follow the consumer, not just the setter
@@ -209,7 +209,8 @@ Examples:
 
 - `func_8007AC94(arg0)` writes `_camera.t2.unk5C`
 - `func_8007DDAC(arg0)` writes `D_800F1A2C`
-- `func_800F9BC0(arg0, arg1)` writes two parameters in `SCREFF2.PRG`
+- `vs_screff2_setParamPair(param0, param1)` writes two persistent parameters in
+  `SCREFF2.PRG`
 - `func_800BE180` advances two waveform slots whose outputs are rotated into
   camera-relative offsets and added to `cameraLookAt` and `cameraPos`
 
@@ -379,7 +380,8 @@ Then immediately locate:
 - `0x7A`: room ambient sound suspend/restore around cutscene control
 - `0xE2`: camera-side angle tween writing `_camera.t2.unk5C`
 - `0xE3`: effect-side angle tween writing `D_800F1A2C`
-- `0xED`: direct two-parameter `SCREFF2` tween feeding `func_800F9BC0`
+- `0xED`: direct two-parameter `SCREFF2` tween feeding
+  `vs_screff2_setParamPair`
 - `0xEF`: camera-relative oscillation init feeding two waveform slots through
   `func_800BE180`
 
@@ -390,7 +392,7 @@ Use these first:
 ```powershell
 rg -n "_opcodeFunctionTable|func_800BB450|func_800BD444|func_800BD6C4|func_800BDC9C" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt
 rg -n "0x7A|0xE2|0xE3|0xED|0xEF" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c
-rg -n "func_8007AC94|func_8007DDAC|func_8007DDB8|func_8007DDD4|func_8007DDF8|func_800F9BC0|func_800BE180|unk5C|D_800F1A2C" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c _refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c
+rg -n "func_8007AC94|func_8007DDAC|func_8007DDB8|func_8007DDD4|func_8007DDF8|vs_screff2_setParamPair|func_800BE180|unk5C|D_800F1A2C" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c _refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c
 rg -n "Opcode7A|SetScreenEffectEnabled|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|CameraOscillationInit|OpcodeEF|CameraRollTween|ScreenEffectAngleTween" decoded_scripts
 ```
 

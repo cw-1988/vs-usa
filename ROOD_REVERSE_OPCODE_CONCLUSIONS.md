@@ -447,12 +447,13 @@ Why still not confirmed:
 Current narrow:
 
 - This opcode, not `0xEF`, is the direct path that feeds
-  `func_800F9BC0(arg0, arg1)` in `SCREFF2.PRG`.
+  `vs_screff2_setParamPair(param0, param1)` in `SCREFF2.PRG`.
 - The first script byte is promoted with `<< 6` before entering the SCREFF2
-  setter, which makes it a 12-bit fixed-point scale-like value rather than a
+  setter, which proves it is a 12-bit fixed-point parameter rather than a
   plain flag or id byte.
-- Real script usage currently gives a stable neutral/reset form of
-  `ED 40 00 00 00`, i.e. `0x40 << 6 = 4096`, while the other sampled values
+- A fresh full decode of `Game Data/MAP` finds 10 currently reachable script
+  uses across 4 rooms. Every one of those rooms resets with `ED 40 00 00 00`,
+  i.e. `0x40 << 6 = 4096`, while the other observed first-parameter values
   stay nearby at `3712`, `4672`, `4928`, `5056`, and `5120`.
 - The second script byte is treated as a signed byte, and the last two bytes
   behave like easing and duration.
@@ -464,16 +465,17 @@ Best safe local tooling name:
 
 Best safe local tooling rendering:
 
-- `scale12=<byte << 6>` with `4096` as the currently proven neutral/reset value
-- `signedParam=<s8>`
+- `param0Fixed12=<byte << 6>` with `4096` as the currently proven neutral/reset
+  value
+- `param1Signed=<s8>`
 
 Why still tentative:
 
 - The two destination fields in `SCREFF2` are still unnamed, so the exact
   player-visible feature behind the pair has not been nailed down yet.
-- The first field is now narrow enough to treat as a fixed-point scale-like
-  input in local decoder output, but the current evidence still does not prove
-  what the second signed field controls on screen.
+- The first field is narrow enough to treat as a fixed-point parameter with a
+  stable neutral/reset form, but the current evidence still does not prove the
+  exact visual meaning of either destination field.
 
 ### Suggested upstream patch shape
 
