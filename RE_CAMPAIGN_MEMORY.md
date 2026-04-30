@@ -159,7 +159,14 @@ Current phase: Pass 3 - Copy/patch reconciliation
   this particular `Load` branch is now a confirmed dead end rather than a
   plausible entry into live gameplay. The remaining runtime blocker is
   therefore the lack of a usable gameplay-entry artifact such as a savestate
-  or populated card, not wrapper timing or intro navigation.
+  or populated card, not wrapper timing or intro navigation. The latest
+  checked-in rerun also encoded a title-menu `New Game` branch instead of the
+  dead `Continue/Load` path: it confirms `CIRCLE`, waits roughly ten seconds,
+  then sends two delayed `START` skips as control-handoff probes. That pass
+  extended the timeout to `4380` frames and still recorded no
+  `0x800BFBB8` reader hit, no table-write hit, and no snapshots, so the
+  remaining cold-boot blocker is now the post-title gameplay-entry timing after
+  the `New Game` branch, not the old blank-card branch itself.
   If both tracked snapshots still match the baseline and the table write
   watchpoint stays quiet, this contradiction can be downgraded to
   `static_resolved` and carried forward into `Pass 4`.
@@ -191,15 +198,26 @@ Use the artifact index for:
   instrumented enough to leave screenshot checkpoints, and the latest retunes
   proved that `START` pushes through the intro chain, this build uses `O`
   confirm / `X` cancel, and the checked-in route can reach the title menu plus
-  the `Load / Memory Card slot 1` screen before stalling.
+  the `Load / Memory Card slot 1` screen before stalling. The newest retune
+  then removed that dead `Continue/Load` branch, switched the checked-in
+  scaffold to a title-menu `New Game` route plus two delayed `START` probes,
+  and reran the wrapper for `4380` frames. That replay still produced no
+  runtime-table reader hit, no table-write hit, and no snapshots, but it moved
+  the cold-boot question forward from "wrong menu branch" to "what exact
+  post-title timing finally yields player control or a reader hit?"
 - `next recommended step`: stop iterating on the current `Load` route unless a
   populated card artifact is added. Prefer running
   `decomp/verification/run_opcode_0x80_runtime_capture.ps1` with a near-battle
   savestate (`-UseNewestSaveState` or `-SaveStatePath`). If no savestate is
-  available yet, the next cold-boot experiment should intentionally follow
-  `New Game` far enough to earn a real save or savestate-worthy checkpoint,
-  not more retries of the blank-card `Load` path. Once a run reaches
-  `0x800BFBB8`, capture `after_init` and `pre_dispatch`, then run
+  available yet, keep the cold-boot fallback on the checked-in `New Game`
+  branch and retune only the post-title control-handoff window. Use the latest
+  `step-08`, `step-09`, `step-10`, and `timeout` frame artifacts under
+  `decomp/evidence/opcode_0x80_runtime_frames/` plus
+  `opcode_0x80_runtime_automation_summary.json` to decide whether the next edit
+  should wait longer before the first `START`, wait longer after the second
+  `START`, or add one more skip/control probe after the current ten-step
+  scaffold. Once a run reaches `0x800BFBB8`, capture `after_init` and
+  `pre_dispatch`, then run
   `decomp/verification/finalize_runtime_observation.py --in-place`. If the
   compare report shows `0x80-0x82` rewrites, immediately import those rows with
   `record_runtime_observation.py import-compare --replace-derived --finalize`.
@@ -245,6 +263,15 @@ Use the artifact index for:
   [`decomp/evidence/opcode_0x80_runtime_input_plan.json`](decomp/evidence/opcode_0x80_runtime_input_plan.json),
   [`decomp/evidence/opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md),
   [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json)
+- `2026-05-01`: retuned the checked-in no-savestate scaffold away from the
+  blank-card `Continue/Load` branch and into a title-menu `New Game` route
+  anchored by `CIRCLE`, wait `~10s`, `START`, wait `~10s`, `START`; the rerun
+  extended to `4380` frames but still did not reach `0x800BFBB8`, any
+  candidate handler, or a table-write hit. Links:
+  [`decomp/evidence/opcode_0x80_runtime_input_plan.json`](decomp/evidence/opcode_0x80_runtime_input_plan.json),
+  [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),
+  [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json),
+  [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
 - `2026-04-30`: made the automated `PCSX-Redux` runtime path savestate-ready
   and validated the scripted capture path against the local disc image. Links:
   [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),

@@ -133,9 +133,14 @@ Current cold-boot status:
   cards in `decomp/evidence/opcode_0x80_runtime_memcard_probe.json`
 - that means the current `Load` route is now a confirmed dead branch for this
   workspace, not a promising gameplay-entry path
-- the next fallback edit should therefore target a `New Game`-to-save route or
-  a savestate-bearing handoff artifact, not more retries of the blank-card
-  `Load` path
+- the checked-in fallback now does exactly that: after reaching the title menu
+  it confirms the default `New Game` branch, waits roughly ten seconds, then
+  sends two delayed `START` skips as control-handoff probes
+- that retuned rerun extended the wrapper timeout to `4380` frames but still
+  recorded no `0x800BFBB8` reader hit, no table-write hit, and no snapshots
+- the next fallback edit should therefore inspect and retune the post-title
+  `New Game` timing window or add a savestate-bearing handoff artifact, not
+  restore the blank-card `Load` route
 
 Savestate-specific behavior:
 

@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Generated from `Pass 3 - Copy/patch reconciliation` on `2026-04-30 23:18:23Z`.
+- Generated from `Pass 3 - Copy/patch reconciliation` on `2026-04-30 23:29:02Z`.
 - Observation source: `decomp/evidence/opcode_0x80_runtime_observation.json`
 - Baseline export: `decomp/evidence/inittbl_opcode_table.json`
 - Runtime table address: `0x800F4C28`
@@ -58,6 +58,9 @@
 - Automated PCSX-Redux capture wrote 11 screen capture(s) under C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_frames. (`2026-04-30T23:17:34Z`)
 - Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=2962; write_hits=0; reader_hits=0; summary_json=C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_automation_summary.json (`2026-04-30T23:17:34Z`)
 - Updated cold-boot route now reaches the Vagrant Story title menu under the corrected PSX-style button mapping (X cancel, O confirm). Screen captures show step-08 on the title menu with Continue highlighted and step-10 on the Load / Memory Card slot 1 screen, but the run still records no runtime-table reader hit, no table-write hit, and no snapshots because the repo-local cards do not yet provide a usable path into live gameplay. (`2026-04-30T23:18:23Z`)
+- Automated PCSX-Redux capture used input plan 'C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_input_plan.json'; prepared_path=C:\Users\Chris\Desktop\vs usa\.codex_tmp\pcsx-redux\opcode_0x80_input_plan-fac1eda172b8471587bf7d77ded020c0.tsv; pad=1/1; steps=10/10; description=Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. The wrapper now auto-extends timeout to cover the full plan plus slack and can leave screen-capture breadcrumbs. Latest visual checkpoints show the repeated START pulses can now reach the Vagrant Story title/logo, so this scaffold pauses menu navigation until after that title state and only then tries to open and drive the menu. Operator follow-up also confirmed that this build uses PSX-style menu mapping where X cancels and O confirms, so the menu-confirm steps now use CIRCLE instead of CROSS. The repo-local memcards still probe as blank formatted cards, so this revision drops the old Continue/Load branch and instead follows a title-menu New Game route: press CIRCLE on the default entry, wait roughly ten seconds, then press START twice with another ten-second gap to skip toward live player control. (`2026-04-30T23:29:01Z`)
+- Automated PCSX-Redux capture wrote 11 screen capture(s) under C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_frames. (`2026-04-30T23:29:01Z`)
+- Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=4380; write_hits=0; reader_hits=0; summary_json=C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_automation_summary.json (`2026-04-30T23:29:01Z`)
 
 ## Conclusion
 

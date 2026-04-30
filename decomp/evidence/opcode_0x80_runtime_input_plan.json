@@ -1,5 +1,5 @@
 {
-  "description": "Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. The wrapper now auto-extends timeout to cover the full plan plus slack and can leave screen-capture breadcrumbs. Latest visual checkpoints show the repeated START pulses can now reach the Vagrant Story title/logo, so this scaffold pauses menu navigation until after that title state and only then tries to open and drive the menu. Operator follow-up also confirmed that this build uses PSX-style menu mapping where X cancels and O confirms, so the menu-confirm steps now use CIRCLE instead of CROSS. The repo-local memcards still probe as blank formatted cards, so future edits should replace the save-backed Continue/Load assumption or pair the route with a populated card artifact rather than only adding more wait frames.",
+  "description": "Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. The wrapper now auto-extends timeout to cover the full plan plus slack and can leave screen-capture breadcrumbs. Latest visual checkpoints show the repeated START pulses can now reach the Vagrant Story title/logo, so this scaffold pauses menu navigation until after that title state and only then tries to open and drive the menu. Operator follow-up also confirmed that this build uses PSX-style menu mapping where X cancels and O confirms, so the menu-confirm steps now use CIRCLE instead of CROSS. The repo-local memcards still probe as blank formatted cards, so this revision drops the old Continue/Load branch and instead follows a title-menu New Game route: press CIRCLE on the default entry, wait roughly ten seconds, then press START twice with another ten-second gap to skip toward live player control.",
   "pad_slot": 1,
   "pad_number": 1,
   "analog_mode": false,
@@ -63,27 +63,27 @@
     },
     {
       "buttons": [
-        "DOWN"
-      ],
-      "hold_frames": 6,
-      "wait_frames_after": 24,
-      "note": "Move the highlight toward Continue or Load if the default cursor is elsewhere."
-    },
-    {
-      "buttons": [
         "CIRCLE"
       ],
       "hold_frames": 8,
-      "wait_frames_after": 180,
-      "note": "Confirm the highlighted main-menu action."
+      "wait_frames_after": 600,
+      "note": "Confirm the default title-menu entry instead of stepping down into the blank-card Continue or Load branch."
     },
     {
       "buttons": [
-        "CIRCLE"
+        "START"
       ],
       "hold_frames": 8,
-      "wait_frames_after": 480,
-      "note": "Clear the next prompt and give the game time to finish loading."
+      "wait_frames_after": 600,
+      "note": "Roughly ten seconds later, skip the first post-title cutscene gate to keep pushing toward gameplay."
+    },
+    {
+      "buttons": [
+        "START"
+      ],
+      "hold_frames": 8,
+      "wait_frames_after": 900,
+      "note": "After another roughly ten-second settle, skip the next gate and leave extra time for player control or the first live reader hit."
     }
   ]
 }
