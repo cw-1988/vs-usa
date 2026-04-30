@@ -130,7 +130,7 @@ OPCODES = {
     0x77: ("Opcode77", 0x05),
     0x78: ("EnableRoomMechanismUpdates", 0x02),
     0x79: ("RoomMechanismControl", 0x03),
-    0x7A: ("Opcode7A", 0x02),
+    0x7A: ("SetRoomAmbientSoundSuspended", 0x02),
     0x7B: ("Opcode7B", 0x05),
     0x7C: ("SetFirstPersonView", 0x02),
     0x7D: ("Opcode7D", 0x03),
@@ -233,19 +233,19 @@ OPCODES = {
     0xDE: ("OpcodeDE", 0x02),
     0xDF: ("OpcodeDF", 0x02),
     0xE0: ("CameraWait", 0x02),
-    0xE1: ("OpcodeE1", 0x02),
-    0xE2: ("CameraAngleTweenA", 0x06),
-    0xE3: ("CameraAngleTweenB", 0x06),
-    0xE4: ("OpcodeE4", 0x05),
-    0xE5: ("OpcodeE5", 0x06),
-    0xE6: ("OpcodeE6", 0x05),
-    0xE7: ("OpcodeE7", 0x02),
+    0xE1: ("SetScreenEffectEnabled", 0x02),
+    0xE2: ("CameraRollTween", 0x06),
+    0xE3: ("ScreenEffectAngleTween", 0x06),
+    0xE4: ("ScreenEffectScaleTween", 0x05),
+    0xE5: ("ScreenEffectColorTween", 0x06),
+    0xE6: ("ScreenEffectOffsetTween", 0x05),
+    0xE7: ("SetScreenEffectMode", 0x02),
     0xE8: ("OpcodeE8", 0x03),
     0xE9: ("OpcodeE9", 0x03),
     0xEA: ("CameraZoom", 0x04),
-    0xEB: ("OpcodeEB", 0x04),
-    0xEC: ("CameraZoomScalar", 0x04),
-    0xED: ("OpcodeED", 0x05),
+    0xEB: ("CameraNearClip", 0x04),
+    0xEC: ("CameraFarClip", 0x04),
+    0xED: ("ScreenEffectParamPairTween", 0x05),
     0xEE: ("OpcodeEE", 0x00),
     0xEF: ("OpcodeEF", 0x06),
     0xF0: ("Wait", 0x02),
@@ -551,7 +551,37 @@ def format_opcode(
             1: "toggle",
         }.get(args[0], f"action={args[0]}")
         return f"action={action}, idMechanism={args[1]}"
-    if op in {0x80, 0x82, 0x8F, 0x9B, 0x9C, 0xA0, 0xAA, 0xB2, 0xB4, 0xB6, 0xC5, 0xD5, 0xE2, 0xE3, 0xE5, 0xEF, 0xF2}:
+    if op == 0x7A and len(args) == 1:
+        return f"suspended={args[0]}"
+    if op == 0xE1 and len(args) == 1:
+        return f"enabled={args[0]}"
+    if op in {0xE2, 0xE3} and len(args) == 5:
+        angle = struct.unpack("<h", args[:2])[0]
+        wrap_mode = args[2] >> 4
+        easing = args[2] & 0x0F
+        return (
+            f"angle={angle}, wrapMode={wrap_mode}, easing={easing}, "
+            f"duration={args[3]}, raw={args[4]}"
+        )
+    if op == 0xE4 and len(args) == 4:
+        x_scale = (args[0] << 7) if args[0] else 0x1000
+        y_scale = (args[1] << 7) if args[1] else 0x1000
+        return (
+            f"xScale={x_scale}, yScale={y_scale}, easing={args[2]}, "
+            f"duration={args[3]}"
+        )
+    if op == 0xE5 and len(args) == 5:
+        return (
+            f"rgb=({args[0]}, {args[1]}, {args[2]}), easing={args[3]}, "
+            f"duration={args[4]}"
+        )
+    if op == 0xE6 and len(args) == 4:
+        x = struct.unpack("<b", args[0:1])[0]
+        y = struct.unpack("<b", args[1:2])[0]
+        return f"x={x}, y={y}, easing={args[2]}, duration={args[3]}"
+    if op == 0xE7 and len(args) == 1:
+        return f"mode={args[0]}"
+    if op in {0x80, 0x82, 0x8F, 0x9B, 0x9C, 0xA0, 0xAA, 0xB2, 0xB4, 0xB6, 0xC5, 0xD5, 0xE2, 0xE3, 0xE5, 0xF2}:
         return f"raw=[{fmt_default(args)}]"
     if op == 0x90 and len(args) == 2:
         return f"slot={args[0]}, raw={args[1]}"
@@ -575,8 +605,28 @@ def format_opcode(
         return f"raw=[{fmt_default(args)}]"
     if op == 0xE0 and len(args) == 1:
         return f"raw={args[0]}"
-    if op in {0xEA, 0xEB, 0xEC} and len(args) == 3:
-        return f"raw=[{fmt_default(args)}]"
+    if op == 0xEA and len(args) == 3:
+        projection_distance = (args[0] << 2) if args[0] else 0x200
+        return (
+            f"projectionDistance={projection_distance}, easing={args[1]}, "
+            f"duration={args[2]}"
+        )
+    if op == 0xEB and len(args) == 3:
+        near_clip = args[0] if args[0] else 0x40
+        return f"nearClip={near_clip}, easing={args[1]}, duration={args[2]}"
+    if op == 0xEC and len(args) == 3:
+        far_clip = (args[0] << 7) if args[0] else 0x1000
+        return f"farClip={far_clip}, easing={args[1]}, duration={args[2]}"
+    if op == 0xED and len(args) == 4:
+        param0 = args[0] << 6
+        param1 = struct.unpack("<b", args[1:2])[0]
+        return f"param0={param0}, param1={param1}, easing={args[2]}, duration={args[3]}"
+    if op == 0xEF and len(args) == 5:
+        control = struct.unpack("<H", args[2:4])[0]
+        return (
+            f"param0={args[0]}, param1={args[1]}, control=0x{control:04X}, "
+            f"duration={args[4]}"
+        )
     if op == 0xF0 and len(args) == 1:
         return f"frames={args[0]}"
     return fmt_default(args)
