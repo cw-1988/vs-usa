@@ -40,19 +40,24 @@ exact message used for each touched repo.
 Start here:
 
 - [`dump_mpd_script.py`](dump_mpd_script.py)
+- [`OPCODE_BEHAVIOR_REFERENCE.md`](OPCODE_BEHAVIOR_REFERENCE.md)
 - [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md)
 - [`GHIDRA_OPCODE_RE_WORKFLOW.md`](GHIDRA_OPCODE_RE_WORKFLOW.md)
 - [`decoded_scripts`](decoded_scripts)
 
-Reference sources:
+Reference anchors:
+
+- [`_refs/rood-reverse`](_refs/rood-reverse)
+- [`_refs/rood-reverse/src`](_refs/rood-reverse/src)
+- [`_refs/rood-reverse/config`](_refs/rood-reverse/config)
+
+Common starting points, not an exhaustive target list:
 
 - [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
-- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
-- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)
-- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)
-- [`_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c`](_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c)
 - [`_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt)
-- [`_refs/rood-reverse/BATTLE_SCREEN_EFFECT_OPCODE_CONCLUSIONS.md`](_refs/rood-reverse/BATTLE_SCREEN_EFFECT_OPCODE_CONCLUSIONS.md)
+
+If the current opcode or subsystem points elsewhere, follow that evidence
+instead of forcing the pass through these files.
 
 Useful local tooling:
 
@@ -95,6 +100,11 @@ Use this when the question is about:
 - argument layout
 - room event sequencing
 - comparing repeated script patterns across maps
+
+Use [`OPCODE_BEHAVIOR_REFERENCE.md`](OPCODE_BEHAVIOR_REFERENCE.md) as the quick
+snapshot of current local names, parameter shapes, and still-missing slots.
+Use [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md)
+for the evidence trail, confidence wording, and remaining proof gaps.
 
 ### `Ghidra`
 
@@ -190,10 +200,10 @@ the implementation meaning is genuinely locked in.
 
 Examples:
 
-- Is `0xEF` better described as a waveform initializer, oscillation setup, or
-  something even more specific?
-- Is `0xE6` really `ScreenEffectOffsetTween`, or is there a better render-space
-  name?
+- Does one named opcode still deserve its current verb, or is the subsystem
+  right but the player-facing wording still too specific?
+- Can one currently raw-looking parameter set be rendered into something more
+  readable without overclaiming its meaning?
 - Is there enough proof to promote one `Strong` finding to `Confirmed`, or does
   the pass actually show why it should stay `Strong`?
 - Is a still-unnamed field in `BATTLE.PRG` understandable enough to document?
@@ -216,23 +226,24 @@ Examples:
 Good patterns:
 
 ```powershell
-rg -n "OpcodeEF|ScreenEffect|CameraRollTween|SetRoomAmbientSoundSuspended" decoded_scripts
-rg -n "^[0-9A-F]{4}: EF " decoded_scripts -S
+rg -n "Opcode..|Camera|ScreenEffect|Ambient|Dialog|Model" decoded_scripts
+rg -n "^[0-9A-F]{4}: [0-9A-F]{2} " decoded_scripts -S
 ```
 
-For opcode work, especially `0xEF`, compare multiple rooms and preserve:
+For opcode work, compare multiple rooms and preserve:
 
 - repeated control words
 - stepped scalar changes
 - timing values
-- neighboring opcodes like `E1`, `E4`, `E5`, `E6`, `E7`, `ED`, `EA`, `EB`
+- neighboring setup, wait, cleanup, or mode-change opcodes that recur around
+  the target
 
 ### Step 3. Confirm the handler mapping
 
 Use the dispatch table before inferring from source order.
 
 ```powershell
-rg -n "_opcodeFunctionTable|vs_battle_script_setScreenEffectEnabled|vs_battle_script_setupAngleTween|func_800BD6C4|func_800BDC9C|func_800BB450|func_800BD444" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt
+rg -n "_opcodeFunctionTable|vs_battle_script_|func_800" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt
 ```
 
 ### Step 4. Trace the consumer path
@@ -281,6 +292,7 @@ Before promoting any confidence level, explicitly sanity-check all three:
 A successful pass should update one or more of:
 
 - [`dump_mpd_script.py`](dump_mpd_script.py)
+- [`OPCODE_BEHAVIOR_REFERENCE.md`](OPCODE_BEHAVIOR_REFERENCE.md)
 - [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md)
 - [`GHIDRA_OPCODE_RE_WORKFLOW.md`](GHIDRA_OPCODE_RE_WORKFLOW.md)
 
@@ -311,7 +323,7 @@ Minimum verification:
 
 Good verification examples:
 
-- confirm `OpcodeEF` now shows structured fields instead of an opaque blob
+- confirm an opcode now shows structured fields instead of an opaque blob
 - confirm a rename appears correctly in several decoded rooms
 - confirm helper or internal renames match the matched implementation and all
   local call sites
@@ -353,16 +365,16 @@ Use conventional commits.
 Good default shapes:
 
 ```text
-feat(re): clarify opcode 0xEF decoder output
-fix(re-notes): tighten evidence for screen effect opcodes
-docs(re): capture new opcode conclusions for 0x7A
+feat(re): clarify opcode 0x7A decoder output
+fix(re-notes): tighten evidence for room audio opcodes
+docs(re): capture new opcode conclusions for 0x9D
 ```
 
 Examples:
 
-- `feat(re): improve opcode 0xEF argument rendering`
-- `docs(re): add new evidence for opcode 0xEF waveform behavior`
-- `fix(decoder): rename confirmed screen effect opcodes`
+- `feat(re): improve opcode 0x7A argument rendering`
+- `docs(re): add new evidence for opcode 0x9D`
+- `fix(decoder): rename confirmed camera opcodes`
 
 Pick the type honestly:
 

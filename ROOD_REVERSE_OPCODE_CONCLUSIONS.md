@@ -9,6 +9,11 @@ The goal is to keep this contribution set conservative: only names with a clear
 code-path or script-usage proof are listed as confirmed. Anything still fuzzy
 should stay tentative in upstream comments and PR text.
 
+Use [`OPCODE_BEHAVIOR_REFERENCE.md`](OPCODE_BEHAVIOR_REFERENCE.md) as the quick
+lookup for the current local opcode table, parameter layouts, and unresolved
+slots. This note is the longer evidence and confidence trail for the names that
+matter enough to justify written conclusions.
+
 ### Confidence guide
 
 Use this quick rubric when judging an opcode name:
@@ -24,6 +29,291 @@ For this note, `rood-reverse` is the better source for opcode work than Data
 Crystal when a handler is actually decompiled. Data Crystal is still useful as a
 legacy address table, but its names should be treated as historical notes until
 the code body agrees.
+
+### Current coverage snapshot
+
+The current local decoder table in
+[`dump_mpd_script.py`](dump_mpd_script.py) now covers all `256` opcode slots,
+but only part of that table is meaningfully named:
+
+- named locally: `85 / 256`
+- still placeholder-named as `OpcodeXX`: `171 / 256`
+- most complete block: `0xE0-0xEF` with `14` named and only `0xE8` / `0xEE`
+  still unresolved
+- completely unresolved block: `0xB0-0xBF`
+
+The heaviest remaining unknown regions are:
+
+- `0xA3-0xBF`
+- `0xC5-0xCF`
+- `0xD5-0xDF`
+- `0xF7-0xFE`
+
+There are also `22` placeholder entries whose current local size is still
+`0x00`, so they remain unsafe targets for any confident rename or decoder
+cleanup pass:
+
+- `0x09`
+- `0x8A-0x8E`
+- `0xA7`
+- `0xAB-0xAF`
+- `0xB0`
+- `0xC6`
+- `0xCC-0xCF`
+- `0xD6`
+- `0xDC-0xDD`
+- `0xEE`
+
+### Still missing from the current local opcode list
+
+Here, "missing" means the local decoder still exposes only a placeholder name
+such as `Opcode41`, not merely that this note lacks a long write-up.
+
+- `0x01-0x0F`
+- `0x13-0x15`
+- `0x1B-0x1F`
+- `0x21`
+- `0x25`
+- `0x27`
+- `0x2A-0x2D`
+- `0x32`
+- `0x34-0x37`
+- `0x3C-0x3D`
+- `0x3F`
+- `0x41`
+- `0x43`
+- `0x45-0x48`
+- `0x4B-0x4F`
+- `0x51-0x53`
+- `0x55-0x57`
+- `0x59-0x63`
+- `0x66-0x67`
+- `0x6A-0x6C`
+- `0x6E-0x6F`
+- `0x71-0x73`
+- `0x77`
+- `0x7B`
+- `0x7D-0x7F`
+- `0x81-0x84`
+- `0x87`
+- `0x89-0x8F`
+- `0x93-0x98`
+- `0x9A-0x9C`
+- `0x9F-0xA0`
+- `0xA3-0xBF`
+- `0xC3`
+- `0xC5-0xCF`
+- `0xD2-0xD3`
+- `0xD5-0xDF`
+- `0xE8`
+- `0xEE`
+- `0xF1-0xF3`
+- `0xF7-0xFE`
+
+### Documented local names still awaiting per-opcode proof write-ups
+
+These names are already usable in the local decoder. What was missing here was
+not the names themselves, but a short record of why they are currently
+reasonable and what would still be needed before each one should be treated as
+fully `Confirmed` in the same sense as the stronger entries below.
+
+#### Dialog and splash-screen control
+
+Current local names:
+
+- `0x10 -> DialogShow`
+- `0x11 -> DialogText`
+- `0x12 -> DialogHide`
+- `0x16 -> SplashScreenChoose`
+- `0x17 -> SplashScreenLoad`
+- `0x18 -> SplashScreenShow`
+- `0x19 -> SplashScreenHide`
+- `0x1A -> SplashScreenFadeIn`
+
+Current narrow:
+
+- `0x10-0x12` already decode cleanly as dialog id, text id, and dialog box
+  control fields in the script dumper, so the dialog-family naming is on solid
+  local footing.
+- `0x16-0x1A` cluster as a separate overlay or splash-screen path rather than
+  actor, room, or camera control, and their current verbs match the usual
+  script ordering pattern of choose or load, then show, hide, or fade.
+- `0x13-0x15` remain unresolved, so this block is only partially mapped.
+
+What is still missing for `Confirmed`:
+
+- A direct handler-by-handler decomp citation for the splash-screen verbs,
+  especially the exact difference between `Choose`, `Load`, and `Show`.
+- One proof pass that ties the fade opcode specifically to fade-in behavior and
+  not a more generic overlay transition mode.
+
+#### Core model staging
+
+Current local names:
+
+- `0x20 -> ModelLoad`
+- `0x22 -> ModelAnimate`
+- `0x23 -> ModelSetAnimations`
+- `0x26 -> ModelPosition`
+- `0x28 -> ModelMoveTo`
+- `0x29 -> ModelMoveTo2`
+- `0x2E -> ModelScale`
+- `0x30 -> ModelLoadAnimationsEx`
+- `0x31 -> ModelTint`
+- `0x33 -> ModelRotate`
+- `0x38 -> ModelLookAt`
+- `0x39 -> ModelLookAtPosition`
+- `0x3A -> ModelLoadAnimations`
+- `0x3E -> ModelIlluminate`
+- `0x42 -> ModelControlViaScript`
+- `0x50 -> ModelControlViaBattleMode`
+- `0x70 -> ModelColor`
+- `0xC4 -> ModelAnimateObject`
+
+Current narrow:
+
+- The argument shapes already look like a coherent actor-model control family:
+  actor ids, animation ids, position triples, rotation-like fields, look-at
+  targets, and color or tint style parameters all show up where expected.
+- Some names in this group are already stronger than the rest. `ModelScale`,
+  `ModelTint`, and `ModelLookAtPosition` have enough local evidence to be worth
+  upstreaming even before every neighboring model opcode gets a full write-up.
+- The weaker names are the ones that still hide an important mode distinction
+  behind generic wording, such as `ModelMoveTo` versus `ModelMoveTo2`,
+  `ModelLoadAnimations` versus `ModelLoadAnimationsEx`, and the control wrappers
+  around `0x42`, `0x50`, and `0xC4`.
+
+What is still missing for `Confirmed`:
+
+- Direct handler evidence for the alternate load, move, and animate variants so
+  the local names can explain the difference instead of only naming the shared
+  subsystem.
+- One field-level pass for `0x3E`, `0x42`, `0x50`, `0x70`, and `0xC4` to decide
+  whether the current names are precise enough or still slightly too generic.
+
+#### Room loading and scene-display flow
+
+Current local names:
+
+- `0x68 -> LoadRoom`
+- `0x69 -> LoadScene`
+- `0x6D -> DisplayRoom`
+- `0x74 -> LoadRoomSection10`
+- `0x75 -> WaitForRoomSection10`
+- `0x76 -> FreeRoomSection10`
+
+Current narrow:
+
+- `0x68` already formats as a zone-room destination pair in the dumper, which
+  makes a room-loader interpretation much stronger than a generic file load.
+- `0x6D` behaves like a display or activation step that appears after load or
+  staging work rather than before it.
+- `0x74-0x76` form a clean async trio by both naming and script position: load,
+  then wait, then free.
+
+What is still missing for `Confirmed`:
+
+- A direct proof of the exact distinction between `LoadRoom` and `LoadScene`.
+- One decomp-backed identification of what "section 10" actually contains so
+  the section-10 names can eventually become more user-facing if warranted.
+
+#### Core audio flow
+
+Current local names:
+
+- `0x80 -> SoundEffects0`
+- `0x85 -> LoadSfxSlot`
+- `0x86 -> FreeSfxSlot`
+- `0x88 -> SetCurrentSfx`
+- `0x90 -> LoadMusicSlot`
+- `0x91 -> FreeMusic`
+- `0x92 -> MusicPlay`
+- `0x99 -> ClearMusicLoadSlot`
+- `0x9D -> LoadSoundFileById`
+- `0x9E -> ProcessSoundQueue`
+
+Current narrow:
+
+- This block already reads like a shared sound pipeline rather than unrelated
+  opcodes: resource loads, slot selection, explicit frees, then queue or
+  process steps.
+- `LoadSoundFileById` and `ProcessSoundQueue` are especially strong locally
+  because real scripts commonly pair `9D xx` with a later `9E`.
+- `LoadSfxSlot`, `FreeSfxSlot`, `SetCurrentSfx`, `LoadMusicSlot`, and
+  `ClearMusicLoadSlot` are all plausible and internally consistent names, but
+  some still rest more on script ordering than on fully cited handler bodies.
+- `SoundEffects0` is intentionally still a placeholder-quality local name in the
+  sense that the subsystem is right but the exact verb is not yet recovered.
+
+What is still missing for `Confirmed`:
+
+- A handler-level pass that separates pure resource management from immediate
+  playback, especially for `0x80`, `0x88`, and `0x92`.
+- One cleaner write-up of how the music-slot and sound-file-id paths interact,
+  so `LoadMusicSlot` and `MusicPlay` can be documented with the same confidence
+  now used for `LoadSoundFileById`.
+
+#### Core camera flow outside the effect-heavy `E` range
+
+Current local names:
+
+- `0xA2 -> CameraZoomIn`
+- `0xC0 -> CameraDirection`
+- `0xC1 -> CameraSetAngle`
+- `0xC2 -> CameraLookAt`
+- `0xD0 -> CameraPosition`
+- `0xD1 -> SetCameraPosition`
+- `0xD4 -> CameraHeight`
+- `0xE0 -> CameraWait`
+- `0xEA -> CameraZoom`
+- `0xEB -> CameraNearClip`
+- `0xEC -> CameraFarClip`
+
+Current narrow:
+
+- The operand shapes and local formatting already separate this block from the
+  screen-effect opcodes: position, look-at, direction, zoom, and clip-plane
+  style fields dominate instead of color or oscillation parameters.
+- `CameraZoom`, `CameraNearClip`, and `CameraFarClip` are among the cleaner
+  local names because their formatter fields already decode into useful scalar
+  values rather than opaque raw bytes.
+- The weaker names are the ones where the noun is clear but the exact action is
+  not yet locked down, such as whether `CameraSetAngle` and `SetCameraPosition`
+  are immediate setters, mode selectors, or trigger bytes for previously staged
+  camera state.
+
+What is still missing for `Confirmed`:
+
+- Direct consumer or handler proof for the single-byte control opcodes
+  `0xA2`, `0xC1`, `0xD1`, and `0xE0`.
+- One tighter pass on `0xC0`, `0xC2`, `0xD0`, and `0xD4` that names their
+  fields more specifically than today's conservative direction, look-at,
+  position, and height labels.
+
+#### Script flow helpers
+
+Current local names:
+
+- `0xF0 -> Wait`
+- `0xF4 -> ScriptCallSlotActive`
+- `0xF5 -> ScriptCall`
+- `0xF6 -> ScriptReturn`
+
+Current narrow:
+
+- This block is already clearly control-flow related rather than content
+  staging. The local names match how the decoder treats the operands and how
+  the opcodes appear in call or return style script regions.
+- `Wait`, `ScriptCall`, and `ScriptReturn` are stronger than
+  `ScriptCallSlotActive`, which still exposes the bookkeeping flavor of the
+  implementation more than a settled player-facing verb.
+
+What is still missing for `Confirmed`:
+
+- A small helper-level proof write-up for the call-slot state checked or
+  updated by `0xF4`.
+- One explicit note on the target encoding used by `0xF5`, mainly so the local
+  call naming can cite something more concrete than script-structure patterning.
 
 ### Confirmed improvements
 
