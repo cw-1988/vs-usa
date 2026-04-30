@@ -1,0 +1,39 @@
+{
+  "file_path": "Game Data/BATTLE/SYSTEM.DAT",
+  "file_size_decimal": 186736,
+  "file_size_hex": "0x2D970",
+  "header_dwords": [
+    {
+      "index": 0,
+      "value_hex": "0x00000020"
+    },
+    {
+      "index": 1,
+      "value_hex": "0x00007028"
+    },
+    {
+      "index": 2,
+      "value_hex": "0x0000E830"
+    },
+    {
+      "index": 3,
+      "value_hex": "0x0000E854"
+    },
+    {
+      "index": 4,
+      "value_hex": "0x0001085C"
+    },
+    {
+      "index": 5,
+      "value_hex": "0x00012864"
+    },
+    {
+      "index": 6,
+      "value_hex": "0x0001A86C"
+    },
+    {
+      "index": 7,
+      "value_hex": "0x0001AA70"
+    }
+  ]
+}

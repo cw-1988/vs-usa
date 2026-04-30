@@ -15,6 +15,8 @@ opcode table pointer, so the remaining `0x80` conflict can move from
 4. `decomp/evidence/title_runtime_opcode_table_accesses.json`
 5. `decomp/evidence/inittbl_0x80_copy_slice.json`
 6. `decomp/evidence/battle_runtime_opcode_table_xrefs.json`
+7. `decomp/evidence/inittbl_system_dat_loader_slice.json`
+8. `decomp/evidence/system_dat_header_words.json`
 
 ## Method
 
@@ -85,9 +87,13 @@ opcode table pointer, so the remaining `0x80` conflict can move from
 - This sweep only answers direct absolute accesses to the slot address itself.
 - It does not by itself rule out a later path that reads the pointer once and
   mutates the allocated `0x400`-byte table through that pointer.
-- `Game Data/BATTLE/SYSTEM.DAT` and any other raw battle-adjacent overlays
-  remain outside this specific sweep because this repo does not yet carry a
-  local import-base note for them.
+- `opcode_0x80_system_dat_static.md` now narrows one earlier speculative
+  branch: the local `_loadSystemDat` slice plus local header words anchor
+  `Game Data/BATTLE/SYSTEM.DAT` as a data payload, not as an imported
+  executable that needs a `BinaryLoader` base note for this sweep.
+- Other battle-adjacent code-bearing binaries, if any remain unrecovered,
+  still sit outside this specific sweep until they are identified and imported
+  with reproducible base notes.
 - It also does not replace runtime if static tracing of possible indirect table
   mutation stalls.
 
@@ -98,6 +104,6 @@ notes, `0x800F4C28` now has one verified init-time writer and one verified
 runtime consumer, with no additional direct slot rewrites recovered by the
 access sweep. The remaining `0x80` uncertainty is narrower than before: any
 later change would need to come from indirect mutation of the copied table
-contents, from a still-unimported battle-adjacent overlay such as
-`SYSTEM.DAT`, or from a runtime-only effect, not from another recovered
-absolute-slot write in the currently swept executables.
+contents, from some other still-unrecovered code path, or from a runtime-only
+effect, not from another recovered absolute-slot write in the currently swept
+executables or from `SYSTEM.DAT`.

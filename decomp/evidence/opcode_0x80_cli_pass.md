@@ -6,8 +6,10 @@
 - `Game Data/BATTLE/BATTLE.PRG`
 - `Game Data/SLUS_010.40`
 - `Game Data/TITLE/TITLE.PRG`
+- `Game Data/BATTLE/SYSTEM.DAT`
 - `decomp/ghidra/export_inittbl_opcode_table.ps1`
 - `decomp/ghidra/export_inittbl_0x80_copy_slice.ps1`
+- `decomp/ghidra/export_inittbl_system_dat_loader_slice.ps1`
 - `decomp/ghidra/export_battle_0x80_sound_cluster_slices.ps1`
 - `decomp/ghidra/export_runtime_opcode_table_accesses.ps1`
 - `decomp/ghidra/export_inittbl_runtime_opcode_table_accesses.ps1`
@@ -36,8 +38,11 @@
 - `decomp/evidence/slus_runtime_opcode_table_accesses.json`
 - `decomp/evidence/title_runtime_opcode_table_accesses.json`
 - `decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`
+- `decomp/evidence/inittbl_system_dat_loader_slice.json`
+- `decomp/evidence/system_dat_header_words.json`
 - `decomp/evidence/opcode_0x80_runtime_slot_access_static.md`
 - `decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md`
+- `decomp/evidence/opcode_0x80_system_dat_static.md`
 
 ## Packet structure
 
@@ -52,6 +57,9 @@
 - `opcode_0x80_runtime_pointer_usage_static.md` is the focused support note
   for how the recovered `BATTLE.PRG` reader actually uses the copied table
   pointer after loading it from `0x800F4C28`.
+- `opcode_0x80_system_dat_static.md` is the focused support note for why the
+  locally loaded `SYSTEM.DAT` blob should no longer be treated as the main
+  missing executable-overlay candidate in this pass.
 
 ## Static findings
 
@@ -109,6 +117,10 @@
   `FUN_800BFBB8` now shows only pointer arithmetic plus one indexed table-entry
   read before `jalr`, with no recovered indirect write-back or tainted
   pointer-argument call in that local consumer.
+- A local `INITBTL.PRG` loader slice plus the first eight dwords of the local
+  `SYSTEM.DAT` file now show `SYSTEM.DAT` being loaded as offset-indexed
+  asset/payload data and then freed, which weakens the old "`SYSTEM.DAT`
+  might be the missing code overlay" branch.
 - The nearby sound-shaped helper keeps `SoundEffects0` plausible as a working
   placeholder, but the local static picture now favors "`0x80-0x82` are real
   copied stubs, while `0x800BA2E0` belongs to a separate local sound
@@ -117,5 +129,5 @@
   real `0x80` target?" or "is there another recovered direct slot rewrite?"
   but "does any other unrecovered path outside the currently traced local
   reader mutate the copied table contents behind `0x800F4C28` before
-  dispatch, especially from battle-adjacent binaries whose import base is not
-  yet locally pinned?"
+  dispatch, either from some other unrecovered code path or from a runtime-only
+  effect?"

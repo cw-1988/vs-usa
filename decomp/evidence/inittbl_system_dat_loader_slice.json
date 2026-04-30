@@ -1,0 +1,543 @@
+{
+  "program_name": "INITBTL.PRG",
+  "instruction_count": 144,
+  "slices": [
+    {
+      "start": "800f989c",
+      "instructions": [
+        {
+          "address": "800f989c",
+          "text": "addiu sp,sp,-0x20"
+        },
+        {
+          "address": "800f98a0",
+          "text": "lui a0,0x2"
+        },
+        {
+          "address": "800f98a4",
+          "text": "ori a0,a0,0xe000"
+        },
+        {
+          "address": "800f98a8",
+          "text": "sw ra,0x1c(sp)"
+        },
+        {
+          "address": "800f98ac",
+          "text": "jal 0x80043e3c"
+        },
+        {
+          "address": "800f98b0",
+          "text": "_sw s0,0x18(sp)"
+        },
+        {
+          "address": "800f98b4",
+          "text": "li a0,0x56b"
+        },
+        {
+          "address": "800f98b8",
+          "text": "lui a1,0x2"
+        },
+        {
+          "address": "800f98bc",
+          "text": "ori a1,a1,0xe000"
+        },
+        {
+          "address": "800f98c0",
+          "text": "move s0,v0"
+        },
+        {
+          "address": "800f98c4",
+          "text": "jal 0x8004493c"
+        },
+        {
+          "address": "800f98c8",
+          "text": "_move a2,s0"
+        },
+        {
+          "address": "800f98cc",
+          "text": "lw v0,0x0(s0)"
+        },
+        {
+          "address": "800f98d0",
+          "text": "nop"
+        },
+        {
+          "address": "800f98d4",
+          "text": "addu v1,s0,v0"
+        },
+        {
+          "address": "800f98d8",
+          "text": "lhu v0,0x0(v1)"
+        },
+        {
+          "address": "800f98dc",
+          "text": "nop"
+        },
+        {
+          "address": "800f98e0",
+          "text": "sh v0,0x10(sp)"
+        },
+        {
+          "address": "800f98e4",
+          "text": "lhu v0,0x2(v1)"
+        },
+        {
+          "address": "800f98e8",
+          "text": "nop"
+        },
+        {
+          "address": "800f98ec",
+          "text": "sh v0,0x12(sp)"
+        },
+        {
+          "address": "800f98f0",
+          "text": "lhu v0,0x4(v1)"
+        },
+        {
+          "address": "800f98f4",
+          "text": "addiu a0,sp,0x10"
+        },
+        {
+          "address": "800f98f8",
+          "text": "sh v0,0x14(sp)"
+        },
+        {
+          "address": "800f98fc",
+          "text": "lhu v0,0x6(v1)"
+        },
+        {
+          "address": "800f9900",
+          "text": "addiu a1,v1,0x8"
+        },
+        {
+          "address": "800f9904",
+          "text": "jal 0x800288fc"
+        },
+        {
+          "address": "800f9908",
+          "text": "_sh v0,0x16(sp)"
+        },
+        {
+          "address": "800f990c",
+          "text": "jal 0x80028650"
+        },
+        {
+          "address": "800f9910",
+          "text": "_clear a0"
+        },
+        {
+          "address": "800f9914",
+          "text": "lw v0,0x4(s0)"
+        },
+        {
+          "address": "800f9918",
+          "text": "nop"
+        },
+        {
+          "address": "800f991c",
+          "text": "addu v1,s0,v0"
+        },
+        {
+          "address": "800f9920",
+          "text": "lhu v0,0x0(v1)"
+        },
+        {
+          "address": "800f9924",
+          "text": "nop"
+        },
+        {
+          "address": "800f9928",
+          "text": "sh v0,0x10(sp)"
+        },
+        {
+          "address": "800f992c",
+          "text": "lhu v0,0x2(v1)"
+        },
+        {
+          "address": "800f9930",
+          "text": "nop"
+        },
+        {
+          "address": "800f9934",
+          "text": "sh v0,0x12(sp)"
+        },
+        {
+          "address": "800f9938",
+          "text": "lhu v0,0x4(v1)"
+        },
+        {
+          "address": "800f993c",
+          "text": "addiu a0,sp,0x10"
+        },
+        {
+          "address": "800f9940",
+          "text": "sh v0,0x14(sp)"
+        },
+        {
+          "address": "800f9944",
+          "text": "lhu v0,0x6(v1)"
+        },
+        {
+          "address": "800f9948",
+          "text": "addiu a1,v1,0x8"
+        },
+        {
+          "address": "800f994c",
+          "text": "jal 0x800288fc"
+        },
+        {
+          "address": "800f9950",
+          "text": "_sh v0,0x16(sp)"
+        },
+        {
+          "address": "800f9954",
+          "text": "jal 0x80028650"
+        },
+        {
+          "address": "800f9958",
+          "text": "_clear a0"
+        },
+        {
+          "address": "800f995c",
+          "text": "li a1,0xf"
+        },
+        {
+          "address": "800f9960",
+          "text": "lw v0,0x8(s0)"
+        },
+        {
+          "address": "800f9964",
+          "text": "clear a2"
+        },
+        {
+          "address": "800f9968",
+          "text": "addu v1,s0,v0"
+        },
+        {
+          "address": "800f996c",
+          "text": "lh a3,0x0(v1)"
+        },
+        {
+          "address": "800f9970",
+          "text": "jal 0x80048a64"
+        },
+        {
+          "address": "800f9974",
+          "text": "_addiu a0,v1,0x4"
+        },
+        {
+          "address": "800f9978",
+          "text": "lw v0,0xc(s0)"
+        },
+        {
+          "address": "800f997c",
+          "text": "nop"
+        },
+        {
+          "address": "800f9980",
+          "text": "addu v1,s0,v0"
+        },
+        {
+          "address": "800f9984",
+          "text": "lhu v0,0x0(v1)"
+        },
+        {
+          "address": "800f9988",
+          "text": "nop"
+        },
+        {
+          "address": "800f998c",
+          "text": "sh v0,0x10(sp)"
+        },
+        {
+          "address": "800f9990",
+          "text": "lhu v0,0x2(v1)"
+        },
+        {
+          "address": "800f9994",
+          "text": "nop"
+        },
+        {
+          "address": "800f9998",
+          "text": "sh v0,0x12(sp)"
+        },
+        {
+          "address": "800f999c",
+          "text": "lhu v0,0x4(v1)"
+        },
+        {
+          "address": "800f99a0",
+          "text": "addiu a0,sp,0x10"
+        },
+        {
+          "address": "800f99a4",
+          "text": "sh v0,0x14(sp)"
+        },
+        {
+          "address": "800f99a8",
+          "text": "lhu v0,0x6(v1)"
+        },
+        {
+          "address": "800f99ac",
+          "text": "addiu a1,v1,0x8"
+        },
+        {
+          "address": "800f99b0",
+          "text": "jal 0x800288fc"
+        },
+        {
+          "address": "800f99b4",
+          "text": "_sh v0,0x16(sp)"
+        },
+        {
+          "address": "800f99b8",
+          "text": "jal 0x80028650"
+        },
+        {
+          "address": "800f99bc",
+          "text": "_clear a0"
+        },
+        {
+          "address": "800f99c0",
+          "text": "lw v0,0x10(s0)"
+        },
+        {
+          "address": "800f99c4",
+          "text": "nop"
+        },
+        {
+          "address": "800f99c8",
+          "text": "addu v1,s0,v0"
+        },
+        {
+          "address": "800f99cc",
+          "text": "lhu v0,0x0(v1)"
+        },
+        {
+          "address": "800f99d0",
+          "text": "nop"
+        },
+        {
+          "address": "800f99d4",
+          "text": "sh v0,0x10(sp)"
+        },
+        {
+          "address": "800f99d8",
+          "text": "lhu v0,0x2(v1)"
+        },
+        {
+          "address": "800f99dc",
+          "text": "nop"
+        },
+        {
+          "address": "800f99e0",
+          "text": "sh v0,0x12(sp)"
+        },
+        {
+          "address": "800f99e4",
+          "text": "lhu v0,0x4(v1)"
+        },
+        {
+          "address": "800f99e8",
+          "text": "addiu a0,sp,0x10"
+        },
+        {
+          "address": "800f99ec",
+          "text": "sh v0,0x14(sp)"
+        },
+        {
+          "address": "800f99f0",
+          "text": "lhu v0,0x6(v1)"
+        },
+        {
+          "address": "800f99f4",
+          "text": "addiu a1,v1,0x8"
+        },
+        {
+          "address": "800f99f8",
+          "text": "jal 0x800288fc"
+        },
+        {
+          "address": "800f99fc",
+          "text": "_sh v0,0x16(sp)"
+        },
+        {
+          "address": "800f9a00",
+          "text": "jal 0x80028650"
+        },
+        {
+          "address": "800f9a04",
+          "text": "_clear a0"
+        },
+        {
+          "address": "800f9a08",
+          "text": "lw v0,0x14(s0)"
+        },
+        {
+          "address": "800f9a0c",
+          "text": "nop"
+        },
+        {
+          "address": "800f9a10",
+          "text": "addu v1,s0,v0"
+        },
+        {
+          "address": "800f9a14",
+          "text": "lhu v0,0x0(v1)"
+        },
+        {
+          "address": "800f9a18",
+          "text": "nop"
+        },
+        {
+          "address": "800f9a1c",
+          "text": "sh v0,0x10(sp)"
+        },
+        {
+          "address": "800f9a20",
+          "text": "lhu v0,0x2(v1)"
+        },
+        {
+          "address": "800f9a24",
+          "text": "nop"
+        },
+        {
+          "address": "800f9a28",
+          "text": "sh v0,0x12(sp)"
+        },
+        {
+          "address": "800f9a2c",
+          "text": "lhu v0,0x4(v1)"
+        },
+        {
+          "address": "800f9a30",
+          "text": "addiu a0,sp,0x10"
+        },
+        {
+          "address": "800f9a34",
+          "text": "sh v0,0x14(sp)"
+        },
+        {
+          "address": "800f9a38",
+          "text": "lhu v0,0x6(v1)"
+        },
+        {
+          "address": "800f9a3c",
+          "text": "addiu a1,v1,0x8"
+        },
+        {
+          "address": "800f9a40",
+          "text": "jal 0x800288fc"
+        },
+        {
+          "address": "800f9a44",
+          "text": "_sh v0,0x16(sp)"
+        },
+        {
+          "address": "800f9a48",
+          "text": "jal 0x80028650"
+        },
+        {
+          "address": "800f9a4c",
+          "text": "_clear a0"
+        },
+        {
+          "address": "800f9a50",
+          "text": "lw v1,0x18(s0)"
+        },
+        {
+          "address": "800f9a54",
+          "text": "li v0,0x300"
+        },
+        {
+          "address": "800f9a58",
+          "text": "sh v0,0x10(sp)"
+        },
+        {
+          "address": "800f9a5c",
+          "text": "li v0,0xf0"
+        },
+        {
+          "address": "800f9a60",
+          "text": "sh v0,0x12(sp)"
+        },
+        {
+          "address": "800f9a64",
+          "text": "addu v1,s0,v1"
+        },
+        {
+          "address": "800f9a68",
+          "text": "lhu v0,0x0(v1)"
+        },
+        {
+          "address": "800f9a6c",
+          "text": "addiu a0,sp,0x10"
+        },
+        {
+          "address": "800f9a70",
+          "text": "sh v0,0x14(sp)"
+        },
+        {
+          "address": "800f9a74",
+          "text": "lhu v0,0x2(v1)"
+        },
+        {
+          "address": "800f9a78",
+          "text": "addiu a1,v1,0x4"
+        },
+        {
+          "address": "800f9a7c",
+          "text": "jal 0x800288fc"
+        },
+        {
+          "address": "800f9a80",
+          "text": "_sh v0,0x16(sp)"
+        },
+        {
+          "address": "800f9a84",
+          "text": "jal 0x80028650"
+        },
+        {
+          "address": "800f9a88",
+          "text": "_clear a0"
+        },
+        {
+          "address": "800f9a8c",
+          "text": "lw a0,0x1c(s0)"
+        },
+        {
+          "address": "800f9a90",
+          "text": "jal 0x800ca9c0"
+        },
+        {
+          "address": "800f9a94",
+          "text": "_addu a0,s0,a0"
+        },
+        {
+          "address": "800f9a98",
+          "text": "jal 0x80043c60"
+        },
+        {
+          "address": "800f9a9c",
+          "text": "_move a0,s0"
+        },
+        {
+          "address": "800f9aa0",
+          "text": "lw ra,0x1c(sp)"
+        },
+        {
+          "address": "800f9aa4",
+          "text": "lw s0,0x18(sp)"
+        },
+        {
+          "address": "800f9aa8",
+          "text": "jr ra"
+        },
+        {
+          "address": "800f9aac",
+          "text": "_addiu sp,sp,0x20"
+        }
+      ]
+    }
+  ]
+}

@@ -36,6 +36,10 @@ Current tracked entry points:
 - [`export_inittbl_0x80_copy_slice.ps1`](export_inittbl_0x80_copy_slice.ps1):
   focused `INITBTL.PRG` instruction dump wrapper for the currently suspected
   init-time table copy routine near `0x800FAAAC`
+- [`export_inittbl_system_dat_loader_slice.ps1`](export_inittbl_system_dat_loader_slice.ps1):
+  focused `INITBTL.PRG` instruction dump wrapper for `_loadSystemDat` at
+  `0x800F989C`, useful for proving that `SYSTEM.DAT` is treated as a data
+  payload rather than a late executable overlay
 - [`export_inittbl_runtime_opcode_table_accesses.ps1`](export_inittbl_runtime_opcode_table_accesses.ps1):
   focused `INITBTL.PRG` access sweep for direct reads/writes of runtime slot
   `0x800F4C28`
