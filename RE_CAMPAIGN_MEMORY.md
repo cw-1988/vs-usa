@@ -96,7 +96,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `in_progress` | `INITBTL.PRG` static table at `0x800FAF7C`, copied into runtime slot `0x800F4C28` by the locally dumped init-time routine at `0x800FAAAC` | Static slot `0x800B66E4`; former competing helper `0x800BA2E0` is now anchored to a local `BATTLE.PRG` sound subdispatch table at `0x800E9F30` with siblings `0x800BA35C/39C/3E4/404/444/470/494` | `SoundEffects0` placeholder only | Does any later runtime path rewrite or bypass the copied `0x800F4C28` entry before dispatch, now that local `BATTLE.PRG` evidence places `0x800BA2E0` inside its own sound-family subdispatch table? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json), [`battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json), [`battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json), [`battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json) |
+| `opcode 0x80` | `in_progress` | `INITBTL.PRG` static table at `0x800FAF7C`, copied into runtime slot `0x800F4C28` by the locally dumped init-time routine at `0x800FAAAC` | Static slot `0x800B66E4`; former competing helper `0x800BA2E0` is now anchored to a local `BATTLE.PRG` sound subdispatch table at `0x800E9F30` with siblings `0x800BA35C/39C/3E4/404/444/470/494`; live `BATTLE.PRG` consumer `FUN_800BFBB8` now reads `0x800F4C28`, indexes by opcode byte, and dispatches via `jalr` | `SoundEffects0` placeholder only | Is there any later static writer that rewrites `0x800F4C28` after the verified init-time copy, now that local `BATTLE.PRG` evidence shows a direct runtime-table consumer instead of a bypass path? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json), [`battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json), [`battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json), [`battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json), [`battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json) |
 
 ## Known Conflicts
 
@@ -113,19 +113,25 @@ Current phase: Pass 3 - Copy/patch reconciliation
   and `decomp/evidence/battle_sound_dispatch_table.json` now place
   `0x800BA2E0` into a local `BATTLE.PRG` eight-entry subdispatch table at
   `0x800E9F30`, alongside `0x800BA35C`, `0x800BA39C`, and the visible
-  `0x800BA3E4+` sound-family neighborhood.
+  `0x800BA3E4+` sound-family neighborhood. `decomp/evidence/battle_runtime_opcode_table_xrefs.json`
+  now recovers a direct local read xref in `FUN_800BFBB8` that loads
+  `0x800F4C28`, indexes by the opcode byte, loads the pointed-to handler, and
+  dispatches through `jalr`, proving a live consumer of the copied runtime
+  table.
 - What competing evidence says:
   There is no longer a strong static case that `0x800BA2E0` is the hidden
-  direct `0x80` target. The remaining contradiction is only the unproven
-  possibility that some later runtime path rewrites or bypasses the copied
-  `0x800F4C28` slot before execution.
-- What is still missing: the live dispatch consumer for `0x800F4C28`, plus any
-  later patch writer or bypass path that could swap `0x80-0x84` away from the
-  copied `0x800B66E4` entries.
+  direct `0x80` target, and the bypass half of the contradiction has now been
+  weakened by the direct `0x800F4C28` consumer xref. The remaining
+  contradiction is only the unproven possibility that some later runtime path
+  rewrites the copied `0x800F4C28` slot before execution.
+- What is still missing: any later patch writer that could swap `0x80-0x84`
+  away from the copied `0x800B66E4` entries after the verified init-time copy
+  and before `FUN_800BFBB8` dispatches through the table.
 - Is runtime justified yet: not yet. Local static evidence now proves the
-  copied initial table state and anchors `0x800BA2E0` to a separate local
-  sound-family table, so the next step is still xref/patch tracing before
-  using `PCSX-Redux` as a tie-breaker.
+  copied initial table state, anchors `0x800BA2E0` to a separate local
+  sound-family table, and recovers a direct runtime-table consumer, so the next
+  step is still static writer tracing before using `PCSX-Redux` as a
+  tie-breaker.
 
 ## Artifacts Index
 
@@ -135,6 +141,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 - [`decomp/evidence/inittbl_opcode_table_xrefs.json`](decomp/evidence/inittbl_opcode_table_xrefs.json)
 - [`decomp/evidence/battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json)
 - [`decomp/evidence/battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json)
+- [`decomp/evidence/battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json)
 
 ### Handler slices
 
@@ -147,6 +154,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 - [`decomp/evidence/opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md)
 - [`decomp/evidence/opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md)
+- [`decomp/evidence/opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md)
 
 ### Proof packets
 
@@ -154,16 +162,17 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 ## Session Handoff
 
-- `last completed step`: rebuilt the `0x80` copy-path and sound-neighborhood
-  notes from local binary exports and instruction dumps, then anchored
-  `0x800BA2E0` to the local `0x800E9F30` sound subdispatch table without
-  treating helper source as evidence authority
-- `next recommended step`: recover the live dispatch consumer for `0x800F4C28`
-  or a later static patch writer/bypass path, now that the `0x800BA2E0`
-  sound-family ambiguity has been downgraded by local table evidence
+- `last completed step`: recovered a direct local `BATTLE.PRG` consumer for
+  `0x800F4C28`, showing `FUN_800BFBB8` loading the runtime table, indexing by
+  opcode byte, and dispatching via `jalr`; folded that result into a local
+  reconciliation note instead of leaving it as a transient shell export
+- `next recommended step`: trace for any later static writer to `0x800F4C28`
+  now that the consumer side is locally proven and the remaining contradiction
+  is patch-only rather than consumer/bypass ambiguity
 - `do not forget`: update this ledger before ending the next pass; no export,
   coverage note, or contradiction should live only in terminal output; keep
-  runtime as a late tie-breaker only after static `0x800F4C28` tracing stalls
+  runtime as a late tie-breaker only after static writer tracing around
+  `0x800F4C28` stalls
 
 ## Completed Milestones
 
@@ -192,3 +201,9 @@ Current phase: Pass 3 - Copy/patch reconciliation
   [`decomp/evidence/battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json),
   [`decomp/evidence/battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json),
   [`decomp/evidence/battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json)
+- `2026-04-30`: recovered a direct local `BATTLE.PRG` consumer for
+  `0x800F4C28`, proving that the copied runtime opcode table is read, indexed
+  by opcode byte, and dispatched through `jalr` before any runtime-only claims.
+  Links:
+  [`decomp/evidence/battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json),
+  [`decomp/evidence/opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md)
