@@ -96,7 +96,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `in_progress` | `INITBTL.PRG` static table at `0x800FAF7C`, copied into runtime slot `0x800F4C28` by the locally dumped init-time routine at `0x800FAAAC` | Static slot `0x800B66E4`; former competing helper `0x800BA2E0` is now anchored to a local `BATTLE.PRG` sound subdispatch table at `0x800E9F30` with siblings `0x800BA35C/39C/3E4/404/444/470/494`; live `BATTLE.PRG` consumer `FUN_800BFBB8` now reads `0x800F4C28`, uses it only for pointer arithmetic plus one indexed table-entry read in the new local trace, and dispatches via `jalr`; widened direct-slot sweeps across `SLUS_010.40` and `TITLE.PRG` recover no additional accesses; local `_loadSystemDat` tracing now anchors `SYSTEM.DAT` as offset-indexed data payload rather than a missing executable overlay | `SoundEffects0` placeholder only | With `SYSTEM.DAT` now locally ruled down to payload data instead of code, does any other unrecovered path still mutate the copied table indirectly before dispatch, or is runtime now justified as the tie-breaker? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_pointer_usage_static.md`](decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md), [`opcode_0x80_system_dat_static.md`](decomp/evidence/opcode_0x80_system_dat_static.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json), [`inittbl_runtime_opcode_table_accesses.json`](decomp/evidence/inittbl_runtime_opcode_table_accesses.json), [`inittbl_system_dat_loader_slice.json`](decomp/evidence/inittbl_system_dat_loader_slice.json), [`system_dat_header_words.json`](decomp/evidence/system_dat_header_words.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json), [`battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json), [`battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json), [`battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json), [`battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json), [`battle_runtime_opcode_table_accesses.json`](decomp/evidence/battle_runtime_opcode_table_accesses.json), [`battle_runtime_opcode_table_pointer_usage.json`](decomp/evidence/battle_runtime_opcode_table_pointer_usage.json), [`slus_runtime_opcode_table_accesses.json`](decomp/evidence/slus_runtime_opcode_table_accesses.json), [`title_runtime_opcode_table_accesses.json`](decomp/evidence/title_runtime_opcode_table_accesses.json) |
+| `opcode 0x80` | `runtime_needed` | `INITBTL.PRG` static table at `0x800FAF7C`, copied into runtime slot `0x800F4C28` by the locally dumped init-time routine at `0x800FAAAC` | Static slot `0x800B66E4`; former competing helper `0x800BA2E0` is now anchored to a local `BATTLE.PRG` sound subdispatch table at `0x800E9F30` with siblings `0x800BA35C/39C/3E4/404/444/470/494`; live `BATTLE.PRG` consumer `FUN_800BFBB8` now reads `0x800F4C28`, uses it only for pointer arithmetic plus one indexed table-entry read in the new local trace, and dispatches via `jalr`; widened direct-slot sweeps across `SLUS_010.40` and `TITLE.PRG` recover no additional accesses; local `_loadSystemDat` tracing now anchors `SYSTEM.DAT` as offset-indexed data payload rather than a missing executable overlay; raw packaged-binary scanning across `.PRG`/`.BIN`/`.40` files finds the same absolute `0x800F4C28` access pattern only in `INITBTL.PRG` and `BATTLE.PRG` | `SoundEffects0` placeholder only | After the imported-executable sweep, pointer-usage trace, `SYSTEM.DAT` narrowing, and raw packaged-binary scan, does runtime ever mutate the copied `0x400`-byte table after init, or do `0x80-0x82` stay stubbed through live dispatch? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_pointer_usage_static.md`](decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md), [`opcode_0x80_system_dat_static.md`](decomp/evidence/opcode_0x80_system_dat_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json), [`inittbl_runtime_opcode_table_accesses.json`](decomp/evidence/inittbl_runtime_opcode_table_accesses.json), [`inittbl_system_dat_loader_slice.json`](decomp/evidence/inittbl_system_dat_loader_slice.json), [`system_dat_header_words.json`](decomp/evidence/system_dat_header_words.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json), [`battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json), [`battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json), [`battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json), [`battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json), [`battle_runtime_opcode_table_accesses.json`](decomp/evidence/battle_runtime_opcode_table_accesses.json), [`battle_runtime_opcode_table_pointer_usage.json`](decomp/evidence/battle_runtime_opcode_table_pointer_usage.json), [`slus_runtime_opcode_table_accesses.json`](decomp/evidence/slus_runtime_opcode_table_accesses.json), [`title_runtime_opcode_table_accesses.json`](decomp/evidence/title_runtime_opcode_table_accesses.json), [`runtime_opcode_table_binary_scan.json`](decomp/evidence/runtime_opcode_table_binary_scan.json) |
 
 ## Known Conflicts
 
@@ -128,6 +128,10 @@ Current phase: Pass 3 - Copy/patch reconciliation
   `Game Data/BATTLE/SYSTEM.DAT` as a locally loaded offset/header data blob
   that is consumed and freed by `_loadSystemDat`, not as a recovered code
   overlay that still needs a `BinaryLoader` base note.
+  `decomp/evidence/runtime_opcode_table_binary_scan.json` now adds a second
+  static sweep layer across `356` packaged `.PRG`/`.BIN`/`.40` files,
+  recovering the same `0x800F4C28` absolute access pattern only in
+  `Game Data/BATTLE/INITBTL.PRG` and `Game Data/BATTLE/BATTLE.PRG`.
 - What competing evidence says:
   There is no longer a strong static case that `0x800BA2E0` is the hidden
   direct `0x80` target, and the bypass half of the contradiction has now been
@@ -139,20 +143,21 @@ Current phase: Pass 3 - Copy/patch reconciliation
   write-back or tainted pointer-argument call. The remaining contradiction is
   therefore narrower still: some other unrecovered path could still mutate the
   copied `0x400`-byte table indirectly even if the currently recovered reader
-  does not.
+  does not. The new raw packaged-binary scan also weakens the last obvious
+  "some other local asset contains another direct absolute access" branch by
+  finding no third match in the packaged corpus, including `Game Data/EFFECT`.
 - What is still missing: any static or runtime evidence that the copied table
   contents themselves are patched after the verified init-time copy, plus any
-  locally anchored candidate for another still-unswept code-bearing
-  battle-adjacent binary that could conceivably touch the copied table
-  indirectly.
-- Is runtime justified yet: possibly, and much more than before. The
-  direct-slot rewrite question is now weaker across every currently importable
-  local executable with a known base note, the one recovered local reader has
-  already been traced through without finding a write-back path, and the
-  earlier `SYSTEM.DAT` branch is now locally narrowed to payload data rather
-  than code. One more static identification pass for any remaining code-bearing
-  battle-adjacent binary is reasonable, but `PCSX-Redux` is now much closer to
-  being the clean tie-breaker.
+  locally anchored proof of an indirect patch path that changes the copied
+  table contents after init.
+- Is runtime justified yet: yes. The direct-slot rewrite question is now weak
+  across every currently importable local executable with a known base note,
+  the one recovered local reader has already been traced through without
+  finding a write-back path, `SYSTEM.DAT` is locally narrowed to payload data
+  rather than code, and the raw packaged-binary scan recovered no third file
+  with the same absolute access pattern. `PCSX-Redux` is now the clean
+  tie-breaker for whether the copied table contents themselves ever change at
+  runtime.
 
 ## Artifacts Index
 
@@ -170,6 +175,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 - [`decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`](decomp/evidence/battle_runtime_opcode_table_pointer_usage.json)
 - [`decomp/evidence/inittbl_system_dat_loader_slice.json`](decomp/evidence/inittbl_system_dat_loader_slice.json)
 - [`decomp/evidence/system_dat_header_words.json`](decomp/evidence/system_dat_header_words.json)
+- [`decomp/evidence/runtime_opcode_table_binary_scan.json`](decomp/evidence/runtime_opcode_table_binary_scan.json)
 
 ### Handler slices
 
@@ -186,6 +192,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 - [`decomp/evidence/opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md)
 - [`decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md`](decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md)
 - [`decomp/evidence/opcode_0x80_system_dat_static.md`](decomp/evidence/opcode_0x80_system_dat_static.md)
+- [`decomp/evidence/opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md)
 
 ### Proof packets
 
@@ -193,19 +200,18 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 ## Session Handoff
 
-- `last completed step`: refactored the runtime-slot access sweep into a
-  reusable wrapper, then widened it to `SLUS_010.40` and `TITLE.PRG`; after
-  that, added a focused `_loadSystemDat` slice plus local `SYSTEM.DAT` header
-  dump, which now anchors `SYSTEM.DAT` as payload data rather than a missing
-  executable overlay candidate
-- `next recommended step`: either identify one last code-bearing
-  battle-adjacent binary worth sweeping for indirect `0x800F4C28` mutation, or
-  explicitly switch to `PCSX-Redux` as the tie-breaker now that the
-  `SYSTEM.DAT` branch has been statically narrowed away
+- `last completed step`: added a reusable raw-binary MIPS address-access
+  scanner, then ran it against `356` packaged `.PRG`/`.BIN`/`.40` files under
+  `Game Data`; it recovered the `0x800F4C28` access pattern only in
+  `INITBTL.PRG` and `BATTLE.PRG`, with no third match in `Game Data/EFFECT` or
+  elsewhere in the packaged corpus
+- `next recommended step`: switch to `PCSX-Redux` as the tie-breaker and
+  capture whether the copied `0x400`-byte opcode table behind `0x800F4C28`
+  ever changes after init before `FUN_800BFBB8` dispatches `0x80-0x82`
 - `do not forget`: update this ledger before ending the next pass; no export,
-  coverage note, or contradiction should live only in terminal output; keep
-  runtime as a late tie-breaker only after indirect patch tracing around the
-  copied table stalls
+  coverage note, or contradiction should live only in terminal output; the
+  static branch is now narrow enough that the next useful pass should collect
+  runtime evidence rather than repeat the same packaged-binary hunt
 
 ## Completed Milestones
 
@@ -271,3 +277,12 @@ Current phase: Pass 3 - Copy/patch reconciliation
   [`decomp/evidence/inittbl_system_dat_loader_slice.json`](decomp/evidence/inittbl_system_dat_loader_slice.json),
   [`decomp/evidence/system_dat_header_words.json`](decomp/evidence/system_dat_header_words.json),
   [`decomp/evidence/opcode_0x80_system_dat_static.md`](decomp/evidence/opcode_0x80_system_dat_static.md)
+- `2026-04-30`: added a reusable raw-binary MIPS address-access scanner and
+  used it to sweep the packaged `.PRG`/`.BIN`/`.40` corpus for
+  `0x800F4C28`; the scan recovered only the already-known `INITBTL.PRG` write
+  and `BATTLE.PRG` read, which is enough to promote `0x80` from
+  `in_progress` to `runtime_needed`. Links:
+  [`decomp/verification/scan_mips_address_accesses.py`](decomp/verification/scan_mips_address_accesses.py),
+  [`decomp/evidence/runtime_opcode_table_binary_scan.json`](decomp/evidence/runtime_opcode_table_binary_scan.json),
+  [`decomp/evidence/opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md),
+  [`decomp/evidence/opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md)

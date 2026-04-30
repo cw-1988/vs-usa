@@ -9,6 +9,10 @@ This folder holds local scripts that compare:
 
 These scripts should make contradictions visible before we need runtime.
 
+They can also do lighter-weight raw binary sweeps when a full `Ghidra` import
+would be premature, such as checking whether any packaged file still contains a
+specific absolute MIPS address-access pattern.
+
 ## What To Catch Early
 
 Good verification scripts should flag:

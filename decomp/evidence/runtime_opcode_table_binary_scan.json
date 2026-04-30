@@ -1,0 +1,52 @@
+{
+  "target_address": "0x800F4C28",
+  "target_upper": "0x800F",
+  "target_lower": "0x4C28",
+  "window": 6,
+  "suffix_filters": [
+    ".40",
+    ".bin",
+    ".prg"
+  ],
+  "scanned_paths": [
+    "Game Data"
+  ],
+  "files_scanned": 356,
+  "matched_file_count": 2,
+  "matched_files": [
+    {
+      "file": "Game Data/BATTLE/BATTLE.PRG",
+      "size_bytes": 577828,
+      "raw_literal_offsets": [],
+      "instruction_pair_matches": [
+        {
+          "lui_offset": "0x000574F4",
+          "lui_text": "lui v1,0x800F",
+          "access_offset": "0x000574FC",
+          "access_text": "lw v1,0x4C28(v1)",
+          "access_kind": "read",
+          "base_register": "v1",
+          "target_register": "v1",
+          "distance_in_instructions": 2
+        }
+      ]
+    },
+    {
+      "file": "Game Data/BATTLE/INITBTL.PRG",
+      "size_bytes": 7036,
+      "raw_literal_offsets": [],
+      "instruction_pair_matches": [
+        {
+          "lui_offset": "0x000012F0",
+          "lui_text": "lui v0,0x800F",
+          "access_offset": "0x00001304",
+          "access_text": "sw a0,0x4C28(v0)",
+          "access_kind": "write",
+          "base_register": "v0",
+          "target_register": "a0",
+          "distance_in_instructions": 5
+        }
+      ]
+    }
+  ]
+}

@@ -22,6 +22,7 @@
 - `decomp/ghidra/DumpXrefs.java`
 - `decomp/ghidra/DumpAddressAccesses.java`
 - `decomp/ghidra/TracePointerDerivedAccesses.java`
+- `decomp/verification/scan_mips_address_accesses.py`
 
 ## Produced artifacts
 
@@ -40,9 +41,11 @@
 - `decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`
 - `decomp/evidence/inittbl_system_dat_loader_slice.json`
 - `decomp/evidence/system_dat_header_words.json`
+- `decomp/evidence/runtime_opcode_table_binary_scan.json`
 - `decomp/evidence/opcode_0x80_runtime_slot_access_static.md`
 - `decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md`
 - `decomp/evidence/opcode_0x80_system_dat_static.md`
+- `decomp/evidence/opcode_0x80_binary_address_scan.md`
 
 ## Packet structure
 
@@ -60,6 +63,10 @@
 - `opcode_0x80_system_dat_static.md` is the focused support note for why the
   locally loaded `SYSTEM.DAT` blob should no longer be treated as the main
   missing executable-overlay candidate in this pass.
+- `opcode_0x80_binary_address_scan.md` is the focused support note for the raw
+  packaged-binary heuristic scan that checks whether any other local
+  `.PRG`/`.BIN` asset still builds the same absolute `0x800F4C28` access
+  pattern.
 
 ## Static findings
 
@@ -105,7 +112,7 @@
 
 ## Current conclusion
 
-- `0x80` is still **in progress**, not confirmed.
+- `0x80` is now **runtime needed**, not confirmed.
 - Local binary evidence now proves both the copied initial dispatch slot
   (`0x800B66E4`) and the init-time table copy into runtime slot `0x800F4C28`.
 - A widened local access sweep of `INITBTL.PRG`, `BATTLE.PRG`,
@@ -121,13 +128,16 @@
   `SYSTEM.DAT` file now show `SYSTEM.DAT` being loaded as offset-indexed
   asset/payload data and then freed, which weakens the old "`SYSTEM.DAT`
   might be the missing code overlay" branch.
+- A raw packaged-binary heuristic scan across `356` local `.PRG`/`.BIN`/`.40`
+  files now recovers the same absolute `0x800F4C28` access pattern in exactly
+  two files, `INITBTL.PRG` and `BATTLE.PRG`, with no third match in the
+  `EFFECT` plugin corpus or elsewhere in `Game Data`.
 - The nearby sound-shaped helper keeps `SoundEffects0` plausible as a working
   placeholder, but the local static picture now favors "`0x80-0x82` are real
   copied stubs, while `0x800BA2E0` belongs to a separate local sound
   subdispatch family that also contains the visible `0x83+` handlers."
 - The remaining unresolved question is no longer "is `0x800BA2E0` secretly the
-  real `0x80` target?" or "is there another recovered direct slot rewrite?"
-  but "does any other unrecovered path outside the currently traced local
-  reader mutate the copied table contents behind `0x800F4C28` before
-  dispatch, either from some other unrecovered code path or from a runtime-only
-  effect?"
+  real `0x80` target?" or "is there another obvious packaged direct slot
+  rewrite?" but "does any indirect path mutate the copied table contents behind
+  `0x800F4C28` before dispatch?" Static evidence is now narrow enough that
+  runtime is the clean next tie-breaker.
