@@ -26,6 +26,15 @@ def utc_now() -> str:
     return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def resolve_repo_path(raw_path: str | None, repo_root: Path) -> Path | None:
+    if raw_path is None:
+        return None
+    path = Path(raw_path)
+    if path.is_absolute():
+        return path
+    return (repo_root / path).resolve()
+
+
 def ensure_list(payload: dict[str, Any], key: str) -> list[Any]:
     value = payload.get(key)
     if value is None:
@@ -120,6 +129,7 @@ def add_table_mutation(
     snapshot_path: str | None,
     note: str | None,
     timestamp: str | None,
+    source: str | None = None,
 ) -> None:
     mutations = ensure_list(observation, "table_mutations")
     entry = {
@@ -131,6 +141,7 @@ def add_table_mutation(
     maybe_set(entry, "snapshot_label", snapshot_label)
     maybe_set(entry, "snapshot_path", snapshot_path)
     maybe_set(entry, "note", note)
+    maybe_set(entry, "source", source)
     mutations.append(entry)
 
 
@@ -159,6 +170,174 @@ def maybe_finalize(
     if allow_missing_snapshots:
         command.append("--allow-missing-snapshots")
     subprocess.run(command, check=True)
+
+
+def iter_compare_mutation_candidates(
+    compare_report: dict[str, Any],
+    *,
+    include_non_focus: bool,
+) -> list[dict[str, str | None]]:
+    snapshots = compare_report.get("snapshots")
+    if not isinstance(snapshots, list):
+        raise ValueError("Compare report is missing a 'snapshots' list")
+
+    candidates: list[dict[str, str | None]] = []
+    for snapshot in snapshots:
+        if not isinstance(snapshot, dict):
+            continue
+        snapshot_label = str(snapshot.get("label") or "unknown")
+        snapshot_path = snapshot.get("path")
+        rows = snapshot.get("changed_details")
+        if not isinstance(rows, list):
+            continue
+
+        focus_rows: set[tuple[str, str, str]] = set()
+        focus_entries = snapshot.get("focus_entries")
+        if isinstance(focus_entries, list):
+            for row in focus_entries:
+                if not isinstance(row, dict) or not row.get("changed"):
+                    continue
+                focus_rows.add(
+                    (
+                        str(row.get("opcode") or ""),
+                        str(row.get("expected_handler") or ""),
+                        str(row.get("observed_handler") or ""),
+                    )
+                )
+
+        for row in rows:
+            if not isinstance(row, dict) or not row.get("changed"):
+                continue
+
+            opcode = str(row.get("opcode") or "")
+            old_handler = str(row.get("expected_handler") or "")
+            new_handler = str(row.get("observed_handler") or "")
+            if not opcode or not old_handler or not new_handler:
+                continue
+
+            key = (opcode, old_handler, new_handler)
+            if not include_non_focus and key not in focus_rows:
+                continue
+
+            candidates.append(
+                {
+                    "opcode": opcode,
+                    "old_handler": old_handler,
+                    "new_handler": new_handler,
+                    "snapshot_label": snapshot_label,
+                    "snapshot_path": str(snapshot_path) if snapshot_path is not None else None,
+                    "note": "Imported from runtime snapshot compare report.",
+                }
+            )
+
+    return candidates
+
+
+def mutation_exists(
+    mutations: list[Any],
+    *,
+    opcode: str,
+    old_handler: str,
+    new_handler: str,
+    snapshot_label: str | None,
+    snapshot_path: str | None,
+    source: str,
+) -> bool:
+    for entry in mutations:
+        if not isinstance(entry, dict):
+            continue
+        if str(entry.get("opcode")) != opcode:
+            continue
+        if str(entry.get("old_handler")) != old_handler:
+            continue
+        if str(entry.get("new_handler")) != new_handler:
+            continue
+        if str(entry.get("source")) != source:
+            continue
+        if snapshot_label is not None and str(entry.get("snapshot_label")) != snapshot_label:
+            continue
+        if snapshot_path is not None and str(entry.get("snapshot_path")) != snapshot_path:
+            continue
+        return True
+    return False
+
+
+def clear_compare_report_mutations(observation: dict[str, Any]) -> int:
+    mutations = ensure_list(observation, "table_mutations")
+    kept = [
+        entry
+        for entry in mutations
+        if not (isinstance(entry, dict) and str(entry.get("source")) == "compare_report")
+    ]
+    removed = len(mutations) - len(kept)
+    observation["table_mutations"] = kept
+    return removed
+
+
+def import_compare_mutations(
+    observation: dict[str, Any],
+    *,
+    compare_report_path: Path,
+    include_non_focus: bool,
+    replace_derived: bool,
+    timestamp: str | None,
+) -> tuple[int, int, int]:
+    compare_report = load_json(compare_report_path)
+    candidates = iter_compare_mutation_candidates(
+        compare_report,
+        include_non_focus=include_non_focus,
+    )
+
+    removed = 0
+    if replace_derived:
+        removed = clear_compare_report_mutations(observation)
+
+    mutations = ensure_list(observation, "table_mutations")
+    imported = 0
+    skipped = 0
+    for candidate in candidates:
+        if mutation_exists(
+            mutations,
+            opcode=str(candidate["opcode"]),
+            old_handler=str(candidate["old_handler"]),
+            new_handler=str(candidate["new_handler"]),
+            snapshot_label=(
+                str(candidate["snapshot_label"])
+                if candidate["snapshot_label"] is not None
+                else None
+            ),
+            snapshot_path=(
+                str(candidate["snapshot_path"])
+                if candidate["snapshot_path"] is not None
+                else None
+            ),
+            source="compare_report",
+        ):
+            skipped += 1
+            continue
+
+        add_table_mutation(
+            observation,
+            opcode=str(candidate["opcode"]),
+            old_handler=str(candidate["old_handler"]),
+            new_handler=str(candidate["new_handler"]),
+            snapshot_label=(
+                str(candidate["snapshot_label"])
+                if candidate["snapshot_label"] is not None
+                else None
+            ),
+            snapshot_path=(
+                str(candidate["snapshot_path"])
+                if candidate["snapshot_path"] is not None
+                else None
+            ),
+            note=str(candidate["note"]) if candidate["note"] is not None else None,
+            timestamp=timestamp,
+            source="compare_report",
+        )
+        imported += 1
+
+    return imported, skipped, removed
 
 
 def build_argument_parser() -> argparse.ArgumentParser:
@@ -258,6 +437,29 @@ def build_argument_parser() -> argparse.ArgumentParser:
     )
     note_parser.add_argument("--note", required=True, help="Note text to append.")
 
+    compare_parser = subparsers.add_parser(
+        "import-compare",
+        parents=[event_parent],
+        help="Import changed opcode rows from a snapshot compare report into table_mutations.",
+    )
+    compare_parser.add_argument(
+        "--compare-report",
+        help=(
+            "Compare report JSON to import from. Defaults to compare_report_path "
+            "inside the observation JSON."
+        ),
+    )
+    compare_parser.add_argument(
+        "--include-non-focus",
+        action="store_true",
+        help="Import every changed opcode row, not just changed focus-opcode rows.",
+    )
+    compare_parser.add_argument(
+        "--replace-derived",
+        action="store_true",
+        help="Drop existing compare-report-derived table_mutations before reimporting.",
+    )
+
     return parser
 
 
@@ -271,6 +473,9 @@ def main() -> int:
     # Once a human records fresh runtime facts, clear the stale generated summary
     # so the next finalize pass cannot be mistaken for current state.
     maybe_reset_conclusion(observation)
+
+    repo_root = Path(__file__).resolve().parents[2]
+    import_summary: tuple[int, int, int] | None = None
 
     if args.command == "set-snapshot":
         update_snapshot(
@@ -315,15 +520,46 @@ def main() -> int:
         )
     elif args.command == "add-note":
         add_note(observation, note=args.note, timestamp=args.timestamp)
+    elif args.command == "import-compare":
+        compare_report_path = (
+            resolve_repo_path(args.compare_report, repo_root)
+            if args.compare_report
+            else resolve_repo_path(
+                observation.get("compare_report_path")
+                if isinstance(observation.get("compare_report_path"), str)
+                else None,
+                repo_root,
+            )
+        )
+        if compare_report_path is None:
+            parser.error(
+                "import-compare requires --compare-report or a compare_report_path "
+                "field in the observation JSON."
+            )
+        if not compare_report_path.exists():
+            parser.error(f"Compare report does not exist: {compare_report_path}")
+        import_summary = import_compare_mutations(
+            observation,
+            compare_report_path=compare_report_path,
+            include_non_focus=args.include_non_focus,
+            replace_derived=args.replace_derived,
+            timestamp=args.timestamp,
+        )
     else:
         parser.error(f"Unsupported command: {args.command}")
 
     write_json(observation_path, observation)
     print(f"updated observation JSON at {observation_path}")
+    if import_summary is not None:
+        imported, skipped, removed = import_summary
+        print(
+            "imported "
+            f"{imported} compare-derived mutation(s), skipped {skipped} duplicate(s), "
+            f"removed {removed} previous compare-derived mutation(s)"
+        )
 
     if args.finalize:
         finalize_helper = observation.get("finalize_helper")
-        repo_root = Path(__file__).resolve().parents[2]
         finalize_path = (
             (repo_root / finalize_helper).resolve()
             if isinstance(finalize_helper, str) and finalize_helper

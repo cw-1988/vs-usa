@@ -23,7 +23,8 @@ Current runtime-pass helpers:
   opcode table against a binary-derived export baseline
 - `record_runtime_observation.py`: appends snapshot paths, breakpoint hits,
   dispatches, mutations, and free-form notes into a checked-in runtime
-  observation packet without hand-editing the JSON
+  observation packet without hand-editing the JSON; it can also import changed
+  opcode rows from a generated compare report back into `table_mutations`
 - `finalize_runtime_observation.py`: validates a filled runtime observation
   packet, writes the compare report, and emits a short support note that is
   ready to link from the campaign ledger
@@ -43,6 +44,10 @@ Recommended runtime handoff flow:
 - once dumps and breakpoint notes are recorded, rerun the same helper without
   changing the artifact layout so the packet graduates from scaffold to runtime
   evidence in place
+- if the compare report shows rewritten handlers that should be called out
+  explicitly, import those changed rows back into the observation packet with
+  `record_runtime_observation.py import-compare --replace-derived --finalize`
+  so the `table_mutations` section and generated support note stay in sync
 
 ## What To Catch Early
 

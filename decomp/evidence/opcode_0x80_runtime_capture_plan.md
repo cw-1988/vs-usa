@@ -144,6 +144,21 @@ python decomp/verification/finalize_runtime_observation.py `
 If one snapshot is still missing and you only want a partial handoff artifact,
 add `--allow-missing-snapshots`.
 
+If the compare report shows changed handlers for the focus opcodes, import
+those rows back into the checked-in observation packet so the mutation section
+is explicit instead of living only inside the compare JSON:
+
+```powershell
+python decomp/verification/record_runtime_observation.py `
+  decomp/evidence/opcode_0x80_runtime_observation.json `
+  import-compare `
+  --replace-derived `
+  --finalize
+```
+
+Add `--include-non-focus` if the runtime pass needs every changed opcode row,
+not just the changed `0x80-0x82` focus entries.
+
 ## Exit conditions
 
 The contradiction is statically resolved enough to treat runtime as decisive if
@@ -164,6 +179,8 @@ If the table changes or dispatch reaches a different handler, store:
 - the comparison report
 - the filled observation template
 - the generated runtime support note
+- imported `table_mutations` rows in the checked-in observation packet when
+  the compare report changes the focus opcodes
 - one short runtime support note summarizing the decisive hit
 
 Then update `RE_CAMPAIGN_MEMORY.md` before ending the pass.

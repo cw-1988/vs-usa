@@ -86,7 +86,8 @@
   breakpoints, expected dump paths, and current missing-snapshot checklist.
 - `record_runtime_observation.py` is the CLI helper for appending snapshot
   paths, breakpoint hits, dispatches, mutations, and notes into that checked-in
-  packet during the runtime pass instead of hand-editing JSON.
+  packet during the runtime pass instead of hand-editing JSON; it can also
+  import changed compare-report rows back into `table_mutations`.
 - `opcode_0x80_runtime_snapshot_compare.json` is the generated compare report
   that currently records the missing dump files and should refresh in place
   once real RAM snapshots are added.
@@ -176,4 +177,9 @@
   `decomp/evidence/opcode_0x80_runtime_observation.json` with
   `decomp/verification/record_runtime_observation.py`, then refresh the
   compare report and support note in place with
-  `decomp/verification/finalize_runtime_observation.py --in-place`.
+  `decomp/verification/finalize_runtime_observation.py --in-place`. If the
+  focus opcodes changed, import those compare-report rows back into
+  `table_mutations` with
+  `decomp/verification/record_runtime_observation.py import-compare
+  --replace-derived --finalize` so the explicit rewritten handlers live in the
+  checked-in packet instead of only in the compare JSON.
