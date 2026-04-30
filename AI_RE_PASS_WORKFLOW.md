@@ -25,6 +25,11 @@ Complete one focused reverse-engineering pass that:
 Do not end with only vague findings. Convert the pass into code or note changes
 unless the evidence is too weak to justify a rename.
 
+If a pass produces changes that belong in both this workspace and
+`_refs/rood-reverse`, treat that as normal. Keep each repo's changes focused,
+stage them in the repo they belong to, and report commit-ready messages for
+each touched repo.
+
 ## Main Files
 
 Start here:
@@ -95,6 +100,11 @@ Use PCSX-Redux when:
 Use the reference checkout as the first code-level anchor when it already
 contains matched or partially named logic. It is often faster than dropping
 straight into raw disassembly.
+
+It is not always read-only. If the RE result justifies upstreamable decoder,
+symbol, struct, comment, or matched-code improvements there, make those
+changes in `_refs/rood-reverse` as part of the same pass instead of leaving the
+finding stranded only in local notes.
 
 ## Working Style
 
@@ -219,7 +229,8 @@ A successful pass should update one or more of:
 Optional if truly useful:
 
 - a short new note with tightly scoped findings
-- comments in the local reference checkout if that materially helps the next pass
+- comments or code changes in `_refs/rood-reverse` if that materially helps the
+  next pass or captures an upstreamable RE result
 
 Do not create a giant theory dump unless it directly helps the next pass.
 Prefer changes that improve the decoder, the findings trail, or both.
@@ -252,7 +263,7 @@ That means:
 1. The intended files are edited.
 2. The diff is focused.
 3. Verification is done.
-4. The AI stages the changes it intentionally made.
+4. The AI stages the changes it intentionally made in each touched repo.
 5. The user is given a clear findings summary.
 6. The user is given the exact commit message to use.
 
@@ -260,6 +271,9 @@ Do not run `git commit`.
 
 If unrelated changes already exist in the worktree, stage only the files or
 hunks that belong to this pass. Do not stage unrelated user work.
+
+If both repos were changed, provide one commit message per repo and say clearly
+which repo each message belongs to.
 
 ## Commit Strategy
 
@@ -292,7 +306,8 @@ Other acceptable scopes include:
 - `notes`
 - `tooling`
 
-At the end of the pass, provide one actual commit message, not just a pattern.
+At the end of the pass, provide one actual commit message per touched repo, not
+just a pattern.
 
 ## Final Report Format
 
@@ -303,8 +318,8 @@ When the pass is complete, report:
 3. which files were updated
 4. how you verified it
 5. a short summary of the findings in normal prose
-6. the exact conventional commit message
-7. confirmation that the intended changes are staged
+6. the exact conventional commit message for each touched repo
+7. confirmation that the intended changes are staged in each touched repo
 
 ## Avoid
 
