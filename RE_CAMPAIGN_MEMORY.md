@@ -83,7 +83,7 @@ Current phase: Pass 0 - Bootstrap and inventory
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `conflicted` | `INITBTL.PRG` static table `D_800FAF7C`, copied into runtime heap table `D_800F4C28` by `_initScriptFunctionTable()` | Static slot `0x800B66E4` vs nearby sound-shaped helper `0x800BA2E0` in `BATTLE.PRG` | `SoundEffects0` placeholder only | Does any later runtime path rewrite or bypass the copied `D_800F4C28` entry for the `0x80-0x84` family? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json) |
+| `opcode 0x80` | `conflicted` | `INITBTL.PRG` static table `D_800FAF7C`, copied into runtime heap table `D_800F4C28` by `_initScriptFunctionTable()` | Static slot `0x800B66E4`; nearby `0x800BA2E0` now looks more like a helper inside the adjacent `0x83+` sound cluster than a direct `0x80` target | `SoundEffects0` placeholder only | Does any later runtime path rewrite or bypass the copied `D_800F4C28` entry, or does xref recovery show `0x800BA2E0` belongs only to the `0x83+` sound family? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json) |
 
 ## Known Conflicts
 
@@ -100,10 +100,15 @@ Current phase: Pass 0 - Bootstrap and inventory
 - What competing evidence says:
   `decomp/evidence/battle_sound_candidate_slice.json` shows `0x800BA2E0`
   consuming the same four argument bytes and calling `vs_main_playSfx`, so a
-  nearby sound-family implementation still looks plausible.
+  nearby sound-family implementation still looks plausible. But
+  `decomp/evidence/opcode_0x80_sound_cluster_static.md` now shows that the
+  exported/source table already transitions from the `0x80-0x82` stub cluster
+  into explicit sound-control handlers at `0x83+`, which weakens the idea that
+  `0x800BA2E0` must be a hidden replacement for `0x80`.
 - What is still missing: the live dispatch consumer for `D_800F4C28`, plus any
   later patch writer or bypass path that could swap `0x80-0x84` away from the
-  copied `0x800B66E4` entries.
+  copied `0x800B66E4` entries, or a direct caller xref that pins
+  `0x800BA2E0` to one of the visible `0x83+` sound opcodes.
 - Is runtime justified yet: not yet. Static ownership and the init-time copy
   are now confirmed, so the next step is still static patch/consumer tracing
   before using `PCSX-Redux` as a tie-breaker.
@@ -122,6 +127,7 @@ Current phase: Pass 0 - Bootstrap and inventory
 ### Reconciliation reports
 
 - [`decomp/evidence/opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md)
+- [`decomp/evidence/opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md)
 
 ### Proof packets
 
@@ -129,12 +135,13 @@ Current phase: Pass 0 - Bootstrap and inventory
 
 ## Session Handoff
 
-- `last completed step`: proved that `INITBTL.PRG` owns the static
-  `D_800FAF7C` battle opcode table and that `_initScriptFunctionTable()`
-  copies it into runtime heap buffer `D_800F4C28` during battle bootstrap
-- `next recommended step`: trace the live consumer of `D_800F4C28` and look
-  for any later patch writer or bypass path that could affect the `0x80-0x84`
-  family
+- `last completed step`: showed that the table already enters a visible
+  sound-control cluster at `0x83+`, making `0x800BA2E0` more likely to belong
+  to adjacent sound opcodes than to a hidden rewrite of `0x80`
+- `next recommended step`: recover xrefs for the runtime dispatch path or for
+  callers of `func_800BA2E0` so the `0x80` conflict can be downgraded from
+  "competing semantic candidate" to either "adjacent helper only" or
+  `runtime_needed`
 - `do not forget`: update this ledger before ending the next pass; no export,
   coverage note, or contradiction should live only in terminal output
 
@@ -159,3 +166,11 @@ Current phase: Pass 0 - Bootstrap and inventory
   [`decomp/evidence/inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json),
   [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c),
   [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/18.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/18.c)
+- `2026-04-30`: showed that the copied `0x80-0x82` stub block is immediately
+  followed by a visible `0x83+` sound-control cluster, weakening the idea that
+  the nearby `vs_main_playSfx` helper is a hidden direct implementation of
+  `0x80`. Links:
+  [`decomp/evidence/opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md),
+  [`decomp/evidence/inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json),
+  [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c),
+  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
