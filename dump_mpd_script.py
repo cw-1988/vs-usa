@@ -780,7 +780,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Disassemble the ScriptSection of MAP*.MPD files in batch mode."
     )
-    parser.add_argument("mpd", type=Path, help="Path to a directory containing MAP*.MPD files")
+    parser.add_argument(
+        "mpd",
+        nargs="?",
+        default=Path("game data/map"),
+        type=Path,
+        help="Optional path to a directory containing MAP*.MPD files (default: game data/map)",
+    )
     parser.add_argument(
         "-o",
         "--output",
@@ -791,7 +797,8 @@ def main() -> None:
 
     inputs = collect_inputs(args.mpd)
     if not inputs:
-        raise FileNotFoundError(f"No MAP*.MPD files found in: {args.mpd}")
+        print(f"No MAP*.MPD files found in: {args.mpd}")
+        return
 
     output_root = args.output if args.output else Path("decoded_scripts")
     output_root.mkdir(parents=True, exist_ok=True)
