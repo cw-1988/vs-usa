@@ -1,0 +1,77 @@
+{
+  "program_name": "BATTLE.PRG",
+  "target": "800f4c28",
+  "backward_window": 6,
+  "before_count": 5,
+  "after_count": 8,
+  "matches": [
+    {
+      "instruction_address": "800bfcfc",
+      "instruction_text": "lw v1,0x4c28(v1)",
+      "access_kind": "read",
+      "base_register": "v1",
+      "matching_lui_address": "800bfcf4",
+      "matching_lui_text": "lui v1,0x800f",
+      "function_name": "FUN_800bfbb8",
+      "function_entry": "800bfbb8",
+      "instructions": [
+          {
+            "address": "800bfce8",
+            "text": "sll v0,v0,0x2"
+          },
+          {
+            "address": "800bfcec",
+            "text": "j 0x800bfd08"
+          },
+          {
+            "address": "800bfcf0",
+            "text": "_addu v0,v0,s4"
+          },
+          {
+            "address": "800bfcf4",
+            "text": "lui v1,0x800f"
+          },
+          {
+            "address": "800bfcf8",
+            "text": "lbu v0,0x0(s0)"
+          },
+          {
+            "address": "800bfcfc",
+            "text": "lw v1,0x4c28(v1)"
+          },
+          {
+            "address": "800bfd00",
+            "text": "sll v0,v0,0x2"
+          },
+          {
+            "address": "800bfd04",
+            "text": "addu v0,v0,v1"
+          },
+          {
+            "address": "800bfd08",
+            "text": "lw v0,0x0(v0)"
+          },
+          {
+            "address": "800bfd0c",
+            "text": "nop"
+          },
+          {
+            "address": "800bfd10",
+            "text": "jalr v0"
+          },
+          {
+            "address": "800bfd14",
+            "text": "_sra a1,s1,0x10"
+          },
+          {
+            "address": "800bfd18",
+            "text": "move v1,v0"
+          },
+          {
+            "address": "800bfd1c",
+            "text": "sltiu v0,v1,0x5"
+          }
+      ]
+    }
+  ]
+}

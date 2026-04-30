@@ -1,0 +1,61 @@
+{
+  "program_name": "INITBTL.PRG",
+  "target": "800f4c28",
+  "backward_window": 6,
+  "before_count": 5,
+  "after_count": 8,
+  "matches": [
+    {
+      "instruction_address": "800fab04",
+      "instruction_text": "_sw a0,0x4c28(v0)",
+      "access_kind": "write",
+      "base_register": "v0",
+      "matching_lui_address": "800faaf0",
+      "matching_lui_text": "lui v0,0x800f",
+      "function_name": null,
+      "function_entry": null,
+      "instructions": [
+          {
+            "address": "800faaf0",
+            "text": "lui v0,0x800f"
+          },
+          {
+            "address": "800faaf4",
+            "text": "lui a1,0x8010"
+          },
+          {
+            "address": "800faaf8",
+            "text": "addiu a1,a1,-0x5084"
+          },
+          {
+            "address": "800faafc",
+            "text": "li a2,0x400"
+          },
+          {
+            "address": "800fab00",
+            "text": "jal 0x800490b0"
+          },
+          {
+            "address": "800fab04",
+            "text": "_sw a0,0x4c28(v0)"
+          },
+          {
+            "address": "800fab08",
+            "text": "lw ra,0x10(sp)"
+          },
+          {
+            "address": "800fab0c",
+            "text": "nop"
+          },
+          {
+            "address": "800fab10",
+            "text": "jr ra"
+          },
+          {
+            "address": "800fab14",
+            "text": "_addiu sp,sp,0x18"
+          }
+      ]
+    }
+  ]
+}

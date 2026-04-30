@@ -96,7 +96,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `in_progress` | `INITBTL.PRG` static table at `0x800FAF7C`, copied into runtime slot `0x800F4C28` by the locally dumped init-time routine at `0x800FAAAC` | Static slot `0x800B66E4`; former competing helper `0x800BA2E0` is now anchored to a local `BATTLE.PRG` sound subdispatch table at `0x800E9F30` with siblings `0x800BA35C/39C/3E4/404/444/470/494`; live `BATTLE.PRG` consumer `FUN_800BFBB8` now reads `0x800F4C28`, indexes by opcode byte, and dispatches via `jalr` | `SoundEffects0` placeholder only | Is there any later static writer that rewrites `0x800F4C28` after the verified init-time copy, now that local `BATTLE.PRG` evidence shows a direct runtime-table consumer instead of a bypass path? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json), [`battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json), [`battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json), [`battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json), [`battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json) |
+| `opcode 0x80` | `in_progress` | `INITBTL.PRG` static table at `0x800FAF7C`, copied into runtime slot `0x800F4C28` by the locally dumped init-time routine at `0x800FAAAC` | Static slot `0x800B66E4`; former competing helper `0x800BA2E0` is now anchored to a local `BATTLE.PRG` sound subdispatch table at `0x800E9F30` with siblings `0x800BA35C/39C/3E4/404/444/470/494`; live `BATTLE.PRG` consumer `FUN_800BFBB8` now reads `0x800F4C28`, indexes by opcode byte, and dispatches via `jalr` | `SoundEffects0` placeholder only | After the direct-slot access sweep found one `INITBTL.PRG` write and one `BATTLE.PRG` read, is any later mutation now only indirect table patching behind the copied pointer rather than another absolute-slot rewrite? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json), [`inittbl_runtime_opcode_table_accesses.json`](decomp/evidence/inittbl_runtime_opcode_table_accesses.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json), [`battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json), [`battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json), [`battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json), [`battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json), [`battle_runtime_opcode_table_accesses.json`](decomp/evidence/battle_runtime_opcode_table_accesses.json) |
 
 ## Known Conflicts
 
@@ -117,21 +117,25 @@ Current phase: Pass 3 - Copy/patch reconciliation
   now recovers a direct local read xref in `FUN_800BFBB8` that loads
   `0x800F4C28`, indexes by the opcode byte, loads the pointed-to handler, and
   dispatches through `jalr`, proving a live consumer of the copied runtime
-  table.
+  table. `decomp/evidence/inittbl_runtime_opcode_table_accesses.json` and
+  `decomp/evidence/battle_runtime_opcode_table_accesses.json` now add a direct
+  absolute-slot access sweep across the two local battle executables, finding
+  one init-time `INITBTL.PRG` write to `0x800F4C28` and one `BATTLE.PRG` read
+  from it, with no additional direct slot accesses recovered in that local
+  sweep.
 - What competing evidence says:
   There is no longer a strong static case that `0x800BA2E0` is the hidden
   direct `0x80` target, and the bypass half of the contradiction has now been
-  weakened by the direct `0x800F4C28` consumer xref. The remaining
-  contradiction is only the unproven possibility that some later runtime path
-  rewrites the copied `0x800F4C28` slot before execution.
-- What is still missing: any later patch writer that could swap `0x80-0x84`
-  away from the copied `0x800B66E4` entries after the verified init-time copy
-  and before `FUN_800BFBB8` dispatches through the table.
-- Is runtime justified yet: not yet. Local static evidence now proves the
-  copied initial table state, anchors `0x800BA2E0` to a separate local
-  sound-family table, and recovers a direct runtime-table consumer, so the next
-  step is still static writer tracing before using `PCSX-Redux` as a
-  tie-breaker.
+  weakened by the direct `0x800F4C28` consumer xref plus the absolute-slot
+  access sweep. The remaining contradiction is narrower: some later path could
+  still mutate the copied `0x400`-byte table indirectly after reading the
+  pointer, even if another absolute-slot rewrite has not been recovered.
+- What is still missing: any static or runtime evidence that the copied table
+  contents themselves are patched after the verified init-time copy, rather
+  than only the slot being read and dispatched through.
+- Is runtime justified yet: not yet. The direct-slot rewrite question is now
+  much weaker, so the next static step is indirect patch tracing from the
+  copied table/pointer before using `PCSX-Redux` as a late tie-breaker.
 
 ## Artifacts Index
 
@@ -142,6 +146,8 @@ Current phase: Pass 3 - Copy/patch reconciliation
 - [`decomp/evidence/battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json)
 - [`decomp/evidence/battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json)
 - [`decomp/evidence/battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json)
+- [`decomp/evidence/inittbl_runtime_opcode_table_accesses.json`](decomp/evidence/inittbl_runtime_opcode_table_accesses.json)
+- [`decomp/evidence/battle_runtime_opcode_table_accesses.json`](decomp/evidence/battle_runtime_opcode_table_accesses.json)
 
 ### Handler slices
 
@@ -155,6 +161,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 - [`decomp/evidence/opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md)
 - [`decomp/evidence/opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md)
 - [`decomp/evidence/opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md)
+- [`decomp/evidence/opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md)
 
 ### Proof packets
 
@@ -162,17 +169,18 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 ## Session Handoff
 
-- `last completed step`: recovered a direct local `BATTLE.PRG` consumer for
-  `0x800F4C28`, showing `FUN_800BFBB8` loading the runtime table, indexing by
-  opcode byte, and dispatching via `jalr`; folded that result into a local
-  reconciliation note instead of leaving it as a transient shell export
-- `next recommended step`: trace for any later static writer to `0x800F4C28`
-  now that the consumer side is locally proven and the remaining contradiction
-  is patch-only rather than consumer/bypass ambiguity
+- `last completed step`: added a reusable direct-address access sweep, then ran
+  it across `INITBTL.PRG` and `BATTLE.PRG` to show one init-time write to
+  `0x800F4C28`, one runtime read from it, and no additional recovered direct
+  slot accesses in those two battle executables
+- `next recommended step`: trace for indirect writes to the copied opcode table
+  contents after the init-time copy, since the direct-slot rewrite question is
+  now narrowed and the remaining uncertainty is table mutation rather than
+  consumer/bypass ambiguity
 - `do not forget`: update this ledger before ending the next pass; no export,
   coverage note, or contradiction should live only in terminal output; keep
-  runtime as a late tie-breaker only after static writer tracing around
-  `0x800F4C28` stalls
+  runtime as a late tie-breaker only after indirect patch tracing around the
+  copied table stalls
 
 ## Completed Milestones
 
@@ -207,3 +215,10 @@ Current phase: Pass 3 - Copy/patch reconciliation
   Links:
   [`decomp/evidence/battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json),
   [`decomp/evidence/opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md)
+- `2026-04-30`: added a reusable local direct-address access sweep, then used
+  it to recover the `INITBTL.PRG` write to `0x800F4C28`, the `BATTLE.PRG` read
+  from it, and the absence of any other recovered direct slot accesses in those
+  two battle executables. Links:
+  [`decomp/evidence/inittbl_runtime_opcode_table_accesses.json`](decomp/evidence/inittbl_runtime_opcode_table_accesses.json),
+  [`decomp/evidence/battle_runtime_opcode_table_accesses.json`](decomp/evidence/battle_runtime_opcode_table_accesses.json),
+  [`decomp/evidence/opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md)
