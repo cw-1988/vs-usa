@@ -5,6 +5,7 @@
   "runtime_table_size_bytes": 1024,
   "baseline_export": "decomp/evidence/inittbl_opcode_table.json",
   "compare_helper": "decomp/verification/compare_opcode_table_snapshots.py",
+  "record_helper": "decomp/verification/record_runtime_observation.py",
   "finalize_helper": "decomp/verification/finalize_runtime_observation.py",
   "compare_report_path": "decomp/evidence/opcode_0x80_runtime_snapshot_compare.json",
   "support_note_path": "decomp/evidence/opcode_0x80_runtime_support.md",
@@ -51,7 +52,7 @@
   "table_mutations": [],
   "dispatch_observations": [],
   "comparison_summary": {
-    "generated_utc": "2026-04-30T20:01:31Z",
+    "generated_utc": "2026-04-30T20:11:55Z",
     "compared_snapshot_count": 0,
     "compared_snapshot_labels": [],
     "missing_snapshot_count": 2,
@@ -65,6 +66,7 @@
     "recorded_breakpoint_hit_count": 0,
     "recorded_table_mutation_count": 0,
     "recorded_dispatch_count": 0,
+    "recorded_note_count": 0,
     "focus_opcodes": {}
   },
   "conclusion": "Runtime observation packet is not finalized yet: no listed snapshot files were available for comparison.",

@@ -24,6 +24,7 @@
 - `decomp/ghidra/TracePointerDerivedAccesses.java`
 - `decomp/verification/scan_mips_address_accesses.py`
 - `decomp/verification/compare_opcode_table_snapshots.py`
+- `decomp/verification/record_runtime_observation.py`
 - `decomp/verification/finalize_runtime_observation.py`
 
 ## Produced artifacts
@@ -83,6 +84,9 @@
 - `opcode_0x80_runtime_observation.json` is the checked-in scaffolded
   observation packet for the next runtime pass; it already carries the planned
   breakpoints, expected dump paths, and current missing-snapshot checklist.
+- `record_runtime_observation.py` is the CLI helper for appending snapshot
+  paths, breakpoint hits, dispatches, mutations, and notes into that checked-in
+  packet during the runtime pass instead of hand-editing JSON.
 - `opcode_0x80_runtime_snapshot_compare.json` is the generated compare report
   that currently records the missing dump files and should refresh in place
   once real RAM snapshots are added.
@@ -169,6 +173,7 @@
   binary baseline with
   `decomp/verification/compare_opcode_table_snapshots.py`, and record the
   breakpoint results in
-  `decomp/evidence/opcode_0x80_runtime_observation.json`, then refresh the
+  `decomp/evidence/opcode_0x80_runtime_observation.json` with
+  `decomp/verification/record_runtime_observation.py`, then refresh the
   compare report and support note in place with
   `decomp/verification/finalize_runtime_observation.py --in-place`.

@@ -56,6 +56,39 @@ smallest capture plan that should settle it.
 9. Record the breakpoint hits and dump paths in
    `decomp/evidence/opcode_0x80_runtime_observation.json`.
 
+Use the recorder helper instead of hand-editing the JSON during the runtime
+pass. Examples:
+
+```powershell
+python decomp/verification/record_runtime_observation.py `
+  decomp/evidence/opcode_0x80_runtime_observation.json `
+  set-snapshot `
+  --label after_init `
+  --path decomp/evidence/opcode_0x80_runtime_after_init.bin `
+  --finalize `
+  --allow-missing-snapshots
+
+python decomp/verification/record_runtime_observation.py `
+  decomp/evidence/opcode_0x80_runtime_observation.json `
+  add-breakpoint-hit `
+  --kind exec `
+  --address 0x800BFBB8 `
+  --pc 0x800BFBB8 `
+  --note "reader reached before candidate dispatch" `
+  --finalize `
+  --allow-missing-snapshots
+
+python decomp/verification/record_runtime_observation.py `
+  decomp/evidence/opcode_0x80_runtime_observation.json `
+  add-dispatch `
+  --opcode 0x80 `
+  --handler-address 0x800B66E4 `
+  --source-breakpoint 0x800B66E4 `
+  --note "dispatch stayed on the copied stub target" `
+  --finalize `
+  --allow-missing-snapshots
+```
+
 ## Checked-in scaffold
 
 This repo now keeps a partially finalized observation scaffold at:
@@ -65,6 +98,11 @@ This repo now keeps a partially finalized observation scaffold at:
 It already records the planned breakpoints, expected dump paths, and the
 current "missing snapshot" state, so the next runtime pass can update that
 file directly instead of starting from a blank template.
+
+The same JSON also names the helper scripts:
+
+- `record_helper`: `decomp/verification/record_runtime_observation.py`
+- `finalize_helper`: `decomp/verification/finalize_runtime_observation.py`
 
 If the scaffold ever needs to be regenerated from the untouched template, use:
 

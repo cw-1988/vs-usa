@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Generated from `Pass 3 - Copy/patch reconciliation` on `2026-04-30 20:01:31Z`.
+- Generated from `Pass 3 - Copy/patch reconciliation` on `2026-04-30 20:11:55Z`.
 - Observation source: `decomp/evidence/opcode_0x80_runtime_observation.json`
 - Baseline export: `decomp/evidence/inittbl_opcode_table.json`
 - Runtime table address: `0x800F4C28`
@@ -34,6 +34,10 @@
 ## Dispatch Observations
 
 - No dispatch observations were recorded yet.
+
+## Notes
+
+- No extra runtime notes were recorded yet.
 
 ## Conclusion
 

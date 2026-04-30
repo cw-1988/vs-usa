@@ -299,9 +299,15 @@ def render_breakpoint_lines(observation: dict[str, Any]) -> list[str]:
         address = entry.get("address") or entry.get("address_range") or "unknown"
         hit_count = entry.get("hit_count")
         note = entry.get("note")
+        timestamp = entry.get("timestamp")
+        pc = entry.get("pc")
         parts = [f"- `{kind}` breakpoint at `{address}`"]
         if hit_count is not None:
             parts.append(f"hit `{hit_count}` time(s)")
+        if timestamp:
+            parts.append(f"timestamp `{timestamp}`")
+        if pc:
+            parts.append(f"PC `{pc}`")
         if note:
             parts.append(str(note))
         lines.append(", ".join(parts))
@@ -339,7 +345,19 @@ def render_dispatch_lines(observation: dict[str, Any]) -> list[str]:
         opcode = entry.get("opcode", "unknown")
         handler = entry.get("handler_address") or entry.get("observed_handler") or "unknown"
         note = entry.get("note")
+        timestamp = entry.get("timestamp")
+        source_breakpoint = entry.get("source_breakpoint")
+        snapshot_label = entry.get("snapshot_label")
         line = f"- Opcode `{opcode}` dispatched to `{handler}`"
+        extra_parts: list[str] = []
+        if timestamp:
+            extra_parts.append(f"timestamp `{timestamp}`")
+        if source_breakpoint:
+            extra_parts.append(f"source `{source_breakpoint}`")
+        if snapshot_label:
+            extra_parts.append(f"snapshot `{snapshot_label}`")
+        if extra_parts:
+            line += f" ({', '.join(extra_parts)})"
         if note:
             line += f": {note}"
         lines.append(line)
@@ -360,13 +378,46 @@ def render_table_mutation_lines(observation: dict[str, Any]) -> list[str]:
         old_handler = entry.get("old_handler") or entry.get("expected_handler") or "unknown"
         new_handler = entry.get("new_handler") or entry.get("observed_handler") or "unknown"
         note = entry.get("note")
+        timestamp = entry.get("timestamp")
+        snapshot_path = entry.get("snapshot_path")
         line = (
             f"- `{snapshot}` changed opcode `{opcode}` from `{old_handler}` to `{new_handler}`"
         )
+        extra_parts: list[str] = []
+        if timestamp:
+            extra_parts.append(f"timestamp `{timestamp}`")
+        if snapshot_path:
+            extra_parts.append(f"dump `{snapshot_path}`")
+        if extra_parts:
+            line += f" ({', '.join(extra_parts)})"
         if note:
             line += f": {note}"
         lines.append(line)
     return lines or ["- No table mutation observations were recorded yet."]
+
+
+def render_note_lines(observation: dict[str, Any]) -> list[str]:
+    notes = observation.get("notes")
+    if not isinstance(notes, list) or not notes:
+        return ["- No extra runtime notes were recorded yet."]
+
+    lines: list[str] = []
+    for entry in notes:
+        if isinstance(entry, dict):
+            text = entry.get("text")
+            timestamp = entry.get("timestamp")
+            if not text:
+                continue
+            line = f"- {text}"
+            if timestamp:
+                line += f" (`{timestamp}`)"
+            lines.append(line)
+            continue
+
+        if isinstance(entry, str) and entry:
+            lines.append(f"- {entry}")
+
+    return lines or ["- No extra runtime notes were recorded yet."]
 
 
 def render_snapshot_lines(compare_report: dict[str, Any]) -> list[str]:
@@ -452,6 +503,10 @@ def build_support_note(
         "",
         *render_dispatch_lines(observation),
         "",
+        "## Notes",
+        "",
+        *render_note_lines(observation),
+        "",
         "## Conclusion",
         "",
         conclusion,
@@ -505,6 +560,9 @@ def update_observation_payload(
         else 0,
         "recorded_dispatch_count": len(observation.get("dispatch_observations", []))
         if isinstance(observation.get("dispatch_observations"), list)
+        else 0,
+        "recorded_note_count": len(observation.get("notes", []))
+        if isinstance(observation.get("notes"), list)
         else 0,
         "focus_opcodes": focus_summary,
     }

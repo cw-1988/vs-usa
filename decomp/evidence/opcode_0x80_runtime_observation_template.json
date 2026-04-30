@@ -5,6 +5,7 @@
   "runtime_table_size_bytes": 1024,
   "baseline_export": "decomp/evidence/inittbl_opcode_table.json",
   "compare_helper": "decomp/verification/compare_opcode_table_snapshots.py",
+  "record_helper": "decomp/verification/record_runtime_observation.py",
   "finalize_helper": "decomp/verification/finalize_runtime_observation.py",
   "compare_report_path": "decomp/evidence/opcode_0x80_runtime_snapshot_compare.json",
   "support_note_path": "decomp/evidence/opcode_0x80_runtime_support.md",
