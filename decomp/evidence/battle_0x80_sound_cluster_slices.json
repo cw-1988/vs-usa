@@ -1,0 +1,420 @@
+{
+  "program_name": "BATTLE.PRG",
+  "instruction_count": 16,
+  "slices": [
+    {
+      "start": "800b66e4",
+      "instructions": [
+        {
+          "address": "800b66e4",
+          "text": "jr ra"
+        },
+        {
+          "address": "800b66e8",
+          "text": "_clear v0"
+        },
+        {
+          "address": "800b66f4",
+          "text": "lui v0,0x800f"
+        },
+        {
+          "address": "800b66f8",
+          "text": "lw v1,0x4bbc(v0)"
+        },
+        {
+          "address": "800b66fc",
+          "text": "nop"
+        },
+        {
+          "address": "800b6700",
+          "text": "beq v1,zero,0x800b671c"
+        },
+        {
+          "address": "800b6704",
+          "text": "_clear v0"
+        },
+        {
+          "address": "800b6708",
+          "text": "lh a0,0x0(v1)"
+        },
+        {
+          "address": "800b670c",
+          "text": "li v1,0x4"
+        },
+        {
+          "address": "800b6710",
+          "text": "bne a0,v1,0x800b671c"
+        },
+        {
+          "address": "800b6714",
+          "text": "_li v0,0x1"
+        },
+        {
+          "address": "800b6718",
+          "text": "clear v0"
+        },
+        {
+          "address": "800b671c",
+          "text": "jr ra"
+        },
+        {
+          "address": "800b6720",
+          "text": "_nop"
+        },
+        {
+          "address": "800b6724",
+          "text": "lui v0,0x800f"
+        },
+        {
+          "address": "800b6728",
+          "text": "lw v0,-0x4644(v0)"
+        }
+      ]
+    },
+    {
+      "start": "800ba2e0",
+      "instructions": [
+        {
+          "address": "800ba2e0",
+          "text": "addiu sp,sp,-0x18"
+        },
+        {
+          "address": "800ba2e4",
+          "text": "move a3,a0"
+        },
+        {
+          "address": "800ba2e8",
+          "text": "sw ra,0x10(sp)"
+        },
+        {
+          "address": "800ba2ec",
+          "text": "lbu v1,0x1(a3)"
+        },
+        {
+          "address": "800ba2f0",
+          "text": "li v0,0x2"
+        },
+        {
+          "address": "800ba2f4",
+          "text": "bne v1,v0,0x800ba320"
+        },
+        {
+          "address": "800ba2f8",
+          "text": "_lui v1,0x800f"
+        },
+        {
+          "address": "800ba2fc",
+          "text": "lui v0,0x800f"
+        },
+        {
+          "address": "800ba300",
+          "text": "lbu v0,0x4c08(v0)"
+        },
+        {
+          "address": "800ba304",
+          "text": "nop"
+        },
+        {
+          "address": "800ba308",
+          "text": "beq v0,zero,0x800ba348"
+        },
+        {
+          "address": "800ba30c",
+          "text": "_lui v0,0x800f"
+        },
+        {
+          "address": "800ba310",
+          "text": "lbu v1,0x2(a3)"
+        },
+        {
+          "address": "800ba314",
+          "text": "nop"
+        },
+        {
+          "address": "800ba318",
+          "text": "sh v1,0x4c4c(v0)"
+        },
+        {
+          "address": "800ba31c",
+          "text": "lui v1,0x800f"
+        }
+      ]
+    },
+    {
+      "start": "800ba3e4",
+      "instructions": [
+        {
+          "address": "800ba3e4",
+          "text": "addiu sp,sp,-0x18"
+        },
+        {
+          "address": "800ba3e8",
+          "text": "sw ra,0x10(sp)"
+        },
+        {
+          "address": "800ba3ec",
+          "text": "jal 0x80045dc0"
+        },
+        {
+          "address": "800ba3f0",
+          "text": "_nop"
+        },
+        {
+          "address": "800ba3f4",
+          "text": "lw ra,0x10(sp)"
+        },
+        {
+          "address": "800ba3f8",
+          "text": "clear v0"
+        },
+        {
+          "address": "800ba3fc",
+          "text": "jr ra"
+        },
+        {
+          "address": "800ba400",
+          "text": "_addiu sp,sp,0x18"
+        },
+        {
+          "address": "800ba404",
+          "text": "addiu sp,sp,-0x18"
+        },
+        {
+          "address": "800ba408",
+          "text": "move a1,a0"
+        },
+        {
+          "address": "800ba40c",
+          "text": "lui v1,0x800f"
+        },
+        {
+          "address": "800ba410",
+          "text": "addiu v1,v1,-0x64cc"
+        },
+        {
+          "address": "800ba414",
+          "text": "sw ra,0x10(sp)"
+        },
+        {
+          "address": "800ba418",
+          "text": "lbu v0,0x1(a1)"
+        },
+        {
+          "address": "800ba41c",
+          "text": "lbu a1,0x2(a1)"
+        },
+        {
+          "address": "800ba420",
+          "text": "sll v0,v0,0x2"
+        }
+      ]
+    },
+    {
+      "start": "800ba404",
+      "instructions": [
+        {
+          "address": "800ba404",
+          "text": "addiu sp,sp,-0x18"
+        },
+        {
+          "address": "800ba408",
+          "text": "move a1,a0"
+        },
+        {
+          "address": "800ba40c",
+          "text": "lui v1,0x800f"
+        },
+        {
+          "address": "800ba410",
+          "text": "addiu v1,v1,-0x64cc"
+        },
+        {
+          "address": "800ba414",
+          "text": "sw ra,0x10(sp)"
+        },
+        {
+          "address": "800ba418",
+          "text": "lbu v0,0x1(a1)"
+        },
+        {
+          "address": "800ba41c",
+          "text": "lbu a1,0x2(a1)"
+        },
+        {
+          "address": "800ba420",
+          "text": "sll v0,v0,0x2"
+        },
+        {
+          "address": "800ba424",
+          "text": "addu v0,v0,v1"
+        },
+        {
+          "address": "800ba428",
+          "text": "lw a0,0x0(v0)"
+        },
+        {
+          "address": "800ba42c",
+          "text": "jal 0x80045d64"
+        },
+        {
+          "address": "800ba430",
+          "text": "_nop"
+        },
+        {
+          "address": "800ba434",
+          "text": "lw ra,0x10(sp)"
+        },
+        {
+          "address": "800ba438",
+          "text": "clear v0"
+        },
+        {
+          "address": "800ba43c",
+          "text": "jr ra"
+        },
+        {
+          "address": "800ba440",
+          "text": "_addiu sp,sp,0x18"
+        }
+      ]
+    },
+    {
+      "start": "800ba444",
+      "instructions": [
+        {
+          "address": "800ba444",
+          "text": "addiu sp,sp,-0x18"
+        },
+        {
+          "address": "800ba448",
+          "text": "move v0,a0"
+        },
+        {
+          "address": "800ba44c",
+          "text": "sw ra,0x10(sp)"
+        },
+        {
+          "address": "800ba450",
+          "text": "lbu a0,0x1(v0)"
+        },
+        {
+          "address": "800ba454",
+          "text": "lbu a1,0x2(v0)"
+        },
+        {
+          "address": "800ba458",
+          "text": "jal 0x80045de0"
+        },
+        {
+          "address": "800ba45c",
+          "text": "_nop"
+        },
+        {
+          "address": "800ba460",
+          "text": "lw ra,0x10(sp)"
+        },
+        {
+          "address": "800ba464",
+          "text": "clear v0"
+        },
+        {
+          "address": "800ba468",
+          "text": "jr ra"
+        },
+        {
+          "address": "800ba46c",
+          "text": "_addiu sp,sp,0x18"
+        },
+        {
+          "address": "800ba470",
+          "text": "addiu sp,sp,-0x18"
+        },
+        {
+          "address": "800ba474",
+          "text": "sw ra,0x10(sp)"
+        },
+        {
+          "address": "800ba478",
+          "text": "lbu a0,0x1(a0)"
+        },
+        {
+          "address": "800ba47c",
+          "text": "jal 0x80045f64"
+        },
+        {
+          "address": "800ba480",
+          "text": "_nop"
+        }
+      ]
+    },
+    {
+      "start": "800ba470",
+      "instructions": [
+        {
+          "address": "800ba470",
+          "text": "addiu sp,sp,-0x18"
+        },
+        {
+          "address": "800ba474",
+          "text": "sw ra,0x10(sp)"
+        },
+        {
+          "address": "800ba478",
+          "text": "lbu a0,0x1(a0)"
+        },
+        {
+          "address": "800ba47c",
+          "text": "jal 0x80045f64"
+        },
+        {
+          "address": "800ba480",
+          "text": "_nop"
+        },
+        {
+          "address": "800ba484",
+          "text": "lw ra,0x10(sp)"
+        },
+        {
+          "address": "800ba488",
+          "text": "sltu v0,zero,v0"
+        },
+        {
+          "address": "800ba48c",
+          "text": "jr ra"
+        },
+        {
+          "address": "800ba490",
+          "text": "_addiu sp,sp,0x18"
+        },
+        {
+          "address": "800ba494",
+          "text": "addiu sp,sp,-0x18"
+        },
+        {
+          "address": "800ba498",
+          "text": "sw ra,0x10(sp)"
+        },
+        {
+          "address": "800ba49c",
+          "text": "lbu a0,0x1(a0)"
+        },
+        {
+          "address": "800ba4a0",
+          "text": "jal 0x800460c0"
+        },
+        {
+          "address": "800ba4a4",
+          "text": "_nop"
+        },
+        {
+          "address": "800ba4a8",
+          "text": "lui v0,0x800f"
+        },
+        {
+          "address": "800ba4ac",
+          "text": "lbu v0,0x4c2c(v0)"
+        }
+      ]
+    }
+  ]
+}

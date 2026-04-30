@@ -46,6 +46,8 @@ Together those files define the local authority model:
 - the original binary and runtime behavior are the ground truth
 - our local decomp/evidence should be the authority for final conclusions
 - `_refs/rood-reverse` is a helper decomp, not a final source by itself
+- helper-repo findings must be converted into local `decomp/` artifacts before
+  they are used as pass evidence in the ledger or a proof packet
 
 ## Code Exploration Policy
 
@@ -81,6 +83,10 @@ Useful reference anchors inside `_refs/rood-reverse`:
 Treat those as lead-generating helpers. If a helper-decomp claim matters to the
 result, reconcile it against `Ghidra`, `PCSX-Redux`, or both before calling it
 final.
+
+Do not cite `_refs/rood-reverse/src/*` or `_refs/rood-reverse/assets/*` as the
+main evidence line in a local proof packet when you can produce a local export,
+instruction dump, xref dump, verification script result, or runtime capture.
 
 ## Local Tools
 
@@ -222,6 +228,9 @@ instead of hiding it.
 If helper decompiled C and the stronger binary or runtime evidence disagree,
 prefer the stronger evidence and call out the helper-decomp mismatch explicitly.
 
+If helper material suggested the right target, record that only as provenance.
+The proof itself should point at local artifacts under `decomp/`.
+
 If the pass ends in a real contradiction, leave a concrete artifact behind:
 
 - export JSON
@@ -329,6 +338,8 @@ Do not:
 - rename helpers based only on adjacency or vibes
 - treat helper decompiled C as final proof when the binary or runtime has not
   been checked yet
+- let `_refs/rood-reverse` links carry more evidentiary weight than local
+  `decomp/` artifacts
 - treat a confidence bump as the default success condition
 - convert tentative notes into confident names without proof
 - leave unexplained experimental edits behind

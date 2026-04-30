@@ -1,0 +1,119 @@
+{
+  "program_name": "INITBTL.PRG",
+  "instruction_count": 28,
+  "slices": [
+    {
+      "start": "800faaac",
+      "instructions": [
+        {
+          "address": "800faaac",
+          "text": "addiu sp,sp,-0x18"
+        },
+        {
+          "address": "800faab0",
+          "text": "li a0,0x1800"
+        },
+        {
+          "address": "800faab4",
+          "text": "lui v0,0x800f"
+        },
+        {
+          "address": "800faab8",
+          "text": "sb zero,0x4c08(v0)"
+        },
+        {
+          "address": "800faabc",
+          "text": "lui v0,0x800f"
+        },
+        {
+          "address": "800faac0",
+          "text": "sw ra,0x10(sp)"
+        },
+        {
+          "address": "800faac4",
+          "text": "jal 0x80043ec4"
+        },
+        {
+          "address": "800faac8",
+          "text": "_sh zero,0x4be2(v0)"
+        },
+        {
+          "address": "800faacc",
+          "text": "li a0,0x80"
+        },
+        {
+          "address": "800faad0",
+          "text": "lui v1,0x800f"
+        },
+        {
+          "address": "800faad4",
+          "text": "jal 0x80043ec4"
+        },
+        {
+          "address": "800faad8",
+          "text": "_sw v0,0x4c30(v1)"
+        },
+        {
+          "address": "800faadc",
+          "text": "li a0,0x400"
+        },
+        {
+          "address": "800faae0",
+          "text": "lui v1,0x800f"
+        },
+        {
+          "address": "800faae4",
+          "text": "jal 0x80043ec4"
+        },
+        {
+          "address": "800faae8",
+          "text": "_sw v0,0x4c48(v1)"
+        },
+        {
+          "address": "800faaec",
+          "text": "move a0,v0"
+        },
+        {
+          "address": "800faaf0",
+          "text": "lui v0,0x800f"
+        },
+        {
+          "address": "800faaf4",
+          "text": "lui a1,0x8010"
+        },
+        {
+          "address": "800faaf8",
+          "text": "addiu a1,a1,-0x5084"
+        },
+        {
+          "address": "800faafc",
+          "text": "li a2,0x400"
+        },
+        {
+          "address": "800fab00",
+          "text": "jal 0x800490b0"
+        },
+        {
+          "address": "800fab04",
+          "text": "_sw a0,0x4c28(v0)"
+        },
+        {
+          "address": "800fab08",
+          "text": "lw ra,0x10(sp)"
+        },
+        {
+          "address": "800fab0c",
+          "text": "nop"
+        },
+        {
+          "address": "800fab10",
+          "text": "jr ra"
+        },
+        {
+          "address": "800fab14",
+          "text": "_addiu sp,sp,0x18"
+        }
+      ]
+    }
+  ]
+}

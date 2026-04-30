@@ -80,6 +80,8 @@ In practice, `Ghidra` is where opcode handlers and control flow are studied, whi
 engine code and checking naming, function boundaries, and subsystem behavior.
 It should still be treated as a helper reference repo rather than final local
 ground truth; see [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md).
+When a helper clue matters to a pass result, convert it into a local
+`decomp/` artifact before citing it as evidence.
 
 ### Optional companion tools
 

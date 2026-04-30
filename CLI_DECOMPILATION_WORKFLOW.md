@@ -31,6 +31,11 @@ Prefer this evidence order for day-to-day work:
 4. helper decomp comparison
 5. `PCSX-Redux` only if the first four still disagree
 
+Helper comparison means lead generation and sanity checking, not final
+authority. When a helper-repo clue matters, turn it into a local export,
+instruction dump, xref artifact, or runtime capture before treating it as
+evidence.
+
 ## Local Tracked Workspace
 
 Use the tracked [`decomp`](decomp) folder for local decompilation support code.
@@ -116,6 +121,10 @@ Run local verification scripts against:
 - local decoder tables
 - local notes
 - helper decomp material
+
+But the output artifact should still anchor itself in local reproducible data.
+Do not let a contradiction note or proof packet rest mainly on helper C when a
+local `Ghidra` export can be produced.
 
 This is where we should catch:
 
@@ -229,6 +238,10 @@ Use these outcomes deliberately:
 If a binary table says one thing and a nearby orphan helper says another, do
 not collapse that into a fake clean answer. Preserve both in the proof packet
 and summarize the contradiction in `RE_CAMPAIGN_MEMORY.md`.
+
+If the nearby helper comes from `_refs/rood-reverse`, cite it as a competing
+lead, then convert the important part into local binary-facing evidence before
+promoting or downgrading a name.
 
 ## Escalation Rule
 

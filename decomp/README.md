@@ -43,3 +43,5 @@ Keep this area useful for the next pass, not just the current one:
 - if a result is conflicted, store both sides of the conflict instead of
   forcing a single winner too early
 - treat helper-decomp names as provenance, not as proof
+- if `_refs/rood-reverse` suggests an address or interpretation, create a
+  local export or proof artifact here before promoting that claim

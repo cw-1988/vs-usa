@@ -23,6 +23,13 @@ Current tracked entry points:
 - [`export_inittbl_opcode_table.ps1`](export_inittbl_opcode_table.ps1):
   headless wrapper for `Game Data/BATTLE/INITBTL.PRG` and the current static
   opcode table candidate at `0x800FAF7C`
+- [`export_inittbl_0x80_copy_slice.ps1`](export_inittbl_0x80_copy_slice.ps1):
+  focused `INITBTL.PRG` instruction dump wrapper for the currently suspected
+  init-time table copy routine near `0x800FAAAC`
+
+Use these helpers to turn binary questions into local reproducible artifacts.
+If `_refs/rood-reverse` suggests a location, that is only a lead; the evidence
+should come back here as a tracked export.
 
 Practical note:
 

@@ -6,6 +6,27 @@ Create one master campaign memory file, `RE_CAMPAIGN_MEMORY.md`, as the cross-se
 
 This campaign is **opcode-first**. The first objective is not “fully name every opcode,” but to finish the foundational passes that make later semantic passes cheap and safe: table ownership, runtime-copy/patch paths, handler coverage, shared-handler clustering, and contradiction tracking.
 
+## Evidence Source Rule
+
+For this campaign, keep the authority chain explicit:
+
+- the original binary plus runtime behavior are the ground truth
+- artifacts under `decomp/` are the local evidence authority
+- [`_refs/rood-reverse`](_refs/rood-reverse) is hint-only and may suggest
+  targets, addresses, or candidate meanings
+
+That means:
+
+- never treat `_refs/rood-reverse` files as stand-alone proof in
+  `RE_CAMPAIGN_MEMORY.md`
+- never let a proof packet rely mainly on helper-decompiled C when the claim
+  can be converted into a local `Ghidra` export, local verification artifact,
+  or runtime capture
+- if a helper-repo idea matters, convert it into a local artifact first and
+  cite the local artifact as evidence
+- helper provenance can still be noted, but only after the local artifact
+  exists
+
 ## Key Changes
 
 ### 1. Add one master cross-session memory file
@@ -163,6 +184,8 @@ Update the existing workflow docs so every session follows this sequence:
    - coverage artifact
    - proof packet
    - contradiction note
+   - and make sure it is a local artifact under `decomp/`, not just a helper
+     repo citation
 
 4. Before ending the pass, update only these ledger sections:
    - `Current Phase`
@@ -196,6 +219,12 @@ Update these existing docs to reference the master memory file:
 - `decomp/README.md`
   - explain that `decomp/` stores implementation artifacts while `RE_CAMPAIGN_MEMORY.md` stores campaign state and handoff memory
 
+Also update those docs to repeat this rule:
+
+- `_refs/rood-reverse` may guide investigation
+- local `decomp/` artifacts, binary exports, and runtime captures must carry
+  the evidentiary weight
+
 ### 5. Keep evidence and memory separate on purpose
 
 Use this division consistently:
@@ -212,6 +241,11 @@ Use this division consistently:
   - proof packets
   - coverage outputs
   - contradiction-specific evidence
+
+- `_refs/rood-reverse/*`
+  - helper corpus only
+  - can supply leads and candidate names
+  - should not be cited as final proof when a local artifact can be produced
 
 - existing opcode docs
   - stable conclusions only

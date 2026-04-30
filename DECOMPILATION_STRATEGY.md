@@ -67,6 +67,14 @@ Do not treat it as final proof by itself for:
 - claims that a handler is inert, complete, or matched enough to settle a
   dispute
 
+In practical terms:
+
+- do not cite `_refs/rood-reverse/src/*` as the main evidence line in a local
+  proof packet or ledger conflict entry
+- convert helper-derived ideas into local `decomp/` artifacts first
+- treat helper links as provenance or competing-lead notes, not as the final
+  proof anchor
+
 ### 4. Runtime beats plausible static theory
 
 When a claim is important and static evidence conflicts, use `PCSX-Redux` to
