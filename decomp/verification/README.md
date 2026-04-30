@@ -13,6 +13,10 @@ They can also do lighter-weight raw binary sweeps when a full `Ghidra` import
 would be premature, such as checking whether any packaged file still contains a
 specific absolute MIPS address-access pattern.
 
+When runtime is finally justified, this folder can still narrow the ask by
+comparing exported RAM snapshots against a binary-derived baseline instead of
+leaving the runtime pass as a purely manual judgment call.
+
 ## What To Catch Early
 
 Good verification scripts should flag:

@@ -1,0 +1,53 @@
+{
+  "target": "opcode 0x80",
+  "phase": "Pass 3 - Copy/patch reconciliation",
+  "runtime_table_address": "0x800F4C28",
+  "runtime_table_size_bytes": 1024,
+  "baseline_export": "decomp/evidence/inittbl_opcode_table.json",
+  "compare_helper": "decomp/verification/compare_opcode_table_snapshots.py",
+  "focus_opcodes": [
+    "0x80",
+    "0x81",
+    "0x82"
+  ],
+  "breakpoints": [
+    {
+      "kind": "exec",
+      "address": "0x800BFBB8",
+      "purpose": "Recovered live runtime table reader"
+    },
+    {
+      "kind": "exec",
+      "address": "0x800B66E4",
+      "purpose": "Static stub target for 0x80-0x82"
+    },
+    {
+      "kind": "exec",
+      "address": "0x800BA2E0",
+      "purpose": "Competing sound-family candidate"
+    },
+    {
+      "kind": "write",
+      "address_range": "0x800F4C28-0x800F5027",
+      "purpose": "Detect post-init runtime rewrites of the copied table"
+    }
+  ],
+  "snapshots": [
+    {
+      "label": "after_init",
+      "path": "decomp/evidence/opcode_0x80_runtime_after_init.bin",
+      "capture_point": "Immediately after the INITBTL copy into 0x800F4C28",
+      "compare_report_path": "decomp/evidence/opcode_0x80_runtime_snapshot_compare.json"
+    },
+    {
+      "label": "pre_dispatch",
+      "path": "decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin",
+      "capture_point": "Late runtime state before any candidate 0x80-0x82 dispatch"
+    }
+  ],
+  "breakpoint_hits": [],
+  "table_mutations": [],
+  "dispatch_observations": [],
+  "conclusion": null,
+  "notes": []
+}

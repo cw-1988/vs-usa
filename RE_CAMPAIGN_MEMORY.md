@@ -96,7 +96,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `runtime_needed` | `INITBTL.PRG` static table at `0x800FAF7C`, copied into runtime slot `0x800F4C28` by the locally dumped init-time routine at `0x800FAAAC` | Static slot `0x800B66E4`; former competing helper `0x800BA2E0` is now anchored to a local `BATTLE.PRG` sound subdispatch table at `0x800E9F30` with siblings `0x800BA35C/39C/3E4/404/444/470/494`; live `BATTLE.PRG` consumer `FUN_800BFBB8` now reads `0x800F4C28`, uses it only for pointer arithmetic plus one indexed table-entry read in the new local trace, and dispatches via `jalr`; widened direct-slot sweeps across `SLUS_010.40` and `TITLE.PRG` recover no additional accesses; local `_loadSystemDat` tracing now anchors `SYSTEM.DAT` as offset-indexed data payload rather than a missing executable overlay; raw packaged-binary scanning across `.PRG`/`.BIN`/`.40` files finds the same absolute `0x800F4C28` access pattern only in `INITBTL.PRG` and `BATTLE.PRG` | `SoundEffects0` placeholder only | After the imported-executable sweep, pointer-usage trace, `SYSTEM.DAT` narrowing, and raw packaged-binary scan, does runtime ever mutate the copied `0x400`-byte table after init, or do `0x80-0x82` stay stubbed through live dispatch? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_pointer_usage_static.md`](decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md), [`opcode_0x80_system_dat_static.md`](decomp/evidence/opcode_0x80_system_dat_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json), [`inittbl_runtime_opcode_table_accesses.json`](decomp/evidence/inittbl_runtime_opcode_table_accesses.json), [`inittbl_system_dat_loader_slice.json`](decomp/evidence/inittbl_system_dat_loader_slice.json), [`system_dat_header_words.json`](decomp/evidence/system_dat_header_words.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json), [`battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json), [`battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json), [`battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json), [`battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json), [`battle_runtime_opcode_table_accesses.json`](decomp/evidence/battle_runtime_opcode_table_accesses.json), [`battle_runtime_opcode_table_pointer_usage.json`](decomp/evidence/battle_runtime_opcode_table_pointer_usage.json), [`slus_runtime_opcode_table_accesses.json`](decomp/evidence/slus_runtime_opcode_table_accesses.json), [`title_runtime_opcode_table_accesses.json`](decomp/evidence/title_runtime_opcode_table_accesses.json), [`runtime_opcode_table_binary_scan.json`](decomp/evidence/runtime_opcode_table_binary_scan.json) |
+| `opcode 0x80` | `runtime_needed` | `INITBTL.PRG` static table at `0x800FAF7C`, copied into runtime slot `0x800F4C28` by the locally dumped init-time routine at `0x800FAAAC` | Static slot `0x800B66E4`; former competing helper `0x800BA2E0` is now anchored to a local `BATTLE.PRG` sound subdispatch table at `0x800E9F30` with siblings `0x800BA35C/39C/3E4/404/444/470/494`; live `BATTLE.PRG` consumer `FUN_800BFBB8` now reads `0x800F4C28`, uses it only for pointer arithmetic plus one indexed table-entry read in the new local trace, and dispatches via `jalr`; widened direct-slot sweeps across `SLUS_010.40` and `TITLE.PRG` recover no additional accesses; local `_loadSystemDat` tracing now anchors `SYSTEM.DAT` as offset-indexed data payload rather than a missing executable overlay; raw packaged-binary scanning across `.PRG`/`.BIN`/`.40` files finds the same absolute `0x800F4C28` access pattern only in `INITBTL.PRG` and `BATTLE.PRG`; the next pass now has a concrete runtime capture note plus a dump-vs-baseline compare helper instead of an open-ended `PCSX-Redux` ask | `SoundEffects0` placeholder only | Do runtime dumps from `0x800F4C28` ever diverge from the binary baseline before candidate `0x80-0x82` dispatch, and if so which handler addresses replace the static `0x800B66E4` stub? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_pointer_usage_static.md`](decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md), [`opcode_0x80_system_dat_static.md`](decomp/evidence/opcode_0x80_system_dat_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_observation_template.json`](decomp/evidence/opcode_0x80_runtime_observation_template.json), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json), [`inittbl_runtime_opcode_table_accesses.json`](decomp/evidence/inittbl_runtime_opcode_table_accesses.json), [`inittbl_system_dat_loader_slice.json`](decomp/evidence/inittbl_system_dat_loader_slice.json), [`system_dat_header_words.json`](decomp/evidence/system_dat_header_words.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json), [`battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json), [`battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json), [`battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json), [`battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json), [`battle_runtime_opcode_table_accesses.json`](decomp/evidence/battle_runtime_opcode_table_accesses.json), [`battle_runtime_opcode_table_pointer_usage.json`](decomp/evidence/battle_runtime_opcode_table_pointer_usage.json), [`slus_runtime_opcode_table_accesses.json`](decomp/evidence/slus_runtime_opcode_table_accesses.json), [`title_runtime_opcode_table_accesses.json`](decomp/evidence/title_runtime_opcode_table_accesses.json), [`runtime_opcode_table_binary_scan.json`](decomp/evidence/runtime_opcode_table_binary_scan.json), [`compare_opcode_table_snapshots.py`](decomp/verification/compare_opcode_table_snapshots.py) |
 
 ## Known Conflicts
 
@@ -149,7 +149,12 @@ Current phase: Pass 3 - Copy/patch reconciliation
 - What is still missing: any static or runtime evidence that the copied table
   contents themselves are patched after the verified init-time copy, plus any
   locally anchored proof of an indirect patch path that changes the copied
-  table contents after init.
+  table contents after init. The missing runtime capture now has a concrete
+  local artifact path:
+  `decomp/evidence/opcode_0x80_runtime_capture_plan.md`,
+  `decomp/evidence/opcode_0x80_runtime_observation_template.json`, and
+  `decomp/verification/compare_opcode_table_snapshots.py` together define the
+  dump points, compare step, and result-recording format.
 - Is runtime justified yet: yes. The direct-slot rewrite question is now weak
   across every currently importable local executable with a known base note,
   the one recovered local reader has already been traced through without
@@ -176,6 +181,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 - [`decomp/evidence/inittbl_system_dat_loader_slice.json`](decomp/evidence/inittbl_system_dat_loader_slice.json)
 - [`decomp/evidence/system_dat_header_words.json`](decomp/evidence/system_dat_header_words.json)
 - [`decomp/evidence/runtime_opcode_table_binary_scan.json`](decomp/evidence/runtime_opcode_table_binary_scan.json)
+- [`decomp/verification/compare_opcode_table_snapshots.py`](decomp/verification/compare_opcode_table_snapshots.py)
 
 ### Handler slices
 
@@ -193,25 +199,29 @@ Current phase: Pass 3 - Copy/patch reconciliation
 - [`decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md`](decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md)
 - [`decomp/evidence/opcode_0x80_system_dat_static.md`](decomp/evidence/opcode_0x80_system_dat_static.md)
 - [`decomp/evidence/opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md)
+- [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md)
 
 ### Proof packets
 
 - [`decomp/evidence/opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md)
+- [`decomp/evidence/opcode_0x80_runtime_observation_template.json`](decomp/evidence/opcode_0x80_runtime_observation_template.json)
 
 ## Session Handoff
 
-- `last completed step`: added a reusable raw-binary MIPS address-access
-  scanner, then ran it against `356` packaged `.PRG`/`.BIN`/`.40` files under
-  `Game Data`; it recovered the `0x800F4C28` access pattern only in
-  `INITBTL.PRG` and `BATTLE.PRG`, with no third match in `Game Data/EFFECT` or
-  elsewhere in the packaged corpus
-- `next recommended step`: switch to `PCSX-Redux` as the tie-breaker and
-  capture whether the copied `0x400`-byte opcode table behind `0x800F4C28`
-  ever changes after init before `FUN_800BFBB8` dispatches `0x80-0x82`
-- `do not forget`: update this ledger before ending the next pass; no export,
-  coverage note, or contradiction should live only in terminal output; the
-  static branch is now narrow enough that the next useful pass should collect
-  runtime evidence rather than repeat the same packaged-binary hunt
+- `last completed step`: added a reusable runtime snapshot compare helper,
+  plus a focused `0x80` runtime capture plan and observation template, so the
+  next `PCSX-Redux` pass now has exact dump points, breakpoint targets, and a
+  scripted baseline-vs-RAM diff step for `0x800F4C28`
+- `next recommended step`: run the capture plan in
+  `decomp/evidence/opcode_0x80_runtime_capture_plan.md`, export at least an
+  `after_init` and `pre_dispatch` dump from `0x800F4C28`, compare them with
+  `decomp/verification/compare_opcode_table_snapshots.py`, and record the
+  breakpoint hits in
+  `decomp/evidence/opcode_0x80_runtime_observation_template.json`
+- `do not forget`: store the raw dump files and the compare report under
+  `decomp/evidence`; if the table changes, capture the rewritten handler
+  addresses for `0x80-0x82` explicitly rather than summarizing them only in
+  prose
 
 ## Completed Milestones
 
@@ -286,3 +296,10 @@ Current phase: Pass 3 - Copy/patch reconciliation
   [`decomp/evidence/runtime_opcode_table_binary_scan.json`](decomp/evidence/runtime_opcode_table_binary_scan.json),
   [`decomp/evidence/opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md),
   [`decomp/evidence/opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md)
+- `2026-04-30`: turned the `0x80` runtime tie-breaker into a concrete local
+  pass by adding a dump-vs-baseline compare helper, a focused runtime capture
+  plan, and a structured observation template for the next `PCSX-Redux`
+  session. Links:
+  [`decomp/verification/compare_opcode_table_snapshots.py`](decomp/verification/compare_opcode_table_snapshots.py),
+  [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md),
+  [`decomp/evidence/opcode_0x80_runtime_observation_template.json`](decomp/evidence/opcode_0x80_runtime_observation_template.json)

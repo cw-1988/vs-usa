@@ -46,6 +46,8 @@
 - `decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md`
 - `decomp/evidence/opcode_0x80_system_dat_static.md`
 - `decomp/evidence/opcode_0x80_binary_address_scan.md`
+- `decomp/evidence/opcode_0x80_runtime_capture_plan.md`
+- `decomp/evidence/opcode_0x80_runtime_observation_template.json`
 
 ## Packet structure
 
@@ -67,6 +69,12 @@
   packaged-binary heuristic scan that checks whether any other local
   `.PRG`/`.BIN` asset still builds the same absolute `0x800F4C28` access
   pattern.
+- `opcode_0x80_runtime_capture_plan.md` is the focused support note for the
+  runtime tie-breaker: exact watch addresses, expected dump points, and the
+  compare-helper invocation for the copied table at `0x800F4C28`.
+- `opcode_0x80_runtime_observation_template.json` is the structured handoff
+  file for recording breakpoint hits, dump paths, and final runtime
+  observations during that pass.
 
 ## Static findings
 
@@ -141,3 +149,9 @@
   rewrite?" but "does any indirect path mutate the copied table contents behind
   `0x800F4C28` before dispatch?" Static evidence is now narrow enough that
   runtime is the clean next tie-breaker.
+- The runtime follow-up is now concretely staged: capture the copied table
+  after init and before candidate dispatch, compare those dumps against the
+  binary baseline with
+  `decomp/verification/compare_opcode_table_snapshots.py`, and record the
+  breakpoint results in
+  `decomp/evidence/opcode_0x80_runtime_observation_template.json`.
