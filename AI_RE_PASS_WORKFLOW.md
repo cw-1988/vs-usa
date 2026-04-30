@@ -1,448 +1,249 @@
 # AI Reverse-Engineering Pass Workflow
 
-This note is the execution brief for the next AI pass on the Vagrant Story
-script reverse-engineering workspace.
+This is the execution brief for the next AI pass on the Vagrant Story USA RE
+workspace.
 
-The goal is to keep the RE work moving in a useful, evidence-backed way
-without turning the workflow into a rigid checklist. This file is meant to
-stay general to the workspace, not tied to one opcode or one ongoing thread.
+The goal is simple: make one evidence-backed improvement, verify it, leave the
+workspace cleaner than before, and stop without pushing.
 
 If a capable model choice is available, prefer `gpt-5.4` with high reasoning
-effort for this pass.
-
-## Code Exploration Policy
-Always use jCodemunch-MCP tools — never fall back to Read, Grep, Glob, or Bash for code exploration.
-- Before reading a file: use get_file_outline or get_file_content
-- Before searching: use search_symbols or search_text
-- Before exploring structure: use get_file_tree or get_repo_outline
-- Call resolve_repo with the current directory first; if not indexed, call index_folder.
+effort.
 
 ## Mission
 
-Complete one focused reverse-engineering pass that:
+Complete one focused pass that:
 
-1. identifies one concrete RE improvement
-2. updates the local tooling, notes, or supporting analysis to reflect it
-3. verifies the change against real game data, source references, runtime
-   behavior, or decoded output
-4. makes its own conventional commit in each touched repo unless the local
-   config explicitly disables commits
-5. leaves the repo state easy for the user to review, undo, or amend locally
-   before anything is pushed
+1. picks one narrow RE question
+2. turns it into a concrete improvement in code, notes, or tooling
+3. verifies the result against real data, source, or runtime behavior
+4. makes the local conventional commit unless config disables commits
 
-Do not end with only vague conclusions. Turn the pass into code, tooling, or
-note changes unless the evidence is too weak to justify a concrete update.
+It is fine for the result to be a tighter note, a safer name, or a confidence
+hold instead of a flashy rename. Accuracy matters more than novelty.
 
-A valid pass can also reduce overclaiming. It is a successful outcome to keep a
-finding at `Strong`, downgrade a shaky `Confirmed` note, or document the exact
-missing proof that blocks a rename.
+## Code Exploration Policy
 
-If a pass produces changes that belong in both this workspace and
-`_refs/rood-reverse`, treat that as normal. Keep each repo's changes focused,
-commit them in the repo they belong to when commits are enabled, and report the
-exact message used for each touched repo.
+Use `jcodemunch-mcp` first for repo exploration.
 
-## Main Files
+- start with `resolve_repo { "path": "." }`
+- if needed, call `index_folder { "path": "." }`
+- open with
+  `plan_turn { "repo": "<resolved repo id>", "query": "<pass question>", "model": "<active model id>" }`
+- use `get_file_outline` before opening files
+- use `search_symbols` for handlers, helpers, globals, and structs
+- use `search_text` for strings, configs, decoded output, and repeated context
+- use `find_references`, `check_references`, and `get_context_bundle` to trace
+  consumer paths
+- only use direct file reads when you are about to edit a specific file
 
-Start here:
+## Main Lanes
 
-- [`dump_mpd_script.py`](dump_mpd_script.py)
-- [`OPCODE_BEHAVIOR_REFERENCE.md`](OPCODE_BEHAVIOR_REFERENCE.md)
-- [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md)
-- [`GHIDRA_OPCODE_RE_WORKFLOW.md`](GHIDRA_OPCODE_RE_WORKFLOW.md)
-- [`decoded_scripts`](decoded_scripts)
+Pick the lane that best matches the question.
 
-Reference anchors:
+- Script and opcode work:
+  [`dump_mpd_script.py`](dump_mpd_script.py),
+  [`decoded_scripts`](decoded_scripts),
+  [`OPCODE_BEHAVIOR_REFERENCE.md`](OPCODE_BEHAVIOR_REFERENCE.md),
+  [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md),
+  [`GHIDRA_OPCODE_RE_WORKFLOW.md`](GHIDRA_OPCODE_RE_WORKFLOW.md)
+- Room and scene work:
+  [`analyze_room_graph.py`](analyze_room_graph.py),
+  [`ROOM_CONNECTION_FINDINGS.md`](ROOM_CONNECTION_FINDINGS.md),
+  [`room_names.tsv`](room_names.tsv)
+- Broad engine and format work:
+  [`README.md`](README.md),
+  [`VAGRANT_STORY_MODDING_OVERVIEW.md`](VAGRANT_STORY_MODDING_OVERVIEW.md),
+  [`_refs/rood-reverse`](_refs/rood-reverse)
 
-- [`_refs/rood-reverse`](_refs/rood-reverse)
-- [`_refs/rood-reverse/src`](_refs/rood-reverse/src)
-- [`_refs/rood-reverse/config`](_refs/rood-reverse/config)
+Useful reference anchors inside `_refs/rood-reverse`:
 
-Common starting points, not an exhaustive target list:
+- `src/` for matched code
+- `config/**/symbol_addrs.txt` and `splat.yaml` for lookup anchors
+- `assets/**/*.yaml` for strings and menu-side confirmation
 
-- [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
-- [`_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt)
+## Local Tools
 
-If the current opcode or subsystem points elsewhere, follow that evidence
-instead of forcing the pass through these files.
+- `dump_mpd_script.py`: opcode meaning, argument layout, event sequencing,
+  repeated room patterns
+- `analyze_room_graph.py`: room types, `sceneId`, `sectionF`, reachability,
+  TSV refreshes
+- `Ghidra`: nonmatching code, xrefs, data layout, control flow
+- `PCSX-Redux`: runtime confirmation when static evidence is not enough
 
-Useful local tooling:
+Common commands:
 
-- [`tools/ghidra_12.0.4_PUBLIC`](tools/ghidra_12.0.4_PUBLIC)
-- [`tools/pcsx-redux`](tools/pcsx-redux)
+```powershell
+python dump_mpd_script.py "Game Data/MAP"
+python analyze_room_graph.py
+python analyze_room_graph.py --update-tsv
+```
 
 ## Local Config
 
 Read [`AI_RE_PASS_WORKFLOW.config.toml`](AI_RE_PASS_WORKFLOW.config.toml) if it
-exists. If it does not exist, fall back to
-[`AI_RE_PASS_WORKFLOW.config.example.toml`](AI_RE_PASS_WORKFLOW.config.example.toml)
-for the default behavior and expected keys.
+exists. Otherwise use
+[`AI_RE_PASS_WORKFLOW.config.example.toml`](AI_RE_PASS_WORKFLOW.config.example.toml).
 
-Current supported configuration:
+Supported setting:
 
-- `commit_mode = "auto"`: make the local conventional commit(s) yourself
+- `commit_mode = "auto"`: make the local commit yourself
 - `commit_mode = "no-commit"`: stage the intended changes and stop before
   `git commit`
 
-Never push as part of this workflow. Local commits are allowed and expected
-when `commit_mode = "auto"`.
-
-## Tooling
-
-Choose tools based on the question instead of forcing one workflow every time.
-
-### `jcodemunch-mcp`
-
-Use `jcodemunch-mcp` first for code and text search/navigation:
-
-- `search_text` for opcode names/placeholders and repeated decoded-script context
-- `search_symbols` for handlers, globals, and symbol discovery in `_refs/rood-reverse`
-- `find_references` / `find_importers` for follow-through impact and usage paths
-
-Preferred session opening flow:
-
-1. `resolve_repo { "path": "." }`
-2. if needed, `index_folder { "path": "." }`
-3. `plan_turn { "repo": ".", "query": "<your pass question>", "model": "<active model id>" }`
-
-### `dump_mpd_script.py`
-
-Use this when the question is about:
-
-- script opcode meaning
-- argument layout
-- room event sequencing
-- comparing repeated script patterns across maps
-
-Use [`OPCODE_BEHAVIOR_REFERENCE.md`](OPCODE_BEHAVIOR_REFERENCE.md) as the quick
-snapshot of current local names, parameter shapes, and still-missing slots.
-Use [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md)
-for the evidence trail, confidence wording, and remaining proof gaps.
-
-### `Ghidra`
-
-Use Ghidra when:
-
-- source references stop in nonmatching code
-- you need xrefs to unnamed globals or fields
-- you need to inspect data layout, call structure, or control flow directly
-- the current question is really about executable behavior rather than script pattern alone
-
-Prefer the GUI for exploratory work. Do not start with headless automation
-unless there is a concrete reason.
-
-### `PCSX-Redux`
-
-Use PCSX-Redux when:
-
-- static analysis is not enough
-- a behavior needs runtime confirmation
-- you want to watch a script effect, camera change, audio reaction, or room transition live
-- you need to verify whether a guessed interpretation matches what the game actually does
-
-### `_refs/rood-reverse`
-
-Use the reference checkout as the first code-level anchor when it already
-contains matched or partially named logic. It is often faster than dropping
-straight into raw disassembly.
-
-It is not always read-only. If the RE result justifies upstreamable decoder,
-symbol, struct, comment, or matched-code improvements there, make those
-changes in `_refs/rood-reverse` as part of the same pass instead of leaving the
-finding stranded only in local notes.
-
-That includes helper-function or internal-state renames, but only when the
-code-level behavior is rock-hard and directly supported by matched or otherwise
-clear implementation evidence. Do not use helper renames as a way to smuggle in
-a speculative script-facing interpretation.
-
-If a pass changes `_refs/rood-reverse`, add or update one short standalone
-conclusions note in that repo too. Prefer a root-level `*_CONCLUSIONS.md` file
-named for the subsystem, keep it tightly scoped to the current pass, and cite
-the source files that justify the nested-repo edits so the evidence travels
-with the upstreamable changes.
+Never push.
 
 ## Working Style
 
-Before doing anything substantial:
+Before substantial work:
 
-1. Run `git status --short` in each repo you might touch.
-2. If you are going to edit a repo that already has pre-existing changes, say
-   this exact message to the user in all caps before stashing:
-   `PRE-EXISTING LOCAL CHANGES DETECTED. I AM STASHING THEM BEFORE I START AND I WILL UNSTASH THEM AFTER I FINISH.`
-3. In each dirty repo you plan to edit, stash the pre-existing changes before
-   making your own edits and restore them after your work is complete.
-4. Read the current conclusions note before renaming anything.
-5. Avoid touching unrelated user changes.
-6. Prefer one strong improvement over five speculative ones.
+1. check repo state in each repo you might edit
+2. if a repo is dirty and you need to edit it, warn the user before stashing
+3. stash pre-existing changes in repos you will edit, then restore them at the
+   end
+4. read the current conclusions note before renaming anything
+5. avoid unrelated edits
+6. prefer one strong improvement over several weak ones
 
-If a repo you need to edit is already dirty, do not revert it. Protect it with
-stash/unstash flow instead.
+If both this workspace and `_refs/rood-reverse` need updates, keep each repo's
+changes focused and report the exact commit message used for each one.
 
-## Choosing a Target
+## Good Targets
 
-Pick a tractable target with a good chance of producing a useful artifact in
-one pass.
+- opcode naming or argument rendering improvements
+- helper or internal renames backed by direct code proof
+- struct or data-layout interpretation improvements
+- room, scene, or reachability classification improvements
+- menu, sound, or overlay behavior clarified through code plus assets
+- runtime validation of a static theory
+- decoder, parser, or note improvements that unblock future passes
 
-Good target types:
-
-- opcode naming or argument-layout improvements
-- helper-function or internal-state naming improvements when behavior is
-  unquestionably confirmed
-- struct-field interpretation improvements
-- runtime validation of a static RE theory
-- decoder or tooling quality-of-life improvements that support RE work
-- note cleanup that materially improves future passes
-
-Good heuristics:
-
-- prefer questions with multiple available evidence sources
-- prefer one solid win over a broad but fuzzy sweep
-- prefer work that can be validated before stopping
-- prefer narrowing scope over widening certainty when the evidence is mixed
-
-Do not rename an opcode just to eliminate a placeholder. Evidence matters more
-than tidiness.
-
-The same rule applies to helper functions and internals: only rename them when
-the implementation meaning is genuinely locked in.
+Do not rename something just to eliminate a placeholder.
 
 ## Workflow
 
-### Step 1. Pick one narrow question
+### 1. Pick one narrow question
 
 Examples:
 
-- Does one named opcode still deserve its current verb, or is the subsystem
-  right but the player-facing wording still too specific?
-- Can one currently raw-looking parameter set be rendered into something more
-  readable without overclaiming its meaning?
-- Is there enough proof to promote one `Strong` finding to `Confirmed`, or does
-  the pass actually show why it should stay `Strong`?
-- Is a still-unnamed field in `BATTLE.PRG` understandable enough to document?
+- does a current opcode name overclaim its meaning?
+- can one raw parameter blob be rendered more usefully?
+- is one `Strong` result actually `Confirmed`, or should it stay `Strong`?
+- does one scene or room field deserve a clearer explanation?
+- is one helper understandable enough to justify a conservative rename?
 
-Write the question down in your scratch notes before broad searching if that
-helps keep the pass focused, but do not turn this into a paperwork exercise.
+### 2. Pull the best evidence first
 
-### Step 2. Pull the best evidence first
+Use the most informative source for the question:
 
-Start from the most informative source for the current question.
+- `decoded_scripts` for usage patterns
+- `_refs/rood-reverse` for handlers and consumers
+- `Ghidra` for gaps in matched code
+- `PCSX-Redux` for runtime proof
+- `MAP*.MPD` and `SCEN*.ARM` for layout questions
 
-Examples:
+For opcode work, preserve repeated context, timing values, stepped scalars, and
+neighboring setup or cleanup opcodes.
 
-- `decoded_scripts` for script opcode or cutscene sequencing questions
-- `_refs/rood-reverse` for handler and consumer questions
-- `Ghidra` for nonmatching code or unnamed globals
-- `PCSX-Redux` for runtime confirmation
-- `MAP*.MPD` or repo scripts for data-layout questions
+For room and scene work, preserve exact `sceneId` sources, marker flag checks,
+cross-zone examples, and special cases such as scene `0`.
 
-Good patterns:
+### 3. Confirm the direct anchor
 
-```text
-search_text {
-  "query": "Opcode..|Camera|ScreenEffect|Ambient|Dialog|Model",
-  "path": "decoded_scripts",
-  "regex": true
-}
+Do not infer from proximity if a stronger anchor exists.
 
-search_text {
-  "query": "^[0-9A-F]{4}: [0-9A-F]{2} ",
-  "path": "decoded_scripts",
-  "regex": true
-}
-```
+- for opcodes, prefer the dispatch table and symbol-address anchors
+- for room and scene work, prefer exact parser anchors such as
+  `sectionB + 0x50`, `sectionF`, and `SCEN*.ARM` marker flags
+- for menu or sound work, cross-check matched source, config lookup anchors,
+  and asset yaml names
 
-For opcode work, compare multiple rooms and preserve:
+### 4. Trace the consumer path
 
-- repeated control words
-- stepped scalar changes
-- timing values
-- neighboring setup, wait, cleanup, or mode-change opcodes that recur around
-  the target
+Do not stop at "this writes field X." Keep following until the user-facing
+meaning becomes clear, the proof runs out, or a broader claim would overstate
+the evidence.
 
-### Step 3. Confirm the handler mapping
+If code, strings, assets, and config disagree, document the disagreement
+instead of hiding it.
 
-Use the dispatch table before inferring from source order.
+### 5. Make the smallest honest update
 
-```text
-search_text {
-  "query": "_opcodeFunctionTable|vs_battle_script_|func_800",
-  "path": "_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c",
-  "regex": true
-}
+Valid results include:
 
-search_text {
-  "query": "_opcodeFunctionTable|vs_battle_script_|func_800",
-  "path": "_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt",
-  "regex": true
-}
-```
-
-### Step 4. Trace the consumer path
-
-Do not stop at "this handler writes field X".
-
-Keep going until one of these happens:
-
-- the field consumer clarifies the user-facing meaning
-- the decomp becomes nonmatching and blocks certainty
-- the script evidence is already strong enough for a conservative local rename
-- the helper or internal behavior is clear enough to justify a code-level name
-  even if the final script-facing label should stay more conservative
-- you find a scope condition, fallback path, or implementation split that means
-  a broader confidence bump would overstate the proof
-
-For non-opcode work, the equivalent rule still applies:
-
-- do not stop at one parsed field or one string match
-- follow the data until the user-facing meaning becomes clearer
-
-### Step 5. Decide what kind of change is justified
-
-Choose one of these as the primary result:
-
-- `Confirmed rename`
-- `Confirmed helper/internal rename`
-- `Confidence held or downgraded with clearer evidence note`
-- `Conservative local tooling rename`
-- `Argument rendering improvement only`
-- `Note-only evidence update`
-- `Analysis or parser improvement`
-- `Runtime-confirmed interpretation`
-
-If the best honest result is "better structured arguments but no better final
-name", that is still a valid pass.
-
-Before promoting any confidence level, explicitly sanity-check all three:
-
-- `What exact user-facing behavior is proven, not just the nearest helper?`
-- `Is the proof global, or only true for one code path, room type, mode, or fallback path?`
-- `Would a cautious reviewer read this wording and infer something broader than the code actually guarantees?`
+- confirmed rename
+- confirmed helper or internal rename
+- confidence held or downgraded with a clearer note
+- argument rendering improvement
+- room or scene classification improvement
+- parser or analysis improvement
+- runtime-confirmed interpretation
 
 ## Good Outputs
 
-A successful pass should update one or more of:
+A good pass usually updates one or more of:
 
 - [`dump_mpd_script.py`](dump_mpd_script.py)
 - [`OPCODE_BEHAVIOR_REFERENCE.md`](OPCODE_BEHAVIOR_REFERENCE.md)
 - [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md)
 - [`GHIDRA_OPCODE_RE_WORKFLOW.md`](GHIDRA_OPCODE_RE_WORKFLOW.md)
-
-Optional if truly useful:
-
-- a short new note with tightly scoped conclusions in this workspace or in
-  `_refs/rood-reverse` when the pass changes the nested repo
-- comments or code changes in `_refs/rood-reverse` if that materially helps the
-  next pass or captures an upstreamable RE result
-- helper or internal naming cleanup in `_refs/rood-reverse` when it is backed
-  by directly readable code behavior rather than a guess about player-facing
-  semantics
-
-Do not create a giant theory dump unless it directly helps the next pass.
-Prefer changes that improve the decoder, the conclusions trail, or both.
+- [`analyze_room_graph.py`](analyze_room_graph.py)
+- [`ROOM_CONNECTION_FINDINGS.md`](ROOM_CONNECTION_FINDINGS.md)
+- [`room_names.tsv`](room_names.tsv)
+- [`README.md`](README.md)
+- [`VAGRANT_STORY_MODDING_OVERVIEW.md`](VAGRANT_STORY_MODDING_OVERVIEW.md)
 
 ## Verification
 
-Before stopping, verify the result against real data.
+Before stopping:
 
-Minimum verification:
-
-1. Verify the relevant behavior against at least one strong source, and prefer
-   two when practical.
-2. Confirm the result is more informative or more accurate than before.
-3. Re-read the wording in the conclusions note and make sure it does not claim
-   more than the code proves.
-
-Good verification examples:
-
-- confirm an opcode now shows structured fields instead of an opaque blob
-- confirm a rename appears correctly in several decoded rooms
-- confirm helper or internal renames match the matched implementation and all
-  local call sites
-- confirm timing or signedness interpretation matches raw bytes
-- confirm a runtime theory matches observed behavior in `PCSX-Redux`
-
-## Finish Line
-
-The end state should be either:
-
-- a local conventional commit in each touched repo, ready for user review, or
-- a staged-but-uncommitted result only when `commit_mode = "no-commit"`
-
-That means:
-
-1. The intended files are edited.
-2. The diff is focused.
-3. Verification is done.
-4. The AI either makes the conventional commit itself or stages only when the
-   config forbids commits.
-5. Any stashed pre-existing user changes are restored before stopping.
-6. The user is given a clear conclusions summary.
-7. The user is given the exact conventional commit message used, or the exact
-   message that would have been used when commits are disabled.
-
-Run `git commit` when `commit_mode = "auto"`. Do not run `git push`.
-
-If unrelated changes already exist in the worktree, stage only the files or
-hunks that belong to this pass before committing. Do not stage unrelated user
-work.
-
-If both repos were changed, create one focused conventional commit per touched
-repo and say clearly which message belongs to which repo.
-
-## Commit Strategy
-
-Use conventional commits.
-
-Good default shapes:
-
-```text
-feat(re): clarify opcode 0x7A decoder output
-fix(re-notes): tighten evidence for room audio opcodes
-docs(re): capture new opcode conclusions for 0x9D
-```
+1. verify against at least one strong source, preferably two
+2. confirm the new result is more accurate or more informative than before
+3. reread the final wording and make sure it does not claim too much
 
 Examples:
 
-- `feat(re): improve opcode 0x7A argument rendering`
-- `docs(re): add new evidence for opcode 0x9D`
-- `fix(decoder): rename confirmed camera opcodes`
+- decoded output now renders a structure instead of a blob
+- a rename fits several real rooms
+- a helper rename matches implementation and local call sites
+- timing or signedness matches raw bytes
+- runtime behavior matches the theory
+- room-graph counts or exclusions still make sense after a graph change
 
-Pick the type honestly:
+## Finish Line
 
-- `feat`: new decoder capability or new meaningful interpretation
-- `fix`: corrected behavior, naming, or rendering
-- `docs`: note-only or workflow-only improvements
+The pass is done when:
 
-Other acceptable scopes include:
+1. the intended files are updated
+2. the diff is focused
+3. verification is done
+4. the AI commits locally when `commit_mode = "auto"`, or stages only when
+   `commit_mode = "no-commit"`
+5. any temporary stash is restored
+6. the user gets a short conclusions summary plus the exact commit message for
+   each touched repo
 
-- `re`
-- `decoder`
-- `notes`
-- `tooling`
+Use conventional commits. Good shapes:
 
-At the end of the pass, provide one actual commit message per touched repo, not
-just a pattern.
+```text
+feat(re): improve opcode 0x7A argument rendering
+fix(tooling): refine room graph classification
+docs(re): tighten evidence for menu sound behavior
+```
 
-When `commit_mode = "auto"`, do not stop after staging. Make the conventional
-commit yourself. When `commit_mode = "no-commit"`, stop after staging and still
-report the exact message that would have been used.
+## Final Report
 
-## Final Report Format
+At the end, report:
 
-When the pass is complete, report:
-
-1. what question you targeted
-2. what evidence changed your confidence
-3. what still blocks any remaining confidence bump, if anything
-4. which files were updated
+1. the question you targeted
+2. what evidence mattered most
+3. what still blocks any remaining confidence bump
+4. which files changed
 5. how you verified it
-6. a short summary of the conclusions in normal prose
-7. the exact conventional commit message for each touched repo
+6. the short conclusions summary
+7. the exact commit message for each touched repo
 8. the commit hash for each local commit, or explicit confirmation that commits
    were skipped because `commit_mode = "no-commit"`
-9. confirmation that any temporary stash was restored, or that no stash was
-   needed
+9. whether any stash was restored
 
 ## Avoid
 
@@ -450,28 +251,14 @@ Do not:
 
 - fight headless Ghidra first
 - rename multiple weak opcodes in one pass
-- rename helper functions or internals based only on adjacency or a hoped-for
-  script meaning
-- treat a confidence bump as the default success condition for a pass
-- collapse helper-level proof into a broader player-facing claim without
-  checking for mode gates, fallback paths, or subsystem splits
+- rename helpers based only on adjacency or vibes
+- treat a confidence bump as the default success condition
 - convert tentative notes into confident names without proof
-- leave the repo with unexplained experimental edits
-- end with only "next ideas" and no concrete artifact
-- force every pass to be opcode-focused if the better win is elsewhere
-
-## Short Version
-
-Pick one solid RE question. Use the best available tools for that question:
-repo scripts, `jcodemunch-mcp`, `_refs/rood-reverse`, `Ghidra`, or `PCSX-Redux`. Make the
-smallest honest improvement that leaves the workspace better than before.
-Verify it. Commit the intended changes locally unless the config disables that.
-Stop without pushing.
+- leave unexplained experimental edits behind
+- end with only future ideas and no concrete artifact
 
 ## Kickoff Line
 
-If the next AI needs a one-line mission, use this:
-
 ```text
-Do one focused RE pass, use the right local tools for the question, turn the result into verified workspace improvements, make the local conventional commit unless config disables it, restore any temporary stash, summarize the conclusions, and stop without pushing.
+Do one focused RE pass, use the right local tools for the question, make the smallest honest verified improvement you can justify, commit locally unless config disables it, restore any temporary stash, summarize the result, and stop without pushing.
 ```
