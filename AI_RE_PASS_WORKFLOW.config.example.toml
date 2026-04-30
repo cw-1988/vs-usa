@@ -1,0 +1,8 @@
+# Local override for AI_RE_PASS_WORKFLOW.md.
+#
+# Supported values:
+# - "auto": make the conventional commit(s) locally at the end of the pass
+# - "no-commit": stage the intended changes and stop before `git commit`
+#
+# The workflow never pushes.
+commit_mode = "auto"

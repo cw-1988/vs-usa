@@ -18,17 +18,18 @@ Complete one focused reverse-engineering pass that:
 1. identifies one concrete RE improvement
 2. updates the local tooling, notes, or supporting analysis to reflect that improvement
 3. verifies the change against real game data, source references, runtime behavior, or decoded output
-4. stages the AI's own intended changes
-5. leaves the repo in a state where the user can review the summary and then
-   just press commit
+4. makes the AI's own conventional commit for each touched repo unless the
+   local config explicitly disables commits
+5. leaves the repo in a state where the user can review, undo, or amend the
+   local commit(s) before anything is pushed
 
 Do not end with only vague conclusions. Convert the pass into code or note changes
 unless the evidence is too weak to justify a rename.
 
 If a pass produces changes that belong in both this workspace and
 `_refs/rood-reverse`, treat that as normal. Keep each repo's changes focused,
-stage them in the repo they belong to, and report commit-ready messages for
-each touched repo.
+commit them in the repo they belong to when commits are enabled, and report the
+exact message used for each touched repo.
 
 ## Main Files
 
@@ -53,6 +54,22 @@ Useful local tooling:
 
 - [`tools/ghidra_12.0.4_PUBLIC`](tools/ghidra_12.0.4_PUBLIC)
 - [`tools/pcsx-redux`](tools/pcsx-redux)
+
+## Local Config
+
+Read [`AI_RE_PASS_WORKFLOW.config.toml`](AI_RE_PASS_WORKFLOW.config.toml) if it
+exists. If it does not exist, fall back to
+[`AI_RE_PASS_WORKFLOW.config.example.toml`](AI_RE_PASS_WORKFLOW.config.example.toml)
+for the default behavior and expected keys.
+
+Current supported setting:
+
+- `commit_mode = "auto"`: make the conventional commit(s) yourself
+- `commit_mode = "no-commit"`: stage the intended changes and stop before
+  `git commit`
+
+Never push as part of this workflow. Local commits are allowed and expected
+when `commit_mode = "auto"`.
 
 ## Tooling
 
@@ -123,11 +140,17 @@ the upstreamable changes.
 Before doing anything substantial:
 
 1. Run `git status --short`.
-2. Read the current conclusions note before renaming anything.
-3. Avoid touching unrelated user changes.
-4. Prefer one strong improvement over five speculative ones.
+2. If you are going to touch a repo that already has pre-existing changes, say
+   this exact message to the user in all caps before stashing:
+   `PRE-EXISTING LOCAL CHANGES DETECTED. I AM STASHING THEM BEFORE I START AND I WILL UNSTASH THEM AFTER I FINISH.`
+3. In each dirty repo you plan to edit, stash the pre-existing changes before
+   making your own edits and restore them after your work is complete.
+4. Read the current conclusions note before renaming anything.
+5. Avoid touching unrelated user changes.
+6. Prefer one strong improvement over five speculative ones.
 
-If the worktree is already dirty, do not revert it. Work around it.
+If the worktree is already dirty, do not revert it. Protect it with
+stash/unstash flow instead.
 
 ## Choosing A Target
 
@@ -282,24 +305,31 @@ Good verification examples:
 
 ## Finish Line
 
-The end state should be "user only has to press commit".
+The end state should be either:
+
+- a local conventional commit in each touched repo, ready for user review, or
+- a staged-but-uncommitted result only when `commit_mode = "no-commit"`
 
 That means:
 
 1. The intended files are edited.
 2. The diff is focused.
 3. Verification is done.
-4. The AI stages the changes it intentionally made in each touched repo.
-5. The user is given a clear conclusions summary.
-6. The user is given the exact commit message to use.
+4. The AI either makes the conventional commit itself or stages only when the
+   config forbids commits.
+5. Any stashed pre-existing user changes are restored before stopping.
+6. The user is given a clear conclusions summary.
+7. The user is given the exact conventional commit message used, or the exact
+   message that would have been used when commits are disabled.
 
-Do not run `git commit`.
+Run `git commit` when `commit_mode = "auto"`. Do not run `git push`.
 
 If unrelated changes already exist in the worktree, stage only the files or
-hunks that belong to this pass. Do not stage unrelated user work.
+hunks that belong to this pass before committing. Do not stage unrelated user
+work.
 
-If both repos were changed, provide one commit message per repo and say clearly
-which repo each message belongs to.
+If both repos were changed, create one focused conventional commit per touched
+repo and say clearly which message belongs to which repo.
 
 ## Commit Strategy
 
@@ -335,6 +365,10 @@ Other acceptable scopes include:
 At the end of the pass, provide one actual commit message per touched repo, not
 just a pattern.
 
+When `commit_mode = "auto"`, do not stop after staging. Make the conventional
+commit yourself. When `commit_mode = "no-commit"`, stop after staging and still
+report the exact message that would have been used.
+
 ## Final Report Format
 
 When the pass is complete, report:
@@ -345,7 +379,9 @@ When the pass is complete, report:
 4. how you verified it
 5. a short summary of the conclusions in normal prose
 6. the exact conventional commit message for each touched repo
-7. confirmation that the intended changes are staged in each touched repo
+7. the commit hash for each local commit, or explicit confirmation that commits
+   were skipped because `commit_mode = "no-commit"`
+8. confirmation that any temporary stash was restored
 
 ## Avoid
 
@@ -365,13 +401,13 @@ Do not:
 Pick one solid RE question. Use the best available tools for that question:
 repo scripts, `rg`, `_refs/rood-reverse`, `Ghidra`, or `PCSX-Redux`. Make the
 smallest honest improvement that leaves the workspace better than before.
-Verify it. Stage the intended changes. Stop in a commit-ready state without
-actually committing.
+Verify it. Commit the intended changes locally unless the config disables that.
+Stop without pushing.
 
 ## Kickoff Line
 
 If the next AI needs a one-line mission, use this:
 
 ```text
-Do one focused RE pass, use the right local tools for the question, turn the result into verified workspace improvements, stage the intended changes, summarize the conclusions, and stop right before git commit.
+Do one focused RE pass, use the right local tools for the question, turn the result into verified workspace improvements, make the local conventional commit unless config disables it, restore any temporary stash, summarize the conclusions, and stop without pushing.
 ```

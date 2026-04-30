@@ -7,3 +7,4 @@ Game Data/*
 decoded_scripts/*
 !decoded_scripts/map-script-files-will-end-up-here.txt
 tools
+AI_RE_PASS_WORKFLOW.config.toml
