@@ -36,8 +36,8 @@ The current local decoder table in
 [`dump_mpd_script.py`](dump_mpd_script.py) now covers all `256` opcode slots,
 but only part of that table is meaningfully named:
 
-- named locally: `85 / 256`
-- still placeholder-named as `OpcodeXX`: `171 / 256`
+- named locally: `84 / 256`
+- still placeholder-named as `OpcodeXX`: `172 / 256`
 - most complete block: `0xE0-0xEF` with `14` named and only `0xE8` / `0xEE`
   still unresolved
 - completely unresolved block: `0xB0-0xBF`
@@ -94,7 +94,7 @@ such as `Opcode41`, not merely that this note lacks a long write-up.
 - `0x77`
 - `0x7B`
 - `0x7D-0x7F`
-- `0x81-0x84`
+- `0x80-0x84`
 - `0x87`
 - `0x89-0x8F`
 - `0x93-0x98`
@@ -221,7 +221,6 @@ What is still missing for `Confirmed`:
 
 Current local names:
 
-- `0x80 -> SoundEffects0`
 - `0x85 -> LoadSfxSlot`
 - `0x86 -> FreeSfxSlot`
 - `0x88 -> SetCurrentSfx`
@@ -237,21 +236,51 @@ Current narrow:
 - This block already reads like a shared sound pipeline rather than unrelated
   opcodes: resource loads, slot selection, explicit frees, then queue or
   process steps.
+- The older local name `0x80 -> SoundEffects0` should no longer be treated as
+  usable. The matched battle-script dispatch table routes `0x80` to
+  `func_800B66E4` in `4A0A8.c`, and that handler body is only `return 0;`,
+  with no sound helper call and no parameter use.
 - `LoadSoundFileById` and `ProcessSoundQueue` are especially strong locally
   because real scripts commonly pair `9D xx` with a later `9E`.
 - `LoadSfxSlot`, `FreeSfxSlot`, `SetCurrentSfx`, `LoadMusicSlot`, and
   `ClearMusicLoadSlot` are all plausible and internally consistent names, but
   some still rest more on script ordering than on fully cited handler bodies.
-- `SoundEffects0` is intentionally still a placeholder-quality local name in the
-  sense that the subsystem is right but the exact verb is not yet recovered.
 
 What is still missing for `Confirmed`:
 
 - A handler-level pass that separates pure resource management from immediate
-  playback, especially for `0x80`, `0x88`, and `0x92`.
+  playback, especially for `0x88` and `0x92`.
 - One cleaner write-up of how the music-slot and sound-file-id paths interact,
   so `LoadMusicSlot` and `MusicPlay` can be documented with the same confidence
   now used for `LoadSoundFileById`.
+
+#### Opcode `0x80`
+
+- Confidence: `Confirmed` for the downgrade back to a placeholder
+
+Current narrow:
+
+- The matched battle-script dispatch table in
+  [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
+  routes `0x80` to `func_800B66E4`.
+- The handler body in
+  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
+  is just `return 0;`, which matches the same empty stub already used for
+  several still-unresolved opcodes.
+- By contrast, the nearby genuinely named audio opcodes such as `0x85`,
+  `0x86`, `0x88`, `0x90`, `0x9D`, and `0x9E` dispatch to readable handlers
+  that immediately call specific sound-engine helpers.
+
+Best safe local tooling name:
+
+- `0x80 -> Opcode80`
+
+Why this downgrade is the smallest honest update:
+
+- The previous local name `SoundEffects0` rested on neighborhood heuristics and
+  script clustering, not on a direct consumer path.
+- The direct handler proof now shows no sound behavior at all, so keeping a
+  sound-family claim would overstate the evidence.
 
 #### Core camera flow outside the effect-heavy `E` range
 
