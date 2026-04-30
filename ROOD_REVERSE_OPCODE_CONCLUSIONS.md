@@ -171,6 +171,43 @@ Current best script-level interpretation:
 - `E2 aa bb we dd 00`: tween the camera roll angle to `<h aa bb>` with
   wrap/easing control `we` over `dd` ticks
 
+#### Opcode `0xE3`
+
+- Data Crystal: unnamed
+- Confirmed name: `ScreenEffectAngleTween`
+- Confidence: `Confirmed`
+
+Why:
+
+- The matched opcode dispatch table maps `0xE3` into the shared
+  `vs_battle_script_setupAngleTween` handler in
+  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).
+- The readable handler body switches on the opcode byte and routes `0xE3` into
+  `D_800F4BA4->screenEffectAngleTween`, not the camera tween slot used by
+  `0xE2`.
+- The matched apply side later commits that tween through
+  `func_8007DDAC(D_800F4BA4->screenEffectAngleTween.currentValue)`.
+- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)
+  shows `func_8007DDAC` as a dedicated persistent setter for the shared
+  screen-effect angle scalar `D_800F1A2C`, and the ending-menu effect setup in
+  [`_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c`](_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c)
+  resets that same setter alongside the shared screen-effect scale, color, and
+  offset state.
+- A fresh local decode of `Game Data/MAP` currently finds 4 `E3` uses, all of
+  them inside the same `E1`/`E4`/`E5`/`E6` effect staging cluster.
+- The strongest sample is `MAP102`, which sets `E3 30 00 10 00 00` before
+  enabling the effect block, then immediately runs `E3 00 00 11 32 00` to
+  tween that angle back to zero over 50 ticks. That behavior fits an effect
+  angle control much better than a camera move or generic scalar.
+- All 4 currently decoded `E3` instances end with a trailing `00` byte,
+  matching the shared setup helper only consuming angle, wrap/easing, and
+  duration rather than a hidden selector field.
+
+Current best script-level interpretation:
+
+- `E3 aa bb we dd 00`: tween the active screen-effect angle to `<h aa bb>` with
+  wrap/easing control `we` over `dd` ticks
+
 #### Opcode `0xE4`
 
 - Data Crystal: unnamed
@@ -319,6 +356,7 @@ These were also validated locally and are stronger than the older public table:
 - `0x9D -> LoadSoundFileById`
 - `0x9E -> ProcessSoundQueue`
 - `0xE2 -> CameraRollTween`
+- `0xE3 -> ScreenEffectAngleTween`
 - `0xE4 -> ScreenEffectScaleTween`
 - `0xE5 -> ScreenEffectColorTween`
 - `0xE6 -> ScreenEffectOffsetTween`
@@ -389,33 +427,7 @@ Why not use show/hide yet:
 These are narrowed down, but should not be hard-renamed upstream without one
 more proof pass:
 
-- `0xE3`
 - `0xED`
-
-#### Opcode `0xE3`
-
-- Confidence: `Strong`
-
-Current narrow:
-
-- It uses the same tween machinery as `0xE2`, but writes to a different target.
-- In scripts it lives much closer to the visual-effect block than to normal
-  camera positioning commands.
-- Nearby matched effect update code shows a separate cluster that pushes timed
-  values into screen-effect state, color state, and `SCREFF2` parameters.
-- All 6 currently decoded `E3` instances also end with a trailing `00` byte,
-  matching the shared setup helper only using angle, wrap/easing, and duration.
-- That makes it look like an effect-side angle control, not a basic camera
-  move opcode.
-
-Best interpretation so far:
-
-- `ScreenEffectAngleTween`
-
-Why still tentative:
-
-- The consumer of `D_800F1A2C` is still hidden behind nonmatching code, so the
-  user-facing feature name is not nailed down.
 
 #### Opcode `0xED`
 
