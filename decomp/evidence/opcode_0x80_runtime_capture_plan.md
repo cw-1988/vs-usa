@@ -34,7 +34,64 @@ smallest capture plan that should settle it.
 4. The actual dispatch target address if execution reaches `0x800B66E4`,
    `0x800BA2E0`, or another rewritten slot for `0x80-0x82`.
 
-## PCSX-Redux checklist
+## Default runtime path
+
+The default runtime path for this contradiction is now automated
+`PCSX-Redux` CLI capture, not manual debugger driving.
+
+Use:
+
+- `decomp/verification/pcsx_redux_opcode_0x80_capture.lua`
+- `decomp/verification/run_opcode_0x80_runtime_capture.ps1`
+
+The wrapper launches a scriptable `PCSX-Redux` build with startup Lua, plants
+the known breakpoints, dumps the copied table directly from emulator memory,
+and records the resulting snapshot paths plus a compact automation summary back
+into `decomp/evidence/opcode_0x80_runtime_observation.json`.
+
+Official `PCSX-Redux` docs that back this path:
+
+- CLI launch surface used by the wrapper:
+  <https://pcsx-redux.consoledev.net/cli_flags/>
+- Lua runtime control, pads, and savestate APIs used or available to the
+  capture script:
+  <https://pcsx-redux.consoledev.net/Lua/redux-basics/>
+- Lua execution and write breakpoints used by the capture script:
+  <https://pcsx-redux.consoledev.net/Lua/breakpoints/>
+- Lua events available for boot/savestate-aware scripting:
+  <https://pcsx-redux.consoledev.net/Lua/events/>
+- Lua memory and register access used for raw table dumps and PC filtering:
+  <https://pcsx-redux.consoledev.net/Lua/memory-and-registers/>
+- MIPS-side callback surface available if the runtime path later needs
+  instrumented code or `pcsx_execSlot()`-style handshakes:
+  <https://pcsx-redux.consoledev.net/mips_api/>
+
+Recommended usage shape:
+
+```powershell
+pwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `
+  -IsoPath "<path-to-disc-image>"
+```
+
+Expected outputs:
+
+- `decomp/evidence/opcode_0x80_runtime_after_init.bin`
+- `decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin`
+- `decomp/evidence/opcode_0x80_runtime_automation_summary.json`
+- refreshed `decomp/evidence/opcode_0x80_runtime_observation.json`
+- refreshed compare/support artifacts through the existing finalize flow
+
+Operational assumptions:
+
+- use a scriptable `PCSX-Redux` CLI-capable build
+- run with the interpreter core plus debugger support
+- keep the output files under `decomp/evidence`
+- let the wrapper and recorder/finalizer own the observation packet updates
+
+## Manual fallback checklist
+
+If the automated CLI path is blocked for a specific run, fall back to the
+manual debugger procedure below.
 
 1. Enable the debugger features needed for execution and memory breakpoints.
 2. Open the memory editor at `0x800F4C28`.

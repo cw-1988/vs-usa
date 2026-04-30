@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Generated from `Pass 3 - Copy/patch reconciliation` on `2026-04-30 20:30:10Z`.
+- Generated from `Pass 3 - Copy/patch reconciliation` on `2026-04-30 21:45:02Z`.
 - Observation source: `decomp/evidence/opcode_0x80_runtime_observation.json`
 - Baseline export: `decomp/evidence/inittbl_opcode_table.json`
 - Runtime table address: `0x800F4C28`
@@ -38,7 +38,7 @@
 
 ## Notes
 
-- No extra runtime notes were recorded yet.
+- Automated PCSX-Redux cold-boot disc run against 'Game Data/Vagrant Story (USA).cue' reached startup Lua and produced decomp/evidence/opcode_0x80_runtime_automation_summary.json, but timed out before 0x800BFBB8. The filtered run recorded reader_hits=0, write_hits=0, ignored_pre_runtime_writes=256 from pc 0x00000600, and no valid after_init/pre_dispatch snapshots. (`2026-04-30T21:44:58Z`)
 
 ## Conclusion
 

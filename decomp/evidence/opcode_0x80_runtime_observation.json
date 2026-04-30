@@ -53,7 +53,7 @@
   "table_mutations": [],
   "dispatch_observations": [],
   "comparison_summary": {
-    "generated_utc": "2026-04-30T20:30:10Z",
+    "generated_utc": "2026-04-30T21:45:02Z",
     "compared_snapshot_count": 0,
     "compared_snapshot_labels": [],
     "missing_snapshot_count": 2,
@@ -67,9 +67,14 @@
     "recorded_breakpoint_hit_count": 0,
     "recorded_table_mutation_count": 0,
     "recorded_dispatch_count": 0,
-    "recorded_note_count": 0,
+    "recorded_note_count": 1,
     "focus_opcodes": {}
   },
   "conclusion": "Runtime observation packet is not finalized yet: no listed snapshot files were available for comparison.",
-  "notes": []
+  "notes": [
+    {
+      "timestamp": "2026-04-30T21:44:58Z",
+      "text": "Automated PCSX-Redux cold-boot disc run against 'Game Data/Vagrant Story (USA).cue' reached startup Lua and produced decomp/evidence/opcode_0x80_runtime_automation_summary.json, but timed out before 0x800BFBB8. The filtered run recorded reader_hits=0, write_hits=0, ignored_pre_runtime_writes=256 from pc 0x00000600, and no valid after_init/pre_dispatch snapshots."
+    }
+  ]
 }
