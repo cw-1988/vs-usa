@@ -9,10 +9,12 @@
 - `decomp/ghidra/export_battle_0x80_sound_cluster_slices.ps1`
 - `decomp/ghidra/export_inittbl_runtime_opcode_table_accesses.ps1`
 - `decomp/ghidra/export_battle_runtime_opcode_table_accesses.ps1`
+- `decomp/ghidra/export_battle_runtime_opcode_table_pointer_usage.ps1`
 - `decomp/ghidra/ExportFunctionTable.java`
 - `decomp/ghidra/DumpInstructions.java`
 - `decomp/ghidra/DumpXrefs.java`
 - `decomp/ghidra/DumpAddressAccesses.java`
+- `decomp/ghidra/TracePointerDerivedAccesses.java`
 
 ## Produced artifacts
 
@@ -26,7 +28,9 @@
 - `decomp/evidence/battle_0x80_sound_cluster_slices.json`
 - `decomp/evidence/inittbl_runtime_opcode_table_accesses.json`
 - `decomp/evidence/battle_runtime_opcode_table_accesses.json`
+- `decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`
 - `decomp/evidence/opcode_0x80_runtime_slot_access_static.md`
+- `decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md`
 
 ## Packet structure
 
@@ -38,6 +42,9 @@
 - `opcode_0x80_runtime_slot_access_static.md` is the focused support note for
   direct absolute accesses to runtime slot `0x800F4C28` across the local battle
   executables.
+- `opcode_0x80_runtime_pointer_usage_static.md` is the focused support note
+  for how the recovered `BATTLE.PRG` reader actually uses the copied table
+  pointer after loading it from `0x800F4C28`.
 
 ## Static findings
 
@@ -89,11 +96,16 @@
 - A local access sweep of `INITBTL.PRG` and `BATTLE.PRG` now finds one direct
   init-time write to `0x800F4C28` and one direct runtime read from it, with no
   additional direct slot accesses recovered in those two battle executables.
+- A local pointer-usage trace of the recovered `BATTLE.PRG` reader at
+  `FUN_800BFBB8` now shows only pointer arithmetic plus one indexed table-entry
+  read before `jalr`, with no recovered indirect write-back or tainted
+  pointer-argument call in that local consumer.
 - The nearby sound-shaped helper keeps `SoundEffects0` plausible as a working
   placeholder, but the local static picture now favors "`0x80-0x82` are real
   copied stubs, while `0x800BA2E0` belongs to a separate local sound
   subdispatch family that also contains the visible `0x83+` handlers."
 - The remaining unresolved question is no longer "is `0x800BA2E0` secretly the
   real `0x80` target?" or "is there another recovered direct slot rewrite?"
-  but "does any later path mutate the copied table contents behind
-  `0x800F4C28` before dispatch?"
+  but "does any other unrecovered path outside the currently traced local
+  reader mutate the copied table contents behind `0x800F4C28` before
+  dispatch?"

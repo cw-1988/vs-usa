@@ -1,0 +1,39 @@
+{
+  "program_name": "BATTLE.PRG",
+  "target": "800f4c28",
+  "seed_address": "800bfbb8",
+  "instruction_limit": 160,
+  "backward_window": 6,
+  "function_name": "FUN_800bfbb8",
+  "function_entry": "800bfbb8",
+  "direct_read_address": "800bfcfc",
+  "direct_read_text": "lw v1,0x4c28(v1)",
+  "taint_root_register": "v1",
+  "derived_uses": [
+    {
+          "address": "800bfd04",
+          "text": "addu v0,v0,v1",
+          "kind": "pointer_arithmetic",
+          "destination_register": "v0",
+          "source_registers": [
+            "v0",
+            "v1"
+          ],
+          "tainted_registers_after": [
+            "v0",
+            "v1"
+          ]
+        },
+    {
+          "address": "800bfd08",
+          "text": "lw v0,0x0(v0)",
+          "kind": "derived_read",
+          "access_kind": "read",
+          "base_register": "v0",
+          "tainted_registers_before": [
+            "v0",
+            "v1"
+          ]
+        }
+  ]
+}

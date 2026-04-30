@@ -21,6 +21,10 @@ Current tracked entry points:
 - [`DumpAddressAccesses.java`](DumpAddressAccesses.java): headless-safe scan for
   reconstructed MIPS `lui` + load/store pairs targeting one exact address,
   useful when normal xrefs miss direct slot reads or writes
+- [`TracePointerDerivedAccesses.java`](TracePointerDerivedAccesses.java):
+  headless-safe trace of how a recovered pointer read is used inside a
+  function, useful for checking whether a runtime table pointer is only read,
+  passed onward, or written through indirectly
 - [`export_function_table.py`](export_function_table.py): Python version kept
   for future `PyGhidra`-based flows
 - [`Invoke-GhidraHeadlessExport.ps1`](Invoke-GhidraHeadlessExport.ps1):
@@ -38,6 +42,9 @@ Current tracked entry points:
 - [`export_battle_runtime_opcode_table_accesses.ps1`](export_battle_runtime_opcode_table_accesses.ps1):
   focused `BATTLE.PRG` access sweep for direct reads/writes of runtime slot
   `0x800F4C28`
+- [`export_battle_runtime_opcode_table_pointer_usage.ps1`](export_battle_runtime_opcode_table_pointer_usage.ps1):
+  focused `BATTLE.PRG` pointer-usage trace for the recovered
+  `FUN_800BFBB8 -> 0x800F4C28` runtime-table reader
 
 Use these helpers to turn binary questions into local reproducible artifacts.
 If `_refs/rood-reverse` suggests a location, that is only a lead; the evidence

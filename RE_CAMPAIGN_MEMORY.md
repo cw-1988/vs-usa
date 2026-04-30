@@ -96,7 +96,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `in_progress` | `INITBTL.PRG` static table at `0x800FAF7C`, copied into runtime slot `0x800F4C28` by the locally dumped init-time routine at `0x800FAAAC` | Static slot `0x800B66E4`; former competing helper `0x800BA2E0` is now anchored to a local `BATTLE.PRG` sound subdispatch table at `0x800E9F30` with siblings `0x800BA35C/39C/3E4/404/444/470/494`; live `BATTLE.PRG` consumer `FUN_800BFBB8` now reads `0x800F4C28`, indexes by opcode byte, and dispatches via `jalr` | `SoundEffects0` placeholder only | After the direct-slot access sweep found one `INITBTL.PRG` write and one `BATTLE.PRG` read, is any later mutation now only indirect table patching behind the copied pointer rather than another absolute-slot rewrite? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json), [`inittbl_runtime_opcode_table_accesses.json`](decomp/evidence/inittbl_runtime_opcode_table_accesses.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json), [`battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json), [`battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json), [`battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json), [`battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json), [`battle_runtime_opcode_table_accesses.json`](decomp/evidence/battle_runtime_opcode_table_accesses.json) |
+| `opcode 0x80` | `in_progress` | `INITBTL.PRG` static table at `0x800FAF7C`, copied into runtime slot `0x800F4C28` by the locally dumped init-time routine at `0x800FAAAC` | Static slot `0x800B66E4`; former competing helper `0x800BA2E0` is now anchored to a local `BATTLE.PRG` sound subdispatch table at `0x800E9F30` with siblings `0x800BA35C/39C/3E4/404/444/470/494`; live `BATTLE.PRG` consumer `FUN_800BFBB8` now reads `0x800F4C28`, uses it only for pointer arithmetic plus one indexed table-entry read in the new local trace, and dispatches via `jalr` | `SoundEffects0` placeholder only | With the one recovered `BATTLE.PRG` reader now traced through to an indexed read and `jalr`, does any other unrecovered path outside the currently swept local battle executables still patch the copied table later? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_pointer_usage_static.md`](decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json), [`inittbl_runtime_opcode_table_accesses.json`](decomp/evidence/inittbl_runtime_opcode_table_accesses.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json), [`battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json), [`battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json), [`battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json), [`battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json), [`battle_runtime_opcode_table_accesses.json`](decomp/evidence/battle_runtime_opcode_table_accesses.json), [`battle_runtime_opcode_table_pointer_usage.json`](decomp/evidence/battle_runtime_opcode_table_pointer_usage.json) |
 
 ## Known Conflicts
 
@@ -127,15 +127,23 @@ Current phase: Pass 3 - Copy/patch reconciliation
   There is no longer a strong static case that `0x800BA2E0` is the hidden
   direct `0x80` target, and the bypass half of the contradiction has now been
   weakened by the direct `0x800F4C28` consumer xref plus the absolute-slot
-  access sweep. The remaining contradiction is narrower: some later path could
-  still mutate the copied `0x400`-byte table indirectly after reading the
-  pointer, even if another absolute-slot rewrite has not been recovered.
+  access sweep. `decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`
+  now narrows the recovered local `BATTLE.PRG` reader even further: inside
+  `FUN_800BFBB8`, the copied pointer is only used for pointer arithmetic plus
+  one indexed table-entry read before `jalr`, with no recovered indirect
+  write-back or tainted pointer-argument call. The remaining contradiction is
+  therefore narrower still: some other unrecovered path could still mutate the
+  copied `0x400`-byte table indirectly even if the currently recovered reader
+  does not.
 - What is still missing: any static or runtime evidence that the copied table
   contents themselves are patched after the verified init-time copy, rather
-  than only the slot being read and dispatched through.
+  than only the slot being read and dispatched through by the currently
+  recovered local consumer.
 - Is runtime justified yet: not yet. The direct-slot rewrite question is now
-  much weaker, so the next static step is indirect patch tracing from the
-  copied table/pointer before using `PCSX-Redux` as a late tie-breaker.
+  much weaker, and the one recovered local reader has now been traced through
+  without finding a write-back path, so the next static step is widening the
+  sweep to any additional local battle-adjacent executables or readers before
+  using `PCSX-Redux` as a late tie-breaker.
 
 ## Artifacts Index
 
@@ -148,6 +156,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 - [`decomp/evidence/battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json)
 - [`decomp/evidence/inittbl_runtime_opcode_table_accesses.json`](decomp/evidence/inittbl_runtime_opcode_table_accesses.json)
 - [`decomp/evidence/battle_runtime_opcode_table_accesses.json`](decomp/evidence/battle_runtime_opcode_table_accesses.json)
+- [`decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`](decomp/evidence/battle_runtime_opcode_table_pointer_usage.json)
 
 ### Handler slices
 
@@ -162,6 +171,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 - [`decomp/evidence/opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md)
 - [`decomp/evidence/opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md)
 - [`decomp/evidence/opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md)
+- [`decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md`](decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md)
 
 ### Proof packets
 
@@ -169,14 +179,15 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 ## Session Handoff
 
-- `last completed step`: added a reusable direct-address access sweep, then ran
-  it across `INITBTL.PRG` and `BATTLE.PRG` to show one init-time write to
-  `0x800F4C28`, one runtime read from it, and no additional recovered direct
-  slot accesses in those two battle executables
-- `next recommended step`: trace for indirect writes to the copied opcode table
-  contents after the init-time copy, since the direct-slot rewrite question is
-  now narrowed and the remaining uncertainty is table mutation rather than
-  consumer/bypass ambiguity
+- `last completed step`: added a reusable pointer-derived access tracer, then
+  ran it on the recovered `BATTLE.PRG` reader at `FUN_800BFBB8` to show that
+  the copied table pointer from `0x800F4C28` is only used for pointer
+  arithmetic plus one indexed read before `jalr`, with no recovered indirect
+  write-back in that local consumer
+- `next recommended step`: widen the slot/pointer sweep to any additional
+  local battle-adjacent executables or overlays that could still mutate the
+  copied table after init, because the currently recovered writer/reader pair
+  inside `INITBTL.PRG` and `BATTLE.PRG` no longer supplies a static patch path
 - `do not forget`: update this ledger before ending the next pass; no export,
   coverage note, or contradiction should live only in terminal output; keep
   runtime as a late tie-breaker only after indirect patch tracing around the
@@ -222,3 +233,10 @@ Current phase: Pass 3 - Copy/patch reconciliation
   [`decomp/evidence/inittbl_runtime_opcode_table_accesses.json`](decomp/evidence/inittbl_runtime_opcode_table_accesses.json),
   [`decomp/evidence/battle_runtime_opcode_table_accesses.json`](decomp/evidence/battle_runtime_opcode_table_accesses.json),
   [`decomp/evidence/opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md)
+- `2026-04-30`: added a reusable pointer-derived access tracer, then used it
+  on `FUN_800BFBB8` to show that the recovered local `BATTLE.PRG` reader only
+  performs pointer arithmetic plus one indexed table-entry read from the copied
+  runtime opcode table before `jalr`, with no recovered indirect write-back in
+  that consumer. Links:
+  [`decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`](decomp/evidence/battle_runtime_opcode_table_pointer_usage.json),
+  [`decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md`](decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md)
