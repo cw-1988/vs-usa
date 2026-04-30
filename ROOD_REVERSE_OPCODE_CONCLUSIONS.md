@@ -1,6 +1,6 @@
-## Vagrant Story Script Opcode Findings
+## Vagrant Story Script Opcode Conclusions
 
-This note collects high-confidence opcode findings that appear to improve on the
+This note collects high-confidence opcode conclusions that appear to improve on the
 current public table at Data Crystal:
 
 - Source: <https://datacrystal.tcrf.net/wiki/Vagrant_Story/Script_Opcodes>
@@ -109,6 +109,57 @@ Current best script-level interpretation:
 - `E1 00`: disable the current screen effect block
 - `E1 01`: enable the current screen effect block
 
+#### Opcode `0xE4`
+
+- Data Crystal: unnamed
+- Confirmed name: `ScreenEffectScaleTween`
+- Confidence: `Confirmed`
+
+Why:
+
+- The matched dispatch table maps `0xE4` into the shared screen-effect helper
+  family, and the matched apply side in
+  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
+  sends the corresponding tween output through `func_8007DDB8`.
+- `func_8007DDB8` writes the two persistent screen-effect scale components in
+  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c),
+  and the effect reset path restores those components to neutral `0x1000`,
+  `0x1000`.
+- A direct non-script caller in
+  [`_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c`](_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c)
+  uses the same setter with values like `0x1029` and `0x107A` before enabling
+  the effect runtime, which matches a scale preset rather than ids or flags.
+- In decoded scripts, `E4 20 20` repeatedly lands on neutral `4096, 4096`,
+  while nearby values like `1F`, `21`, and `23` make small in/out adjustments.
+
+Current best script-level interpretation:
+
+- `E4 xx yy ee dd`: tween the active screen effect scale on two axes
+
+#### Opcode `0xE6`
+
+- Data Crystal: unnamed
+- Confirmed name: `ScreenEffectOffsetTween`
+- Confidence: `Confirmed`
+
+Why:
+
+- The same matched apply path in
+  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
+  routes the `0xE6` tween state through `func_8007DDF8`.
+- `func_8007DDF8` stores the persistent screen-effect offset vector in
+  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c),
+  and the effect reset path zeros that state.
+- Script operands are explicitly treated as signed bytes in the local decoder
+  and show up in small ranges such as `-3`, `-1`, `0`, `1`, `2`, and `4`,
+  which fits an offset control much better than ids, colors, or mode flags.
+- Real script sequences frequently push a small offset and then ease back to
+  `0, 0`, for example in `MAP017`, `MAP026`, `MAP131`, and `MAP145`.
+
+Current best script-level interpretation:
+
+- `E6 xx yy ee dd`: tween the active screen effect offset on two axes
+
 ### Other confirmed names worth upstreaming
 
 These were also validated locally and are stronger than the older public table:
@@ -128,7 +179,9 @@ These were also validated locally and are stronger than the older public table:
 - `0x99 -> ClearMusicLoadSlot`
 - `0x9D -> LoadSoundFileById`
 - `0x9E -> ProcessSoundQueue`
+- `0xE4 -> ScreenEffectScaleTween`
 - `0xE5 -> ScreenEffectColorTween`
+- `0xE6 -> ScreenEffectOffsetTween`
 - `0xE7 -> SetScreenEffectMode`
 - `0xEB -> CameraNearClip`
 - `0xEC -> CameraFarClip`
@@ -197,8 +250,6 @@ more proof pass:
 - `0x7A`
 - `0xE2`
 - `0xE3`
-- `0xE4`
-- `0xE6`
 - `0xED`
 - `0xEF`
 
@@ -279,49 +330,6 @@ Why still tentative:
 
 - The consumer of `D_800F1A2C` is still hidden behind nonmatching code, so the
   user-facing feature name is not nailed down.
-
-#### Opcode `0xE4`
-
-- Confidence: `Strong`
-
-Current narrow:
-
-- This opcode writes through `func_8007DDB8`, the same setter used by direct
-  non-script callers.
-- Its first two script bytes are promoted with `<< 7`, and a raw value of
-  `0x20` lands exactly on neutral `0x1000`.
-- That makes the script-facing values behave like two effect scale components,
-  not ids, colors, or flags.
-
-Best interpretation so far:
-
-- `ScreenEffectScaleTween`
-
-Why still tentative:
-
-- The underlying runtime fields are still unnamed, so the safest claim is
-  `two-component effect scale tween` rather than a more cinematic label.
-
-#### Opcode `0xE6`
-
-- Confidence: `Strong`
-
-Current narrow:
-
-- This opcode writes through `func_8007DDF8`.
-- The first two script bytes are treated as signed values and are commonly used
-  in tiny ranges like `-2`, `0`, `1`, and `2`.
-- In scripts it behaves like a small two-axis adjustment layered onto the
-  active screen effect rather than a camera move or object transform.
-
-Best interpretation so far:
-
-- `ScreenEffectOffsetTween`
-
-Why still tentative:
-
-- The exact user-facing meaning of those two signed components still needs one
-  more consumer-side pass before claiming a more specific term than `offset`.
 
 #### Opcode `0xED`
 

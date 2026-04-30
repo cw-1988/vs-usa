@@ -32,7 +32,7 @@ That output is useful for:
 - [`analyze_room_graph.py`](analyze_room_graph.py): analyzes room and scene connectivity
 - [`room_names.tsv`](room_names.tsv): map, zone, area, and room name lookup table
 - [`decoded_scripts`](decoded_scripts): generated decoded script output
-- [`ROOD_REVERSE_OPCODE_FINDINGS.md`](ROOD_REVERSE_OPCODE_FINDINGS.md): opcode findings and naming notes
+- [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md): opcode conclusions and naming notes
 - [`ROOM_CONNECTION_FINDINGS.md`](ROOM_CONNECTION_FINDINGS.md): room and scene connectivity notes
 - [`VAGRANT_STORY_MODDING_OVERVIEW.md`](VAGRANT_STORY_MODDING_OVERVIEW.md): higher-level notes on the extracted disc contents
 - [`Game Data`](Game%20Data): place the extracted USA disc contents here

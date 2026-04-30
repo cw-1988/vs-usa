@@ -62,7 +62,7 @@ git -C "_refs/rood-reverse" merge upstream/main
 
 Keeping external repos under `_refs/` makes it easier to:
 
-- compare our findings against active decomp work
+- compare our conclusions against active decomp work
 - script against a known local checkout
 - keep research dependencies separate from this repo's own source files
 

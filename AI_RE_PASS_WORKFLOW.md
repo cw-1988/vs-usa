@@ -22,7 +22,7 @@ Complete one focused reverse-engineering pass that:
 5. leaves the repo in a state where the user can review the summary and then
    just press commit
 
-Do not end with only vague findings. Convert the pass into code or note changes
+Do not end with only vague conclusions. Convert the pass into code or note changes
 unless the evidence is too weak to justify a rename.
 
 If a pass produces changes that belong in both this workspace and
@@ -35,7 +35,7 @@ each touched repo.
 Start here:
 
 - [`dump_mpd_script.py`](dump_mpd_script.py)
-- [`ROOD_REVERSE_OPCODE_FINDINGS.md`](ROOD_REVERSE_OPCODE_FINDINGS.md)
+- [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md)
 - [`GHIDRA_OPCODE_RE_WORKFLOW.md`](GHIDRA_OPCODE_RE_WORKFLOW.md)
 - [`decoded_scripts`](decoded_scripts)
 
@@ -47,6 +47,7 @@ Reference sources:
 - [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)
 - [`_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c`](_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c)
 - [`_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt)
+- [`_refs/rood-reverse/BATTLE_SCREEN_EFFECT_OPCODE_CONCLUSIONS.md`](_refs/rood-reverse/BATTLE_SCREEN_EFFECT_OPCODE_CONCLUSIONS.md)
 
 Useful local tooling:
 
@@ -111,12 +112,18 @@ code-level behavior is rock-hard and directly supported by matched or otherwise
 clear implementation evidence. Do not use helper renames as a way to smuggle in
 a speculative script-facing interpretation.
 
+If a pass changes `_refs/rood-reverse`, add or update one short standalone
+conclusions note in that repo too. Prefer a root-level `*_CONCLUSIONS.md` file named
+for the subsystem, keep it tightly scoped to the current pass, and cite the
+source files that justify the nested-repo edits so the evidence travels with
+the upstreamable changes.
+
 ## Working Style
 
 Before doing anything substantial:
 
 1. Run `git status --short`.
-2. Read the current findings note before renaming anything.
+2. Read the current conclusions note before renaming anything.
 3. Avoid touching unrelated user changes.
 4. Prefer one strong improvement over five speculative ones.
 
@@ -236,12 +243,13 @@ name", that is still a valid pass.
 A successful pass should update one or more of:
 
 - [`dump_mpd_script.py`](dump_mpd_script.py)
-- [`ROOD_REVERSE_OPCODE_FINDINGS.md`](ROOD_REVERSE_OPCODE_FINDINGS.md)
+- [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md)
 - [`GHIDRA_OPCODE_RE_WORKFLOW.md`](GHIDRA_OPCODE_RE_WORKFLOW.md)
 
 Optional if truly useful:
 
-- a short new note with tightly scoped findings
+- a short new note with tightly scoped conclusions in this workspace or in
+  `_refs/rood-reverse` when the pass changes the nested repo
 - comments or code changes in `_refs/rood-reverse` if that materially helps the
   next pass or captures an upstreamable RE result
 - helper or internal naming cleanup in `_refs/rood-reverse` when it is backed
@@ -249,7 +257,7 @@ Optional if truly useful:
   semantics
 
 Do not create a giant theory dump unless it directly helps the next pass.
-Prefer changes that improve the decoder, the findings trail, or both.
+Prefer changes that improve the decoder, the conclusions trail, or both.
 
 ## Verification
 
@@ -260,7 +268,7 @@ Minimum verification:
 1. Verify the relevant behavior against at least one strong source, and prefer
    two when practical.
 2. Confirm the result is more informative or more accurate than before.
-3. Re-read the wording in the findings note and make sure it does not claim
+3. Re-read the wording in the conclusions note and make sure it does not claim
    more than the code proves.
 
 Good verification examples:
@@ -282,7 +290,7 @@ That means:
 2. The diff is focused.
 3. Verification is done.
 4. The AI stages the changes it intentionally made in each touched repo.
-5. The user is given a clear findings summary.
+5. The user is given a clear conclusions summary.
 6. The user is given the exact commit message to use.
 
 Do not run `git commit`.
@@ -302,7 +310,7 @@ Good default shapes:
 ```text
 feat(re): clarify opcode 0xEF decoder output
 fix(re-notes): tighten evidence for screen effect opcodes
-docs(re): capture new opcode findings for 0x7A
+docs(re): capture new opcode conclusions for 0x7A
 ```
 
 Examples:
@@ -335,7 +343,7 @@ When the pass is complete, report:
 2. what evidence changed your confidence
 3. which files were updated
 4. how you verified it
-5. a short summary of the findings in normal prose
+5. a short summary of the conclusions in normal prose
 6. the exact conventional commit message for each touched repo
 7. confirmation that the intended changes are staged in each touched repo
 
@@ -365,5 +373,5 @@ actually committing.
 If the next AI needs a one-line mission, use this:
 
 ```text
-Do one focused RE pass, use the right local tools for the question, turn the result into verified workspace improvements, stage the intended changes, summarize the findings, and stop right before git commit.
+Do one focused RE pass, use the right local tools for the question, turn the result into verified workspace improvements, stage the intended changes, summarize the conclusions, and stop right before git commit.
 ```

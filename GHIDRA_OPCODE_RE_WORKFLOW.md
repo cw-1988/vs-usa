@@ -161,12 +161,12 @@ Example:
 Open:
 
 - [`dump_mpd_script.py`](dump_mpd_script.py)
-- [`ROOD_REVERSE_OPCODE_FINDINGS.md`](ROOD_REVERSE_OPCODE_FINDINGS.md)
+- [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md)
 
 The fastest pattern is:
 
 - look for placeholder names like `OpcodeXX`
-- compare that against the findings note to see whether the opcode is truly
+- compare that against the conclusions note to see whether the opcode is truly
   unresolved or just not yet renamed locally
 
 ### Step 2. Pull sample script contexts
@@ -422,7 +422,7 @@ Nice follow-up:
 
 1. Add comments in the `rood-reverse` reference checkout around the handler and
    consumer code.
-2. Keep the local decoder and findings note synchronized as confidence improves.
+2. Keep the local decoder and conclusions note synchronized as confidence improves.
 
 ## Session Reminder
 
