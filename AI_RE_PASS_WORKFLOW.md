@@ -106,6 +106,11 @@ symbol, struct, comment, or matched-code improvements there, make those
 changes in `_refs/rood-reverse` as part of the same pass instead of leaving the
 finding stranded only in local notes.
 
+That includes helper-function or internal-state renames, but only when the
+code-level behavior is rock-hard and directly supported by matched or otherwise
+clear implementation evidence. Do not use helper renames as a way to smuggle in
+a speculative script-facing interpretation.
+
 ## Working Style
 
 Before doing anything substantial:
@@ -125,6 +130,8 @@ one pass.
 Good target types:
 
 - opcode naming or argument-layout improvements
+- helper-function or internal-state naming improvements when behavior is
+  unquestionably confirmed
 - struct-field interpretation improvements
 - runtime validation of a static RE theory
 - decoder or tooling quality-of-life improvements that support RE work
@@ -138,6 +145,9 @@ Good heuristics:
 
 Do not rename an opcode just to eliminate a placeholder. Evidence matters more
 than tidiness.
+
+The same rule applies to helper functions and internals: only rename them when
+the implementation meaning is genuinely locked in.
 
 ## Workflow
 
@@ -186,7 +196,7 @@ For opcode work, especially `0xEF`, compare multiple rooms and preserve:
 Use the dispatch table before inferring from source order.
 
 ```powershell
-rg -n "_opcodeFunctionTable|func_800BB450|func_800BD444|func_800BD6C4|func_800BDC9C" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt
+rg -n "_opcodeFunctionTable|vs_battle_script_setScreenEffectEnabled|vs_battle_script_setupAngleTween|func_800BD6C4|func_800BDC9C|func_800BB450|func_800BD444" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt
 ```
 
 ### Step 4. Trace the consumer path
@@ -198,6 +208,8 @@ Keep going until one of these happens:
 - the field consumer clarifies the user-facing meaning
 - the decomp becomes nonmatching and blocks certainty
 - the script evidence is already strong enough for a conservative local rename
+- the helper or internal behavior is clear enough to justify a code-level name
+  even if the final script-facing label should stay more conservative
 
 For non-opcode work, the equivalent rule still applies:
 
@@ -209,6 +221,7 @@ For non-opcode work, the equivalent rule still applies:
 Only choose one of these as the main result:
 
 - `Confirmed rename`
+- `Confirmed helper/internal rename`
 - `Conservative local tooling rename`
 - `Argument rendering improvement only`
 - `Note-only evidence update`
@@ -231,6 +244,9 @@ Optional if truly useful:
 - a short new note with tightly scoped findings
 - comments or code changes in `_refs/rood-reverse` if that materially helps the
   next pass or captures an upstreamable RE result
+- helper or internal naming cleanup in `_refs/rood-reverse` when it is backed
+  by directly readable code behavior rather than a guess about player-facing
+  semantics
 
 Do not create a giant theory dump unless it directly helps the next pass.
 Prefer changes that improve the decoder, the findings trail, or both.
@@ -251,6 +267,8 @@ Good verification examples:
 
 - confirm `OpcodeEF` now shows structured fields instead of an opaque blob
 - confirm a rename appears correctly in several decoded rooms
+- confirm helper or internal renames match the matched implementation and all
+  local call sites
 - confirm timing or signedness interpretation matches raw bytes
 - confirm a runtime theory matches observed behavior in `PCSX-Redux`
 
@@ -327,6 +345,8 @@ Do not:
 
 - fight headless Ghidra first
 - rename multiple weak opcodes in one pass
+- rename helper functions or internals based only on adjacency or a hoped-for
+  script meaning
 - convert tentative notes into confident names without proof
 - leave the repo with unexplained experimental edits
 - end with only "next ideas" and no concrete artifact
