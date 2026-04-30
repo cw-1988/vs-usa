@@ -222,6 +222,43 @@ Current best script-level interpretation:
 
 - `E6 xx yy ee dd`: tween the active screen effect offset on two axes
 
+#### Opcode `0xE9`
+
+- Data Crystal: unnamed
+- Confirmed name: `RecenterCamera`
+- Confidence: `Confirmed`
+
+Why:
+
+- The matched opcode dispatch table in
+  [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
+  maps `0xE9` directly to `func_800BB3BC`.
+- `func_800BB3BC` converts the first script byte into either a preserved-facing
+  sentinel (`0xFF -> -1`) or an 8-way facing override through `((arg0[1] + 4)
+  & 7)`, converts script `0` in the second byte into a preserved-distance
+  sentinel, and passes both through `func_800BC1CC`.
+- `func_800BC1CC` rebuilds the target camera look-at and camera-position pair
+  through `vs_battle_initialiseCameraFromSpherical`, copies those targets into
+  the live camera state, and starts the camera tween helpers based on the
+  transition distance.
+- The matched `vs_battle_initialiseCameraFromSpherical` body in
+  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)
+  shows the optional override behavior clearly: `mode 1` forces distance
+  `0x600`, `mode 2` forces distance `0x900`, and `-1` preserves the current
+  spherical camera state.
+- Real script usage matches that behavior. Most instances are the handback form
+  `E9 FF 00`, used when cutscenes or first-person beats return the camera to
+  normal spherical control, while rarer setup forms such as `E9 03 01`,
+  `E9 04 02`, and `E9 04 00` appear where scripts want a specific facing sector
+  or distance preset before the recenter.
+
+Current best script-level interpretation:
+
+- `E9 FF 00`: recenter the camera from the current spherical gameplay state
+- `E9 xx 00`: recenter the camera and override the 8-way facing sector first
+- `E9 xx 01`: recenter the camera with the short-distance (`0x600`) preset
+- `E9 xx 02`: recenter the camera with the long-distance (`0x900`) preset
+
 #### Opcode `0xEF`
 
 - Data Crystal: unnamed
@@ -285,6 +322,7 @@ These were also validated locally and are stronger than the older public table:
 - `0xE4 -> ScreenEffectScaleTween`
 - `0xE5 -> ScreenEffectColorTween`
 - `0xE6 -> ScreenEffectOffsetTween`
+- `0xE9 -> RecenterCamera`
 - `0xE7 -> SetScreenEffectMode`
 - `0xEB -> CameraNearClip`
 - `0xEC -> CameraFarClip`

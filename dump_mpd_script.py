@@ -241,7 +241,7 @@ OPCODES = {
     0xE6: ("ScreenEffectOffsetTween", 0x05),
     0xE7: ("SetScreenEffectMode", 0x02),
     0xE8: ("OpcodeE8", 0x03),
-    0xE9: ("OpcodeE9", 0x03),
+    0xE9: ("RecenterCamera", 0x03),
     0xEA: ("CameraZoom", 0x04),
     0xEB: ("CameraNearClip", 0x04),
     0xEC: ("CameraFarClip", 0x04),
@@ -585,6 +585,17 @@ def format_opcode(
         return f"x={x}, y={y}, easing={args[2]}, duration={args[3]}"
     if op == 0xE7 and len(args) == 1:
         return f"mode={args[0]}"
+    if op == 0xE9 and len(args) == 2:
+        if args[0] == 0xFF:
+            facing = "preserve"
+        else:
+            facing = str((args[0] + 4) & 0x07)
+        distance_preset = {
+            0: "preserve",
+            1: "0x600",
+            2: "0x900",
+        }.get(args[1], f"mode={args[1]}")
+        return f"facingSector={facing}, distancePreset={distance_preset}"
     if op in {0x80, 0x82, 0x8F, 0x9B, 0x9C, 0xA0, 0xAA, 0xB2, 0xB4, 0xB6, 0xC5, 0xD5, 0xE2, 0xE3, 0xE5, 0xF2}:
         return f"raw=[{fmt_default(args)}]"
     if op == 0x90 and len(args) == 2:
