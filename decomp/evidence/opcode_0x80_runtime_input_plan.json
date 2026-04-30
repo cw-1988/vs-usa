@@ -1,5 +1,5 @@
 {
-  "description": "Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. Tune the frame waits after the first real run; this scaffold is intentionally conservative and assumes memcard-backed menu resume.",
+  "description": "Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. The wrapper now auto-extends timeout to cover the full plan plus slack; the current memcard-backed route completes all six scheduled steps but still does not reach the recovered runtime reader, so future edits should retune the route or menu assumptions rather than only adding more wait frames.",
   "pad_slot": 1,
   "pad_number": 1,
   "analog_mode": false,

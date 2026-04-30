@@ -53,7 +53,7 @@
   "table_mutations": [],
   "dispatch_observations": [],
   "comparison_summary": {
-    "generated_utc": "2026-04-30T21:45:02Z",
+    "generated_utc": "2026-04-30T22:56:27Z",
     "compared_snapshot_count": 0,
     "compared_snapshot_labels": [],
     "missing_snapshot_count": 2,
@@ -67,7 +67,7 @@
     "recorded_breakpoint_hit_count": 0,
     "recorded_table_mutation_count": 0,
     "recorded_dispatch_count": 0,
-    "recorded_note_count": 1,
+    "recorded_note_count": 3,
     "focus_opcodes": {}
   },
   "conclusion": "Runtime observation packet is not finalized yet: no listed snapshot files were available for comparison.",
@@ -75,6 +75,14 @@
     {
       "timestamp": "2026-04-30T21:44:58Z",
       "text": "Automated PCSX-Redux cold-boot disc run against 'Game Data/Vagrant Story (USA).cue' reached startup Lua and produced decomp/evidence/opcode_0x80_runtime_automation_summary.json, but timed out before 0x800BFBB8. The filtered run recorded reader_hits=0, write_hits=0, ignored_pre_runtime_writes=256 from pc 0x00000600, and no valid after_init/pre_dispatch snapshots."
+    },
+    {
+      "timestamp": "2026-04-30T22:56:27Z",
+      "text": "Automated PCSX-Redux capture used input plan 'C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_input_plan.json'; prepared_path=C:\\Users\\Chris\\Desktop\\vs usa\\.codex_tmp\\pcsx-redux\\opcode_0x80_input_plan-46ff105abb8c493798c4fdf06ede421e.tsv; pad=1/1; steps=6/6; description=Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. Tune the frame waits after the first real run; this scaffold is intentionally conservative and assumes memcard-backed menu resume."
+    },
+    {
+      "timestamp": "2026-04-30T22:56:27Z",
+      "text": "Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=2710; write_hits=0; reader_hits=0; summary_json=C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_automation_summary.json"
     }
   ]
 }

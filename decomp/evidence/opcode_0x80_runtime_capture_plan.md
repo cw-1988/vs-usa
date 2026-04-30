@@ -52,6 +52,15 @@ near-battle savestate exists yet, the same wrapper can now translate a
 checked-in JSON pad-input plan into a Lua replay schedule instead of leaving
 the cold-boot fallback entirely manual.
 
+The wrapper now also auto-raises the runtime timeout when an input plan would
+otherwise outlast the base `1800`-frame default. That matters for the
+checked-in cold-boot scaffold: its six scheduled steps finish at frame `1630`,
+and the previous fixed timeout left only `170` frames of slack after the last
+step. The latest fallback run therefore used an effective timeout of `2710`
+frames, confirmed that all six steps completed, and still recorded no
+`0x800BFBB8` reader hit, no runtime-table write hit, and no snapshots. The
+remaining cold-boot problem is the route itself, not the wrapper timeout.
+
 Official `PCSX-Redux` docs that back this path:
 
 - CLI launch surface used by the wrapper:
@@ -107,6 +116,15 @@ The default scaffold lives at:
 That JSON is intentionally a starter plan, not proof. Keep it checked in,
 tune the frame waits as real runs reveal the actual menu timing, and prefer a
 near-battle savestate again as soon as one exists.
+
+Current cold-boot status:
+
+- the plan now completes all six scripted button steps under the wrapper's
+  timeout-aware path
+- the tested memcard-backed menu route still does not reach the recovered
+  runtime reader or trigger any table snapshots
+- the next fallback edit should therefore target route choice or menu state,
+  not just longer waits
 
 Savestate-specific behavior:
 

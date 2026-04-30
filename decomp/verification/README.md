@@ -71,6 +71,9 @@ Recommended runtime handoff flow:
   with `-UseDefaultInputPlan` or `-InputPlanPath <json>` so the same scripted
   flow can press through the menu path instead of falling back to a purely
   manual debugger session
+- the wrapper now auto-extends timeout when a checked-in input plan would
+  otherwise outlast the base frame budget, so a failed cold-boot run now says
+  more about the route or menu state than about a hidden timeout mismatch
 - let `finalize_runtime_observation.py` refresh the reconstructed baseline blob
   and compare-report hashes in place, so the handoff packet preserves concrete
   byte-level artifacts even before live dumps exist

@@ -28,6 +28,7 @@ param(
     [int]$IdleCycles = 200000,
     [int]$TimeoutFrames = 1800,
     [int]$PostReaderFrames = 180,
+    [int]$InputPlanTimeoutSlackFrames = 600,
     [string]$MinWritePc = "0x80000000",
     [int]$SummaryWaitSeconds = 120,
     [switch]$QuitOnCandidateHit
@@ -268,6 +269,7 @@ function Prepare-InputPlan {
         AnalogMode         = $analogMode
         InitialDelayFrames = $initialDelayFrames
         StepCount          = $stepIndex
+        FinalFrameAfterWaits = $currentFrame
     }
 }
 
@@ -380,6 +382,15 @@ if ($UseDefaultInputPlan) {
     $inputPlanInfo = Prepare-InputPlan -Path $InputPlanPath
 }
 
+$effectiveTimeoutFrames = $TimeoutFrames
+if ($inputPlanInfo) {
+    $inputPlanDrivenTimeout = [Math]::Max(
+        [int]$inputPlanInfo.FinalFrameAfterWaits + $PostReaderFrames,
+        [int]$inputPlanInfo.FinalFrameAfterWaits + $InputPlanTimeoutSlackFrames
+    )
+    $effectiveTimeoutFrames = [Math]::Max($TimeoutFrames, $inputPlanDrivenTimeout)
+}
+
 if (-not [string]::IsNullOrWhiteSpace($Memcard1Path)) {
     $candidateMemcard1Path = Resolve-RepoPath -Path $Memcard1Path
     if (Test-Path -LiteralPath $candidateMemcard1Path) {
@@ -410,7 +421,7 @@ $env:VS_OPCODE_AFTER_INIT_PATH = $afterInitPath
 $env:VS_OPCODE_PRE_DISPATCH_PATH = $preDispatchPath
 $env:VS_OPCODE_AUTOMATION_SUMMARY_PATH = $summaryPath
 $env:VS_OPCODE_IDLE_CYCLES = "$IdleCycles"
-$env:VS_OPCODE_TIMEOUT_FRAMES = "$TimeoutFrames"
+$env:VS_OPCODE_TIMEOUT_FRAMES = "$effectiveTimeoutFrames"
 $env:VS_OPCODE_POST_READER_FRAMES = "$PostReaderFrames"
 $env:VS_OPCODE_MIN_WRITE_PC = $MinWritePc
 $env:VS_OPCODE_QUIT_ON_CANDIDATE_HIT = if ($QuitOnCandidateHit) { "1" } else { "0" }
@@ -462,6 +473,10 @@ if ($saveStatePath) {
 if ($inputPlanInfo) {
     Write-Host "Input plan source: $($inputPlanInfo.SourcePath)"
     Write-Host "Input plan steps: $($inputPlanInfo.StepCount)"
+    Write-Host "Input plan final frame: $($inputPlanInfo.FinalFrameAfterWaits)"
+    if ($effectiveTimeoutFrames -ne $TimeoutFrames) {
+        Write-Host "Timeout frames raised from $TimeoutFrames to $effectiveTimeoutFrames to cover the input plan plus slack."
+    }
 }
 if ($memcard1Path) {
     Write-Host "Memcard1: $memcard1Path"
