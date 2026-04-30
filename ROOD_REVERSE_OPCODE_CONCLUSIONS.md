@@ -192,6 +192,45 @@ Current best script-level interpretation:
 
 - `E6 xx yy ee dd`: tween the active screen effect offset on two axes
 
+#### Opcode `0xEF`
+
+- Data Crystal: unnamed
+- Confirmed name: `CameraOscillationControl`
+- Confidence: `Confirmed`
+
+Why:
+
+- Raw handler recovery in `func_800BDC9C` shows `0xEF` is not a plain one-shot
+  setter. When the second script byte is zero, it immediately clears both local
+  oscillation slots and returns.
+- When that second byte is nonzero, the same handler allocates or reuses one of
+  two small slot records, storing a phase-rate byte, an amplitude byte, a
+  control word, and a duration for the slot updater to consume.
+- The recovered slot updater in `func_800BE01C` feeds the first byte into the
+  phase term of an `rsin` call and multiplies the second byte into the output
+  amplitude, which is much stronger than the older generic `scalar0/scalar1`
+  reading.
+- The matched consumer in `func_800BE180` reads the low control byte as routing
+  and axis-multiplier bits, then rotates the resulting short vectors into
+  camera-relative offsets that are added to both `cameraLookAt` and
+  `cameraPos`.
+- Script usage matches the split behavior: long timed bursts like `MAP131`,
+  `MAP132`, and `MAP136` set up oscillation, while repeated forms such as
+  `EF 01 00 57 00 01` and `EF 50 00 47 00 01` appear at cleanup beats where a
+  clear-all control makes better sense than a zero-amplitude init.
+
+Current best script-level interpretation:
+
+- `EF rr 00 cc CC dd`: clear both active camera oscillation slots
+- `EF rr aa cc CC dd`: start or refresh a camera-relative oscillation with
+  phase rate `rr`, amplitude `aa`, control word `0xCCcc`, and duration `dd`
+
+Important detail:
+
+- The opcode label is now strong enough to confirm the camera oscillation
+  subsystem and the control/setup split, but the exact player-facing meaning of
+  each high-byte waveform mode is still worth future recovery work.
+
 ### Other confirmed names worth upstreaming
 
 These were also validated locally and are stronger than the older public table:
@@ -218,6 +257,7 @@ These were also validated locally and are stronger than the older public table:
 - `0xE7 -> SetScreenEffectMode`
 - `0xEB -> CameraNearClip`
 - `0xEC -> CameraFarClip`
+- `0xEF -> CameraOscillationControl`
 - `0xF4 -> ScriptCallSlotActive`
 - `0xF5 -> ScriptCall`
 - `0xF6 -> ScriptReturn`
@@ -283,7 +323,6 @@ more proof pass:
 - `0x7A`
 - `0xE3`
 - `0xED`
-- `0xEF`
 
 #### Opcode `0x7A`
 
@@ -361,72 +400,6 @@ Why still tentative:
 
 - The two destination fields in `SCREFF2` are still unnamed, so the exact
   player-visible feature behind the pair has not been nailed down yet.
-
-#### Opcode `0xEF`
-
-- Confidence: `Strong`
-
-Current narrow:
-
-- It behaves like part of the same visual-effect cluster as the nearby `E`-range
-  opcodes, but its consumer path is camera-side rather than `SCREFF2`-side.
-- Raw handler work now shows that `0xEF` allocates or reuses one of two small
-  waveform slots that are advanced by `func_800BE180`.
-- The recovered updater logic in `func_800BE01C` shows those slots evaluating a
-  sine-driven oscillation over a bounded duration instead of writing one direct
-  target value.
-- The active slot outputs are then converted from short vectors into
-  camera-relative offsets and added to both `cameraLookAt` and `cameraPos` in
-  the main effect update path.
-- In scripts it shows up in short timed bursts around zoom, effect, and camera
-  staging beats, which fits transient camera oscillation much better than logic
-  flow or a generic scalar setter.
-
-Best interpretation so far:
-
-- It initializes camera-relative oscillation state rather than a plain screen
-  parameter.
-
-Best safe local tooling name:
-
-- `CameraOscillationInit`
-
-Why still not upstream-safe:
-
-- The exact control-word bit layout still needs handler recovery, especially the
-  pieces that choose slot, routing, and envelope behavior.
-- The final player-facing label may still deserve a more specific term such as
-  shake, wobble, or pulse once the remaining nonmatching code is recovered.
-
-Observed local argument patterns worth carrying forward:
-
-- The last byte behaves like a duration input and commonly matches the timing
-  rhythm of nearby waits or cutscene beats.
-- The middle word behaves like a reusable control word more than a plain scalar.
-  Common local values include `0x0047`, `0x0057`, `0x005B`, `0x0065`,
-  `0x0067`, `0x0097`, and `0x01A7`.
-- The first two bytes behave like small scalar parameters. They are often
-  pulsed in alternating pairs or stepped sequences rather than treated as ids.
-  The local decoder still renders them conservatively as `scalar0` and
-  `scalar1` to preserve that structure without overclaiming their final role.
-
-Useful script examples:
-
-- `MAP223`: `EF 08 08 66 00 06`, `EF 08 04 66 00 06`,
-  `EF 08 02 66 00 06`, `EF 08 01 66 00 06`
-  This looks like a stepped scalar sweep while the control word stays fixed at
-  `0x0066`.
-- `MAP069`: `EF 01 32 67 00 07`, `EF 02 32 5B 00 07`,
-  `EF 02 19 67 00 07`, `EF 04 17 5B 00 07`
-  This looks like alternating paired setup rather than a one-shot direct field
-  write.
-- `MAP131` to `MAP136`: repeated pairs such as `0x0193` and `0x019B`
-  reinforce the idea that the 16-bit word is a reusable effect-control input.
-- `MAP136`: `EF 05 0E 9B 00 08`, `EF 05 0E 93 00 08`, and
-  `EF 34 06 93 00 78`
-  These runs fit the recovered oscillation model well: the control word changes
-  while the scalar pair can stay fixed, and long-duration setups favour a
-  `frequency plus amplitude` style reading over a one-shot direct write.
 
 ### Suggested upstream patch shape
 

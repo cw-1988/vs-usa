@@ -247,7 +247,7 @@ OPCODES = {
     0xEC: ("CameraFarClip", 0x04),
     0xED: ("ScreenEffectParamPairTween", 0x05),
     0xEE: ("OpcodeEE", 0x00),
-    0xEF: ("CameraOscillationInit", 0x06),
+    0xEF: ("CameraOscillationControl", 0x06),
     0xF0: ("Wait", 0x02),
     0xF1: ("OpcodeF1", 0x02),
     0xF2: ("OpcodeF2", 0x05),
@@ -463,6 +463,10 @@ def fmt_signed_pair(lo: int, hi: int) -> int:
     return struct.unpack("<h", bytes([lo, hi]))[0]
 
 
+def decode_ef_axis_scale(control_low: int, shift: int) -> int:
+    return ((control_low >> shift) & 0x03) - 1
+
+
 def format_room_ref(record: dict[str, int | str]) -> str:
     return (
         f"map={record['map_id']}, area={record['area']}, "
@@ -623,8 +627,22 @@ def format_opcode(
         return f"param0={param0}, param1={param1}, easing={args[2]}, duration={args[3]}"
     if op == 0xEF and len(args) == 5:
         control = struct.unpack("<H", args[2:4])[0]
+        control_low = args[2]
+        waveform_mode = args[3]
+        if args[1] == 0:
+            return (
+                f"mode=clearAll, ignoredPhaseRate={args[0]}, "
+                f"ignoredControlWord=0x{control:04X}, ignoredDuration={args[4]}"
+            )
         return (
-            f"scalar0={args[0]}, scalar1={args[1]}, controlWord=0x{control:04X}, "
+            f"phaseRate={args[0]}, amplitude={args[1]}, controlWord=0x{control:04X}, "
+            f"waveformMode={waveform_mode}, "
+            f"axisScale=("
+            f"{decode_ef_axis_scale(control_low, 2)}, "
+            f"{decode_ef_axis_scale(control_low, 4)}, "
+            f"{decode_ef_axis_scale(control_low, 6)}), "
+            f"applyToLookAt={1 if control_low & 0x01 else 0}, "
+            f"applyToPosition={1 if control_low & 0x02 else 0}, "
             f"duration={args[4]}"
         )
     if op == 0xF0 and len(args) == 1:
