@@ -7,6 +7,12 @@ Use this together with
 [`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md) and
 [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md).
 
+If a pass might escalate to runtime capture, also start with
+[`../../decomp/verification/README.md`](../../decomp/verification/README.md),
+which links the official `PCSX-Redux` docs at
+<https://pcsx-redux.consoledev.net/> plus the CLI and Lua references used by
+this workflow.
+
 The goal is simple:
 
 - do routine recovery, verification, and contradiction scans with CLI tools
