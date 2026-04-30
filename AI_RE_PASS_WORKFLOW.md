@@ -26,6 +26,10 @@ Complete one focused reverse-engineering pass that:
 Do not end with only vague conclusions. Turn the pass into code, tooling, or
 note changes unless the evidence is too weak to justify a concrete update.
 
+A valid pass can also reduce overclaiming. It is a successful outcome to keep a
+finding at `Strong`, downgrade a shaky `Confirmed` note, or document the exact
+missing proof that blocks a rename.
+
 If a pass produces changes that belong in both this workspace and
 `_refs/rood-reverse`, treat that as normal. Keep each repo's changes focused,
 commit them in the repo they belong to when commits are enabled, and report the
@@ -172,6 +176,7 @@ Good heuristics:
 - prefer questions with multiple available evidence sources
 - prefer one solid win over a broad but fuzzy sweep
 - prefer work that can be validated before stopping
+- prefer narrowing scope over widening certainty when the evidence is mixed
 
 Do not rename an opcode just to eliminate a placeholder. Evidence matters more
 than tidiness.
@@ -189,7 +194,8 @@ Examples:
   something even more specific?
 - Is `0xE6` really `ScreenEffectOffsetTween`, or is there a better render-space
   name?
-- Is there enough proof to promote one `Strong` finding to `Confirmed`?
+- Is there enough proof to promote one `Strong` finding to `Confirmed`, or does
+  the pass actually show why it should stay `Strong`?
 - Is a still-unnamed field in `BATTLE.PRG` understandable enough to document?
 
 Write the question down in your scratch notes before broad searching if that
@@ -240,6 +246,8 @@ Keep going until one of these happens:
 - the script evidence is already strong enough for a conservative local rename
 - the helper or internal behavior is clear enough to justify a code-level name
   even if the final script-facing label should stay more conservative
+- you find a scope condition, fallback path, or implementation split that means
+  a broader confidence bump would overstate the proof
 
 For non-opcode work, the equivalent rule still applies:
 
@@ -252,6 +260,7 @@ Choose one of these as the primary result:
 
 - `Confirmed rename`
 - `Confirmed helper/internal rename`
+- `Confidence held or downgraded with clearer evidence note`
 - `Conservative local tooling rename`
 - `Argument rendering improvement only`
 - `Note-only evidence update`
@@ -260,6 +269,12 @@ Choose one of these as the primary result:
 
 If the best honest result is "better structured arguments but no better final
 name", that is still a valid pass.
+
+Before promoting any confidence level, explicitly sanity-check all three:
+
+- `What exact user-facing behavior is proven, not just the nearest helper?`
+- `Is the proof global, or only true for one code path, room type, mode, or fallback path?`
+- `Would a cautious reviewer read this wording and infer something broader than the code actually guarantees?`
 
 ## Good Outputs
 
@@ -375,13 +390,14 @@ When the pass is complete, report:
 
 1. what question you targeted
 2. what evidence changed your confidence
-3. which files were updated
-4. how you verified it
-5. a short summary of the conclusions in normal prose
-6. the exact conventional commit message for each touched repo
-7. the commit hash for each local commit, or explicit confirmation that commits
+3. what still blocks any remaining confidence bump, if anything
+4. which files were updated
+5. how you verified it
+6. a short summary of the conclusions in normal prose
+7. the exact conventional commit message for each touched repo
+8. the commit hash for each local commit, or explicit confirmation that commits
    were skipped because `commit_mode = "no-commit"`
-8. confirmation that any temporary stash was restored, or that no stash was
+9. confirmation that any temporary stash was restored, or that no stash was
    needed
 
 ## Avoid
@@ -392,6 +408,9 @@ Do not:
 - rename multiple weak opcodes in one pass
 - rename helper functions or internals based only on adjacency or a hoped-for
   script meaning
+- treat a confidence bump as the default success condition for a pass
+- collapse helper-level proof into a broader player-facing claim without
+  checking for mode gates, fallback paths, or subsystem splits
 - convert tentative notes into confident names without proof
 - leave the repo with unexplained experimental edits
 - end with only "next ideas" and no concrete artifact

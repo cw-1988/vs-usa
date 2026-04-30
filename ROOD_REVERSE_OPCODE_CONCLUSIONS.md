@@ -87,36 +87,6 @@ Current best script-level interpretation:
 - `79 00 xx`: trigger room mechanism `xx`
 - `79 01 xx`: toggle room mechanism `xx`
 
-#### Opcode `0x7A`
-
-- Data Crystal: unnamed (`800ba108`)
-- Confirmed name: `SetRoomAmbientSoundSuspended`
-- Confidence: `Confirmed`
-
-Why:
-
-- The matched opcode dispatch table routes `0x7A` directly to the readable
-  handler body now named
-  [`vs_battle_script_setRoomAmbientSoundSuspended`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).
-- When the script byte is nonzero, that handler latches a local "suspended"
-  state, grabs the current ambient sound id through `func_800913BC(-1)`, and
-  clears playback by swapping in `-1`.
-- When the script byte returns to zero, the same handler restores the saved
-  ambient sound id through `func_800913BC(savedId)` and clears the latched
-  suspended state.
-- The sound helper in
-  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c)
-  confirms `func_800913BC` is exactly that "swap current ambient id and play
-  it if valid" path.
-- Real script usage matches the code: decoded rooms such as `MAP138`,
-  `MAP062`, `MAP001`, and `MAP006` use `7A 01` near cutscene takeover beats
-  and `7A 00` when normal room behavior is restored.
-
-Current best script-level interpretation:
-
-- `7A 01`: suspend the current room ambient sound, saving the previous id
-- `7A 00`: restore the saved room ambient sound id
-
 #### Opcode `0xE1`
 
 - Data Crystal: unnamed
@@ -345,7 +315,6 @@ These were also validated locally and are stronger than the older public table:
 - `0x74 -> LoadRoomSection10`
 - `0x75 -> WaitForRoomSection10`
 - `0x76 -> FreeRoomSection10`
-- `0x7A -> SetRoomAmbientSoundSuspended`
 - `0x7C -> SetFirstPersonView`
 - `0x85 -> LoadSfxSlot`
 - `0x86 -> FreeSfxSlot`
@@ -427,7 +396,49 @@ Why not use show/hide yet:
 These are narrowed down, but should not be hard-renamed upstream without one
 more proof pass:
 
+- `0x7A`
 - `0xED`
+
+#### Opcode `0x7A`
+
+- Confidence: `Strong`
+
+Current narrow:
+
+- The matched opcode dispatch table routes `0x7A` directly to the readable
+  handler body now named
+  [`vs_battle_script_setRoomAmbientSoundSuspended`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).
+- When the script byte is nonzero, that handler latches a local "suspended"
+  state and, if `func_8008E470()` passes, grabs the current ambient sound id
+  through `func_800913BC(-1)` and clears playback by swapping in `-1`.
+- When the script byte returns to zero, the same handler restores the saved
+  ambient sound id through `func_800913BC(savedId)` and clears the latched
+  suspended state.
+- The sound helper in
+  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c)
+  confirms `func_800913BC` is the persistent ambient-id swap path.
+- Real script usage still matches the user-facing idea: decoded rooms such as
+  `MAP138`, `MAP062`, `MAP001`, and `MAP006` use `7A 01` near cutscene
+  takeover beats and `7A 00` when normal room behavior is restored.
+
+Best safe local tooling name:
+
+- `SetRoomAmbientSoundSuspended`
+
+Current best script-level interpretation:
+
+- `7A 01`: suspend the current room ambient sound, saving the previous id when
+  this room uses the persistent ambient-id path
+- `7A 00`: restore that saved ambient sound id when the same path is active
+
+Why still not confirmed:
+
+- The save/restore behavior proven so far is scoped to the persistent
+  ambient-id path behind `func_800913BC`.
+- The room audio code also has a separate AKAO-backed `section14` path, and the
+  opcode handler gates its swap/restore work through `func_8008E470()`.
+- That means the shared user-facing effect is strongly suggested, but the
+  current proof does not yet justify a broad unconditional confirmed rename.
 
 #### Opcode `0xED`
 
