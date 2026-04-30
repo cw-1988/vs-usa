@@ -34,7 +34,8 @@ Current runtime-pass helpers:
   `0x80` runtime tie-breaker; it plants breakpoints, dumps the runtime table
   from emulator memory, records save-state load events, can replay a scripted
   pad-input plan through the documented `PCSX.SIO0.slots[*].pads[*]`
-  overrides, and writes a compact summary JSON
+  overrides, writes a compact summary JSON, and now emits per-step screen
+  capture artifacts for cold-boot route debugging
 - `run_opcode_0x80_runtime_capture.ps1`: wrapper that launches `PCSX-Redux`
   with the capture Lua, then folds the resulting dumps and summary back into
   the checked-in observation packet via the existing recorder/finalizer; it
@@ -42,6 +43,9 @@ Current runtime-pass helpers:
   UI savestates into a temporary raw file that `PCSX.loadSaveState(file)` can
   consume, and it can prepare a checked-in JSON input plan into a Lua-friendly
   schedule when cold-boot menu automation is the only available fallback
+- `probe_psx_memcards.py`: lightweight heuristic probe for repo-local PS1
+  memory cards so runtime route planning can tell whether a checked-in
+  `Continue` or `Load` assumption is backed by a real save-bearing card
 
 Official `PCSX-Redux` references for this automation path:
 
@@ -71,9 +75,20 @@ Recommended runtime handoff flow:
   with `-UseDefaultInputPlan` or `-InputPlanPath <json>` so the same scripted
   flow can press through the menu path instead of falling back to a purely
   manual debugger session
+- before trusting a memcard-backed menu route, run
+  `python decomp/verification/probe_psx_memcards.py memcard1.mcd memcard2.mcd`
+  or inspect the checked-in
+  `decomp/evidence/opcode_0x80_runtime_memcard_probe.json`; the current repo
+  cards probe as blank formatted cards, so the default cold-boot path should
+  not be treated as a validated save-resume route and the next real cold-boot
+  branch should be `New Game` far enough to earn a usable save/checkpoint
 - the wrapper now auto-extends timeout when a checked-in input plan would
   otherwise outlast the base frame budget, so a failed cold-boot run now says
   more about the route or menu state than about a hidden timeout mismatch
+- the wrapper and Lua capture now also leave screen-capture artifacts under
+  `decomp/evidence/opcode_0x80_runtime_frames/`; the latest retunes made those
+  captures useful enough to prove intro/video progression, title-menu reach,
+  and the corrected `O` confirm / `X` cancel mapping for this build
 - let `finalize_runtime_observation.py` refresh the reconstructed baseline blob
   and compare-report hashes in place, so the handoff packet preserves concrete
   byte-level artifacts even before live dumps exist

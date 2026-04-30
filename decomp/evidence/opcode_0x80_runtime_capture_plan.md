@@ -54,12 +54,13 @@ the cold-boot fallback entirely manual.
 
 The wrapper now also auto-raises the runtime timeout when an input plan would
 otherwise outlast the base `1800`-frame default. That matters for the
-checked-in cold-boot scaffold: its six scheduled steps finish at frame `1630`,
-and the previous fixed timeout left only `170` frames of slack after the last
-step. The latest fallback run therefore used an effective timeout of `2710`
-frames, confirmed that all six steps completed, and still recorded no
-`0x800BFBB8` reader hit, no runtime-table write hit, and no snapshots. The
-remaining cold-boot problem is the route itself, not the wrapper timeout.
+checked-in cold-boot scaffold because the latest retunes are longer than the
+first six-step starter plan and rely on visual checkpoints to prove progress.
+The current blocker is no longer hidden timeout behavior: the route now reaches
+the title menu and can open the `Load / Memory Card slot 1` screen, but it
+still records no `0x800BFBB8` reader hit, no runtime-table write hit, and no
+snapshots because the repo-local cards do not yet provide a usable path into
+live gameplay.
 
 Official `PCSX-Redux` docs that back this path:
 
@@ -112,19 +113,29 @@ pwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `
 The default scaffold lives at:
 
 - `decomp/evidence/opcode_0x80_runtime_input_plan.json`
+- `decomp/evidence/opcode_0x80_runtime_memcard_probe.md`
 
 That JSON is intentionally a starter plan, not proof. Keep it checked in,
 tune the frame waits as real runs reveal the actual menu timing, and prefer a
-near-battle savestate again as soon as one exists.
+near-battle savestate again as soon as one exists. If no save-bearing card is
+available, the next cold-boot branch should be `New Game` far enough to earn a
+real save or checkpoint, not more retries of the blank-card `Load` path.
 
 Current cold-boot status:
 
-- the plan now completes all six scripted button steps under the wrapper's
-  timeout-aware path
-- the tested memcard-backed menu route still does not reach the recovered
-  runtime reader or trigger any table snapshots
-- the next fallback edit should therefore target route choice or menu state,
-  not just longer waits
+- the wrapper now emits per-step screen-capture artifacts under
+  `decomp/evidence/opcode_0x80_runtime_frames/`, and the latest captures are
+  informative enough to show the route reaching the title logo, the title
+  menu, and the `Load / Memory Card slot 1` screen
+- corrected PSX-style menu mapping matters here: this build uses `O` confirm /
+  `X` cancel, and the checked-in input plan now reflects that
+- the repo-local `memcard1.mcd` and `memcard2.mcd` probe as blank formatted
+  cards in `decomp/evidence/opcode_0x80_runtime_memcard_probe.json`
+- that means the current `Load` route is now a confirmed dead branch for this
+  workspace, not a promising gameplay-entry path
+- the next fallback edit should therefore target a `New Game`-to-save route or
+  a savestate-bearing handoff artifact, not more retries of the blank-card
+  `Load` path
 
 Savestate-specific behavior:
 

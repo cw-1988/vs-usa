@@ -124,7 +124,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `runtime_needed` | `INITBTL.PRG` static table at `0x800FAF7C`, copied by the init-time routine at `0x800FAAAC` into runtime slot `0x800F4C28` | Initial slot `0x800B66E4` is a shared stub for `0x80-0x82`; former competing target `0x800BA2E0` is now locally anchored to the `BATTLE.PRG` sound subdispatch table at `0x800E9F30`; recovered reader `FUN_800BFBB8` dispatches through the copied runtime table via `jalr` | `SoundEffects0` placeholder only | Do runtime dumps from `0x800F4C28` ever diverge from the binary baseline before `0x80-0x82` dispatch, and if so which handlers replace `0x800B66E4`? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md) |
+| `opcode 0x80` | `runtime_needed` | `INITBTL.PRG` static table at `0x800FAF7C`, copied by the init-time routine at `0x800FAAAC` into runtime slot `0x800F4C28` | Initial slot `0x800B66E4` is a shared stub for `0x80-0x82`; former competing target `0x800BA2E0` is now locally anchored to the `BATTLE.PRG` sound subdispatch table at `0x800E9F30`; recovered reader `FUN_800BFBB8` dispatches through the copied runtime table via `jalr` | `SoundEffects0` placeholder only | Do runtime dumps from `0x800F4C28` ever diverge from the binary baseline before `0x80-0x82` dispatch, and if so which handlers replace `0x800B66E4`? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md), [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md) |
 
 ## Known Conflicts
 
@@ -152,11 +152,14 @@ Current phase: Pass 3 - Copy/patch reconciliation
   [`opcode_0x80_runtime_expected_table.bin`](decomp/evidence/opcode_0x80_runtime_expected_table.bin),
   and
   [`compare_opcode_table_snapshots.py`](decomp/verification/compare_opcode_table_snapshots.py).
-  The checked-in cold-boot fallback now finishes all six scripted pad steps by
-  frame `1630` under an auto-raised timeout of `2710`, but it still produces
-  no `0x800BFBB8` reader hit, no runtime-table write hit, and no usable
-  snapshots. The remaining runtime blocker is therefore route quality rather
-  than a wrapper timeout mismatch.
+  The cold-boot automation is now far enough along to prove real route facts:
+  the retuned input plan plus corrected `O` confirm / `X` cancel mapping reach
+  the title menu, highlight `Continue`, and open the `Load / Memory Card slot
+  1` screen. But the repo-local cards still probe as blank formatted cards, so
+  this particular `Load` branch is now a confirmed dead end rather than a
+  plausible entry into live gameplay. The remaining runtime blocker is
+  therefore the lack of a usable gameplay-entry artifact such as a savestate
+  or populated card, not wrapper timing or intro navigation.
   If both tracked snapshots still match the baseline and the table write
   watchpoint stays quiet, this contradiction can be downgraded to
   `static_resolved` and carried forward into `Pass 4`.
@@ -184,19 +187,18 @@ Use the artifact index for:
 
 ## Session Handoff
 
-- `last completed step`: the no-savestate `PCSX-Redux` fallback no longer
-  self-times out before its own input plan ends. The wrapper now auto-raises
-  timeout frames when the checked-in plan runs longer than the base default,
-  and the latest cold-boot pass confirmed that all six scripted pad steps
-  complete by frame `1630` while still failing to reach `0x800BFBB8` or any
-  runtime-table snapshot point.
-- `next recommended step`: run
+- `last completed step`: the no-savestate `PCSX-Redux` fallback is now
+  instrumented enough to leave screenshot checkpoints, and the latest retunes
+  proved that `START` pushes through the intro chain, this build uses `O`
+  confirm / `X` cancel, and the checked-in route can reach the title menu plus
+  the `Load / Memory Card slot 1` screen before stalling.
+- `next recommended step`: stop iterating on the current `Load` route unless a
+  populated card artifact is added. Prefer running
   `decomp/verification/run_opcode_0x80_runtime_capture.ps1` with a near-battle
-  savestate if available (`-UseNewestSaveState` or `-SaveStatePath`). If no
-  savestate exists yet, retune
-  `decomp/evidence/opcode_0x80_runtime_input_plan.json` away from the current
-  memcard-backed menu route, because that route now completes cleanly but still
-  never reaches the recovered runtime reader. Once the run reaches
+  savestate (`-UseNewestSaveState` or `-SaveStatePath`). If no savestate is
+  available yet, the next cold-boot experiment should intentionally follow
+  `New Game` far enough to earn a real save or savestate-worthy checkpoint,
+  not more retries of the blank-card `Load` path. Once a run reaches
   `0x800BFBB8`, capture `after_init` and `pre_dispatch`, then run
   `decomp/verification/finalize_runtime_observation.py --in-place`. If the
   compare report shows `0x80-0x82` rewrites, immediately import those rows with
@@ -204,14 +206,14 @@ Use the artifact index for:
   If both snapshots match the baseline and no rewrite evidence appears, relabel
   the `0x80` conflict as `static_resolved` and advance the target to
   `Pass 4 - Semantic proof packets`.
-- `do not forget`: keep raw dumps and compare reports under `decomp/evidence`,
-  preserve the original savestate or tuned input-plan JSON as the handoff
-  artifact, and use the compare-import helper instead of hand-editing mutation
-  rows. If rewrites do appear, keep `Pass 3` active until the replacement
-  handlers are anchored with local evidence rather than leaving the result as a
-  compare-only observation. For the cold-boot fallback specifically, do not
-  mistake "all scheduled button steps finished" for "the route succeeded";
-  preserve which menu path and memcard assumptions were actually tested.
+- `do not forget`: keep raw dumps, compare reports, and useful frame captures
+  under `decomp/evidence`, preserve the original savestate or tuned input-plan
+  JSON as the handoff artifact, and use the compare-import helper instead of
+  hand-editing mutation rows. If rewrites do appear, keep `Pass 3` active until
+  the replacement handlers are anchored with local evidence rather than leaving
+  the result as a compare-only observation. For the cold-boot fallback
+  specifically, preserve which menu path, button mapping, and card assumptions
+  were actually tested so the next pass does not retry a known dead branch.
 
 ## Completed Milestones
 
@@ -232,6 +234,17 @@ Use the artifact index for:
   [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),
   [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json),
   [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
+- `2026-05-01`: added route-debug screenshots and a memcard probe for the `0x80`
+  runtime path, then used them to prove that the cold-boot scaffold can reach
+  the title menu and `Load / Memory Card slot 1` under `O` confirm / `X`
+  cancel, but still cannot enter gameplay because the repo-local cards are
+  blank. Links:
+  [`decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](decomp/verification/pcsx_redux_opcode_0x80_capture.lua),
+  [`decomp/verification/run_opcode_0x80_runtime_capture.ps1`](decomp/verification/run_opcode_0x80_runtime_capture.ps1),
+  [`decomp/verification/probe_psx_memcards.py`](decomp/verification/probe_psx_memcards.py),
+  [`decomp/evidence/opcode_0x80_runtime_input_plan.json`](decomp/evidence/opcode_0x80_runtime_input_plan.json),
+  [`decomp/evidence/opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md),
+  [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json)
 - `2026-04-30`: made the automated `PCSX-Redux` runtime path savestate-ready
   and validated the scripted capture path against the local disc image. Links:
   [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),

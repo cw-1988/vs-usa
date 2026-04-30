@@ -1,0 +1,30 @@
+{
+  "keywords": [
+    "VAGRANT",
+    "STORY",
+    "SLUS",
+    "SCUS",
+    "SLPS",
+    "SQUARE"
+  ],
+  "cards": [
+    {
+      "path": "C:\\Users\\Chris\\Desktop\\vs usa\\memcard1.mcd",
+      "size_bytes": 131072,
+      "nonzero_byte_count": 186,
+      "highest_nonzero_offset": "0x1FFF",
+      "ascii_match_count": 0,
+      "ascii_matches": [],
+      "looks_blank_formatted": true
+    },
+    {
+      "path": "C:\\Users\\Chris\\Desktop\\vs usa\\memcard2.mcd",
+      "size_bytes": 131072,
+      "nonzero_byte_count": 186,
+      "highest_nonzero_offset": "0x1FFF",
+      "ascii_match_count": 0,
+      "ascii_matches": [],
+      "looks_blank_formatted": true
+    }
+  ]
+}

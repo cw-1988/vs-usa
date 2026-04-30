@@ -53,7 +53,7 @@
   "table_mutations": [],
   "dispatch_observations": [],
   "comparison_summary": {
-    "generated_utc": "2026-04-30T22:56:27Z",
+    "generated_utc": "2026-04-30T23:18:23Z",
     "compared_snapshot_count": 0,
     "compared_snapshot_labels": [],
     "missing_snapshot_count": 2,
@@ -67,7 +67,7 @@
     "recorded_breakpoint_hit_count": 0,
     "recorded_table_mutation_count": 0,
     "recorded_dispatch_count": 0,
-    "recorded_note_count": 3,
+    "recorded_note_count": 20,
     "focus_opcodes": {}
   },
   "conclusion": "Runtime observation packet is not finalized yet: no listed snapshot files were available for comparison.",
@@ -83,6 +83,74 @@
     {
       "timestamp": "2026-04-30T22:56:27Z",
       "text": "Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=2710; write_hits=0; reader_hits=0; summary_json=C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_automation_summary.json"
+    },
+    {
+      "timestamp": "2026-04-30T23:07:29Z",
+      "text": "Automated PCSX-Redux capture used input plan 'C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_input_plan.json'; prepared_path=C:\\Users\\Chris\\Desktop\\vs usa\\.codex_tmp\\pcsx-redux\\opcode_0x80_input_plan-8a821277aa834c31b3b5dff10fa51bf9.tsv; pad=1/1; steps=6/6; description=Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. The wrapper now auto-extends timeout to cover the full plan plus slack; the current memcard-backed route completes all six scheduled steps but still does not reach the recovered runtime reader, so future edits should retune the route or menu assumptions rather than only adding more wait frames."
+    },
+    {
+      "timestamp": "2026-04-30T23:07:29Z",
+      "text": "Automated PCSX-Redux capture wrote 7 screen capture(s) under C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_frames."
+    },
+    {
+      "timestamp": "2026-04-30T23:07:30Z",
+      "text": "Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=2710; write_hits=0; reader_hits=0; summary_json=C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_automation_summary.json"
+    },
+    {
+      "timestamp": "2026-04-30T23:09:51Z",
+      "text": "Repo-local memcard probe now reports memcard1.mcd and memcard2.mcd as blank formatted cards (131072 bytes, 186 nonzero bytes each, highest nonzero offset 0x1FFF, no Vagrant Story title-id ASCII matches). The checked-in cold-boot route therefore should not assume a save-backed Continue/Load path unless a populated card artifact is added."
+    },
+    {
+      "timestamp": "2026-04-30T23:12:01Z",
+      "text": "Automated PCSX-Redux capture used input plan 'C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_input_plan.json'; prepared_path=C:\\Users\\Chris\\Desktop\\vs usa\\.codex_tmp\\pcsx-redux\\opcode_0x80_input_plan-d1232c6fd0ab4b01969804d0cf2ce3b9.tsv; pad=1/1; steps=7/7; description=Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. The wrapper now auto-extends timeout to cover the full plan plus slack and can leave screen-capture breadcrumbs. Operator feedback indicates the earlier black screen corresponded to an intro video that needs a START skip, so this scaffold now front-loads repeated START presses before the old menu-confirm path. The repo-local memcards still probe as blank formatted cards, so future edits should replace the save-backed Continue/Load assumption or pair the route with a populated card artifact rather than only adding more wait frames."
+    },
+    {
+      "timestamp": "2026-04-30T23:12:01Z",
+      "text": "Automated PCSX-Redux capture wrote 8 screen capture(s) under C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_frames."
+    },
+    {
+      "timestamp": "2026-04-30T23:12:01Z",
+      "text": "Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=2332; write_hits=0; reader_hits=0; summary_json=C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_automation_summary.json"
+    },
+    {
+      "timestamp": "2026-04-30T23:14:12Z",
+      "text": "Automated PCSX-Redux capture used input plan 'C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_input_plan.json'; prepared_path=C:\\Users\\Chris\\Desktop\\vs usa\\.codex_tmp\\pcsx-redux\\opcode_0x80_input_plan-d6393748382c4b869a5f5e98630733c5.tsv; pad=1/1; steps=9/9; description=Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. The wrapper now auto-extends timeout to cover the full plan plus slack and can leave screen-capture breadcrumbs. Latest visual checkpoints show the old menu inputs were still landing on publisher, Squaresoft, and opening-FMV screens, so this scaffold now keeps pulsing START through the intro chain before it attempts menu navigation. The repo-local memcards still probe as blank formatted cards, so future edits should replace the save-backed Continue/Load assumption or pair the route with a populated card artifact rather than only adding more wait frames."
+    },
+    {
+      "timestamp": "2026-04-30T23:14:12Z",
+      "text": "Automated PCSX-Redux capture wrote 10 screen capture(s) under C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_frames."
+    },
+    {
+      "timestamp": "2026-04-30T23:14:12Z",
+      "text": "Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=2714; write_hits=0; reader_hits=0; summary_json=C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_automation_summary.json"
+    },
+    {
+      "timestamp": "2026-04-30T23:16:04Z",
+      "text": "Automated PCSX-Redux capture used input plan 'C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_input_plan.json'; prepared_path=C:\\Users\\Chris\\Desktop\\vs usa\\.codex_tmp\\pcsx-redux\\opcode_0x80_input_plan-6cadf0fb5a4f42f89e0d494c8f882973.tsv; pad=1/1; steps=10/10; description=Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. The wrapper now auto-extends timeout to cover the full plan plus slack and can leave screen-capture breadcrumbs. Latest visual checkpoints show the repeated START pulses can now reach the Vagrant Story title/logo, so this scaffold pauses menu navigation until after that title state and only then tries to open and drive the menu. The repo-local memcards still probe as blank formatted cards, so future edits should replace the save-backed Continue/Load assumption or pair the route with a populated card artifact rather than only adding more wait frames."
+    },
+    {
+      "timestamp": "2026-04-30T23:16:05Z",
+      "text": "Automated PCSX-Redux capture wrote 11 screen capture(s) under C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_frames."
+    },
+    {
+      "timestamp": "2026-04-30T23:16:05Z",
+      "text": "Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=2962; write_hits=0; reader_hits=0; summary_json=C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_automation_summary.json"
+    },
+    {
+      "timestamp": "2026-04-30T23:17:34Z",
+      "text": "Automated PCSX-Redux capture used input plan 'C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_input_plan.json'; prepared_path=C:\\Users\\Chris\\Desktop\\vs usa\\.codex_tmp\\pcsx-redux\\opcode_0x80_input_plan-a46e8f17640d40f58fe003f10ef4eb1d.tsv; pad=1/1; steps=10/10; description=Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. The wrapper now auto-extends timeout to cover the full plan plus slack and can leave screen-capture breadcrumbs. Latest visual checkpoints show the repeated START pulses can now reach the Vagrant Story title/logo, so this scaffold pauses menu navigation until after that title state and only then tries to open and drive the menu. Operator follow-up also confirmed that this build uses PSX-style menu mapping where X cancels and O confirms, so the menu-confirm steps now use CIRCLE instead of CROSS. The repo-local memcards still probe as blank formatted cards, so future edits should replace the save-backed Continue/Load assumption or pair the route with a populated card artifact rather than only adding more wait frames."
+    },
+    {
+      "timestamp": "2026-04-30T23:17:34Z",
+      "text": "Automated PCSX-Redux capture wrote 11 screen capture(s) under C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_frames."
+    },
+    {
+      "timestamp": "2026-04-30T23:17:34Z",
+      "text": "Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=2962; write_hits=0; reader_hits=0; summary_json=C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_automation_summary.json"
+    },
+    {
+      "timestamp": "2026-04-30T23:18:23Z",
+      "text": "Updated cold-boot route now reaches the Vagrant Story title menu under the corrected PSX-style button mapping (X cancel, O confirm). Screen captures show step-08 on the title menu with Continue highlighted and step-10 on the Load / Memory Card slot 1 screen, but the run still records no runtime-table reader hit, no table-write hit, and no snapshots because the repo-local cards do not yet provide a usable path into live gameplay."
     }
   ]
 }

@@ -19,6 +19,7 @@ param(
     [string]$AfterInitPath = "decomp/evidence/opcode_0x80_runtime_after_init.bin",
     [string]$PreDispatchPath = "decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin",
     [string]$SummaryPath = "decomp/evidence/opcode_0x80_runtime_automation_summary.json",
+    [string]$ScreenshotDirectory = "decomp/evidence/opcode_0x80_runtime_frames",
     [string]$TableAddress = "0x800F4C28",
     [string]$TableSize = "0x400",
     [string]$FocusOpcodes = "0x80,0x81,0x82",
@@ -317,6 +318,7 @@ $observationPath = Resolve-RepoPath -Path $ObservationPath
 $afterInitPath = Resolve-RepoPath -Path $AfterInitPath
 $preDispatchPath = Resolve-RepoPath -Path $PreDispatchPath
 $summaryPath = Resolve-RepoPath -Path $SummaryPath
+$screenshotDirectory = Resolve-RepoPath -Path $ScreenshotDirectory
 $saveStatePath = $null
 $saveStateInfo = $null
 $inputPlanInfo = $null
@@ -408,8 +410,10 @@ if (-not [string]::IsNullOrWhiteSpace($Memcard2Path)) {
 New-Item -ItemType Directory -Force -Path ([System.IO.Path]::GetDirectoryName($afterInitPath)) | Out-Null
 New-Item -ItemType Directory -Force -Path ([System.IO.Path]::GetDirectoryName($preDispatchPath)) | Out-Null
 New-Item -ItemType Directory -Force -Path ([System.IO.Path]::GetDirectoryName($summaryPath)) | Out-Null
+New-Item -ItemType Directory -Force -Path $screenshotDirectory | Out-Null
 
 Remove-Item -LiteralPath $afterInitPath, $preDispatchPath, $summaryPath -ErrorAction SilentlyContinue
+Get-ChildItem -LiteralPath $screenshotDirectory -File -ErrorAction SilentlyContinue | Remove-Item -ErrorAction SilentlyContinue
 
 $env:VS_OPCODE_TABLE_ADDRESS = $TableAddress
 $env:VS_OPCODE_TABLE_SIZE = $TableSize
@@ -434,6 +438,7 @@ $env:VS_OPCODE_INPUT_PLAN_DESCRIPTION = if ($inputPlanInfo) { $inputPlanInfo.Des
 $env:VS_OPCODE_INPUT_PLAN_PAD_SLOT = if ($inputPlanInfo) { "$($inputPlanInfo.PadSlot)" } else { "" }
 $env:VS_OPCODE_INPUT_PLAN_PAD_NUMBER = if ($inputPlanInfo) { "$($inputPlanInfo.PadNumber)" } else { "" }
 $env:VS_OPCODE_INPUT_PLAN_ANALOG_MODE = if ($inputPlanInfo -and $inputPlanInfo.AnalogMode) { "1" } else { "0" }
+$env:VS_OPCODE_SCREENSHOT_DIR = $screenshotDirectory
 
 $args = @(
     "-portable",
@@ -461,6 +466,7 @@ Write-Host "Launching PCSX-Redux automated capture..."
 Write-Host "Executable: $pcsxReduxExe"
 Write-Host "Boot source: $bootPath"
 Write-Host "Summary path: $summaryPath"
+Write-Host "Screenshot directory: $screenshotDirectory"
 if ($saveStatePath) {
     Write-Host "Save state: $saveStatePath"
     if ($saveStateInfo.SourcePath -ne $saveStatePath) {
@@ -593,6 +599,15 @@ if ($summaryInputPlan -and ((Get-ObjectPropertyValue -Object $summaryInputPlan -
         $observationPath,
         "add-note",
         "--note", ($inputPlanNoteParts -join "; ")
+    )
+}
+
+$summaryScreenCaptures = @(Get-ObjectPropertyValue -Object $summary -Name "screen_captures" -Default @())
+if ($summaryScreenCaptures.Count -gt 0) {
+    Invoke-Recorder @(
+        $observationPath,
+        "add-note",
+        "--note", ("Automated PCSX-Redux capture wrote {0} screen capture(s) under {1}." -f $summaryScreenCaptures.Count, $screenshotDirectory)
     )
 }
 

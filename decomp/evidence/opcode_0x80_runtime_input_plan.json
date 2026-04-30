@@ -1,25 +1,65 @@
 {
-  "description": "Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. The wrapper now auto-extends timeout to cover the full plan plus slack; the current memcard-backed route completes all six scheduled steps but still does not reach the recovered runtime reader, so future edits should retune the route or menu assumptions rather than only adding more wait frames.",
+  "description": "Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. The wrapper now auto-extends timeout to cover the full plan plus slack and can leave screen-capture breadcrumbs. Latest visual checkpoints show the repeated START pulses can now reach the Vagrant Story title/logo, so this scaffold pauses menu navigation until after that title state and only then tries to open and drive the menu. Operator follow-up also confirmed that this build uses PSX-style menu mapping where X cancels and O confirms, so the menu-confirm steps now use CIRCLE instead of CROSS. The repo-local memcards still probe as blank formatted cards, so future edits should replace the save-backed Continue/Load assumption or pair the route with a populated card artifact rather than only adding more wait frames.",
   "pad_slot": 1,
   "pad_number": 1,
   "analog_mode": false,
-  "initial_delay_frames": 720,
+  "initial_delay_frames": 240,
   "steps": [
+    {
+      "buttons": [
+        "START"
+      ],
+      "hold_frames": 10,
+      "wait_frames_after": 150,
+      "note": "Skip the first intro video or title gate as soon as pad input becomes live."
+    },
+    {
+      "buttons": [
+        "START"
+      ],
+      "hold_frames": 10,
+      "wait_frames_after": 180,
+      "note": "Skip a second intro or attract-video gate if the first START only clears one clip."
+    },
+    {
+      "buttons": [
+        "START"
+      ],
+      "hold_frames": 10,
+      "wait_frames_after": 180,
+      "note": "Skip the publisher screen or the next skippable intro gate; earlier captures were still here when CROSS fired."
+    },
+    {
+      "buttons": [
+        "START"
+      ],
+      "hold_frames": 10,
+      "wait_frames_after": 180,
+      "note": "Skip the Squaresoft logo or any remaining pre-title splash."
+    },
+    {
+      "buttons": [
+        "START"
+      ],
+      "hold_frames": 10,
+      "wait_frames_after": 180,
+      "note": "Skip the opening FMV or attract clip; earlier captures suggest the run was just entering this phase."
+    },
+    {
+      "buttons": [
+        "CIRCLE"
+      ],
+      "hold_frames": 8,
+      "wait_frames_after": 240,
+      "note": "Advance from the title screen into the main menu once the intro chain has been exhausted."
+    },
     {
       "buttons": [
         "START"
       ],
       "hold_frames": 8,
       "wait_frames_after": 240,
-      "note": "Dismiss the title or intro gate after fastboot settles."
-    },
-    {
-      "buttons": [
-        "CROSS"
-      ],
-      "hold_frames": 8,
-      "wait_frames_after": 180,
-      "note": "Advance from the title screen into the main menu."
+      "note": "Open the title menu after the Vagrant Story logo has settled instead of sending menu-navigation input into the logo splash."
     },
     {
       "buttons": [
@@ -31,7 +71,7 @@
     },
     {
       "buttons": [
-        "CROSS"
+        "CIRCLE"
       ],
       "hold_frames": 8,
       "wait_frames_after": 180,
@@ -39,15 +79,7 @@
     },
     {
       "buttons": [
-        "CROSS"
-      ],
-      "hold_frames": 8,
-      "wait_frames_after": 240,
-      "note": "Confirm the selected save or submenu entry."
-    },
-    {
-      "buttons": [
-        "CROSS"
+        "CIRCLE"
       ],
       "hold_frames": 8,
       "wait_frames_after": 480,

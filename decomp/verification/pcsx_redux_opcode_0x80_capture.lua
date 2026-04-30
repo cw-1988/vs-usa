@@ -141,6 +141,7 @@ local config = {
     input_plan_pad_slot = parse_int(os.getenv("VS_OPCODE_INPUT_PLAN_PAD_SLOT"), 1),
     input_plan_pad_number = parse_int(os.getenv("VS_OPCODE_INPUT_PLAN_PAD_NUMBER"), 1),
     input_plan_analog_mode = parse_bool(os.getenv("VS_OPCODE_INPUT_PLAN_ANALOG_MODE"), false),
+    screenshot_dir = os.getenv("VS_OPCODE_SCREENSHOT_DIR") or "",
 }
 
 local state = {
@@ -168,6 +169,7 @@ local state = {
     exit_code = 0,
     save_state_load_count = 0,
     input_plan = nil,
+    screen_captures = {},
 }
 
 local function add_note(text)
@@ -235,6 +237,66 @@ local function dump_snapshot(label, path, reason)
         focus_handlers = capture_focus_handlers(),
     }
     add_note("captured " .. label .. " snapshot via " .. reason)
+end
+
+local function screenshot_path(label)
+    if config.screenshot_dir == nil or config.screenshot_dir == "" then
+        return nil
+    end
+    return config.screenshot_dir .. "/" .. label .. ".ppm"
+end
+
+local function convert_16bpp_to_rgb24(slice)
+    local raw = tostring(slice)
+    local output = {}
+    local output_index = 1
+    for offset = 1, #raw, 2 do
+        local lo = string.byte(raw, offset)
+        local hi = string.byte(raw, offset + 1)
+        local value = lo + hi * 0x100
+        local red5 = bit.band(value, 0x1F)
+        local green5 = bit.band(bit.rshift(value, 5), 0x1F)
+        local blue5 = bit.band(bit.rshift(value, 10), 0x1F)
+        output[output_index] = string.char(bit.bor(bit.lshift(red5, 3), bit.rshift(red5, 2)))
+        output[output_index + 1] = string.char(bit.bor(bit.lshift(green5, 3), bit.rshift(green5, 2)))
+        output[output_index + 2] = string.char(bit.bor(bit.lshift(blue5, 3), bit.rshift(blue5, 2)))
+        output_index = output_index + 3
+    end
+    return table.concat(output)
+end
+
+local function capture_screen(label, reason)
+    local path = screenshot_path(label)
+    if path == nil then
+        return
+    end
+
+    local ok, err = pcall(function()
+        local screenshot = PCSX.GPU.takeScreenShot()
+        local handle = Support.File.open(path, "TRUNCATE")
+        handle:write(string.format("P6\n%d %d\n255\n", screenshot.width, screenshot.height))
+        if screenshot.bpp == 1 then
+            handle:writeMoveSlice(screenshot.data)
+        else
+            handle:write(convert_16bpp_to_rgb24(screenshot.data))
+        end
+        handle:close()
+
+        state.screen_captures[#state.screen_captures + 1] = {
+            label = label,
+            path = path,
+            timestamp = utc_now(),
+            frame = state.frame_count,
+            width = screenshot.width,
+            height = screenshot.height,
+            bpp = screenshot.bpp == 1 and 24 or 16,
+            reason = reason,
+        }
+    end)
+
+    if not ok then
+        add_note("failed to capture screen " .. label .. ": " .. tostring(err))
+    end
 end
 
 local function queue_safe(label, func)
@@ -429,6 +491,7 @@ local function update_input_plan()
             step.completed = true
             plan.completed_steps = plan.completed_steps + 1
             add_note("input plan step " .. tostring(index) .. " completed: " .. step.note)
+            capture_screen(string.format("step-%02d-complete", index), "input_plan_step_complete")
         end
     end
 
@@ -484,6 +547,7 @@ local function write_summary()
             started_steps = state.input_plan.started_steps,
             completed_steps = state.input_plan.completed_steps,
         } or nil,
+        screen_captures = state.screen_captures,
     }
 
     local handle, err = io.open(config.summary_path, "wb")
@@ -667,6 +731,7 @@ function DrawImguiFrame()
         if state.saw_write and state.snapshots.after_init == nil then
             dump_snapshot("after_init", config.after_init_path, "timeout_fallback")
         end
+        capture_screen("timeout", "timeout_before_capture_finished")
         request_quit(2, "timeout elapsed before capture finished")
     end
 end

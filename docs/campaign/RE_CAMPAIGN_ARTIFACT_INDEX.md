@@ -43,6 +43,8 @@ evidence under `decomp/`.
 - [`../../decomp/evidence/opcode_0x80_binary_address_scan.md`](../../decomp/evidence/opcode_0x80_binary_address_scan.md)
 - [`../../decomp/evidence/opcode_0x80_runtime_capture_plan.md`](../../decomp/evidence/opcode_0x80_runtime_capture_plan.md)
 - [`../../decomp/evidence/opcode_0x80_runtime_input_plan.json`](../../decomp/evidence/opcode_0x80_runtime_input_plan.json)
+- [`../../decomp/evidence/opcode_0x80_runtime_memcard_probe.md`](../../decomp/evidence/opcode_0x80_runtime_memcard_probe.md)
+- [`../../decomp/evidence/opcode_0x80_runtime_memcard_probe.json`](../../decomp/evidence/opcode_0x80_runtime_memcard_probe.json)
 - [`../../decomp/evidence/opcode_0x80_runtime_support.md`](../../decomp/evidence/opcode_0x80_runtime_support.md)
 - [`../../decomp/evidence/opcode_0x80_runtime_automation_summary.json`](../../decomp/evidence/opcode_0x80_runtime_automation_summary.json)
 - [`../../decomp/evidence/opcode_0x80_runtime_expected_table.bin`](../../decomp/evidence/opcode_0x80_runtime_expected_table.bin)
@@ -61,3 +63,4 @@ evidence under `decomp/`.
 - [`../../decomp/verification/finalize_runtime_observation.py`](../../decomp/verification/finalize_runtime_observation.py)
 - [`../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua)
 - [`../../decomp/verification/run_opcode_0x80_runtime_capture.ps1`](../../decomp/verification/run_opcode_0x80_runtime_capture.ps1)
+- [`../../decomp/verification/probe_psx_memcards.py`](../../decomp/verification/probe_psx_memcards.py)
