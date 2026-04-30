@@ -50,6 +50,62 @@ Current best script-level interpretation:
 The exact field names for the three control bytes may still deserve refinement,
 but the subsystem identity is high-confidence.
 
+#### Opcode `0x49`
+
+- Data Crystal: unnamed (`800b8c54`)
+- Confirmed name: `SetJumpBackCounter`
+- Confidence: `Confirmed`
+
+Why:
+
+- The matched opcode dispatch table in
+  [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
+  maps `0x49` directly to the small readable handler now renamed
+  `vs_battle_script_setJumpBackCounter`.
+- That handler only does one thing: when the first script byte is not `0xFF`,
+  it stores the second byte into a local counter-slot array at
+  `D_800F4C10[arg0[1]]`.
+- The paired opcode `0x4A` later decrements that same slot and uses it to
+  decide whether to jump backward, which makes `0x49` the explicit counter-setup
+  half of the pair rather than a generic flag or mode write.
+- In decoded scripts, the only currently reachable counted form is
+  `49 00 01`, which matches a one-iteration setup for the later `4A 00 ...`
+  consumer. The repeated cathedral shake loops instead use the reserved
+  `49 FF 00` scaffolding form before the unconditional `4A FF ...` back-jump.
+
+Current best script-level interpretation:
+
+- `49 ss cc`: store initial loop/jump-back count `cc` into counter slot `ss`
+- `49 FF 00`: reserved unconditional form used alongside `4A FF ...`
+
+#### Opcode `0x4A`
+
+- Data Crystal: unnamed
+- Confirmed name: `JumpBackIfCounter`
+- Confidence: `Confirmed`
+
+Why:
+
+- The matched opcode dispatch table maps `0x4A` directly to the readable
+  handler
+  [`vs_battle_script_jumpBackIf`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c),
+  now tightened to `vs_battle_script_jumpBackIfCounter` in the nested repo.
+- When the first script byte is `0xFF`, the handler immediately returns
+  `&arg0[-vs_battle_getShort(arg0 + 2)]`, which is an unconditional backward
+  jump by the encoded 16-bit offset.
+- Otherwise it pre-decrements `D_800F4C10[arg0[1]]` and only returns that same
+  backward jump target while the decremented slot stays nonzero.
+- Real script usage matches both forms. `MAP131`, `MAP133`, and `MAP413`
+  repeatedly use `49 FF 00` plus `4A FF ...` to loop camera-oscillation beats,
+  while `MAP318` and `MAP321` use the slot `0` form `49 00 01` / `4A 00 8A 00`
+  as the counted variant.
+
+Current best script-level interpretation:
+
+- `4A FF ll hh`: unconditionally jump backward by `<h ll hh>` bytes
+- `4A ss ll hh`: decrement counter slot `ss`, then jump backward by
+  `<h ll hh>` while the result stays nonzero
+
 #### Opcode `0x78`
 
 - Data Crystal: unnamed (`800ba0e4`)
@@ -310,6 +366,8 @@ Important detail:
 These were also validated locally and are stronger than the older public table:
 
 - `0x2E -> ModelScale`
+- `0x49 -> SetJumpBackCounter`
+- `0x4A -> JumpBackIfCounter`
 - `0x31 -> ModelTint`
 - `0x39 -> ModelLookAtPosition`
 - `0x74 -> LoadRoomSection10`

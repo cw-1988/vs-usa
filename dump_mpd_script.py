@@ -81,8 +81,8 @@ OPCODES = {
     0x46: ("Opcode46", 0x03),
     0x47: ("Opcode47", 0x04),
     0x48: ("Opcode48", 0x01),
-    0x49: ("Opcode49", 0x03),
-    0x4A: ("Opcode4A", 0x04),
+    0x49: ("SetJumpBackCounter", 0x03),
+    0x4A: ("JumpBackIfCounter", 0x04),
     0x4B: ("Opcode4B", 0x03),
     0x4C: ("Opcode4C", 0x03),
     0x4D: ("Opcode4D", 0x02),
@@ -530,6 +530,15 @@ def format_opcode(
         return f"raw=[{fmt_default(args)}]"
     if op == 0x44 and len(args) == 1:
         return f"idMode={args[0]}"
+    if op == 0x49 and len(args) == 2:
+        if args[0] == 0xFF:
+            return f"counterSlot=unconditional, ignoredCount={args[1]}"
+        return f"counterSlot={args[0]}, initialCount={args[1]}"
+    if op == 0x4A and len(args) == 3:
+        jump = struct.unpack("<H", bytes(args[1:3]))[0]
+        if args[0] == 0xFF:
+            return f"counterSlot=unconditional, jump=-0x{jump:X}"
+        return f"counterSlot={args[0]}, jump=-0x{jump:X}"
     if op == 0x54:
         return f"raw=[{fmt_default(args)}]"
     if op == 0x58 and len(args) == 1:
