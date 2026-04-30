@@ -29,24 +29,24 @@ unless the evidence is too weak to justify a rename.
 
 Start here:
 
-- [`dump_mpd_script.py`](/c:/Users/Chris/Desktop/vs%20usa/dump_mpd_script.py)
-- [`ROOD_REVERSE_OPCODE_FINDINGS.md`](/c:/Users/Chris/Desktop/vs%20usa/ROOD_REVERSE_OPCODE_FINDINGS.md)
-- [`GHIDRA_OPCODE_RE_WORKFLOW.md`](/c:/Users/Chris/Desktop/vs%20usa/GHIDRA_OPCODE_RE_WORKFLOW.md)
-- [`decoded_scripts`](</c:/Users/Chris/Desktop/vs usa/decoded_scripts>)
+- [`dump_mpd_script.py`](dump_mpd_script.py)
+- [`ROOD_REVERSE_OPCODE_FINDINGS.md`](ROOD_REVERSE_OPCODE_FINDINGS.md)
+- [`GHIDRA_OPCODE_RE_WORKFLOW.md`](GHIDRA_OPCODE_RE_WORKFLOW.md)
+- [`decoded_scripts`](decoded_scripts)
 
 Reference sources:
 
-- [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c>)
-- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c>)
-- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c>)
-- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h>)
-- [`_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c>)
-- [`_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt>)
+- [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
+- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
+- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)
+- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)
+- [`_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c`](_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c)
+- [`_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt)
 
 Useful local tooling:
 
-- [`tools/ghidra_12.0.4_PUBLIC`](</c:/Users/Chris/Desktop/vs usa/tools/ghidra_12.0.4_PUBLIC>)
-- [`tools/pcsx-redux`](</c:/Users/Chris/Desktop/vs usa/tools/pcsx-redux>)
+- [`tools/ghidra_12.0.4_PUBLIC`](tools/ghidra_12.0.4_PUBLIC)
+- [`tools/pcsx-redux`](tools/pcsx-redux)
 
 ## Tooling
 
@@ -212,9 +212,9 @@ name", that is still a valid pass.
 
 A successful pass should update one or more of:
 
-- [`dump_mpd_script.py`](/c:/Users/Chris/Desktop/vs%20usa/dump_mpd_script.py)
-- [`ROOD_REVERSE_OPCODE_FINDINGS.md`](/c:/Users/Chris/Desktop/vs%20usa/ROOD_REVERSE_OPCODE_FINDINGS.md)
-- [`GHIDRA_OPCODE_RE_WORKFLOW.md`](/c:/Users/Chris/Desktop/vs%20usa/GHIDRA_OPCODE_RE_WORKFLOW.md)
+- [`dump_mpd_script.py`](dump_mpd_script.py)
+- [`ROOD_REVERSE_OPCODE_FINDINGS.md`](ROOD_REVERSE_OPCODE_FINDINGS.md)
+- [`GHIDRA_OPCODE_RE_WORKFLOW.md`](GHIDRA_OPCODE_RE_WORKFLOW.md)
 
 Optional if truly useful:
 

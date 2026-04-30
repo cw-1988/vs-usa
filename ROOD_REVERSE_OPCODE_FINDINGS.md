@@ -96,7 +96,7 @@ Current best script-level interpretation:
 Why:
 
 - The matched opcode dispatch table in
-  [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c>)
+  [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
   maps `0xE1` directly to `func_800BB450`.
 - `func_800BB450` is a tiny wrapper that just calls `func_8007DD50(arg0[1])`.
 - `func_8007DD50` flips the effect runtime between active and shutdown states

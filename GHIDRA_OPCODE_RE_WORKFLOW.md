@@ -5,30 +5,30 @@ instead of re-learning the same setup and toolchain friction.
 
 Current local context:
 
-- workspace root: [`c:\Users\Chris\Desktop\vs usa`](</c:/Users/Chris/Desktop/vs usa>)
-- local Ghidra install: [`tools/ghidra_12.0.4_PUBLIC`](</c:/Users/Chris/Desktop/vs usa/tools/ghidra_12.0.4_PUBLIC>)
-- local Ghidra project: [`tools/ghidra-project`](</c:/Users/Chris/Desktop/vs usa/tools/ghidra-project>)
-- game overlay of interest: [`Game Data/BATTLE/BATTLE.PRG`](</c:/Users/Chris/Desktop/vs usa/Game Data/BATTLE/BATTLE.PRG>)
-- decomp reference checkout: [`_refs/rood-reverse`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse>)
+- workspace root: [`.`](.)
+- local Ghidra install: [`tools/ghidra_12.0.4_PUBLIC`](tools/ghidra_12.0.4_PUBLIC)
+- local Ghidra project: [`tools/ghidra-project`](tools/ghidra-project)
+- game overlay of interest: [`Game Data/BATTLE/BATTLE.PRG`](Game%20Data/BATTLE/BATTLE.PRG)
+- decomp reference checkout: [`_refs/rood-reverse`](_refs/rood-reverse)
 
 ## Short Version
 
 If the goal is to reverse more script opcodes fast, the best workflow is:
 
 1. Start from the opcode table and decoded script usage in
-   [`dump_mpd_script.py`](/c:/Users/Chris/Desktop/vs%20usa/dump_mpd_script.py)
-   and [`decoded_scripts`](</c:/Users/Chris/Desktop/vs usa/decoded_scripts>).
-2. Use [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c>)
+   [`dump_mpd_script.py`](dump_mpd_script.py)
+   and [`decoded_scripts`](decoded_scripts).
+2. Use [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
    as the main opcode-handler map.
 3. Use
-   [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c>)
+   [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
    as the exact opcode dispatch table when source order is ambiguous.
 4. Use
-   [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c>)
-   and [`146C.h`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h>)
+   [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)
+   and [`146C.h`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)
    for camera, room, audio, and effect consumers.
 5. Use
-   [`_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt>)
+   [`_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt)
    when a function is referenced but not easy to locate by browsing alone.
 6. Only drop into live Ghidra when the decomp leaves a real gap, especially for
    nonmatching consumers.
@@ -41,7 +41,7 @@ force headless Ghidra automation before confirming the local project state.
 ### 1. Start from real script usage first
 
 Before naming an opcode, find several real script contexts in
-[`decoded_scripts`](</c:/Users/Chris/Desktop/vs usa/decoded_scripts>).
+[`decoded_scripts`](decoded_scripts).
 
 Why:
 
@@ -64,7 +64,7 @@ Useful examples from this session:
 
 The main file for script handler work is:
 
-- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c>)
+- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
 
 This is where the most useful wins came from.
 
@@ -85,7 +85,7 @@ Examples from this session:
 
 File:
 
-- [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c>)
+- [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)
 
 Why it mattered:
 
@@ -113,7 +113,7 @@ This helped a lot more than expected.
 
 File:
 
-- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h>)
+- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)
 
 Why it mattered:
 
@@ -139,7 +139,7 @@ actor value.
 
 Useful file:
 
-- [`_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt>)
+- [`_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt)
 
 This is handy when:
 
@@ -160,8 +160,8 @@ Example:
 
 Open:
 
-- [`dump_mpd_script.py`](/c:/Users/Chris/Desktop/vs%20usa/dump_mpd_script.py)
-- [`ROOD_REVERSE_OPCODE_FINDINGS.md`](/c:/Users/Chris/Desktop/vs%20usa/ROOD_REVERSE_OPCODE_FINDINGS.md)
+- [`dump_mpd_script.py`](dump_mpd_script.py)
+- [`ROOD_REVERSE_OPCODE_FINDINGS.md`](ROOD_REVERSE_OPCODE_FINDINGS.md)
 
 The fastest pattern is:
 
@@ -240,11 +240,11 @@ What stayed conservative:
 
 Main install:
 
-- [`tools/ghidra_12.0.4_PUBLIC`](</c:/Users/Chris/Desktop/vs usa/tools/ghidra_12.0.4_PUBLIC>)
+- [`tools/ghidra_12.0.4_PUBLIC`](tools/ghidra_12.0.4_PUBLIC)
 
 Project:
 
-- [`tools/ghidra-project`](</c:/Users/Chris/Desktop/vs usa/tools/ghidra-project>)
+- [`tools/ghidra-project`](tools/ghidra-project)
 
 PSX loader extension:
 
@@ -270,9 +270,9 @@ That file confirms the loader name and that it uses PSX language id:
 
 Current files:
 
-- [`tools/ghidra-project/Vagrant Story USA.gpr`](</c:/Users/Chris/Desktop/vs usa/tools/ghidra-project/Vagrant Story USA.gpr>)
-- [`tools/ghidra-project/Vagrant Story USA.rep`](</c:/Users/Chris/Desktop/vs usa/tools/ghidra-project/Vagrant Story USA.rep>)
-- [`tools/ghidra-project/Vagrant Story USA.lock`](</c:/Users/Chris/Desktop/vs usa/tools/ghidra-project/Vagrant Story USA.lock>)
+- [`tools/ghidra-project/Vagrant Story USA.gpr`](tools/ghidra-project/Vagrant%20Story%20USA.gpr)
+- [`tools/ghidra-project/Vagrant Story USA.rep`](tools/ghidra-project/Vagrant%20Story%20USA.rep)
+- [`tools/ghidra-project/Vagrant Story USA.lock`](tools/ghidra-project/Vagrant%20Story%20USA.lock)
 
 Important caution:
 
@@ -361,15 +361,15 @@ Then immediately locate:
 
 ### Main handler file
 
-- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c>)
+- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)
 
 ### Main consumer file
 
-- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c>)
+- [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)
 
 ### Effect-side helper
 
-- [`_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c>)
+- [`_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c`](_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c)
 
 ### Best current examples
 
