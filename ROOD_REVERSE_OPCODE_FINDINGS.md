@@ -4,7 +4,6 @@ This note collects high-confidence opcode findings that appear to improve on the
 current public table at Data Crystal:
 
 - Source: <https://datacrystal.tcrf.net/wiki/Vagrant_Story/Script_Opcodes>
-- Checked on: 2026-04-29
 
 The goal is to keep this contribution set conservative: only names with a clear
 code-path or script-usage proof are listed as confirmed. Anything still fuzzy
@@ -88,6 +87,28 @@ Current best script-level interpretation:
 - `79 00 xx`: trigger room mechanism `xx`
 - `79 01 xx`: toggle room mechanism `xx`
 
+#### Opcode `0xE1`
+
+- Data Crystal: unnamed
+- Confirmed name: `SetScreenEffectEnabled`
+- Confidence: `Confirmed`
+
+Why:
+
+- The matched opcode dispatch table in
+  [`_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c>)
+  maps `0xE1` directly to `func_800BB450`.
+- `func_800BB450` is a tiny wrapper that just calls `func_8007DD50(arg0[1])`.
+- `func_8007DD50` flips the effect runtime between active and shutdown states
+  and allocates the backing effect object when needed.
+- In scripts, `E1 01` and `E1 00` consistently bracket the nearby effect setup
+  and tween opcodes such as `E4`, `E5`, `E6`, `E7`, and `EF`.
+
+Current best script-level interpretation:
+
+- `E1 00`: disable the current screen effect block
+- `E1 01`: enable the current screen effect block
+
 ### Other confirmed names worth upstreaming
 
 These were also validated locally and are stronger than the older public table:
@@ -107,6 +128,10 @@ These were also validated locally and are stronger than the older public table:
 - `0x99 -> ClearMusicLoadSlot`
 - `0x9D -> LoadSoundFileById`
 - `0x9E -> ProcessSoundQueue`
+- `0xE5 -> ScreenEffectColorTween`
+- `0xE7 -> SetScreenEffectMode`
+- `0xEB -> CameraNearClip`
+- `0xEC -> CameraFarClip`
 - `0xF4 -> ScriptCallSlotActive`
 - `0xF5 -> ScriptCall`
 - `0xF6 -> ScriptReturn`
@@ -172,6 +197,9 @@ more proof pass:
 - `0x7A`
 - `0xE2`
 - `0xE3`
+- `0xE4`
+- `0xE6`
+- `0xED`
 - `0xEF`
 
 #### Opcode `0x7A`
@@ -193,6 +221,10 @@ Best interpretation so far:
 
 - `SuspendRoomAmbientSound`
 
+Best safe local tooling name:
+
+- `SetRoomAmbientSoundSuspended`
+
 Why still tentative:
 
 - Rooms with an actual AKAO section and rooms that fall back to the persistent
@@ -203,47 +235,114 @@ Why still tentative:
 
 #### Opcode `0xE2`
 
-- Confidence: `Tentative`
+- Confidence: `Strong`
 
 Current narrow:
 
 - This opcode starts a timed angle-style tween.
 - The tween updates one specific camera field over time instead of moving the
   whole camera position directly.
+- The local `camera_t2` layout now exposes `pitch` and `yaw` as separate named
+  fields immediately before the `unk5C` target that this opcode writes.
 - Script usage also fits that: it commonly appears around camera staging rather
   than around actor or room control.
 
 Best interpretation so far:
 
-- This is a real angular tween on the camera state, and `CameraRollTween` is a
-  plausible eventual rename.
+- `CameraRollTween`
 
 Why still tentative:
 
-- `_camera.t2.unk5C` is not formally named in the decomp yet, so the exact
-  axis should still be proven once more before upstreaming.
+- `_camera.t2.unk5C` is still unnamed in code, so this is strong enough for
+  local tooling but still deserves one more consumer-side proof before an
+  upstream hard rename.
 
 #### Opcode `0xE3`
 
-- Confidence: `Tentative`
+- Confidence: `Strong`
 
 Current narrow:
 
 - It uses the same tween machinery as `0xE2`, but writes to a different target.
 - In scripts it lives much closer to the visual-effect block than to normal
   camera positioning commands.
-- That makes it look like an effect-side angle or phase control, not a basic
-  “move camera here” opcode.
+- Nearby matched effect update code shows a separate cluster that pushes timed
+  values into screen-effect state, color state, and `SCREFF2` parameters.
+- That makes it look like an effect-side angle control, not a basic camera
+  move opcode.
 
 Best interpretation so far:
 
-- It is another angular tween, but likely for a post-process or screen-effect
-  subsystem rather than the main camera look-at/position path.
+- `ScreenEffectAngleTween`
 
 Why still tentative:
 
 - The consumer of `D_800F1A2C` is still hidden behind nonmatching code, so the
   user-facing feature name is not nailed down.
+
+#### Opcode `0xE4`
+
+- Confidence: `Strong`
+
+Current narrow:
+
+- This opcode writes through `func_8007DDB8`, the same setter used by direct
+  non-script callers.
+- Its first two script bytes are promoted with `<< 7`, and a raw value of
+  `0x20` lands exactly on neutral `0x1000`.
+- That makes the script-facing values behave like two effect scale components,
+  not ids, colors, or flags.
+
+Best interpretation so far:
+
+- `ScreenEffectScaleTween`
+
+Why still tentative:
+
+- The underlying runtime fields are still unnamed, so the safest claim is
+  `two-component effect scale tween` rather than a more cinematic label.
+
+#### Opcode `0xE6`
+
+- Confidence: `Strong`
+
+Current narrow:
+
+- This opcode writes through `func_8007DDF8`.
+- The first two script bytes are treated as signed values and are commonly used
+  in tiny ranges like `-2`, `0`, `1`, and `2`.
+- In scripts it behaves like a small two-axis adjustment layered onto the
+  active screen effect rather than a camera move or object transform.
+
+Best interpretation so far:
+
+- `ScreenEffectOffsetTween`
+
+Why still tentative:
+
+- The exact user-facing meaning of those two signed components still needs one
+  more consumer-side pass before claiming a more specific term than `offset`.
+
+#### Opcode `0xED`
+
+- Confidence: `Strong`
+
+Current narrow:
+
+- This opcode, not `0xEF`, is the direct path that feeds
+  `func_800F9BC0(arg0, arg1)` in `SCREFF2.PRG`.
+- The first script byte is promoted with `<< 6`, the second is treated as a
+  signed byte, and the last two bytes behave like easing and duration.
+- That makes it a two-parameter effect tween rather than general logic flow.
+
+Best safe local tooling name:
+
+- `ScreenEffectParamPairTween`
+
+Why still tentative:
+
+- The two destination fields in `SCREFF2` are still unnamed, so the exact
+  player-visible feature behind the pair has not been nailed down yet.
 
 #### Opcode `0xEF`
 
@@ -253,19 +352,48 @@ Current narrow:
 
 - It behaves like part of the same visual-effect cluster as the nearby `E`-range
   opcodes.
+- Raw handler work now shows that `0xEF` allocates or reuses one of two small
+  waveform slots that are advanced by `func_800BE180`.
+- Those slots store a waveform mode, duration, and a couple of small scalar
+  parameters instead of writing directly to one camera or effect field.
 - In scripts it shows up in little timed bursts, which feels like effect tuning
   rather than logic flow or object control.
-- Its arguments also look like “set up a short ramp” values, not ids, flags, or
-  jump targets.
+- Its arguments look much more like `set up an oscillator/pulse` than
+  `set one target value directly`.
 
 Best interpretation so far:
 
-- It is probably one of the timed screen-effect parameter tween initialisers.
+- It is probably a screen-effect waveform or oscillation initializer.
 
 Why still tentative:
 
-- The exact destination fields for `0xEF` are still hidden in nonmatching code,
-  so naming it more specifically would be premature.
+- The exact destination fields and user-facing effect name are still hidden in
+  nonmatching code, so anything more specific would be premature.
+- The script-side arguments are structured enough to be worth preserving, but
+  not yet strongly enough named for a hard mnemonic rename.
+
+Observed local argument patterns worth carrying forward:
+
+- The last byte behaves like a duration input and commonly matches the timing
+  rhythm of nearby waits or cutscene beats.
+- The middle word behaves like a reusable control word more than a plain scalar.
+  Common local values include `0x0047`, `0x0057`, `0x005B`, `0x0065`,
+  `0x0067`, `0x0097`, and `0x01A7`.
+- The first two bytes behave like small scalar parameters. They are often
+  pulsed in alternating pairs or stepped sequences rather than treated as ids.
+
+Useful script examples:
+
+- `MAP223`: `EF 08 08 66 00 06`, `EF 08 04 66 00 06`,
+  `EF 08 02 66 00 06`, `EF 08 01 66 00 06`
+  This looks like a stepped scalar sweep while the control word stays fixed at
+  `0x0066`.
+- `MAP069`: `EF 01 32 67 00 07`, `EF 02 32 5B 00 07`,
+  `EF 02 19 67 00 07`, `EF 04 17 5B 00 07`
+  This looks like alternating paired setup rather than a one-shot direct field
+  write.
+- `MAP131` to `MAP136`: repeated pairs such as `0x0193` and `0x019B`
+  reinforce the idea that the 16-bit word is a reusable effect-control input.
 
 ### Suggested upstream patch shape
 

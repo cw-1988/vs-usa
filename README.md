@@ -32,40 +32,44 @@ That output is useful for:
 - [`analyze_room_graph.py`](/c:/Users/Chris/Desktop/vs%20usa/analyze_room_graph.py): analyzes room and scene connectivity
 - [`room_names.tsv`](/c:/Users/Chris/Desktop/vs%20usa/room_names.tsv): map, zone, area, and room name lookup table
 - [`decoded_scripts`](/c:/Users/Chris/Desktop/vs%20usa/decoded_scripts): generated decoded script output
-- [`ROOD_REVERSE_OPCODE_FINDINGS_2026-04-29.md`](/c:/Users/Chris/Desktop/vs%20usa/ROOD_REVERSE_OPCODE_FINDINGS_2026-04-29.md): opcode findings and naming notes
-- [`ROOM_CONNECTION_FINDINGS_2026-04-29.md`](/c:/Users/Chris/Desktop/vs%20usa/ROOM_CONNECTION_FINDINGS_2026-04-29.md): room and scene connectivity notes
+- [`ROOD_REVERSE_OPCODE_FINDINGS.md`](/c:/Users/Chris/Desktop/vs%20usa/ROOD_REVERSE_OPCODE_FINDINGS.md): opcode findings and naming notes
+- [`ROOM_CONNECTION_FINDINGS.md`](/c:/Users/Chris/Desktop/vs%20usa/ROOM_CONNECTION_FINDINGS.md): room and scene connectivity notes
 - [`VAGRANT_STORY_MODDING_OVERVIEW.md`](/c:/Users/Chris/Desktop/vs%20usa/VAGRANT_STORY_MODDING_OVERVIEW.md): higher-level notes on the extracted disc contents
 - [`Game Data`](/c:/Users/Chris/Desktop/vs%20usa/Game%20Data): place the extracted USA disc contents here
+- [`tools`](/c:/Users/Chris/Desktop/vs%20usa/tools): local reverse-engineering tools and debugger builds kept outside version control
 - [`_refs/README.md`](/c:/Users/Chris/Desktop/vs%20usa/_refs/README.md): notes for external reference repos used alongside this workspace
 
 ## Tools and references
 
-This workspace is not operating in isolation. Alongside the local Python scripts, it benefits from a few outside tools and reference projects.
+This workspace uses three layers of tooling: repo-local analysis scripts, local reverse-engineering tools under `tools/`, and optional reference repos under `_refs/`.
 
-### Local scripts in this repo
+### In-repo scripts
 
-- [`dump_mpd_script.py`](/c:/Users/Chris/Desktop/vs%20usa/dump_mpd_script.py) for batch script extraction and readable opcode output
-- [`analyze_room_graph.py`](/c:/Users/Chris/Desktop/vs%20usa/analyze_room_graph.py) for scene and room connectivity analysis
+- [`dump_mpd_script.py`](/c:/Users/Chris/Desktop/vs%20usa/dump_mpd_script.py): batch script extraction and readable opcode output
+- [`analyze_room_graph.py`](/c:/Users/Chris/Desktop/vs%20usa/analyze_room_graph.py): scene and room connectivity analysis
 
-### External reference repos
+### Local reverse-engineering toolchain
 
-- [`_refs/rood-reverse`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse>): local clone of the upstream `rood-reverse` Vagrant Story decompilation project when present
+- [`tools/ghidra_12.0.4_PUBLIC`](</c:/Users/Chris/Desktop/vs usa/tools/ghidra_12.0.4_PUBLIC>): main static analysis environment, launched with [`ghidraRun.bat`](</c:/Users/Chris/Desktop/vs usa/tools/ghidra_12.0.4_PUBLIC/ghidraRun.bat>)
+- `ghidra_psx_ldr`: installed into the local Ghidra setup to improve PlayStation-specific analysis
+- [`tools/pcsx-redux`](</c:/Users/Chris/Desktop/vs usa/tools/pcsx-redux>): runtime debugger build, launched with [`pcsx-redux.exe`](</c:/Users/Chris/Desktop/vs usa/tools/pcsx-redux/pcsx-redux.exe>)
+
+In practice, `Ghidra` is where opcode handlers and control flow are studied, while `PCSX-Redux` is used to step through live behavior and verify theories. The `tools/` folder stays Git-ignored because it holds large local binaries, extracted archives, and working tool checkouts.
+
+### Reference repos
+
+- [`_refs/rood-reverse`](</c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse>): optional local clone of the upstream Vagrant Story decompilation project
 - upstream `rood-reverse`: <https://github.com/ser-pounce/rood-reverse>
 
-`rood-reverse` is especially useful because it gives us a code-level view of the game engine, which helps turn guessed opcode names into verified behavior.
+`rood-reverse` is especially useful for matching guessed opcode behavior to engine code and checking naming, function boundaries, and subsystem behavior.
 
-### Recommended companion tools
+### Optional companion tools
 
-- `Ghidra`: best fit for understanding what opcode handlers actually do, because it combines disassembly, graphing, scripting, and decompilation
-- `ghidra_psx_ldr`: helpful Ghidra extension for PS1 executables and PSYQ-flavored analysis workflows
-- `Capstone`: still useful for lightweight scripted instruction decoding, bulk scans, and automation, but not ideal as the main environment for semantic reverse-engineering
-
-### Useful decomp/modding pipeline tools
-
-- `splat`: helpful if the work grows from script study into broader binary splitting and decomp project structure
-- `m2c`: useful when you want a MIPS-focused decompiler pass on assembly outside a full interactive RE session
-- `objdiff`: useful once we begin matching or rebuilding compiled objects
-- `mkpsxiso`: useful later when the project reaches the point of rebuilding patched PlayStation disc images
+- `Capstone`: useful for lightweight scripted instruction decoding, bulk scans, and automation
+- `splat`: useful if the work expands into broader binary splitting and decomp project structure
+- `m2c`: useful for MIPS-focused decompiler passes outside a full interactive RE session
+- `objdiff`: useful once matching or rebuilding compiled objects becomes important
+- `mkpsxiso`: useful later if the project reaches patched PlayStation disc rebuilds
 
 ## How to use
 
@@ -168,3 +172,4 @@ and toward:
 - The scripts are written for Python 3.
 - The repo is currently centered on the USA game data layout.
 - If a decoded file only shows partial meaning for an opcode, that is expected; preserving uncertain data is part of the workflow.
+- The current local toolchain is centered around Ghidra for static analysis and PCSX-Redux for runtime verification.
