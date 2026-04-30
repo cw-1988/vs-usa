@@ -109,6 +109,38 @@ Current best script-level interpretation:
 - `E1 00`: disable the current screen effect block
 - `E1 01`: enable the current screen effect block
 
+#### Opcode `0xE2`
+
+- Data Crystal: unnamed
+- Confirmed name: `CameraRollTween`
+- Confidence: `Confirmed`
+
+Why:
+
+- The matched opcode dispatch table maps `0xE2` into the shared
+  `vs_battle_script_setupAngleTween` handler in
+  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).
+- The readable handler body switches on the opcode byte and routes `0xE2` into
+  `D_800F4BA4->cameraAngleTween`.
+- The matched apply side later commits that tween through
+  `func_8007AC94(D_800F4BA4->cameraAngleTween.currentValue)`.
+- `func_8007AC94` writes `_camera.t2.unk5C`, and the current
+  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)
+  layout now exposes named `pitch` and `yaw` fields immediately before that
+  target. The paired getter masks the stored value with `& 0xFFF`, which fits
+  the remaining camera-angle slot much better than a generic scalar.
+- In `decoded_scripts`, all 291 sampled `E2` instances currently end with a
+  trailing `00` byte, matching the handler only consuming angle, wrap/easing,
+  and duration rather than a hidden selector or id field.
+- Script usage clusters around camera staging beats and repeated resets back to
+  angle `0`, which matches a camera roll control instead of room or actor
+  state.
+
+Current best script-level interpretation:
+
+- `E2 aa bb we dd 00`: tween the camera roll angle to `<h aa bb>` with
+  wrap/easing control `we` over `dd` ticks
+
 #### Opcode `0xE4`
 
 - Data Crystal: unnamed
@@ -179,6 +211,7 @@ These were also validated locally and are stronger than the older public table:
 - `0x99 -> ClearMusicLoadSlot`
 - `0x9D -> LoadSoundFileById`
 - `0x9E -> ProcessSoundQueue`
+- `0xE2 -> CameraRollTween`
 - `0xE4 -> ScreenEffectScaleTween`
 - `0xE5 -> ScreenEffectColorTween`
 - `0xE6 -> ScreenEffectOffsetTween`
@@ -248,7 +281,6 @@ These are narrowed down, but should not be hard-renamed upstream without one
 more proof pass:
 
 - `0x7A`
-- `0xE2`
 - `0xE3`
 - `0xED`
 - `0xEF`
@@ -284,30 +316,6 @@ Why still tentative:
   describe the shared user-facing effect rather than overfit one implementation
   detail.
 
-#### Opcode `0xE2`
-
-- Confidence: `Strong`
-
-Current narrow:
-
-- This opcode starts a timed angle-style tween.
-- The tween updates one specific camera field over time instead of moving the
-  whole camera position directly.
-- The local `camera_t2` layout now exposes `pitch` and `yaw` as separate named
-  fields immediately before the `unk5C` target that this opcode writes.
-- Script usage also fits that: it commonly appears around camera staging rather
-  than around actor or room control.
-
-Best interpretation so far:
-
-- `CameraRollTween`
-
-Why still tentative:
-
-- `_camera.t2.unk5C` is still unnamed in code, so this is strong enough for
-  local tooling but still deserves one more consumer-side proof before an
-  upstream hard rename.
-
 #### Opcode `0xE3`
 
 - Confidence: `Strong`
@@ -319,6 +327,8 @@ Current narrow:
   camera positioning commands.
 - Nearby matched effect update code shows a separate cluster that pushes timed
   values into screen-effect state, color state, and `SCREFF2` parameters.
+- All 6 currently decoded `E3` instances also end with a trailing `00` byte,
+  matching the shared setup helper only using angle, wrap/easing, and duration.
 - That makes it look like an effect-side angle control, not a basic camera
   move opcode.
 

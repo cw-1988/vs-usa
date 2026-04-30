@@ -561,7 +561,7 @@ def format_opcode(
         easing = args[2] & 0x0F
         return (
             f"angle={angle}, wrapMode={wrap_mode}, easing={easing}, "
-            f"duration={args[3]}, raw={args[4]}"
+            f"duration={args[3]}, reserved={args[4]}"
         )
     if op == 0xE4 and len(args) == 4:
         x_scale = (args[0] << 7) if args[0] else 0x1000
