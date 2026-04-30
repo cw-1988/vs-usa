@@ -20,6 +20,9 @@ Current tracked entry points:
   binary-first instruction proof before runtime tracing
 - [`export_function_table.py`](export_function_table.py): Python version kept
   for future `PyGhidra`-based flows
+- [`Invoke-GhidraHeadlessExport.ps1`](Invoke-GhidraHeadlessExport.ps1):
+  shared headless-launch helper so the task-specific wrappers only declare
+  binary inputs, base addresses, and export targets
 - [`export_inittbl_opcode_table.ps1`](export_inittbl_opcode_table.ps1):
   headless wrapper for `Game Data/BATTLE/INITBTL.PRG` and the current static
   opcode table candidate at `0x800FAF7C`
@@ -36,3 +39,6 @@ Practical note:
 - For quick instruction proof at known addresses, importing with
   `-loader BinaryLoader -loader-baseAddr ... -noanalysis` is usually enough and
   much faster than a full analysis pass.
+- If a wrapper grows beyond "declare target-specific arguments and call the
+  shared helper," factor the repeated launch logic back into the helper instead
+  of cloning another full script body.

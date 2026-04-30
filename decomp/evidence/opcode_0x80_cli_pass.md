@@ -20,6 +20,14 @@
 - `decomp/evidence/battle_sound_candidate_slice.json`
 - `decomp/evidence/battle_0x80_sound_cluster_slices.json`
 
+## Packet structure
+
+- This file is the top-level `0x80` proof packet.
+- `opcode_0x80_copy_path_static.md` is the focused support note for the
+  `0x800FAF7C -> 0x800F4C28` copy path.
+- `opcode_0x80_sound_cluster_static.md` is the focused support note for the
+  nearby `0x800BA2E0` sound-family interpretation.
+
 ## Static findings
 
 - The binary-derived `INITBTL.PRG` opcode table export places `0x80` at
@@ -39,53 +47,22 @@
 
 ## Copy-path findings
 
-- The local `INITBTL.PRG` slice at `0x800FAAAC` shows the init-time allocator
-  sequence for the battle script runtime:
-
-```text
-800faadc li a0,0x400
-800faae4 jal 0x80043ec4
-800faaec move a0,v0
-800faaf4 lui a1,0x8010
-800faaf8 addiu a1,a1,-0x5084
-800faafc li a2,0x400
-800fab00 jal 0x800490b0
-800fab04 sw a0,0x4c28(v0)
-```
-
-- `0x8010:0x5084` resolves to `0x800FAF7C`, so the same routine allocates a
-  `0x400` byte buffer, stores it to runtime slot `0x800F4C28`, and copies
-  `0x400` bytes from the exported opcode table at `0x800FAF7C`.
-- The current headless xref dump for `0x800FAF7C` came back empty, so this pass
-  relies on the binary instruction slice rather than an auto-recovered data xref.
+- `inittbl_0x80_copy_slice.json` proves that the exported table at `0x800FAF7C`
+  is copied into runtime slot `0x800F4C28` during init.
+- `inittbl_opcode_table_xrefs.json` is still empty under the current headless
+  analysis settings, so the copy-path claim currently rests on the local
+  instruction slice rather than an auto-recovered xref.
+- See `opcode_0x80_copy_path_static.md` for the exact copy-sequence argument.
 
 ## Conflicting nearby evidence
 
-- A separate code slice at `0x800BA2E0` shows a 4-byte argument consumer:
-
-```text
-800ba324 lbu v0,0x1(a3)
-800ba328 lbu a1,0x2(a3)
-800ba32c lbu a2,0x3(a3)
-800ba330 lbu a3,0x4(a3)
-800ba33c lw a0,0x0(v0)
-800ba340 jal 0x80045754
-```
-
-- The same local sound-neighborhood dump shows that the table already moves
-  from the `0x80-0x82` stub cluster into a contiguous block of non-stub
-  handlers at `0x83+`, including:
-
-```text
-0x83 -> 0x800BA3E4 -> jal 0x80045dc0
-0x84 -> 0x800BA404 -> jal 0x80045d64
-0x85 -> 0x800BA444 -> jal 0x80045de0
-0x86 -> 0x800BA470 -> jal 0x80045f64
-```
-
-- That makes `0x800BA2E0` a strong nearby sound-family helper candidate, but
-  it still does not appear as the static `0x80` table target in the binary
-  export.
+- `battle_sound_candidate_slice.json` still keeps `0x800BA2E0` plausible as a
+  sound-shaped candidate because it consumes the same four-byte argument block.
+- `battle_0x80_sound_cluster_slices.json` also shows the exported table already
+  moving into a visible contiguous sound-family neighborhood at `0x83+`.
+- That weakens the idea that `0x800BA2E0` must be a hidden replacement for the
+  copied `0x80` slot, but it does not fully rule it out.
+- See `opcode_0x80_sound_cluster_static.md` for the local neighborhood case.
 
 ## Current conclusion
 
