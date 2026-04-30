@@ -8,3 +8,15 @@ decoded_scripts/*
 !decoded_scripts/map-script-files-will-end-up-here.txt
 tools
 AI_RE_PASS_WORKFLOW.config.toml
+
+# Local emulator/debugger scratch artifacts
+.ignored/
+.sentry-native/
+memcard1.mcd
+memcard2.mcd
+offscreen.frag
+offscreen.lua
+offscreen.vert
+output.frag
+output.lua
+output.vert
