@@ -4,6 +4,7 @@ This note describes how to do most local decompilation work from the command
 line.
 
 Use this together with
+[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md) and
 [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md).
 
 The goal is simple:
@@ -11,6 +12,14 @@ The goal is simple:
 - do routine recovery, verification, and contradiction scans with CLI tools
 - use `Ghidra` headless or scripted output as the main static-analysis engine
 - treat `PCSX-Redux` as a conflict-breaker, not the default first step
+
+`RE_CAMPAIGN_MEMORY.md` is the campaign-state authority for these passes:
+
+- choose the target from `Priority Targets` or `Session Handoff`
+- register every new export, coverage output, proof packet, or contradiction in
+  the ledger before ending the pass
+- keep conflict-state tracking in the ledger instead of scattering it across
+  ad-hoc notes
 
 ## Principle
 
@@ -35,9 +44,28 @@ Recommended responsibilities:
 - [`decomp/evidence`](decomp/evidence): structured proof packets and exported
   machine-readable facts
 
+Keep the split intentional:
+
+- [`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md): campaign state, priorities,
+  conflict summaries, artifact links, and handoff memory
+- [`decomp`](decomp): implementation helpers, exported evidence, and
+  reconciliation outputs
+
 Do not put large binary tool installs here. Keep those under ignored `tools/`.
 
 ## Default CLI Pipeline
+
+### 0. Anchor the pass in the ledger
+
+Before exporting anything, read [`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md)
+and decide:
+
+- which target or handoff step this pass is serving
+- which pass from `Pass Plan` is active
+- which artifact you are about to produce
+
+If the planned work is not visible in the ledger, add or update the relevant
+target before the pass drifts.
 
 ### 1. Start from real script usage
 
@@ -148,6 +176,9 @@ Suggested fields:
   - `handler_address`
   - `handler_name`
 
+Register the finished export under `Artifacts Index -> Table exports` in
+[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md).
+
 ### Function coverage export
 
 Suggested fields:
@@ -161,6 +192,10 @@ Suggested fields:
 - `gaps`
 - `orphan_candidates`
 
+Register the finished export under `Artifacts Index -> Reconciliation reports`
+or a coverage-oriented artifact entry in
+[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md).
+
 ### Opcode proof packet
 
 Suggested fields:
@@ -173,6 +208,10 @@ Suggested fields:
 - `consumer_notes`
 - `status`
 - `open_conflicts`
+
+Register the proof packet under `Artifacts Index -> Proof packets`, then update
+the matching target row and any relevant conflict entry in
+[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md).
 
 ## Conflict States
 
@@ -188,7 +227,8 @@ Use these outcomes deliberately:
   any runtime escalation
 
 If a binary table says one thing and a nearby orphan helper says another, do
-not collapse that into a fake clean answer. Preserve both in the proof packet.
+not collapse that into a fake clean answer. Preserve both in the proof packet
+and summarize the contradiction in `RE_CAMPAIGN_MEMORY.md`.
 
 ## Escalation Rule
 

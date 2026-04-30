@@ -6,6 +6,13 @@ The current focus is the game's room and event scripting, especially the `MAP*.M
 
 Long term, that should make it possible to build more ambitious custom content than simple numeric stat edits, including new event behavior and more meaningful map or scenario changes.
 
+For substantial opcode or decomp work, start with
+[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md). It is the cross-session
+campaign ledger and handoff entrypoint, and it should be read before
+[`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md) and
+[`CLI_DECOMPILATION_WORKFLOW.md`](CLI_DECOMPILATION_WORKFLOW.md) when choosing
+the next opcode/decomp pass.
+
 ## What the project does
 
 Right now the repo mainly provides:
@@ -32,6 +39,8 @@ That output is useful for:
 - [`analyze_room_graph.py`](analyze_room_graph.py): analyzes room and scene connectivity
 - [`room_names.tsv`](room_names.tsv): map, zone, area, and room name lookup table
 - [`decoded_scripts`](decoded_scripts): generated decoded script output
+- [`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md): cross-session campaign
+  memory and handoff ledger for opcode/decomp work
 - [`ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](ROOD_REVERSE_OPCODE_CONCLUSIONS.md): opcode conclusions and naming notes
 - [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md): local standards for
   binary-first decompilation and helper-decomp verification

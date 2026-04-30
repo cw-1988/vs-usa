@@ -22,15 +22,30 @@ It is fine for the result to be a tighter note, a safer name, or a confidence
 hold instead of a flashy rename. Accuracy matters more than novelty.
 
 Before starting, read
-[`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md).
-That file defines the local authority model:
+[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md),
+[`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md), and
+[`CLI_DECOMPILATION_WORKFLOW.md`](CLI_DECOMPILATION_WORKFLOW.md).
+
+Use that sequence deliberately:
+
+1. `RE_CAMPAIGN_MEMORY.md`: current phase, priority targets, unresolved
+   conflicts, artifact index, and session handoff
+2. `DECOMPILATION_STRATEGY.md`: evidence authority and proof standards
+3. `CLI_DECOMPILATION_WORKFLOW.md`: default export, reconciliation, and runtime
+   escalation flow
+
+`RE_CAMPAIGN_MEMORY.md` is the cross-session campaign authority for in-progress
+opcode/decomp work. Pick the question for this pass only from:
+
+- `Priority Targets`
+- `Session Handoff -> next recommended step`
+- the active pass structure in `Pass Plan`
+
+Together those files define the local authority model:
 
 - the original binary and runtime behavior are the ground truth
 - our local decomp/evidence should be the authority for final conclusions
 - `_refs/rood-reverse` is a helper decomp, not a final source by itself
-
-For CLI-first decomp support and when to escalate to runtime, also read
-[`CLI_DECOMPILATION_WORKFLOW.md`](CLI_DECOMPILATION_WORKFLOW.md).
 
 ## Code Exploration Policy
 
@@ -131,9 +146,21 @@ Do not rename something just to eliminate a placeholder.
 
 ## Workflow
 
+### 0. Anchor on the ledger
+
+Before choosing a target, record the current campaign state from
+[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md):
+
+- current phase
+- target or handoff step you are taking
+- unresolved conflict, if any
+- artifact shape you expect to produce
+
+Do not start a free-floating opcode pass outside that ledger context.
+
 ### 1. Pick one narrow question
 
-Examples:
+Examples pulled from the ledger-backed campaign:
 
 - does a current opcode name overclaim its meaning?
 - can one raw parameter blob be rendered more usefully?
@@ -200,6 +227,7 @@ If the pass ends in a real contradiction, leave a concrete artifact behind:
 - export JSON
 - small proof packet under `decomp/evidence`
 - wording update that marks the result `Tentative` or `Conflicted`
+- ledger update in `RE_CAMPAIGN_MEMORY.md`
 
 Do not leave the contradiction only in terminal output or memory.
 
@@ -219,6 +247,7 @@ Valid results include:
 
 A good pass usually updates one or more of:
 
+- [`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md)
 - [`dump_mpd_script.py`](dump_mpd_script.py)
 - [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md)
 - [`OPCODE_BEHAVIOR_REFERENCE.md`](OPCODE_BEHAVIOR_REFERENCE.md)
@@ -257,10 +286,13 @@ The pass is done when:
 1. the intended files are updated
 2. the diff is focused
 3. verification is done
-4. the AI commits locally when `commit_mode = "auto"`, or stages only when
+4. `RE_CAMPAIGN_MEMORY.md` is updated in the relevant sections:
+   `Current Phase`, `Priority Targets`, `Known Conflicts`, `Artifacts Index`,
+   `Session Handoff`, and optional `Completed Milestones`
+5. the AI commits locally when `commit_mode = "auto"`, or stages only when
    `commit_mode = "no-commit"`
-5. any temporary stash is restored
-6. the user gets a short conclusions summary plus the exact commit message for
+6. any temporary stash is restored
+7. the user gets a short conclusions summary plus the exact commit message for
    each touched repo
 
 Use conventional commits. Good shapes:
@@ -280,11 +312,12 @@ At the end, report:
 3. what still blocks any remaining confidence bump
 4. which files changed
 5. how you verified it
-6. the short conclusions summary
-7. the exact commit message for each touched repo
-8. the commit hash for each local commit, or explicit confirmation that commits
+6. how `RE_CAMPAIGN_MEMORY.md` was updated
+7. the short conclusions summary
+8. the exact commit message for each touched repo
+9. the commit hash for each local commit, or explicit confirmation that commits
    were skipped because `commit_mode = "no-commit"`
-9. whether any stash was restored
+10. whether any stash was restored
 
 ## Avoid
 

@@ -2,11 +2,13 @@
 
 This note defines the local decompilation standard for this workspace.
 
-For the CLI-first implementation layer, also read
+For the campaign-state ledger and CLI-first implementation layer, also read
+[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md) and
 [`CLI_DECOMPILATION_WORKFLOW.md`](CLI_DECOMPILATION_WORKFLOW.md).
 
 The short version:
 
+- `RE_CAMPAIGN_MEMORY.md` is the local campaign authority for in-progress state
 - our decomp and evidence notes should be the authority for local conclusions
 - the original binary plus runtime behavior are the ground truth
 - [`_refs/rood-reverse`](_refs/rood-reverse) is a valuable helper decomp, not
@@ -38,6 +40,8 @@ record instead of inheriting authority from upstream helper repos.
 
 That means:
 
+- [`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md) tracks the current phase,
+  priorities, unresolved conflicts, and handoff state for the next pass
 - local notes should separate proven facts from borrowed ideas
 - local opcode names should only become authoritative after independent
   verification
@@ -133,7 +137,10 @@ packet containing:
 6. the main consumer or side-effect path
 7. optional runtime trace if the area is disputed
 
-If a claim cannot survive this packet, keep it tentative.
+If a claim cannot survive this packet, keep it tentative, and record the
+conflict summary plus artifact links in
+[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md) instead of leaving the state
+implicit.
 
 ## Ghidra Role
 
@@ -212,6 +219,8 @@ matters.
 
 Use this repo structure mentally:
 
+- [`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md): campaign authority for
+  in-progress state, target selection, and handoff memory
 - local scripts and notes: current research workspace
 - local decomp/evidence docs: emerging authority
 - `Ghidra` project: binary truth and structure recovery

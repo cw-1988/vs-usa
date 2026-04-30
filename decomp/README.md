@@ -9,6 +9,9 @@ Use it for:
 - verification and reconciliation scripts
 - exported machine-readable evidence
 
+Keep campaign state out of this folder. The cross-session memory and handoff
+ledger lives at [`../RE_CAMPAIGN_MEMORY.md`](../RE_CAMPAIGN_MEMORY.md).
+
 Keep large binary tools out of here.
 Those stay under ignored [`tools`](../tools).
 
@@ -17,6 +20,12 @@ Those stay under ignored [`tools`](../tools).
 - [`ghidra`](ghidra): `Ghidra`-side scripts or notes
 - [`verification`](verification): local verification scripts
 - [`evidence`](evidence): exported JSON or proof packets
+
+That means:
+
+- [`../RE_CAMPAIGN_MEMORY.md`](../RE_CAMPAIGN_MEMORY.md): campaign state,
+  priorities, conflict summaries, artifact links, and session handoff
+- [`decomp`](.): implementation helpers and durable evidence artifacts
 
 ## Working Rule
 
