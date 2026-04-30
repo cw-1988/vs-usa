@@ -365,7 +365,8 @@ stay a little conservative.
 
 #### Opcodes `0x64` and `0x65`
 
-- Confidence: `Confirmed` at helper level, `Tentative` at script-friendly level
+- Confidence: `Confirmed` at helper level, `Strong` for conservative local
+  tooling names, still not `Confirmed` for an upstream script-facing rename
 
 Current narrow:
 
@@ -376,20 +377,38 @@ Current narrow:
   `0x100`.
 - The same flag is also initialised from room section `12`, so this is clearly a
   room-geometry state bit rather than an actor, camera, or sound control.
+- The matched section-12 helper `func_8008E224` in
+  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)
+  writes the same one-bit state and mirrors it into the linked geometry entry,
+  which ties these opcodes to built-in room-object staging rather than an
+  isolated debug flag.
+- Real script usage now gives a stronger script-facing pattern than the older
+  raw flag names. `0x65` clusters heavily around room-display and cutscene
+  staging beats, often just before `DisplayRoom`, camera setup, or first-person
+  framing, while the same geometry ids are later restored with `0x64`.
+- In the current decoded room set, the same geometry ids are toggled by both
+  opcodes in 39 files, including
+  [`decoded_scripts/1-Wine Cellar/009-Entrance to Darkness.txt`](decoded_scripts/1-Wine%20Cellar/009-Entrance%20to%20Darkness.txt),
+  [`decoded_scripts/1-Wine Cellar/013-Smokebarrel Stair.txt`](decoded_scripts/1-Wine%20Cellar/013-Smokebarrel%20Stair.txt),
+  and
+  [`decoded_scripts/10-The Keep/124-The Warrior's Rest.txt`](decoded_scripts/10-The%20Keep/124-The%20Warrior's%20Rest.txt).
+- A broad script scan currently finds `0x65` within six lines of
+  `DisplayRoom` 611 times, versus 47 for `0x64`, which fits a temporary
+  suppression/setup role better than a permanent state write.
 
 Best safe local names for tooling:
 
-- `0x64 -> ClearRoomGeometryFlag100`
-- `0x65 -> SetRoomGeometryFlag100`
+- `0x64 -> RestoreRoomGeometry`
+- `0x65 -> SuppressRoomGeometry`
 
-Why not use show/hide yet:
+Why this wording stays conservative:
 
-- The exact gameplay meaning of geometry flag `0x100` still needs one more pass
-  through the geometry consumers.
-- That means older guesses like `0x64 = enable/show` and `0x65 = disable/hide`
-  are still too aggressive.
-- What is actually proven right now is the polarity of the bit operation:
-  `0x64` clears the flag and `0x65` sets it.
+- The exact render or collision consumer behind geometry flag `0x100` still
+  needs one more decomp pass.
+- That means a harder claim like `ShowRoomGeometry`/`HideRoomGeometry` could
+  still be slightly too specific.
+- `Restore`/`Suppress` captures the proven script pattern without pretending the
+  remaining implementation details are fully locked down.
 
 ### Still tentative
 

@@ -108,8 +108,8 @@ OPCODES = {
     0x61: ("Opcode61", 0x03),
     0x62: ("Opcode62", 0x02),
     0x63: ("Opcode63", 0x01),
-    0x64: ("ClearRoomGeometryFlag100", 0x02),
-    0x65: ("SetRoomGeometryFlag100", 0x02),
+    0x64: ("RestoreRoomGeometry", 0x02),
+    0x65: ("SuppressRoomGeometry", 0x02),
     0x66: ("Opcode66", 0x03),
     0x67: ("Opcode67", 0x05),
     0x68: ("LoadRoom", 0x0A),
@@ -534,6 +534,8 @@ def format_opcode(
         return f"raw=[{fmt_default(args)}]"
     if op == 0x58 and len(args) == 1:
         return f"idMode={args[0]}"
+    if op in {0x64, 0x65} and len(args) == 1:
+        return f"idGeometry={args[0]}"
     if op == 0x68 and len(args) == 9:
         room_ref = room_index_by_zone_room.get((args[0], args[1]))
         if room_ref is None:
