@@ -87,6 +87,36 @@ Current best script-level interpretation:
 - `79 00 xx`: trigger room mechanism `xx`
 - `79 01 xx`: toggle room mechanism `xx`
 
+#### Opcode `0x7A`
+
+- Data Crystal: unnamed (`800ba108`)
+- Confirmed name: `SetRoomAmbientSoundSuspended`
+- Confidence: `Confirmed`
+
+Why:
+
+- The matched opcode dispatch table routes `0x7A` directly to the readable
+  handler body now named
+  [`vs_battle_script_setRoomAmbientSoundSuspended`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).
+- When the script byte is nonzero, that handler latches a local "suspended"
+  state, grabs the current ambient sound id through `func_800913BC(-1)`, and
+  clears playback by swapping in `-1`.
+- When the script byte returns to zero, the same handler restores the saved
+  ambient sound id through `func_800913BC(savedId)` and clears the latched
+  suspended state.
+- The sound helper in
+  [`_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c`](_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c)
+  confirms `func_800913BC` is exactly that "swap current ambient id and play
+  it if valid" path.
+- Real script usage matches the code: decoded rooms such as `MAP138`,
+  `MAP062`, `MAP001`, and `MAP006` use `7A 01` near cutscene takeover beats
+  and `7A 00` when normal room behavior is restored.
+
+Current best script-level interpretation:
+
+- `7A 01`: suspend the current room ambient sound, saving the previous id
+- `7A 00`: restore the saved room ambient sound id
+
 #### Opcode `0xE1`
 
 - Data Crystal: unnamed
@@ -241,6 +271,7 @@ These were also validated locally and are stronger than the older public table:
 - `0x74 -> LoadRoomSection10`
 - `0x75 -> WaitForRoomSection10`
 - `0x76 -> FreeRoomSection10`
+- `0x7A -> SetRoomAmbientSoundSuspended`
 - `0x7C -> SetFirstPersonView`
 - `0x85 -> LoadSfxSlot`
 - `0x86 -> FreeSfxSlot`
@@ -320,40 +351,8 @@ Why not use show/hide yet:
 These are narrowed down, but should not be hard-renamed upstream without one
 more proof pass:
 
-- `0x7A`
 - `0xE3`
 - `0xED`
-
-#### Opcode `0x7A`
-
-- Confidence: `Strong`
-
-Current narrow:
-
-- It is part of the room audio subsystem, not a generic visual toggle.
-- `vs_battle_roomData.section14` is the room `AKAO` section in the room header
-  struct, so this handler is explicitly tied to room sound data.
-- When `7A 01` succeeds, it saves the current persistent room ambient sound id
-  and clears it via `func_800913BC(-1)`.
-- When `7A 00` runs later, it restores that saved ambient sound id.
-- In scripts it commonly brackets cutscene takeover and cleanup. `MAP001`,
-  `MAP006`, `MAP062`, and `MAP138` are good local examples.
-
-Best interpretation so far:
-
-- `SuspendRoomAmbientSound`
-
-Best safe local tooling name:
-
-- `SetRoomAmbientSoundSuspended`
-
-Why still tentative:
-
-- Rooms with an actual AKAO section and rooms that fall back to the persistent
-  ambient-sfx path do not behave through the exact same implementation path.
-- So the subsystem identity is strong, but the final upstream name should still
-  describe the shared user-facing effect rather than overfit one implementation
-  detail.
 
 #### Opcode `0xE3`
 
