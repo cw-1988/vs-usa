@@ -346,35 +346,39 @@ Why still tentative:
 
 #### Opcode `0xEF`
 
-- Confidence: `Tentative`
+- Confidence: `Strong`
 
 Current narrow:
 
 - It behaves like part of the same visual-effect cluster as the nearby `E`-range
-  opcodes.
+  opcodes, but its consumer path is camera-side rather than `SCREFF2`-side.
 - Raw handler work now shows that `0xEF` allocates or reuses one of two small
   waveform slots that are advanced by `func_800BE180`.
-- Those slots store a waveform mode, duration, and a couple of small scalar
-  parameters instead of writing directly to one camera or effect field.
-- In scripts it shows up in little timed bursts, which feels like effect tuning
-  rather than logic flow or object control.
-- Its arguments look much more like `set up an oscillator/pulse` than
-  `set one target value directly`.
+- The recovered updater logic in `func_800BE01C` shows those slots evaluating a
+  sine-driven oscillation over a bounded duration instead of writing one direct
+  target value.
+- The active slot outputs are then converted from short vectors into
+  camera-relative offsets and added to both `cameraLookAt` and `cameraPos` in
+  the main effect update path.
+- In scripts it shows up in short timed bursts around zoom, effect, and camera
+  staging beats, which fits transient camera oscillation much better than logic
+  flow or a generic scalar setter.
 
 Best interpretation so far:
 
-- It is probably a screen-effect waveform or oscillation initializer.
+- It initializes camera-relative oscillation state rather than a plain screen
+  parameter.
 
 Best safe local tooling name:
 
-- `ScreenEffectWaveformInit`
+- `CameraOscillationInit`
 
-Why still tentative:
+Why still not upstream-safe:
 
-- The exact destination fields and user-facing effect name are still hidden in
-  nonmatching code, so anything more specific would be premature.
-- The script-side arguments are structured enough to be worth preserving, but
-  not yet strongly enough named for a hard upstream rename.
+- The exact control-word bit layout still needs handler recovery, especially the
+  pieces that choose slot, routing, and envelope behavior.
+- The final player-facing label may still deserve a more specific term such as
+  shake, wobble, or pulse once the remaining nonmatching code is recovered.
 
 Observed local argument patterns worth carrying forward:
 
@@ -385,8 +389,8 @@ Observed local argument patterns worth carrying forward:
   `0x0067`, `0x0097`, and `0x01A7`.
 - The first two bytes behave like small scalar parameters. They are often
   pulsed in alternating pairs or stepped sequences rather than treated as ids.
-  The local decoder now renders them conservatively as `scalar0` and `scalar1`
-  to preserve that structure without overclaiming their final role.
+  The local decoder still renders them conservatively as `scalar0` and
+  `scalar1` to preserve that structure without overclaiming their final role.
 
 Useful script examples:
 
@@ -400,6 +404,11 @@ Useful script examples:
   write.
 - `MAP131` to `MAP136`: repeated pairs such as `0x0193` and `0x019B`
   reinforce the idea that the 16-bit word is a reusable effect-control input.
+- `MAP136`: `EF 05 0E 9B 00 08`, `EF 05 0E 93 00 08`, and
+  `EF 34 06 93 00 78`
+  These runs fit the recovered oscillation model well: the control word changes
+  while the scalar pair can stay fixed, and long-duration setups favour a
+  `frequency plus amplitude` style reading over a one-shot direct write.
 
 ### Suggested upstream patch shape
 

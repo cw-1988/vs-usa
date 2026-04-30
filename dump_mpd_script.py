@@ -247,7 +247,7 @@ OPCODES = {
     0xEC: ("CameraFarClip", 0x04),
     0xED: ("ScreenEffectParamPairTween", 0x05),
     0xEE: ("OpcodeEE", 0x00),
-    0xEF: ("ScreenEffectWaveformInit", 0x06),
+    0xEF: ("CameraOscillationInit", 0x06),
     0xF0: ("Wait", 0x02),
     0xF1: ("OpcodeF1", 0x02),
     0xF2: ("OpcodeF2", 0x05),

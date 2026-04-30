@@ -176,7 +176,7 @@ Use the decoded scripts to gather multiple contexts before opening more code.
 Good quick approach:
 
 ```powershell
-rg -n "Opcode7A|SetScreenEffectEnabled|CameraRollTween|ScreenEffectAngleTween|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|ScreenEffectWaveformInit|OpcodeEF" decoded_scripts
+rg -n "Opcode7A|SetScreenEffectEnabled|CameraRollTween|ScreenEffectAngleTween|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|CameraOscillationInit|OpcodeEF" decoded_scripts
 ```
 
 If the current local names differ, search by raw opcode byte or the old name.
@@ -210,6 +210,8 @@ Examples:
 - `func_8007AC94(arg0)` writes `_camera.t2.unk5C`
 - `func_8007DDAC(arg0)` writes `D_800F1A2C`
 - `func_800F9BC0(arg0, arg1)` writes two parameters in `SCREFF2.PRG`
+- `func_800BE180` advances two waveform slots whose outputs are rotated into
+  camera-relative offsets and added to `cameraLookAt` and `cameraPos`
 
 That consumer-side tracing is what separated:
 
@@ -227,12 +229,13 @@ Good examples from this session:
 - `SetRoomAmbientSoundSuspended`
 - `CameraRollTween`
 - `ScreenEffectAngleTween`
+- `CameraOscillationInit`
 
 What stayed conservative:
 
-- `0xEF` now uses the local decoder name `ScreenEffectWaveformInit`, but it is
-  still not hard-renamed upstream because the final user-facing waveform label
-  is not nailed down yet
+- `0xEF` now uses the local decoder name `CameraOscillationInit`, but it is
+  still not hard-renamed upstream because the exact control-word layout and
+  final player-facing label are not nailed down yet
 
 ## Ghidra Setup Notes
 
@@ -377,7 +380,8 @@ Then immediately locate:
 - `0xE2`: camera-side angle tween writing `_camera.t2.unk5C`
 - `0xE3`: effect-side angle tween writing `D_800F1A2C`
 - `0xED`: direct two-parameter `SCREFF2` tween feeding `func_800F9BC0`
-- `0xEF`: waveform-slot initializer updated through `func_800BE180`
+- `0xEF`: camera-relative oscillation init feeding two waveform slots through
+  `func_800BE180`
 
 ## Good Starting Queries Next Session
 
@@ -387,7 +391,7 @@ Use these first:
 rg -n "_opcodeFunctionTable|func_800BB450|func_800BD444|func_800BD6C4|func_800BDC9C" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt
 rg -n "0x7A|0xE2|0xE3|0xED|0xEF" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c
 rg -n "func_8007AC94|func_8007DDAC|func_8007DDB8|func_8007DDD4|func_8007DDF8|func_800F9BC0|func_800BE180|unk5C|D_800F1A2C" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c _refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c
-rg -n "Opcode7A|SetScreenEffectEnabled|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|ScreenEffectWaveformInit|OpcodeEF|CameraRollTween|ScreenEffectAngleTween" decoded_scripts
+rg -n "Opcode7A|SetScreenEffectEnabled|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|CameraOscillationInit|OpcodeEF|CameraRollTween|ScreenEffectAngleTween" decoded_scripts
 ```
 
 If looking for the next best unknown after this session, inspect nearby `E`-range
@@ -407,7 +411,8 @@ Those clearly participate in one effect subsystem.
 
 Most promising:
 
-1. Nail down the exact screen-feature name behind `0xEF`.
+1. Recover the exact control-word layout behind `0xEF`, especially slot and
+   envelope selection.
 2. Confirm whether `0xE6` is best described as effect offset, drift, or some
    more specific render-space term.
 3. Use Ghidra xrefs to identify the real user-facing meaning of `D_800F1A2C`
