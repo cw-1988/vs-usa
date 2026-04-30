@@ -176,6 +176,13 @@ For any confidence-changing opcode pass, do one contradiction scan:
 3. check nearby function-shaped candidates in the same address block
 4. check whether binary or runtime evidence is needed to break the tie
 
+Before trusting any headless `Ghidra` export from a raw overlay, also check:
+
+1. whether the import used the correct base address from `splat.yaml`
+2. whether the script is headless-safe in the current `Ghidra` setup
+3. whether a fast instruction dump would answer the question without a full
+   analysis pass
+
 ### 4. Trace the consumer path
 
 Do not stop at "this writes field X." Keep following until the user-facing
@@ -187,6 +194,14 @@ instead of hiding it.
 
 If helper decompiled C and the stronger binary or runtime evidence disagree,
 prefer the stronger evidence and call out the helper-decomp mismatch explicitly.
+
+If the pass ends in a real contradiction, leave a concrete artifact behind:
+
+- export JSON
+- small proof packet under `decomp/evidence`
+- wording update that marks the result `Tentative` or `Conflicted`
+
+Do not leave the contradiction only in terminal output or memory.
 
 ### 5. Make the smallest honest update
 
@@ -222,6 +237,8 @@ Before stopping:
 1. verify against at least one strong source, preferably two
 2. confirm the new result is more accurate or more informative than before
 3. reread the final wording and make sure it does not claim too much
+4. confirm the binary import setup was correct for any raw-overlay `Ghidra`
+   export used as proof
 
 Examples:
 
@@ -274,6 +291,7 @@ At the end, report:
 Do not:
 
 - fight headless Ghidra first
+- trust a raw-overlay headless import before confirming its base address
 - rename multiple weak opcodes in one pass
 - rename helpers based only on adjacency or vibes
 - treat helper decompiled C as final proof when the binary or runtime has not

@@ -65,6 +65,21 @@ Use `analyzeHeadless` or scripted `Ghidra` runs to export facts such as:
 
 These exports should be treated as the main static-analysis truth layer.
 
+Important watch-outs:
+
+- Raw PS1 overlay imports are not self-describing. If the file is not a
+  `PS-X EXE`, set the `BinaryLoader` base address explicitly from the relevant
+  `splat.yaml` instead of trusting the default import mapping.
+- Keep the import base, table address, and file identity together in the same
+  wrapper or proof packet. Many false contradictions are really address-mapping
+  mistakes.
+- Prefer headless-safe `GhidraScript` Java helpers for repeatable CLI passes.
+  `PyGhidra`-style Python helpers may not be available under
+  `analyzeHeadless`.
+- If you already know the address you want to inspect, a `-noanalysis`
+  instruction dump is often enough and much faster than a full auto-analysis
+  pass.
+
 ### 3. Reconcile locally
 
 Run local verification scripts against:
@@ -158,6 +173,31 @@ Suggested fields:
 - `consumer_notes`
 - `status`
 - `open_conflicts`
+
+## Conflict States
+
+Not every pass should end in a rename.
+
+Use these outcomes deliberately:
+
+- `confirmed`: binary and script evidence agree, and runtime is either
+  unnecessary or already aligned
+- `tentative`: the working name is still useful, but the proof packet does not
+  settle it
+- `conflicted`: strong static evidence disagrees and should be recorded before
+  any runtime escalation
+
+If a binary table says one thing and a nearby orphan helper says another, do
+not collapse that into a fake clean answer. Preserve both in the proof packet.
+
+## Escalation Rule
+
+Escalate to `PCSX-Redux` only after all of these are true:
+
+1. the loader/base-address mapping has been checked
+2. the relevant binary table or code slice has been exported
+3. local reconciliation still leaves a real contradiction
+4. the contradiction matters to the final claim
 
 ## Practical Rule
 

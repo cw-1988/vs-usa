@@ -60,7 +60,7 @@ evidence notes in
 | `0x79` | `RoomMechanismControl` | `action: u8, idMechanism: u8` | `0x03` | Trigger or toggle a room mechanism by id. |
 | `0x7A` | `SetRoomAmbientSoundSuspended` | `suspended: u8` | `0x02` | Suspend or restore room ambient playback on the proven persistent-ambient path. |
 | `0x7C` | `SetFirstPersonView` | `raw: u8` | `0x02` | Toggle or stage first-person camera/view mode. |
-| `0x80` | `SoundEffects0` | `raw: u8[4]` | `0x05` | Tentative sound-family placeholder; direct dispatch and nearby handler evidence still disagree. |
+| `0x80` | `SoundEffects0` | `raw: u8[4]` | `0x05` | Tentative sound-family placeholder; CLI binary export routes `0x80` to stub `0x800B66E4`, while separate nearby `0x800BA2E0` still looks like real `vs_main_playSfx` work. |
 | `0x85` | `LoadSfxSlot` | `slot: u8, idSfx: u8` | `0x03` | Audio resource or playback control. |
 | `0x86` | `FreeSfxSlot` | `slot: u8` | `0x02` | Audio resource or playback control. |
 | `0x88` | `SetCurrentSfx` | `idSfx: u8` | `0x02` | Audio resource or playback control. |

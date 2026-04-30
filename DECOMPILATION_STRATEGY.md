@@ -155,6 +155,15 @@ When a helper decomp and `Ghidra` disagree, go back to:
 - pointer tables
 - literal data references
 
+Practical caution:
+
+- A correct-looking decompiler view can still be anchored to the wrong import
+  base if the raw overlay was loaded incorrectly.
+- For raw PS1 overlays, treat the `splat.yaml` base address as part of the
+  ground-truth setup, not as an optional convenience.
+- If the address setup is wrong, every downstream table check can look precise
+  while still being false.
+
 ## PCSX-Redux Role
 
 Use `PCSX-Redux` for:
@@ -181,6 +190,23 @@ The local decomp becomes more trustworthy when we can regularly audit:
 These audits can be manual at first and automated later.
 
 The tracked home for that automation work is [`decomp`](decomp).
+
+## Known Failure Modes To Guard Against
+
+The most important recurring ways to fool ourselves are:
+
+- raw-binary import drift: the overlay is loaded at the wrong base address, so
+  table reads and function checks are offset while still looking consistent
+- helper-decomp overtrust: a readable helper function gets treated as authority
+  before binary mapping confirms it
+- stub overpromotion: a dispatch-table hit to a real stub gets treated as the
+  whole story before nearby orphan candidates are checked
+- reconciliation gaps: a contradiction is noticed, but no proof packet is
+  written, so the same uncertainty has to be rediscovered later
+
+The fix for all four is the same: preserve the binary setup, export the facts,
+record the conflict, and only then escalate to runtime if the conflict still
+matters.
 
 ## Practical Working Model
 

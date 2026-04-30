@@ -240,9 +240,17 @@ Current narrow:
 - `0x80` is still unresolved, but not in a way that justifies a clean
   downgrade back to a generic placeholder. The static dispatch table currently
   routes `0x80` to `func_800B66E4`, whose matched body is only `return 0;`.
+- A CLI-first replay now proves that directly from the binary too:
+  `decomp/evidence/inittbl_opcode_table.json` exports `0x80 -> 0x800B66E4`,
+  and `decomp/evidence/battle_0x80_handler_slices.json` shows the handler
+  opens with `jr ra` / `clear v0`.
 - At the same time, the nearby unmatched helper `func_800BA2E0` in the same
   source file consumes the exact 4 argument bytes that `0x80` uses in scripts
   and calls `vs_main_playSfx(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4])`.
+- The same CLI pass also captured that candidate at the instruction level in
+  `decomp/evidence/battle_sound_candidate_slice.json`, including the
+  `jal 0x80045754` call that `_refs/rood-reverse/config/SLUS_010.40/symbol_addrs.txt`
+  names `vs_main_playSfx`.
 - Real script usage still clusters like a sound cue rather than inert padding:
   `0x80` appears heavily in cutscene timing slots such as
   `80 03 1E 80 7F`, `80 03 19 80 7F`, and `80 03 30 7F 7F`, often between
