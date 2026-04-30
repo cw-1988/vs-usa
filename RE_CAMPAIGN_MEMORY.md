@@ -187,6 +187,9 @@ Current phase: Pass 3 - Copy/patch reconciliation
 - [`decomp/verification/compare_opcode_table_snapshots.py`](decomp/verification/compare_opcode_table_snapshots.py)
 - [`decomp/verification/record_runtime_observation.py`](decomp/verification/record_runtime_observation.py)
 - [`decomp/verification/finalize_runtime_observation.py`](decomp/verification/finalize_runtime_observation.py)
+- [`decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](decomp/verification/pcsx_redux_opcode_0x80_capture.lua)
+- [`decomp/verification/run_opcode_0x80_runtime_capture.ps1`](decomp/verification/run_opcode_0x80_runtime_capture.ps1)
+- [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json)
 - [`decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json)
 
 ### Handler slices
@@ -207,6 +210,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 - [`decomp/evidence/opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md)
 - [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md)
 - [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
+- [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json)
 - [`decomp/evidence/opcode_0x80_runtime_expected_table.bin`](decomp/evidence/opcode_0x80_runtime_expected_table.bin)
 
 ### Proof packets
@@ -219,16 +223,19 @@ Current phase: Pass 3 - Copy/patch reconciliation
 ## Session Handoff
 
 - `last completed step`: taught the compare/finalize runtime helpers to emit a
-  reconstructed baseline table blob plus file size/hash metadata, then
-  refreshed the checked-in `0x80` runtime scaffold so the next `PCSX-Redux`
-  pass starts with a byte-for-byte baseline artifact instead of only JSON path
-  references
-- `next recommended step`: run the capture plan in
-  `decomp/evidence/opcode_0x80_runtime_capture_plan.md`, export at least an
-  `after_init` and `pre_dispatch` dump from `0x800F4C28`, record each dump path
-  plus any breakpoint hits and dispatch targets with
-  `decomp/verification/record_runtime_observation.py`, then compare/finalize
-  in place with `decomp/verification/finalize_runtime_observation.py --in-place`;
+  reconstructed baseline table blob plus file size/hash metadata, then added a
+  no-HITL `PCSX-Redux` CLI capture wrapper plus startup Lua, cited the
+  official CLI/Lua/MIPS docs in the runtime notes, and recorded that a cold
+  boot from `Game Data/Vagrant Story (USA).cue` reaches startup Lua but still
+  times out before `0x800BFBB8`
+- `next recommended step`: keep using
+  `decomp/verification/run_opcode_0x80_runtime_capture.ps1` as the default
+  runtime path, but feed it a nearer launch state next: either a savestate
+  that resumes close to battle runtime or scripted pad/menu automation that
+  can reach the first `BATTLE.PRG` reader. Once the run reaches `0x800BFBB8`,
+  let the wrapper capture `after_init` and `pre_dispatch`, then
+  compare/finalize in place with
+  `decomp/verification/finalize_runtime_observation.py --in-place`;
   if the compare report changes `0x80-0x82`, immediately run
   `decomp/verification/record_runtime_observation.py import-compare
   --replace-derived --finalize` so the explicit rewritten handlers land in the
@@ -360,4 +367,19 @@ Current phase: Pass 3 - Copy/patch reconciliation
   [`decomp/verification/finalize_runtime_observation.py`](decomp/verification/finalize_runtime_observation.py),
   [`decomp/evidence/opcode_0x80_runtime_expected_table.bin`](decomp/evidence/opcode_0x80_runtime_expected_table.bin),
   [`decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json),
+  [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
+- `2026-04-30`: added a no-HITL-first `PCSX-Redux` runtime capture path for
+  the active `0x80` contradiction by checking in a startup Lua breakpoint/dump
+  script plus a PowerShell wrapper that feeds the existing observation packet
+  and compare/finalize helpers. Links:
+  [`decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](decomp/verification/pcsx_redux_opcode_0x80_capture.lua),
+  [`decomp/verification/run_opcode_0x80_runtime_capture.ps1`](decomp/verification/run_opcode_0x80_runtime_capture.ps1),
+  [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md),
+  [`decomp/verification/README.md`](decomp/verification/README.md)
+- `2026-04-30`: validated the automated `PCSX-Redux` path against the local
+  `Vagrant Story (USA).cue` disc image, proving that startup Lua runs and the
+  filtered cold-boot path can record a negative runtime result even though it
+  still times out before the recovered `BATTLE.PRG` reader. Links:
+  [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),
+  [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json),
   [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)

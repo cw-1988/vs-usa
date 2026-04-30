@@ -77,8 +77,8 @@ In practical terms:
 
 ### 4. Runtime beats plausible static theory
 
-When a claim is important and static evidence conflicts, use `PCSX-Redux` to
-observe what actually runs.
+When a claim is important and static evidence conflicts, use automated
+`PCSX-Redux` CLI capture to observe what actually runs.
 
 Typical examples:
 
@@ -91,7 +91,7 @@ Typical examples:
 
 Use this rough priority order when deciding what to trust:
 
-1. runtime trace in `PCSX-Redux`
+1. runtime trace or automated capture in `PCSX-Redux`
 2. raw table bytes or disassembly in `Ghidra`
 3. verified function boundaries and xrefs in `Ghidra`
 4. matched local or helper decompiled source that agrees with the binary
@@ -181,13 +181,16 @@ Practical caution:
 
 ## PCSX-Redux Role
 
-Use `PCSX-Redux` for:
+Use `PCSX-Redux` primarily through scripted CLI capture for:
 
 - opcode dispatch breakpoints
 - handler-address confirmation
 - RAM watchpoints on copied function tables
 - validation of side effects
 - confirmation that a disputed static interpretation really occurs in play
+
+Manual debugger interaction is now fallback work for cases where the scripted
+path does not yet reach the needed launch point or breakpoint shape.
 
 If static and runtime disagree, the static model is incomplete.
 
@@ -232,7 +235,7 @@ Use this repo structure mentally:
 - local scripts and notes: current research workspace
 - local decomp/evidence docs: emerging authority
 - `Ghidra` project: binary truth and structure recovery
-- `PCSX-Redux`: runtime truth
+- `PCSX-Redux` CLI capture: runtime truth
 - [`_refs/rood-reverse`](_refs/rood-reverse): helper reference corpus
 
 That lets us move fast without confusing borrowed confidence for proven local

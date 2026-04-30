@@ -83,8 +83,8 @@ Useful reference anchors inside `_refs/rood-reverse`:
 - `assets/**/*.yaml` for strings and menu-side confirmation
 
 Treat those as lead-generating helpers. If a helper-decomp claim matters to the
-result, reconcile it against `Ghidra`, `PCSX-Redux`, or both before calling it
-final.
+result, reconcile it against `Ghidra`, scripted `PCSX-Redux` CLI capture, or
+both before calling it final.
 
 Do not cite `_refs/rood-reverse/src/*` or `_refs/rood-reverse/assets/*` as the
 main evidence line in a local proof packet when you can produce a local export,
@@ -98,8 +98,8 @@ instruction dump, xref dump, verification script result, or runtime capture.
   TSV refreshes
 - `decomp/verification`: local static reconciliation scripts before runtime
 - `Ghidra`: nonmatching code, xrefs, data layout, control flow
-- `PCSX-Redux`: last-resort conflict breaker when static evidence still
-  conflicts
+- `PCSX-Redux` CLI automation: last-resort runtime conflict breaker when static
+  evidence still conflicts
 
 Common commands:
 
@@ -184,7 +184,7 @@ Use the most informative source for the question:
 - `_refs/rood-reverse` for candidate handlers, names, and consumers
 - `Ghidra` for binary tables, function boundaries, xrefs, and gaps in matched
   code
-- `PCSX-Redux` for runtime proof and dispatch confirmation
+- scripted `PCSX-Redux` CLI capture for runtime proof and dispatch confirmation
 - `MAP*.MPD` and `SCEN*.ARM` for layout questions
 
 For opcode work, preserve repeated context, timing values, stepped scalars, and

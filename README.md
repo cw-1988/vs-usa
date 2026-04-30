@@ -67,9 +67,14 @@ This workspace uses three layers of tooling: repo-local analysis scripts, local 
 
 - [`tools/ghidra_12.0.4_PUBLIC`](tools/ghidra_12.0.4_PUBLIC): main static analysis environment, launched with [`ghidraRun.bat`](tools/ghidra_12.0.4_PUBLIC/ghidraRun.bat)
 - `ghidra_psx_ldr`: installed into the local Ghidra setup to improve PlayStation-specific analysis
-- [`tools/pcsx-redux`](tools/pcsx-redux): runtime debugger build, launched with [`pcsx-redux.exe`](tools/pcsx-redux/pcsx-redux.exe)
+- [`tools/pcsx-redux`](tools/pcsx-redux): runtime debugger and scriptable
+  capture build, launched with [`pcsx-redux.exe`](tools/pcsx-redux/pcsx-redux.exe)
 
-In practice, `Ghidra` is where opcode handlers and control flow are studied, while `PCSX-Redux` is used to step through live behavior and verify theories. The `tools/` folder stays Git-ignored because it holds large local binaries, extracted archives, and working tool checkouts.
+In practice, `Ghidra` is where opcode handlers and control flow are studied,
+while `PCSX-Redux` is used through scripted CLI capture to verify live
+behavior and settle runtime contradictions. The `tools/` folder stays
+Git-ignored because it holds large local binaries, extracted archives, and
+working tool checkouts.
 
 ### Reference repos
 
@@ -192,4 +197,5 @@ and toward:
 - The scripts are written for Python 3.
 - The repo is currently centered on the USA game data layout.
 - If a decoded file only shows partial meaning for an opcode, that is expected; preserving uncertain data is part of the workflow.
-- The current local toolchain is centered around Ghidra for static analysis and PCSX-Redux for runtime verification.
+- The current local toolchain is centered around Ghidra for static analysis and
+  automated `PCSX-Redux` CLI capture for runtime verification.

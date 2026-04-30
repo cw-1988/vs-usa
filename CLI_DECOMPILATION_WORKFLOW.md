@@ -11,7 +11,8 @@ The goal is simple:
 
 - do routine recovery, verification, and contradiction scans with CLI tools
 - use `Ghidra` headless or scripted output as the main static-analysis engine
-- treat `PCSX-Redux` as a conflict-breaker, not the default first step
+- treat `PCSX-Redux` CLI automation as the runtime conflict-breaker, not the
+  default first step
 
 `RE_CAMPAIGN_MEMORY.md` is the campaign-state authority for these passes:
 
@@ -29,7 +30,7 @@ Prefer this evidence order for day-to-day work:
 2. binary-derived tables and function facts exported from `Ghidra`
 3. local verification scripts
 4. helper decomp comparison
-5. `PCSX-Redux` only if the first four still disagree
+5. automated `PCSX-Redux` CLI capture only if the first four still disagree
 
 Helper comparison means lead generation and sanity checking, not final
 authority. When a helper-repo clue matters, turn it into a local export,
@@ -135,15 +136,22 @@ This is where we should catch:
 
 ### 4. Escalate only if needed
 
-If static evidence still conflicts after the reconciliation pass, then use
-`PCSX-Redux` for:
+If static evidence still conflicts after the reconciliation pass, then use the
+scripted `PCSX-Redux` runtime path for:
 
 - confirming the handler that actually executes
 - checking whether a copied dispatch table is patched in RAM
 - proving a disputed side effect
 - deciding between two static candidates that both still look plausible
 
-## When `PCSX-Redux` Is Not Needed
+For the active `0x80` contradiction, the default runtime wrapper is:
+
+- [`decomp/verification/run_opcode_0x80_runtime_capture.ps1`](decomp/verification/run_opcode_0x80_runtime_capture.ps1)
+
+Use manual emulator interaction only if the scripted capture path cannot reach
+the required state yet.
+
+## When Runtime Is Not Needed
 
 Do not jump to runtime first if the question can be answered by:
 
@@ -245,7 +253,8 @@ promoting or downgrading a name.
 
 ## Escalation Rule
 
-Escalate to `PCSX-Redux` only after all of these are true:
+Escalate to automated `PCSX-Redux` CLI capture only after all of these are
+true:
 
 1. the loader/base-address mapping has been checked
 2. the relevant binary table or code slice has been exported
@@ -260,6 +269,6 @@ If a disputed opcode cannot survive:
 - `Ghidra` table export
 - local reconciliation
 
-then stop and use `PCSX-Redux` to break the tie.
+then stop and use scripted `PCSX-Redux` capture to break the tie.
 
 If it does survive those three, runtime can often wait.
