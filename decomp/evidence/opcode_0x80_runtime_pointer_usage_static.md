@@ -49,6 +49,8 @@ callee from that reader.
   `BATTLE.PRG`.
 - It does not yet prove that some other overlay, unrecovered reader, or
   runtime-only path never mutates the copied buffer later.
-- The static contradiction is now narrower: within the two battle executables
-  already swept, the copied table has an init-time writer, a runtime reader,
-  and no recovered direct or traced indirect mutation path.
+- The static contradiction is now narrower: within the four currently swept
+  local executables that have reproducible base-address notes, the copied table
+  has an init-time writer, a runtime reader, no additional direct slot access
+  in `SLUS_010.40` or `TITLE.PRG`, and no recovered traced indirect mutation
+  path in the one recovered local reader.

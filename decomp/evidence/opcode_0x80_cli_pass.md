@@ -4,11 +4,16 @@
 
 - `Game Data/BATTLE/INITBTL.PRG`
 - `Game Data/BATTLE/BATTLE.PRG`
+- `Game Data/SLUS_010.40`
+- `Game Data/TITLE/TITLE.PRG`
 - `decomp/ghidra/export_inittbl_opcode_table.ps1`
 - `decomp/ghidra/export_inittbl_0x80_copy_slice.ps1`
 - `decomp/ghidra/export_battle_0x80_sound_cluster_slices.ps1`
+- `decomp/ghidra/export_runtime_opcode_table_accesses.ps1`
 - `decomp/ghidra/export_inittbl_runtime_opcode_table_accesses.ps1`
 - `decomp/ghidra/export_battle_runtime_opcode_table_accesses.ps1`
+- `decomp/ghidra/export_slus_runtime_opcode_table_accesses.ps1`
+- `decomp/ghidra/export_title_runtime_opcode_table_accesses.ps1`
 - `decomp/ghidra/export_battle_runtime_opcode_table_pointer_usage.ps1`
 - `decomp/ghidra/ExportFunctionTable.java`
 - `decomp/ghidra/DumpInstructions.java`
@@ -28,6 +33,8 @@
 - `decomp/evidence/battle_0x80_sound_cluster_slices.json`
 - `decomp/evidence/inittbl_runtime_opcode_table_accesses.json`
 - `decomp/evidence/battle_runtime_opcode_table_accesses.json`
+- `decomp/evidence/slus_runtime_opcode_table_accesses.json`
+- `decomp/evidence/title_runtime_opcode_table_accesses.json`
 - `decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`
 - `decomp/evidence/opcode_0x80_runtime_slot_access_static.md`
 - `decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md`
@@ -40,8 +47,8 @@
 - `opcode_0x80_sound_cluster_static.md` is the focused support note for the
   nearby `0x800BA2E0` sound-family interpretation.
 - `opcode_0x80_runtime_slot_access_static.md` is the focused support note for
-  direct absolute accesses to runtime slot `0x800F4C28` across the local battle
-  executables.
+  direct absolute accesses to runtime slot `0x800F4C28` across the currently
+  importable local executables with known base-address notes.
 - `opcode_0x80_runtime_pointer_usage_static.md` is the focused support note
   for how the recovered `BATTLE.PRG` reader actually uses the copied table
   pointer after loading it from `0x800F4C28`.
@@ -93,9 +100,11 @@
 - `0x80` is still **in progress**, not confirmed.
 - Local binary evidence now proves both the copied initial dispatch slot
   (`0x800B66E4`) and the init-time table copy into runtime slot `0x800F4C28`.
-- A local access sweep of `INITBTL.PRG` and `BATTLE.PRG` now finds one direct
-  init-time write to `0x800F4C28` and one direct runtime read from it, with no
-  additional direct slot accesses recovered in those two battle executables.
+- A widened local access sweep of `INITBTL.PRG`, `BATTLE.PRG`,
+  `SLUS_010.40`, and `TITLE.PRG` now finds one direct init-time write to
+  `0x800F4C28`, one direct runtime read from it, and no additional recovered
+  direct slot accesses in the other importable executables with known base
+  notes.
 - A local pointer-usage trace of the recovered `BATTLE.PRG` reader at
   `FUN_800BFBB8` now shows only pointer arithmetic plus one indexed table-entry
   read before `jalr`, with no recovered indirect write-back or tainted
@@ -108,4 +117,5 @@
   real `0x80` target?" or "is there another recovered direct slot rewrite?"
   but "does any other unrecovered path outside the currently traced local
   reader mutate the copied table contents behind `0x800F4C28` before
-  dispatch?"
+  dispatch, especially from battle-adjacent binaries whose import base is not
+  yet locally pinned?"

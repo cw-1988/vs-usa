@@ -42,6 +42,15 @@ Current tracked entry points:
 - [`export_battle_runtime_opcode_table_accesses.ps1`](export_battle_runtime_opcode_table_accesses.ps1):
   focused `BATTLE.PRG` access sweep for direct reads/writes of runtime slot
   `0x800F4C28`
+- [`export_runtime_opcode_table_accesses.ps1`](export_runtime_opcode_table_accesses.ps1):
+  shared wrapper for direct reads/writes of runtime slot `0x800F4C28` across
+  any imported executable with a known base address
+- [`export_slus_runtime_opcode_table_accesses.ps1`](export_slus_runtime_opcode_table_accesses.ps1):
+  `SLUS_010.40` access sweep for direct reads/writes of runtime slot
+  `0x800F4C28`, using the locally reproducible `0x8000F800` binary-loader base
+  that maps file offset `0x800` to VRAM `0x80010000`
+- [`export_title_runtime_opcode_table_accesses.ps1`](export_title_runtime_opcode_table_accesses.ps1):
+  `TITLE.PRG` access sweep for direct reads/writes of runtime slot `0x800F4C28`
 - [`export_battle_runtime_opcode_table_pointer_usage.ps1`](export_battle_runtime_opcode_table_pointer_usage.ps1):
   focused `BATTLE.PRG` pointer-usage trace for the recovered
   `FUN_800BFBB8 -> 0x800F4C28` runtime-table reader

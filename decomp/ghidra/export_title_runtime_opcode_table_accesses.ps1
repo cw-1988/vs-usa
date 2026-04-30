@@ -1,6 +1,6 @@
 param(
-    [string]$BinaryPath = "Game Data/BATTLE/BATTLE.PRG",
-    [string]$OutputPath = "decomp/evidence/battle_runtime_opcode_table_accesses.json",
+    [string]$BinaryPath = "Game Data/TITLE/TITLE.PRG",
+    [string]$OutputPath = "decomp/evidence/title_runtime_opcode_table_accesses.json",
     [string]$BaseAddress = "0x80068800",
     [string]$ProjectRoot = ".codex_tmp/ghidra-scratch"
 )
@@ -9,8 +9,5 @@ param(
     -BinaryPath $BinaryPath `
     -OutputPath $OutputPath `
     -BaseAddress $BaseAddress `
-    -BlockName "BATTLE" `
-    -SeedAddresses @(
-        "0x800BFBB8"
-    ) `
+    -BlockName "TITLE" `
     -ProjectRoot $ProjectRoot
