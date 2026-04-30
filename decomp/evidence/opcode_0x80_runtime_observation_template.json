@@ -9,6 +9,7 @@
   "finalize_helper": "decomp/verification/finalize_runtime_observation.py",
   "compare_report_path": "decomp/evidence/opcode_0x80_runtime_snapshot_compare.json",
   "support_note_path": "decomp/evidence/opcode_0x80_runtime_support.md",
+  "expected_bin_path": "decomp/evidence/opcode_0x80_runtime_expected_table.bin",
   "focus_opcodes": [
     "0x80",
     "0x81",

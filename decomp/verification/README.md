@@ -20,7 +20,8 @@ leaving the runtime pass as a purely manual judgment call.
 Current runtime-pass helpers:
 
 - `compare_opcode_table_snapshots.py`: compares raw RAM dumps of a copied
-  opcode table against a binary-derived export baseline
+  opcode table against a binary-derived export baseline and can emit a
+  reconstructed baseline blob plus file metadata for the compared artifacts
 - `record_runtime_observation.py`: appends snapshot paths, breakpoint hits,
   dispatches, mutations, and free-form notes into a checked-in runtime
   observation packet without hand-editing the JSON; it can also import changed
@@ -34,6 +35,9 @@ Recommended runtime handoff flow:
 - keep a checked-in observation scaffold under `decomp/evidence` so the next
   `PCSX-Redux` pass starts from planned breakpoints, expected dump paths, and a
   missing-snapshot checklist instead of a blank JSON file
+- let `finalize_runtime_observation.py` refresh the reconstructed baseline blob
+  and compare-report hashes in place, so the handoff packet preserves concrete
+  byte-level artifacts even before live dumps exist
 - record each dump path, breakpoint hit, dispatch, or mutation into that
   checked-in JSON with `record_runtime_observation.py` as the runtime pass
   progresses instead of leaving those facts in emulator UI state or terminal

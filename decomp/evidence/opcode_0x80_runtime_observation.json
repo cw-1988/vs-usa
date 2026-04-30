@@ -9,6 +9,7 @@
   "finalize_helper": "decomp/verification/finalize_runtime_observation.py",
   "compare_report_path": "decomp/evidence/opcode_0x80_runtime_snapshot_compare.json",
   "support_note_path": "decomp/evidence/opcode_0x80_runtime_support.md",
+  "expected_bin_path": "decomp/evidence/opcode_0x80_runtime_expected_table.bin",
   "focus_opcodes": [
     "0x80",
     "0x81",
@@ -52,7 +53,7 @@
   "table_mutations": [],
   "dispatch_observations": [],
   "comparison_summary": {
-    "generated_utc": "2026-04-30T20:11:55Z",
+    "generated_utc": "2026-04-30T20:30:10Z",
     "compared_snapshot_count": 0,
     "compared_snapshot_labels": [],
     "missing_snapshot_count": 2,

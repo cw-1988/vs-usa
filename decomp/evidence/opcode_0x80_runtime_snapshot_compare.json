@@ -1,6 +1,11 @@
 {
   "observation_source": "decomp/evidence/opcode_0x80_runtime_observation.json",
   "baseline_export": "decomp/evidence/inittbl_opcode_table.json",
+  "baseline_export_metadata": {
+    "path": "decomp/evidence/inittbl_opcode_table.json",
+    "size_bytes": 48223,
+    "sha256": "5e3d19567f902d897befa43149e8b1ba30072447e8cd0b6e04cf9895cd51b30b"
+  },
   "table_name": "INITBTL_opcode_table",
   "binary_table_address": "0x800FAF7C",
   "runtime_table_address": "0x800F4C28",
@@ -12,7 +17,12 @@
     "0x81",
     "0x82"
   ],
-  "expected_bin_path": null,
+  "expected_bin_path": "decomp/evidence/opcode_0x80_runtime_expected_table.bin",
+  "expected_bin_metadata": {
+    "path": "decomp/evidence/opcode_0x80_runtime_expected_table.bin",
+    "size_bytes": 1024,
+    "sha256": "bf98e99d441e94b8bf4d421b59c5994c74b254adbd7736bede778ae0d905b844"
+  },
   "snapshots": [],
   "missing_snapshots": [
     {

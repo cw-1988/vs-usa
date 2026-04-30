@@ -144,6 +144,13 @@ def build_compare_report(
     expected_blob = compare_module.build_expected_blob(entries, pointer_size)
     expected_size = len(expected_blob)
 
+    configured_table_size = observation.get("runtime_table_size_bytes")
+    if configured_table_size is not None and int(configured_table_size) != expected_size:
+        raise ValueError(
+            "Observation JSON runtime_table_size_bytes does not match the derived "
+            f"baseline blob size: configured {configured_table_size}, derived {expected_size}"
+        )
+
     if expected_bin_path is not None:
         expected_bin_path.parent.mkdir(parents=True, exist_ok=True)
         expected_bin_path.write_bytes(expected_blob)
@@ -168,18 +175,22 @@ def build_compare_report(
     for snapshot in available_snapshots:
         compared = compare_module.summarize_snapshot(
             resolve_repo_path(snapshot["resolved_path"], repo_root),
-                label=snapshot["label"],
-                entries=entries,
-                focus_opcodes=focus_opcode_values,
-                handler_to_opcodes=handler_to_opcodes,
-                expected_size=expected_size,
+            label=snapshot["label"],
+            entries=entries,
+            focus_opcodes=focus_opcode_values,
+            handler_to_opcodes=handler_to_opcodes,
+            expected_size=expected_size,
+            display_path=str(snapshot["path"]),
         )
-        compared["path"] = snapshot["path"]
         compared_snapshots.append(compared)
 
     report = {
         "observation_source": format_repo_path(observation_path, repo_root),
         "baseline_export": baseline_export,
+        "baseline_export_metadata": compare_module.build_file_metadata(
+            export_path,
+            display_path=baseline_export,
+        ),
         "table_name": compare_payload.get("table_name"),
         "binary_table_address": compare_payload.get("table_address"),
         "runtime_table_address": observation.get("runtime_table_address"),
@@ -188,6 +199,14 @@ def build_compare_report(
         "expected_size_bytes": expected_size,
         "focus_opcodes": [to_hex(opcode, digits=2) for opcode in sorted(focus_opcode_values)],
         "expected_bin_path": format_repo_path(expected_bin_path, repo_root),
+        "expected_bin_metadata": (
+            compare_module.build_file_metadata(
+                expected_bin_path,
+                display_path=format_repo_path(expected_bin_path, repo_root),
+            )
+            if expected_bin_path is not None
+            else None
+        ),
         "snapshots": compared_snapshots,
         "missing_snapshots": missing_snapshots,
     }
@@ -426,12 +445,18 @@ def render_snapshot_lines(compare_report: dict[str, Any]) -> list[str]:
     lines: list[str] = []
 
     for snapshot in snapshots:
-        lines.append(
+        line = (
             "- "
             f"`{snapshot['label']}` compared `{snapshot['size_bytes']}` bytes: "
             f"`{snapshot['matching_entries']}` matching entries, "
             f"`{snapshot['changed_entries']}` changed entries"
         )
+        metadata = snapshot.get("file_metadata")
+        if isinstance(metadata, dict):
+            sha256 = metadata.get("sha256")
+            if sha256:
+                line += f", sha256 `{sha256}`"
+        lines.append(line)
 
     for snapshot in missing:
         line = f"- Missing snapshot file for `{snapshot['label']}`: `{snapshot['path']}`"
@@ -468,6 +493,15 @@ def build_support_note(
     generated_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%SZ")
     target = observation.get("target", "unknown target")
     phase = observation.get("phase", "unknown phase")
+    expected_bin_metadata = compare_report.get("expected_bin_metadata")
+    expected_bin_line = "- Reconstructed baseline blob: not written"
+    if compare_report.get("expected_bin_path"):
+        expected_bin_line = f"- Reconstructed baseline blob: `{compare_report['expected_bin_path']}`"
+        if isinstance(expected_bin_metadata, dict) and expected_bin_metadata.get("sha256"):
+            expected_bin_line += (
+                f" (size `{expected_bin_metadata.get('size_bytes')}` bytes, "
+                f"sha256 `{expected_bin_metadata.get('sha256')}`)"
+            )
 
     lines = [
         f"# {target} Runtime Observation Support Note",
@@ -478,6 +512,7 @@ def build_support_note(
         f"- Observation source: `{compare_report['observation_source']}`",
         f"- Baseline export: `{compare_report['baseline_export']}`",
         f"- Runtime table address: `{compare_report['runtime_table_address']}`",
+        expected_bin_line,
         "",
         "## Snapshot Comparison",
         "",
@@ -662,10 +697,13 @@ def main() -> int:
         template_key="support_note_path",
         fallback_suffix="_support.md",
     )
-    expected_bin_path = (
-        resolve_repo_path(str(args.expected_bin), repo_root)
-        if args.expected_bin is not None
-        else None
+    expected_bin_path = resolve_output_path(
+        args.expected_bin,
+        observation,
+        observation_path=observation_path,
+        repo_root=repo_root,
+        template_key="expected_bin_path",
+        fallback_suffix="_expected_table.bin",
     )
 
     compare_report, _metadata = build_compare_report(

@@ -2,10 +2,11 @@
 
 ## Scope
 
-- Generated from `Pass 3 - Copy/patch reconciliation` on `2026-04-30 20:11:55Z`.
+- Generated from `Pass 3 - Copy/patch reconciliation` on `2026-04-30 20:30:10Z`.
 - Observation source: `decomp/evidence/opcode_0x80_runtime_observation.json`
 - Baseline export: `decomp/evidence/inittbl_opcode_table.json`
 - Runtime table address: `0x800F4C28`
+- Reconstructed baseline blob: `decomp/evidence/opcode_0x80_runtime_expected_table.bin` (size `1024` bytes, sha256 `bf98e99d441e94b8bf4d421b59c5994c74b254adbd7736bede778ae0d905b844`)
 
 ## Snapshot Comparison
 

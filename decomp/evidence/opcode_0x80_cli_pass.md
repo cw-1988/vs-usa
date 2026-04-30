@@ -54,6 +54,7 @@
 - `decomp/evidence/opcode_0x80_runtime_observation.json`
 - `decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`
 - `decomp/evidence/opcode_0x80_runtime_support.md`
+- `decomp/evidence/opcode_0x80_runtime_expected_table.bin`
 
 ## Packet structure
 
@@ -90,11 +91,16 @@
   import changed compare-report rows back into `table_mutations`.
 - `opcode_0x80_runtime_snapshot_compare.json` is the generated compare report
   that currently records the missing dump files and should refresh in place
-  once real RAM snapshots are added.
+  once real RAM snapshots are added; it now also records the baseline export
+  hash plus per-dump size/hash metadata for any compared snapshots.
 - `opcode_0x80_runtime_support.md` is the generated runtime support note that
   now doubles as a ready-to-use runtime checklist because it includes the
-  planned breakpoints and missing snapshot captures even before the dumps
-  exist.
+  planned breakpoints, missing snapshot captures, and the reconstructed
+  baseline blob metadata even before the dumps exist.
+- `opcode_0x80_runtime_expected_table.bin` is the reconstructed binary-derived
+  baseline table image that the compare/finalize helpers now refresh alongside
+  the JSON report so a runtime pass has a stable byte-for-byte artifact to
+  diff against.
 
 ## Static findings
 

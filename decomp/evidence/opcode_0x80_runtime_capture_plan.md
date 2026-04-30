@@ -103,6 +103,12 @@ The same JSON also names the helper scripts:
 
 - `record_helper`: `decomp/verification/record_runtime_observation.py`
 - `finalize_helper`: `decomp/verification/finalize_runtime_observation.py`
+- `expected_bin_path`: `decomp/evidence/opcode_0x80_runtime_expected_table.bin`
+
+The finalize helper now also reconstructs the binary-derived baseline pointer
+table into that `expected_bin_path` artifact and records its size/hash in the
+compare report, so the runtime pass has a checked-in byte-for-byte baseline to
+diff against in addition to the JSON export.
 
 If the scaffold ever needs to be regenerated from the untouched template, use:
 
@@ -132,8 +138,8 @@ python decomp/verification/compare_opcode_table_snapshots.py `
   --output decomp/evidence/opcode_0x80_runtime_snapshot_compare.json
 ```
 
-Then finalize the observation packet so the compare report, support note, and
-updated JSON all agree:
+Then finalize the observation packet so the compare report, support note,
+reconstructed baseline blob, and updated JSON all agree:
 
 ```powershell
 python decomp/verification/finalize_runtime_observation.py `

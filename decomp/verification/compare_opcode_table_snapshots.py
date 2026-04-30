@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import struct
 from pathlib import Path
@@ -14,6 +15,15 @@ def parse_int(value: str) -> int:
 
 def to_hex(value: int, digits: int = 8) -> str:
     return f"0x{value:0{digits}X}"
+
+
+def build_file_metadata(path: Path, *, display_path: str | None = None) -> dict[str, Any]:
+    data = path.read_bytes()
+    return {
+        "path": display_path or str(path),
+        "size_bytes": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+    }
 
 
 def load_export(path: Path) -> dict[str, Any]:
@@ -73,6 +83,7 @@ def summarize_snapshot(
     focus_opcodes: set[int],
     handler_to_opcodes: dict[int, list[int]],
     expected_size: int,
+    display_path: str | None = None,
 ) -> dict[str, Any]:
     observed_handlers = parse_snapshot(snapshot_path, expected_size)
     changed_details: list[dict[str, Any]] = []
@@ -98,7 +109,8 @@ def summarize_snapshot(
 
     return {
         "label": label,
-        "path": str(snapshot_path),
+        "path": display_path or str(snapshot_path),
+        "file_metadata": build_file_metadata(snapshot_path, display_path=display_path),
         "size_bytes": expected_size,
         "matching_entries": len(entries) - len(changed_details),
         "changed_entries": len(changed_details),
@@ -201,6 +213,7 @@ def main() -> int:
 
     report = {
         "baseline_export": str(args.export_json),
+        "baseline_export_metadata": build_file_metadata(args.export_json),
         "table_name": payload.get("table_name"),
         "binary_table_address": payload.get("table_address"),
         "runtime_table_address": to_hex(parse_int(args.runtime_table_address) & 0xFFFFFFFF),
@@ -209,6 +222,11 @@ def main() -> int:
         "expected_size_bytes": expected_size,
         "focus_opcodes": [to_hex(opcode, digits=2) for opcode in sorted(focus_opcodes)],
         "expected_bin_path": str(args.write_expected_bin) if args.write_expected_bin else None,
+        "expected_bin_metadata": (
+            build_file_metadata(args.write_expected_bin)
+            if args.write_expected_bin is not None
+            else None
+        ),
         "snapshots": snapshots,
     }
 

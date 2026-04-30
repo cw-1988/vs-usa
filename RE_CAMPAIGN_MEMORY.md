@@ -96,7 +96,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `runtime_needed` | `INITBTL.PRG` static table at `0x800FAF7C`, copied into runtime slot `0x800F4C28` by the locally dumped init-time routine at `0x800FAAAC` | Static slot `0x800B66E4`; former competing helper `0x800BA2E0` is now anchored to a local `BATTLE.PRG` sound subdispatch table at `0x800E9F30` with siblings `0x800BA35C/39C/3E4/404/444/470/494`; live `BATTLE.PRG` consumer `FUN_800BFBB8` now reads `0x800F4C28`, uses it only for pointer arithmetic plus one indexed table-entry read in the new local trace, and dispatches via `jalr`; widened direct-slot sweeps across `SLUS_010.40` and `TITLE.PRG` recover no additional accesses; local `_loadSystemDat` tracing now anchors `SYSTEM.DAT` as offset-indexed data payload rather than a missing executable overlay; raw packaged-binary scanning across `.PRG`/`.BIN`/`.40` files finds the same absolute `0x800F4C28` access pattern only in `INITBTL.PRG` and `BATTLE.PRG`; the next pass now has a concrete runtime capture note, a checked-in observation scaffold, recorder/compare/finalize helpers, and a compare-import helper so rewritten focus-opcode handlers can be promoted into `table_mutations` without hand transcription | `SoundEffects0` placeholder only | Do runtime dumps from `0x800F4C28` ever diverge from the binary baseline before candidate `0x80-0x82` dispatch, and if so which handler addresses replace the static `0x800B66E4` stub? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_pointer_usage_static.md`](decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md), [`opcode_0x80_system_dat_static.md`](decomp/evidence/opcode_0x80_system_dat_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_observation_template.json`](decomp/evidence/opcode_0x80_runtime_observation_template.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json), [`inittbl_runtime_opcode_table_accesses.json`](decomp/evidence/inittbl_runtime_opcode_table_accesses.json), [`inittbl_system_dat_loader_slice.json`](decomp/evidence/inittbl_system_dat_loader_slice.json), [`system_dat_header_words.json`](decomp/evidence/system_dat_header_words.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json), [`battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json), [`battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json), [`battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json), [`battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json), [`battle_runtime_opcode_table_accesses.json`](decomp/evidence/battle_runtime_opcode_table_accesses.json), [`battle_runtime_opcode_table_pointer_usage.json`](decomp/evidence/battle_runtime_opcode_table_pointer_usage.json), [`slus_runtime_opcode_table_accesses.json`](decomp/evidence/slus_runtime_opcode_table_accesses.json), [`title_runtime_opcode_table_accesses.json`](decomp/evidence/title_runtime_opcode_table_accesses.json), [`runtime_opcode_table_binary_scan.json`](decomp/evidence/runtime_opcode_table_binary_scan.json), [`compare_opcode_table_snapshots.py`](decomp/verification/compare_opcode_table_snapshots.py), [`record_runtime_observation.py`](decomp/verification/record_runtime_observation.py), [`finalize_runtime_observation.py`](decomp/verification/finalize_runtime_observation.py) |
+| `opcode 0x80` | `runtime_needed` | `INITBTL.PRG` static table at `0x800FAF7C`, copied into runtime slot `0x800F4C28` by the locally dumped init-time routine at `0x800FAAAC` | Static slot `0x800B66E4`; former competing helper `0x800BA2E0` is now anchored to a local `BATTLE.PRG` sound subdispatch table at `0x800E9F30` with siblings `0x800BA35C/39C/3E4/404/444/470/494`; live `BATTLE.PRG` consumer `FUN_800BFBB8` now reads `0x800F4C28`, uses it only for pointer arithmetic plus one indexed table-entry read in the new local trace, and dispatches via `jalr`; widened direct-slot sweeps across `SLUS_010.40` and `TITLE.PRG` recover no additional accesses; local `_loadSystemDat` tracing now anchors `SYSTEM.DAT` as offset-indexed data payload rather than a missing executable overlay; raw packaged-binary scanning across `.PRG`/`.BIN`/`.40` files finds the same absolute `0x800F4C28` access pattern only in `INITBTL.PRG` and `BATTLE.PRG`; the next pass now has a concrete runtime capture note, a checked-in observation scaffold, recorder/compare/finalize helpers, a reconstructed baseline blob with hashes, and a compare-import helper so rewritten focus-opcode handlers can be promoted into `table_mutations` without hand transcription | `SoundEffects0` placeholder only | Do runtime dumps from `0x800F4C28` ever diverge from the binary baseline before candidate `0x80-0x82` dispatch, and if so which handler addresses replace the static `0x800B66E4` stub? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_pointer_usage_static.md`](decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md), [`opcode_0x80_system_dat_static.md`](decomp/evidence/opcode_0x80_system_dat_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_observation_template.json`](decomp/evidence/opcode_0x80_runtime_observation_template.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md), [`opcode_0x80_runtime_expected_table.bin`](decomp/evidence/opcode_0x80_runtime_expected_table.bin), [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json), [`inittbl_0x80_copy_slice.json`](decomp/evidence/inittbl_0x80_copy_slice.json), [`inittbl_runtime_opcode_table_accesses.json`](decomp/evidence/inittbl_runtime_opcode_table_accesses.json), [`inittbl_system_dat_loader_slice.json`](decomp/evidence/inittbl_system_dat_loader_slice.json), [`system_dat_header_words.json`](decomp/evidence/system_dat_header_words.json), [`battle_0x80_handler_slices.json`](decomp/evidence/battle_0x80_handler_slices.json), [`battle_sound_candidate_slice.json`](decomp/evidence/battle_sound_candidate_slice.json), [`battle_sound_candidate_xrefs.json`](decomp/evidence/battle_sound_candidate_xrefs.json), [`battle_sound_dispatch_table.json`](decomp/evidence/battle_sound_dispatch_table.json), [`battle_0x80_sound_cluster_slices.json`](decomp/evidence/battle_0x80_sound_cluster_slices.json), [`battle_runtime_opcode_table_xrefs.json`](decomp/evidence/battle_runtime_opcode_table_xrefs.json), [`battle_runtime_opcode_table_accesses.json`](decomp/evidence/battle_runtime_opcode_table_accesses.json), [`battle_runtime_opcode_table_pointer_usage.json`](decomp/evidence/battle_runtime_opcode_table_pointer_usage.json), [`slus_runtime_opcode_table_accesses.json`](decomp/evidence/slus_runtime_opcode_table_accesses.json), [`title_runtime_opcode_table_accesses.json`](decomp/evidence/title_runtime_opcode_table_accesses.json), [`runtime_opcode_table_binary_scan.json`](decomp/evidence/runtime_opcode_table_binary_scan.json), [`compare_opcode_table_snapshots.py`](decomp/verification/compare_opcode_table_snapshots.py), [`record_runtime_observation.py`](decomp/verification/record_runtime_observation.py), [`finalize_runtime_observation.py`](decomp/verification/finalize_runtime_observation.py) |
 
 ## Known Conflicts
 
@@ -153,7 +153,8 @@ Current phase: Pass 3 - Copy/patch reconciliation
   local artifact path:
   `decomp/evidence/opcode_0x80_runtime_capture_plan.md`,
   `decomp/evidence/opcode_0x80_runtime_observation_template.json`,
-  `decomp/evidence/opcode_0x80_runtime_observation.json`, and
+  `decomp/evidence/opcode_0x80_runtime_observation.json`,
+  `decomp/evidence/opcode_0x80_runtime_expected_table.bin`, and
   `decomp/verification/compare_opcode_table_snapshots.py` together define the
   dump points, compare step, result-recording format, and currently missing
   snapshot checklist.
@@ -206,20 +207,22 @@ Current phase: Pass 3 - Copy/patch reconciliation
 - [`decomp/evidence/opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md)
 - [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md)
 - [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
+- [`decomp/evidence/opcode_0x80_runtime_expected_table.bin`](decomp/evidence/opcode_0x80_runtime_expected_table.bin)
 
 ### Proof packets
 
 - [`decomp/evidence/opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md)
 - [`decomp/evidence/opcode_0x80_runtime_observation_template.json`](decomp/evidence/opcode_0x80_runtime_observation_template.json)
 - [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json)
+- [`decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json)
 
 ## Session Handoff
 
-- `last completed step`: extended the reusable runtime-observation recorder so
-  it can also import changed compare-report rows back into
-  `table_mutations`, then refreshed the runtime plan and ledger links so the
-  next `PCSX-Redux` pass can promote rewritten focus-opcode handlers into the
-  checked-in packet without hand transcription
+- `last completed step`: taught the compare/finalize runtime helpers to emit a
+  reconstructed baseline table blob plus file size/hash metadata, then
+  refreshed the checked-in `0x80` runtime scaffold so the next `PCSX-Redux`
+  pass starts with a byte-for-byte baseline artifact instead of only JSON path
+  references
 - `next recommended step`: run the capture plan in
   `decomp/evidence/opcode_0x80_runtime_capture_plan.md`, export at least an
   `after_init` and `pre_dispatch` dump from `0x800F4C28`, record each dump path
@@ -235,9 +238,10 @@ Current phase: Pass 3 - Copy/patch reconciliation
   addresses for `0x80-0x82` explicitly rather than summarizing them only in
   prose, prefer the compare-import helper over hand-editing those mutation
   rows, keep the generated runtime support note linked alongside the updated
-  observation JSON, use the recorder helper instead of leaving evidence only in
-  emulator UI state, and refresh the scaffolded compare/support files instead
-  of creating parallel ad-hoc notes
+  observation JSON, keep the regenerated baseline blob with the packet so the
+  recorded hashes stay meaningful, use the recorder helper instead of leaving
+  evidence only in emulator UI state, and refresh the scaffolded
+  compare/support files instead of creating parallel ad-hoc notes
 
 ## Completed Milestones
 
@@ -348,3 +352,12 @@ Current phase: Pass 3 - Copy/patch reconciliation
   [`decomp/verification/record_runtime_observation.py`](decomp/verification/record_runtime_observation.py),
   [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md),
   [`decomp/verification/README.md`](decomp/verification/README.md)
+- `2026-04-30`: taught the runtime compare/finalize helpers to refresh a
+  reconstructed baseline table blob and file hashes inside the checked-in
+  `0x80` runtime packet, so future dumps can be audited against stable
+  byte-level artifacts instead of path names alone. Links:
+  [`decomp/verification/compare_opcode_table_snapshots.py`](decomp/verification/compare_opcode_table_snapshots.py),
+  [`decomp/verification/finalize_runtime_observation.py`](decomp/verification/finalize_runtime_observation.py),
+  [`decomp/evidence/opcode_0x80_runtime_expected_table.bin`](decomp/evidence/opcode_0x80_runtime_expected_table.bin),
+  [`decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json),
+  [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
