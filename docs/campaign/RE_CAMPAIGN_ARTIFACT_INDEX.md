@@ -14,6 +14,8 @@ evidence under `decomp/`.
 - [`../../decomp/evidence/battle_sound_candidate_xrefs.json`](../../decomp/evidence/battle_sound_candidate_xrefs.json)
 - [`../../decomp/evidence/battle_sound_dispatch_table.json`](../../decomp/evidence/battle_sound_dispatch_table.json)
 - [`../../decomp/evidence/battle_runtime_opcode_table_xrefs.json`](../../decomp/evidence/battle_runtime_opcode_table_xrefs.json)
+- [`../../decomp/evidence/battle_runtime_reader_xrefs.json`](../../decomp/evidence/battle_runtime_reader_xrefs.json)
+- [`../../decomp/evidence/battle_runtime_reader_caller_xrefs.json`](../../decomp/evidence/battle_runtime_reader_caller_xrefs.json)
 - [`../../decomp/evidence/inittbl_runtime_opcode_table_accesses.json`](../../decomp/evidence/inittbl_runtime_opcode_table_accesses.json)
 - [`../../decomp/evidence/battle_runtime_opcode_table_accesses.json`](../../decomp/evidence/battle_runtime_opcode_table_accesses.json)
 - [`../../decomp/evidence/slus_runtime_opcode_table_accesses.json`](../../decomp/evidence/slus_runtime_opcode_table_accesses.json)
@@ -31,6 +33,8 @@ evidence under `decomp/`.
 - [`../../decomp/evidence/battle_sound_candidate_slice.json`](../../decomp/evidence/battle_sound_candidate_slice.json)
 - [`../../decomp/evidence/inittbl_0x80_copy_slice.json`](../../decomp/evidence/inittbl_0x80_copy_slice.json)
 - [`../../decomp/evidence/battle_0x80_sound_cluster_slices.json`](../../decomp/evidence/battle_0x80_sound_cluster_slices.json)
+- [`../../decomp/evidence/battle_runtime_reader_call_chain_slices.json`](../../decomp/evidence/battle_runtime_reader_call_chain_slices.json)
+- [`../../decomp/evidence/battle_runtime_reader_caller_slice.json`](../../decomp/evidence/battle_runtime_reader_caller_slice.json)
 
 ## Reconciliation Reports
 
@@ -39,6 +43,7 @@ evidence under `decomp/`.
 - [`../../decomp/evidence/opcode_0x80_runtime_dispatch_static.md`](../../decomp/evidence/opcode_0x80_runtime_dispatch_static.md)
 - [`../../decomp/evidence/opcode_0x80_runtime_slot_access_static.md`](../../decomp/evidence/opcode_0x80_runtime_slot_access_static.md)
 - [`../../decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md`](../../decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md)
+- [`../../decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md`](../../decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md)
 - [`../../decomp/evidence/opcode_0x80_system_dat_static.md`](../../decomp/evidence/opcode_0x80_system_dat_static.md)
 - [`../../decomp/evidence/opcode_0x80_binary_address_scan.md`](../../decomp/evidence/opcode_0x80_binary_address_scan.md)
 - [`../../decomp/evidence/opcode_0x80_runtime_capture_plan.md`](../../decomp/evidence/opcode_0x80_runtime_capture_plan.md)

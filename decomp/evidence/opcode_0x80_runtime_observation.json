@@ -23,6 +23,16 @@
     },
     {
       "kind": "exec",
+      "address": "0x800BF850",
+      "purpose": "Recovered direct caller of FUN_800BFBB8"
+    },
+    {
+      "kind": "exec",
+      "address": "0x8007A36C",
+      "purpose": "Recovered upstream caller site for the 0x800BF850 -> FUN_800BFBB8 chain"
+    },
+    {
+      "kind": "exec",
       "address": "0x800B66E4",
       "purpose": "Static stub target for 0x80-0x82"
     },
@@ -53,7 +63,7 @@
   "table_mutations": [],
   "dispatch_observations": [],
   "comparison_summary": {
-    "generated_utc": "2026-05-01T00:51:27Z",
+    "generated_utc": "2026-05-01T01:22:29Z",
     "compared_snapshot_count": 0,
     "compared_snapshot_labels": [],
     "missing_snapshot_count": 2,
@@ -63,11 +73,11 @@
     ],
     "all_compared_snapshots_match_baseline": false,
     "any_focus_opcode_changed": false,
-    "planned_breakpoint_count": 4,
+    "planned_breakpoint_count": 6,
     "recorded_breakpoint_hit_count": 0,
     "recorded_table_mutation_count": 0,
     "recorded_dispatch_count": 0,
-    "recorded_note_count": 104,
+    "recorded_note_count": 107,
     "focus_opcodes": {}
   },
   "conclusion": "Runtime observation packet is not finalized yet: no listed snapshot files were available for comparison.",
@@ -486,6 +496,18 @@
     },
     {
       "timestamp": "2026-05-01T00:51:27Z",
+      "text": "Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=4886; write_hits=0; reader_hits=0; summary_json=C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_automation_summary.json"
+    },
+    {
+      "timestamp": "2026-05-01T01:19:32Z",
+      "text": "Automated PCSX-Redux capture used input plan 'C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_input_plan_bat_kill.json'; prepared_path=C:\\Users\\Chris\\Desktop\\vs usa\\.codex_tmp\\pcsx-redux\\opcode_0x80_input_plan-f80c94507adc4df2974122676c0bcab1.tsv; pad=1/1; steps=12/12; description=Preserved cold-boot negative-control route for Vagrant Story (USA). This 12-step plan reaches player control after the New Game intro skips, rotates into the adjacent room, unsheathes, opens the attack sphere, and lands the opening bat attack. The corresponding automated run finished at 2026-05-01T00:51:26Z with frame_count=4886, reader_hit_count=0, write_hit_count=0, candidate_hit_count=0, and no snapshots, so keep this plan as a durable proof that early post-intro control plus the first bat encounter still do not exercise the watched opcode 0x80 runtime reader."
+    },
+    {
+      "timestamp": "2026-05-01T01:19:32Z",
+      "text": "Automated PCSX-Redux capture wrote 13 screen capture(s) under C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_frames."
+    },
+    {
+      "timestamp": "2026-05-01T01:19:32Z",
       "text": "Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=4886; write_hits=0; reader_hits=0; summary_json=C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_automation_summary.json"
     }
   ]

@@ -19,6 +19,10 @@ smallest capture plan that should settle it.
 - Baseline export: `decomp/evidence/inittbl_opcode_table.json`
 - Live runtime table reader: `FUN_800BFBB8`
 - Reader address: `0x800BFBB8`
+- Reader caller: `FUN_800BF850`
+- Reader caller address: `0x800BF850`
+- Recovered upstream caller site: `0x8007A36C`
+- Related pointer family under the caller: `0x800F4C38`
 - Current static `0x80-0x82` target: `0x800B66E4`
 - Nearby competing sound-family candidate: `0x800BA2E0`
 - Visible neighboring sound-family handlers: `0x800BA35C`, `0x800BA39C`,
@@ -33,6 +37,9 @@ smallest capture plan that should settle it.
    table changed after the second capture.
 4. The actual dispatch target address if execution reaches `0x800B66E4`,
    `0x800BA2E0`, or another rewritten slot for `0x80-0x82`.
+5. If `0x800BFBB8` stays silent, whether execution at least reaches
+   `0x800BF850` or the upstream site at `0x8007A36C` before the attempted
+   trigger window ends.
 
 ## Default runtime path
 
@@ -51,6 +58,17 @@ into `decomp/evidence/opcode_0x80_runtime_observation.json`. When no
 near-battle savestate exists yet, the same wrapper can now translate a
 checked-in JSON pad-input plan into a Lua replay schedule instead of leaving
 the cold-boot fallback entirely manual.
+
+The current capture flow also probes the newly recovered upstream reader chain:
+
+- `0x800BF850` (`reader caller`)
+- `0x8007A36C` (`reader grandcaller`)
+
+Those probes matter because the preserved bat-control negative route is now
+strictly stronger than the older "no `0x800BFBB8` hit" claim: the widened
+rerun still produced no reader hit, no caller hit, and no grandcaller hit.
+That means early gameplay plus the first bat exchange do not even enter the
+recovered reader family yet.
 
 The wrapper now also auto-raises the runtime timeout when an input plan would
 otherwise outlast the base `1800`-frame default. That matters for the
@@ -138,9 +156,12 @@ Current cold-boot status:
   sends two delayed `START` skips as control-handoff probes
 - that retuned rerun extended the wrapper timeout to `4380` frames but still
   recorded no `0x800BFBB8` reader hit, no table-write hit, and no snapshots
-- the next fallback edit should therefore inspect and retune the post-title
-  `New Game` timing window or add a savestate-bearing handoff artifact, not
-  restore the blank-card `Load` route
+- the preserved bat-control negative route now goes farther and still stays
+  silent on `0x800BFBB8`, `0x800BF850`, and `0x8007A36C`
+- the next fallback edit should therefore widen from the `0x8007A36C ->
+  0x800BF850 -> 0x800BFBB8` chain or add a savestate-bearing handoff artifact,
+  not restore the blank-card `Load` route or rely on more blind early-gameplay
+  timing tweaks
 
 Savestate-specific behavior:
 
@@ -194,6 +215,8 @@ manual debugger procedure below.
    stop when the runtime reader first consumes the copied table.
 5. Add execution breakpoints at:
    - `0x800BFBB8`
+   - `0x800BF850`
+   - `0x8007A36C`
    - `0x800B66E4`
    - `0x800BA2E0`
 6. When the init copy has completed, export `0x400` bytes from the memory

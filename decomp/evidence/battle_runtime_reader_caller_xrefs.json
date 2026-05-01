@@ -1,0 +1,76 @@
+{
+  "program_name": "BATTLE.PRG",
+  "target": "800bf850",
+  "before_count": 4,
+  "after_count": 10,
+  "xrefs": [
+    {
+      "from_address": "8007a36c",
+      "reference_type": "UNCONDITIONAL_CALL",
+      "function_name": null,
+      "function_entry": null,
+      "instructions": [
+          {
+            "address": "8007a35c",
+            "text": "bne v0,zero,0x8007a36c"
+          },
+          {
+            "address": "8007a360",
+            "text": "_nop"
+          },
+          {
+            "address": "8007a364",
+            "text": "jal 0x8006e7f0"
+          },
+          {
+            "address": "8007a368",
+            "text": "_nop"
+          },
+          {
+            "address": "8007a36c",
+            "text": "jal 0x800bf850"
+          },
+          {
+            "address": "8007a370",
+            "text": "_nop"
+          },
+          {
+            "address": "8007a374",
+            "text": "lw v1,0x196c(s8)"
+          },
+          {
+            "address": "8007a378",
+            "text": "nop"
+          },
+          {
+            "address": "8007a37c",
+            "text": "beq v1,s6,0x8007a3bc"
+          },
+          {
+            "address": "8007a380",
+            "text": "_sltiu v0,v1,0x3"
+          },
+          {
+            "address": "8007a384",
+            "text": "beq v0,zero,0x8007a39c"
+          },
+          {
+            "address": "8007a388",
+            "text": "_li v0,0xa"
+          },
+          {
+            "address": "8007a38c",
+            "text": "beq v1,s5,0x8007a3ac"
+          },
+          {
+            "address": "8007a390",
+            "text": "_nop"
+          },
+          {
+            "address": "8007a394",
+            "text": "j 0x8007a3e8"
+          }
+      ]
+    }
+  ]
+}

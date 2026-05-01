@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Generated from `Pass 3 - Copy/patch reconciliation` on `2026-05-01 00:51:27Z`.
+- Generated from `Pass 3 - Copy/patch reconciliation` on `2026-05-01 01:22:29Z`.
 - Observation source: `decomp/evidence/opcode_0x80_runtime_observation.json`
 - Baseline export: `decomp/evidence/inittbl_opcode_table.json`
 - Runtime table address: `0x800F4C28`
@@ -20,6 +20,8 @@
 ## Planned Breakpoints
 
 - `exec` breakpoint at `0x800BFBB8`: Recovered live runtime table reader
+- `exec` breakpoint at `0x800BF850`: Recovered direct caller of FUN_800BFBB8
+- `exec` breakpoint at `0x8007A36C`: Recovered upstream caller site for the 0x800BF850 -> FUN_800BFBB8 chain
 - `exec` breakpoint at `0x800B66E4`: Static stub target for 0x80-0x82
 - `exec` breakpoint at `0x800BA2E0`: Competing sound-family candidate
 - `write` breakpoint at `0x800F4C28-0x800F5027`: Detect post-init runtime rewrites of the copied table
@@ -142,6 +144,9 @@
 - Automated PCSX-Redux capture used input plan 'C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_input_plan.json'; prepared_path=C:\Users\Chris\Desktop\vs usa\.codex_tmp\pcsx-redux\opcode_0x80_input_plan-70177bc720054a3b807cef3dd5408901.tsv; pad=1/1; steps=12/12; description=Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. The wrapper now auto-extends timeout to cover the full plan plus slack and can leave screen-capture breadcrumbs. Latest visual checkpoints show the repeated START pulses can now reach the Vagrant Story title/logo, so this scaffold pauses menu navigation until after that title state and only then tries to open and drive the menu. Operator follow-up also confirmed that this build uses PSX-style menu mapping where X cancels and O confirms, so the menu-confirm steps now use CIRCLE instead of CROSS. The repo-local memcards still probe as blank formatted cards, so this revision drops the old Continue/Load branch and instead follows a title-menu New Game route: press CIRCLE on the default entry, wait roughly ten seconds, press START twice with another ten-second gap to skip toward live player control, then wait another roughly five seconds and press CIRCLE as a final probe for the attack-radius or battle-control handoff. (`2026-05-01T00:51:26Z`)
 - Automated PCSX-Redux capture wrote 13 screen capture(s) under C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_frames. (`2026-05-01T00:51:26Z`)
 - Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=4886; write_hits=0; reader_hits=0; summary_json=C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_automation_summary.json (`2026-05-01T00:51:27Z`)
+- Automated PCSX-Redux capture used input plan 'C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_input_plan_bat_kill.json'; prepared_path=C:\Users\Chris\Desktop\vs usa\.codex_tmp\pcsx-redux\opcode_0x80_input_plan-f80c94507adc4df2974122676c0bcab1.tsv; pad=1/1; steps=12/12; description=Preserved cold-boot negative-control route for Vagrant Story (USA). This 12-step plan reaches player control after the New Game intro skips, rotates into the adjacent room, unsheathes, opens the attack sphere, and lands the opening bat attack. The corresponding automated run finished at 2026-05-01T00:51:26Z with frame_count=4886, reader_hit_count=0, write_hit_count=0, candidate_hit_count=0, and no snapshots, so keep this plan as a durable proof that early post-intro control plus the first bat encounter still do not exercise the watched opcode 0x80 runtime reader. (`2026-05-01T01:19:32Z`)
+- Automated PCSX-Redux capture wrote 13 screen capture(s) under C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_frames. (`2026-05-01T01:19:32Z`)
+- Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=4886; write_hits=0; reader_hits=0; summary_json=C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_automation_summary.json (`2026-05-01T01:19:32Z`)
 
 ## Conclusion
 

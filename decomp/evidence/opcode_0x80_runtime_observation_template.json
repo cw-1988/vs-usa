@@ -23,6 +23,16 @@
     },
     {
       "kind": "exec",
+      "address": "0x800BF850",
+      "purpose": "Recovered direct caller of FUN_800BFBB8"
+    },
+    {
+      "kind": "exec",
+      "address": "0x8007A36C",
+      "purpose": "Recovered upstream caller site for the 0x800BF850 -> FUN_800BFBB8 chain"
+    },
+    {
+      "kind": "exec",
       "address": "0x800B66E4",
       "purpose": "Static stub target for 0x80-0x82"
     },

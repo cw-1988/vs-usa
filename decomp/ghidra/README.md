@@ -58,6 +58,9 @@ Current tracked entry points:
 - [`export_battle_runtime_opcode_table_pointer_usage.ps1`](export_battle_runtime_opcode_table_pointer_usage.ps1):
   focused `BATTLE.PRG` pointer-usage trace for the recovered
   `FUN_800BFBB8 -> 0x800F4C28` runtime-table reader
+- [`export_battle_runtime_reader_call_chain.ps1`](export_battle_runtime_reader_call_chain.ps1):
+  one-shot `BATTLE.PRG` call-chain export for the recovered
+  `0x8007A36C -> 0x800BF850 -> FUN_800BFBB8` runtime-reader family
 
 Use these helpers to turn binary questions into local reproducible artifacts.
 If `_refs/rood-reverse` suggests a location, that is only a lead; the evidence

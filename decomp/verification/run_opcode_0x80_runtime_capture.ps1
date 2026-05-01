@@ -24,6 +24,8 @@ param(
     [string]$TableSize = "0x400",
     [string]$FocusOpcodes = "0x80,0x81,0x82",
     [string]$ReaderAddress = "0x800BFBB8",
+    [string]$ReaderCallerAddress = "0x800BF850",
+    [string]$ReaderGrandcallerAddress = "0x8007A36C",
     [string]$StubAddress = "0x800B66E4",
     [string]$CandidateAddress = "0x800BA2E0",
     [int]$IdleCycles = 200000,
@@ -419,6 +421,8 @@ $env:VS_OPCODE_TABLE_ADDRESS = $TableAddress
 $env:VS_OPCODE_TABLE_SIZE = $TableSize
 $env:VS_OPCODE_FOCUS_OPCODES = $FocusOpcodes
 $env:VS_OPCODE_READER_ADDRESS = $ReaderAddress
+$env:VS_OPCODE_READER_CALLER_ADDRESS = $ReaderCallerAddress
+$env:VS_OPCODE_READER_GRANDCALLER_ADDRESS = $ReaderGrandcallerAddress
 $env:VS_OPCODE_STUB_ADDRESS = $StubAddress
 $env:VS_OPCODE_CANDIDATE_ADDRESS = $CandidateAddress
 $env:VS_OPCODE_AFTER_INIT_PATH = $afterInitPath
@@ -568,6 +572,25 @@ if ($summary.reader_hit_count -gt 0) {
     )
 }
 
+$probeHits = @()
+if ($summary.probe_hits) {
+    foreach ($property in $summary.probe_hits.PSObject.Properties) {
+        $probe = $property.Value
+        if ($probe.hit_count -gt 0) {
+            $probeHits += ("{0} x{1}" -f $property.Name, $probe.hit_count)
+            Invoke-Recorder @(
+                $observationPath,
+                "add-breakpoint-hit",
+                "--kind", "exec",
+                "--address", $property.Name,
+                "--hit-count", "$($probe.hit_count)",
+                "--pc", $property.Name,
+                "--note", "Automated PCSX-Redux capture hit upstream probe breakpoint '$($probe.label)'."
+            )
+        }
+    }
+}
+
 if ($saveStateInfo) {
     $note = if ($saveStateInfo.WasDecompressed) {
         "Automated PCSX-Redux capture loaded savestate source '$($saveStateInfo.SourcePath)' after inflating its gzip-compressed UI payload to a temporary raw file for PCSX.loadSaveState(file)."
@@ -657,6 +680,10 @@ $noteParts = @(
 
 if ($candidateHits.Count -gt 0) {
     $noteParts += ("candidate_hits=" + ($candidateHits -join ", "))
+}
+
+if ($probeHits.Count -gt 0) {
+    $noteParts += ("probe_hits=" + ($probeHits -join ", "))
 }
 
 if ($snapshotSummaries.Count -gt 0) {

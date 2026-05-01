@@ -122,6 +122,8 @@ local config = {
     table_size = parse_int(os.getenv("VS_OPCODE_TABLE_SIZE"), 0x400),
     focus_opcodes = split_csv(os.getenv("VS_OPCODE_FOCUS_OPCODES") or "0x80,0x81,0x82"),
     reader_address = parse_int(os.getenv("VS_OPCODE_READER_ADDRESS"), 0x800BFBB8),
+    reader_caller_address = parse_int(os.getenv("VS_OPCODE_READER_CALLER_ADDRESS"), 0x800BF850),
+    reader_grandcaller_address = parse_int(os.getenv("VS_OPCODE_READER_GRANDCALLER_ADDRESS"), 0x8007A36C),
     stub_address = parse_int(os.getenv("VS_OPCODE_STUB_ADDRESS"), 0x800B66E4),
     candidate_address = parse_int(os.getenv("VS_OPCODE_CANDIDATE_ADDRESS"), 0x800BA2E0),
     after_init_path = os.getenv("VS_OPCODE_AFTER_INIT_PATH") or "decomp/evidence/opcode_0x80_runtime_after_init.bin",
@@ -160,6 +162,7 @@ local state = {
         stub = hex32(config.stub_address),
         candidate = hex32(config.candidate_address),
     },
+    probe_hits = {},
     last_write_cycle = nil,
     saw_write = false,
     snapshots = {},
@@ -531,6 +534,7 @@ local function write_summary()
         candidate_hit_count = state.candidate_hit_count,
         write_breakpoint = state.write_breakpoint,
         exec_breakpoints = state.exec_breakpoints,
+        probe_hits = state.probe_hits,
         snapshots = state.snapshots,
         candidate_hits = state.candidate_hits,
         notes = state.notes,
@@ -668,9 +672,48 @@ local function add_candidate_breakpoint(address, label)
     )
 end
 
+local function add_probe_breakpoint(address, label)
+    if address == nil or address == 0 then
+        return
+    end
+
+    local key = hex32(address)
+    state.exec_breakpoints[label] = key
+    breakpoints[#breakpoints + 1] = PCSX.addBreakpoint(
+        address,
+        "Exec",
+        4,
+        label,
+        function()
+            local entry = state.probe_hits[key] or {
+                label = label,
+                hit_count = 0,
+                pcs = {},
+            }
+            entry.hit_count = entry.hit_count + 1
+            entry.pcs[#entry.pcs + 1] = current_pc_hex()
+            state.probe_hits[key] = entry
+            queue_safe(label .. " breakpoint", function()
+                add_note(label .. " breakpoint hit at " .. key)
+            end)
+        end
+    )
+end
+
 add_candidate_breakpoint(config.stub_address, "stub candidate")
 if config.candidate_address ~= config.stub_address then
     add_candidate_breakpoint(config.candidate_address, "sound-family candidate")
+end
+if config.reader_caller_address ~= config.reader_address
+    and config.reader_caller_address ~= config.stub_address
+    and config.reader_caller_address ~= config.candidate_address then
+    add_probe_breakpoint(config.reader_caller_address, "reader caller")
+end
+if config.reader_grandcaller_address ~= config.reader_address
+    and config.reader_grandcaller_address ~= config.reader_caller_address
+    and config.reader_grandcaller_address ~= config.stub_address
+    and config.reader_grandcaller_address ~= config.candidate_address then
+    add_probe_breakpoint(config.reader_grandcaller_address, "reader grandcaller")
 end
 
 listeners[#listeners + 1] = PCSX.Events.createEventListener("Quitting", function()
