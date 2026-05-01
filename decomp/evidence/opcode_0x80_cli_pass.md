@@ -1,4 +1,4 @@
-# Opcode `0x80` CLI Pass
+# Opcode `0x80` Proof Packet
 
 ## Inputs
 
@@ -55,6 +55,8 @@
 - `decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`
 - `decomp/evidence/opcode_0x80_runtime_support.md`
 - `decomp/evidence/opcode_0x80_runtime_expected_table.bin`
+- `decomp/evidence/opcode_0x80_semantic_proof.md`
+- `decomp/evidence/opcode_0x80_shared_stub_family_audit.md`
 
 ## Packet structure
 
@@ -101,6 +103,13 @@
   baseline table image that the compare/finalize helpers now refresh alongside
   the JSON report so a runtime pass has a stable byte-for-byte artifact to
   diff against.
+- `opcode_0x80_semantic_proof.md` is the post-runtime semantic write-up that
+  retires the old rewrite blocker and captures the safest local interpretation
+  for `0x80`.
+- `opcode_0x80_shared_stub_family_audit.md` is the guardrail packet that
+  makes the widened `0x800B66E4` family explicit before any later naming pass
+  tries to treat this one shared stub as direct proof for dialog, room,
+  music, or audio semantics.
 
 ## Static findings
 
@@ -144,48 +153,54 @@
   slot.
 - See `opcode_0x80_sound_cluster_static.md` for the local neighborhood case.
 
+## Runtime tie-break findings
+
+- The validated `MAP001` listener-control route now resolves the live runtime
+  table pointer slot `0x800F4C28 -> 0x801119F0`, reaches the recovered reader
+  chain `0x8007A36C -> 0x800BF850 -> 0x800BFBB8`, and records direct retail
+  `0x80 -> 0x800B66E4` dispatch samples.
+- `opcode_0x80_runtime_support.md` now compares both checked snapshots against
+  the reconstructed baseline and reports `256` matching entries and `0`
+  changed entries for both `after_init` and `pre_dispatch`.
+- The live write watchpoint over `0x801119F0-0x80111DEF` records `0` hits in
+  that same validated route.
+- That closes the old "maybe the copied slot is rewritten before the intro
+  uses it" branch for the checked retail runtime path.
+
 ## Current conclusion
 
-- `0x80` is now **runtime needed**, not confirmed.
-- Local binary evidence now proves both the copied initial dispatch slot
-  (`0x800B66E4`) and the init-time table copy into runtime slot `0x800F4C28`.
+- `0x80` is no longer `runtime needed`.
+- Local binary and retail runtime evidence now agree on the same structural
+  floor: `0x80` dispatches through the copied runtime table and still lands on
+  `0x800B66E4`, the shared return-zero stub.
+- The old copy/patch contradiction is closed strongly enough to move the target
+  into `Pass 4`/`tentative` semantic status.
 - A widened local access sweep of `INITBTL.PRG`, `BATTLE.PRG`,
-  `SLUS_010.40`, and `TITLE.PRG` now finds one direct init-time write to
-  `0x800F4C28`, one direct runtime read from it, and no additional recovered
-  direct slot accesses in the other importable executables with known base
-  notes.
+  `SLUS_010.40`, and `TITLE.PRG` still finds only one direct init-time write
+  to `0x800F4C28`, one direct runtime read from it, and no additional
+  recovered direct slot accesses in the other importable executables with
+  known base notes.
 - A local pointer-usage trace of the recovered `BATTLE.PRG` reader at
-  `FUN_800BFBB8` now shows only pointer arithmetic plus one indexed table-entry
-  read before `jalr`, with no recovered indirect write-back or tainted
-  pointer-argument call in that local consumer.
+  `FUN_800BFBB8` still shows only pointer arithmetic plus one indexed
+  table-entry read before `jalr`, with no recovered indirect write-back or
+  tainted pointer-argument call in that local consumer.
 - A local `INITBTL.PRG` loader slice plus the first eight dwords of the local
-  `SYSTEM.DAT` file now show `SYSTEM.DAT` being loaded as offset-indexed
-  asset/payload data and then freed, which weakens the old "`SYSTEM.DAT`
-  might be the missing code overlay" branch.
+  `SYSTEM.DAT` file still show `SYSTEM.DAT` being loaded as offset-indexed
+  asset/payload data and then freed, which keeps the old "`SYSTEM.DAT`
+  might be the missing code overlay" branch weak.
 - A raw packaged-binary heuristic scan across `356` local `.PRG`/`.BIN`/`.40`
-  files now recovers the same absolute `0x800F4C28` access pattern in exactly
-  two files, `INITBTL.PRG` and `BATTLE.PRG`, with no third match in the
-  `EFFECT` plugin corpus or elsewhere in `Game Data`.
-- The nearby sound-shaped helper keeps `SoundEffects0` plausible as a working
-  placeholder, but the local static picture now favors "`0x80-0x82` are real
-  copied stubs, while `0x800BA2E0` belongs to a separate local sound
-  subdispatch family that also contains the visible `0x83+` handlers."
-- The remaining unresolved question is no longer "is `0x800BA2E0` secretly the
-  real `0x80` target?" or "is there another obvious packaged direct slot
-  rewrite?" but "does any indirect path mutate the copied table contents behind
-  `0x800F4C28` before dispatch?" Static evidence is now narrow enough that
-  runtime is the clean next tie-breaker.
-- The runtime follow-up is now concretely staged: capture the copied table
-  after init and before candidate dispatch, compare those dumps against the
-  binary baseline with
-  `decomp/verification/compare_opcode_table_snapshots.py`, and record the
-  breakpoint results in
-  `decomp/evidence/opcode_0x80_runtime_observation.json` with
-  `decomp/verification/record_runtime_observation.py`, then refresh the
-  compare report and support note in place with
-  `decomp/verification/finalize_runtime_observation.py --in-place`. If the
-  focus opcodes changed, import those compare-report rows back into
-  `table_mutations` with
-  `decomp/verification/record_runtime_observation.py import-compare
-  --replace-derived --finalize` so the explicit rewritten handlers live in the
-  checked-in packet instead of only in the compare JSON.
+  files still recovers the same absolute `0x800F4C28` access pattern in
+  exactly two files, `INITBTL.PRG` and `BATTLE.PRG`, with no third match in
+  the `EFFECT` plugin corpus or elsewhere in `Game Data`.
+- The nearby sound-shaped helper no longer justifies a direct `0x80` sound
+  label. The safer local interpretation is the one captured in
+  `opcode_0x80_semantic_proof.md`: `0x80` is currently best treated as a
+  shared stub slot, while the visible direct sound family begins in the
+  separate `0x83+` subdispatch block.
+- A widened local family audit now also shows `0x800B66E4` is reused by `30`
+  heterogeneous `INITBTL.PRG` opcode slots, including currently named dialog,
+  model, room, battle-end, and music-looking members, so the table hit must be
+  treated as structural evidence only.
+- `SoundEffects0` should therefore stay retired as an overclaim until a later
+  pass produces handler-level evidence that reconnects `0x80` itself to an
+  audible effect.

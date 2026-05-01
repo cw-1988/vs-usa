@@ -393,7 +393,9 @@ one of these happens:
 ## Result handling
 
 If the table never changes and dispatch still lands on `0x800B66E4`, the next
-pass can safely narrow `SoundEffects0` further or retire it as an overclaim.
+pass can safely retire the old `SoundEffects0` label in downstream decoder and
+note text, while keeping the structural `Opcode80SharedStub` wording until a
+later shared-stub family audit proves something stronger.
 
 If the table changes or dispatch reaches a different handler, store:
 

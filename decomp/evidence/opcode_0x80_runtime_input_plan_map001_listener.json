@@ -1,5 +1,5 @@
 {
-  "description": "Cold-boot MAP001 listener-control route for Vagrant Story (USA). This plan only skips the publisher/video intro, confirms New Game on the title menu, and then leaves the opening MAP001 cutscene untouched so early intro opcodes such as the first SoundEffects0 calls can exercise the runtime capture without later START skips or player-control inputs.",
+  "description": "Cold-boot MAP001 listener-control route for Vagrant Story (USA). This plan only skips the publisher/video intro, confirms New Game on the title menu, and then leaves the opening MAP001 cutscene untouched so early intro opcodes such as the first Opcode80SharedStub sites can exercise the runtime capture without later START skips or player-control inputs.",
   "pad_slot": 1,
   "pad_number": 1,
   "analog_mode": false,

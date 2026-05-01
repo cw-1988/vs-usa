@@ -49,7 +49,7 @@ claims.
 
 ## Current Phase
 
-Current phase: Pass 3 - Copy/patch reconciliation
+Current phase: Pass 5 - Naming and decoder updates
 
 ## Status Legend
 
@@ -129,84 +129,69 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `runtime_needed` | `INITBTL.PRG` static table at `0x800FAF7C`, copied by the init-time routine at `0x800FAAAC` into pointer slot `0x800F4C28` and resolved live at `0x801119F0` during the validated `MAP001` intro pass | Initial slot `0x800B66E4` is a shared stub for `0x80-0x82`; former competing target `0x800BA2E0` is now locally anchored to the `BATTLE.PRG` sound subdispatch table at `0x800E9F30`; recovered reader `FUN_800BFBB8` dispatches through the copied runtime table via `jalr`, and the `MAP001` listener-control run now proves that chain is live on retail runtime | `SoundEffects0` placeholder only | Now that the live reader chain is proven and `0x80` still resolves to shared stub `0x800B66E4`, what later state, side table, or secondary callee gives `0x80` its real sound behavior without a copied-table rewrite? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_reader_call_chain_static.md`](decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md), [`opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md), [`opcode_0x80_runtime_input_plan_bat_kill.json`](decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json), [`opcode_0x80_runtime_input_plan_map001_listener.json`](decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json), [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md) |
+| `opcode 0x80` | `tentative` | `INITBTL.PRG` static table at `0x800FAF7C`, copied by the init-time routine at `0x800FAAAC` into pointer slot `0x800F4C28` and resolved live at `0x801119F0`; checked `after_init` and `pre_dispatch` snapshots still match that copied baseline byte-for-byte | Initial slot `0x800B66E4` is a shared return-zero stub reused by a widened `30`-opcode `INITBTL.PRG` family that includes named dialog, model, room, battle-end, and music-looking members as well as `0x80-0x82`; former competing target `0x800BA2E0` is now locally anchored to the separate `BATTLE.PRG` sound subdispatch table at `0x800E9F30`; recovered reader `FUN_800BFBB8` dispatches through the copied runtime table via `jalr`, and the validated `MAP001` listener-control run logs retail `0x10`, `0x13`, `0x44`, and `0x80` landing on `0x800B66E4` with no post-init table-write hits | `Opcode80SharedStub` | Now that the widened `0x800B66E4` family is explicit, which neighboring opcodes or prepared-state paths explain the audio-looking `0x80` script sites well enough to retire the historical sound label everywhere? | `Pass 5 - Naming and decoder updates` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_semantic_proof.md`](decomp/evidence/opcode_0x80_semantic_proof.md), [`opcode_0x80_neighbor_sound_context.md`](decomp/evidence/opcode_0x80_neighbor_sound_context.md), [`opcode_0x80_shared_stub_family_audit.md`](decomp/evidence/opcode_0x80_shared_stub_family_audit.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_reader_call_chain_static.md`](decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md), [`opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md), [`opcode_0x80_runtime_input_plan_bat_kill.json`](decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json), [`opcode_0x80_runtime_input_plan_map001_listener.json`](decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json), [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md) |
 
 ## Known Conflicts
 
-### `0x80`: copied initial stub vs possible later runtime rewrite/bypass
+### `0x80`: historical sound label vs verified shared stub
 
-- What static evidence says:
+- What static and runtime evidence now agree on:
   `inittbl_opcode_table.json` and `battle_0x80_handler_slices.json` still map
-  `0x80-0x82` to the shared stub at `0x800B66E4`.
+  `0x80-0x82` to the shared stub at `0x800B66E4`, whose first two
+  instructions are only `jr ra` / `clear v0`.
   `inittbl_0x80_copy_slice.json` proves the init-time copy from `0x800FAF7C`
   into runtime slot `0x800F4C28`, and
   `battle_runtime_opcode_table_xrefs.json` proves `FUN_800BFBB8` reads that
   runtime table and dispatches through it with `jalr`.
-  `opcode_0x80_runtime_reader_call_chain_static.md` now narrows the same
-  reader under one recovered caller chain:
-  `0x8007A36C -> 0x800BF850 -> FUN_800BFBB8`, with the immediate caller also
-  iterating a small pointer family rooted at `0x800F4C38`.
-- What competing evidence says:
-  The old alternative `0x800BA2E0` now fits a local `BATTLE.PRG` sound
-  subdispatch table, not the hidden direct `0x80` handler. The remaining
-  uncertainty is narrower: the table may still be patched indirectly after the
-  verified init-time copy even though current direct-slot sweeps and pointer
-  tracing have not recovered a rewrite path.
-- What is still missing:
-  A tighter local proof of what happens after the now-validated `0x80`
-  dispatch lands on shared stub `0x800B66E4`. The active packet is
-  anchored by
-  [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md),
-  [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json),
-  [`opcode_0x80_runtime_expected_table.bin`](decomp/evidence/opcode_0x80_runtime_expected_table.bin),
-  and
-  [`compare_opcode_table_snapshots.py`](decomp/verification/compare_opcode_table_snapshots.py).
-  The cold-boot automation is now far enough along to prove real route facts:
-  the retuned input plan plus corrected `O` confirm / `X` cancel mapping reach
-  the title menu, highlight `Continue`, and open the `Load / Memory Card slot
-  1` screen. But the repo-local cards still probe as blank formatted cards, so
-  this particular `Load` branch is now a confirmed dead end rather than a
-  plausible entry into live gameplay. The remaining runtime blocker is
-  therefore the lack of a usable gameplay-entry artifact such as a savestate
-  or populated card, not wrapper timing or intro navigation. The latest
-  checked-in rerun also encoded a title-menu `New Game` branch instead of the
-  dead `Continue/Load` path: it confirms `CIRCLE`, waits roughly ten seconds,
-  then sends two delayed `START` skips as control-handoff probes. That pass
-  extended the timeout to `4380` frames and still recorded no
-  `0x800BFBB8` reader hit, no table-write hit, and no snapshots, so the
-  old blank-card branch is no longer the live question. The preserved
-  bat-control follow-up went farther: it reached player control, rotated into
-  the adjacent room, unsheathed, opened the attack sphere, and attacked the
-  first bat, yet still recorded no `0x800BFBB8` reader hit, no candidate hit,
-  no table-write hit, and no snapshots. The widened rerun now also armed probe
-  breakpoints for `0x800BF850` and `0x8007A36C`, and those stayed silent too.
-  The runtime summary now also preserves per-step input-plan start/complete
-  notes with frame numbers, so route drift can be checked from one JSON packet
-  before opening screenshot crumbs or retuning button timing again.
-  The next decisive pass therefore needs either a nearer savestate or a wider
-  trigger search beyond that recovered reader chain, not more blind proof that
-  "gameplay happened."
-  That `MAP001` listener-control proof now exists. The corrected runtime pass
-  dereferences pointer slot `0x800F4C28`, resolves the live table at
-  `0x801119F0`, hits `0x8007A36C -> 0x800BF850 -> 0x800BFBB8` repeatedly, and
-  records `0x80 -> 0x800B66E4` dispatches directly from the retail intro
-  script while also proving dozens of other `MAP001` opcode-family handlers.
-  That closes the old "maybe the trigger plumbing is broken" branch. The live
-  question is narrower now: why does `0x80` still map to the shared stub even
-  though the surrounding script system is demonstrably active?
-  No local artifact in this pass uses a custom `PRG`, patched executable, or
-  custom ISO as a positive-control trigger source; if a future pass introduces
-  one, keep that proof path labeled separately from retail-runtime evidence.
-  If both tracked snapshots still match the baseline and the table write
-  watchpoint stays quiet, this contradiction can be downgraded to
-  `static_resolved` and carried forward into `Pass 4`. If the next widened
-  runtime pass still finds no copied-table reads or rewrites around the real
-  target moment, then the working assumption that `FUN_800BFBB8` is the
-  decisive live reader for this contradiction should be reopened explicitly in
-  the notes rather than protected by more cold-boot route churn.
+  The validated `MAP001` listener-control pass then resolves the live table at
+  `0x801119F0`, repeatedly hits
+  `0x8007A36C -> 0x800BF850 -> 0x800BFBB8`, and records retail
+  `0x80 -> 0x800B66E4` dispatches directly from the untouched intro script.
+  `opcode_0x80_runtime_support.md` now compares both checked snapshots against
+  the reconstructed baseline and reports `256` matching entries and `0`
+  changed entries for both `after_init` and `pre_dispatch`, while the live
+  write watchpoint over `0x801119F0-0x80111DEF` stays quiet.
+- What that rules out:
+  The old copy/patch contradiction is now closed for the checked route.
+  Local evidence no longer supports a post-init rewrite of the copied `0x80`
+  slot before the validated intro dispatch.
+  The former competing helper `0x800BA2E0` also no longer survives as a hidden
+  direct `0x80` target because `opcode_0x80_sound_cluster_static.md` anchors
+  it inside a separate local `BATTLE.PRG` sound subdispatch table rooted at
+  `0x800E9F30` alongside the visible `0x83+` family.
+- What the safe semantic floor is:
+  The strongest local interpretation is now structural, not audio-facing:
+  treat `0x80` as `Opcode80SharedStub`, a shared return-zero dispatch slot
+  reused by `0x80-0x82` and several other opcode IDs.
+  The widened family audit now makes that lack of uniqueness explicit:
+  the same `INITBTL.PRG` table slot also covers named dialog, model,
+  engine-mode, room, battle-end, and music-looking members such as `0x10`,
+  `0x11`, `0x22`, `0x44`, `0x54`, `0x69`, `0x6D`, and `0x92`.
+  That means table membership alone is not direct user-facing proof for any
+  member of the cluster.
+  `SoundEffects0` is now an overclaim for the opcode itself.
+  Any audible effect near `0x80` script sites must currently be attributed to
+  neighboring opcodes, previously prepared state, or some other subsystem not
+  proven to dispatch from `0x80`.
+- What still remains open:
+  The main remaining question is not table ownership but semantic cleanup:
+  why content authors still placed `0x80` in sound-looking cutscene moments,
+  and whether those moments can be reassigned cleanly to nearby confirmed
+  sound-family behavior without inventing a new direct role for the stubbed
+  opcode.
+  The new neighboring-context packet now gives that cleanup a stronger
+  script-side foothold: `88` of the `127` decoded-script files that contain
+  `0x80` also co-host explicit `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or
+  `0x9E` sound-family neighbors, and representative scenes such as `MAP001`,
+  `MAP026`, and `MAP415` arm those neighboring paths before later `0x80`
+  bursts.
+  What still stays open is which one of those prepared-state families is the
+  decisive consumer for each scene.
 - Is runtime justified yet:
-  Yes. Static sweeps have narrowed the contradiction enough that `PCSX-Redux`
-  is now the clean tie-breaker.
+  Not for the copy/patch tie-breaker.
+  Keep the validated `MAP001` listener route only as a regression path when
+  runtime instrumentation changes or a new semantic hypothesis needs live
+  checking.
 
 ## Campaign Artifact Index
 
@@ -228,68 +213,98 @@ Use the artifact index for:
 
 ## Session Handoff
 
-- `last completed step`: the latest automation pass added a checked-in
-  two-stage savestate bridge under
-  `decomp/verification/test-runs/map001-main-menu-bridge/`, then used it to
-  prove a real `PCSX-Redux` sequencing quirk: loading the savestate during Lua
-  startup made the restored title-menu frame look frozen even though
-  `ExecutionFlow::SaveStateLoaded` fired, while deferring
-  `PCSX.loadSaveState(...)` until `ExecutionFlow::ShellReached` restored a
-  healthy resumed run. The clean resumed rerun now loads
-  `save-states/init-main-menu.savestate`, waits `45` frames, presses
-  `CIRCLE` at `New Game`, resolves the pointer-slot fix
-  (`0x800F4C28 -> 0x801119F0`), hits the proven reader chain on the untouched
-  intro (`0x8007A36C` and `0x800BF850` x`78`, `0x800BFBB8` x`76`), and still
-  records retail `0x80 -> 0x800B66E4` dispatches with no post-init copied-table
-  write hits.
-- `next recommended step`: keep the `MAP001` listener route as the default
-  positive-control regression and pivot the runtime work from "does the trigger
-  chain work?" to "what makes `0x80` do real work after landing on the shared
-  stub?" Preferred order for the next pass:
-  1. rerun the validated `MAP001` route with
+- `last completed step`: the `Pass 5` neighboring-sound context packet for
+  `0x80` is now checked in.
+  The validated `MAP001` listener-control route and shared-family audit had
+  already closed the direct-handler question.
+  The new packet
+  [`opcode_0x80_neighbor_sound_context.md`](decomp/evidence/opcode_0x80_neighbor_sound_context.md)
+  adds the positive script-side explanation the handoff asked for:
+  many representative audio-looking `0x80` scenes already co-host explicit
+  `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, and `0x9E` setup, so the historical
+  sound label is no longer the least-bad explanation for those moments.
+- `next recommended step`: keep `0x80` as a `Pass 5` semantic cleanup target,
+  not a runtime blocker. Preferred order for the next pass:
+  1. use the shared-family audit plus the neighboring-context packet as naming
+     constraints:
+     do not treat `0x800B66E4` table membership as standalone proof for
+     `0x80`, `0x10`, `0x11`, `0x22`, `0x69`, `0x6D`, `0x92`, or any other
+     member of the widened cluster, and do not treat script-side co-location
+     alone as proof that `0x80` is itself the direct sound trigger
+  2. focus the next semantic pass on the consumer relationship between the
+     already-proven neighboring sound families:
+     compare how `0x9D` plus `0x9E` queueing, `0x90` plus `0x92` music-slot
+     playback, and `0x85` plus `0x88` SFX-slot selection account for the same
+     representative `MAP001`, `MAP026`, and `MAP415` scenes
+  3. if a new semantic theory needs live checking, rerun the validated
+     `MAP001` listener route with
      `decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json`
-     whenever the Lua/wrapper instrumentation changes, and include
-     `decoded_scripts/24-Unmapped/001-Unknown Room.txt` so the handler-probe
-     set stays grounded in the same intro script
-  2. build or preserve a near-`0x80` savestate inside the `MAP001` intro so
-     the next semantic pass can sit directly on the first `0x80` call instead
-     of replaying the whole cold boot
-  3. instrument outward from shared stub `0x800B66E4` and its immediate
-     callers/side tables rather than treating `0x800BA2E0` as the hidden
-     direct handler; the validated reader log now shows `0x80` itself still
-     dispatching to the stub
+     so the probe set stays grounded in the same retail intro script
   4. keep the bat-control route only as a negative-control regression, because
      it still proves that early free movement/combat is a poor proxy trigger
-     for this contradiction
-  5. use `-CpuCore dynarec -DisableDebugger` only for route smoke tests;
-     breakpoint-driven proof still needs interpreter plus debugger, so the real
-     speedup path for semantic work is a near-target savestate, not more full
-     cold boots
-  Once a run reaches a real reader or rewrite site, capture `after_init` and
-  `pre_dispatch`, then run
-  `decomp/verification/finalize_runtime_observation.py --in-place`. If the
-  compare report shows `0x80-0x82` rewrites, immediately import those rows with
-  `record_runtime_observation.py import-compare --replace-derived --finalize`.
-  If both snapshots match the baseline and no rewrite evidence appears, relabel
-  the `0x80` conflict as `static_resolved` and advance the target to
-  `Pass 4 - Semantic proof packets`.
-- `do not forget`: keep raw dumps, compare reports, and useful frame captures
-  under `decomp/evidence`, preserve the original savestate or tuned input-plan
-  JSON as the handoff artifact, and use the compare-import helper instead of
-  hand-editing mutation rows. If rewrites do appear, keep `Pass 3` active until
-  the replacement handlers are anchored with local evidence rather than leaving
-  the result as a compare-only observation. For the cold-boot fallback
-  specifically, preserve which menu path, button mapping, and card assumptions
-  were actually tested so the next pass does not retry a known dead branch.
-  If the next pass uses the stripped `MAP001` listener-control route, label it
-  explicitly as the positive-control baseline for retail runtime, not as a
-  substitute for the later semantic pass on `0x80` itself.
-  If a future validation pass uses a custom `PRG`, patched executable, or
-  custom ISO as a positive control for the instrumentation, label that run
-  explicitly as tooling proof rather than retail-runtime opcode proof.
+     for the intro-side `0x80` question
+- `do not forget`: preserve the distinction between structural proof and
+  semantic speculation.
+  `0x800B66E4` is proven; a direct sound-effect meaning for `0x80` is not.
+  Keep the raw dumps, compare report, and savestate bridge artifacts registered
+  under `decomp/evidence`, and label any future custom-`PRG` or patched-ISO
+  validation as tooling proof rather than retail-runtime opcode proof.
 
 ## Completed Milestones
 
+- `2026-05-01`: completed the `Pass 5` neighboring-sound context packet for
+  `0x80`.
+  A direct decoded-script scan now shows that `88` of the `127` files
+  containing legacy-rendered `0x80` lines also co-host at least one explicit
+  sound-family neighbor from `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or
+  `0x9E`, with `49` files containing all three prepared-state categories:
+  `0x85/0x88`, `0x90/0x92`, and `0x9D/0x9E`.
+  Representative scenes such as `MAP001`, `MAP026`, and `MAP415` now show
+  those neighboring sound opcodes arming SFX slots, music slots, or
+  sound-file queues before later `0x80` bursts.
+  This does not prove the final consumer yet, but it retires the old
+  `SoundEffects0` label for a stronger positive reason than "the handler is a
+  stub."
+  Links:
+  [`opcode_0x80_neighbor_sound_context.md`](decomp/evidence/opcode_0x80_neighbor_sound_context.md),
+  [`decoded_scripts/24-Unmapped/001-Unknown Room.txt`](decoded_scripts/24-Unmapped/001-Unknown%20Room.txt),
+  [`decoded_scripts/1-Wine Cellar/026-The Gallows.txt`](decoded_scripts/1-Wine%20Cellar/026-The%20Gallows.txt),
+  [`decoded_scripts/23-Great Cathedral/415-The Dark tempts Ashley.txt`](decoded_scripts/23-Great%20Cathedral/415-The%20Dark%20tempts%20Ashley.txt)
+- `2026-05-01`: completed the widened `0x800B66E4` shared-stub family audit
+  for `0x80`.
+  The binary-derived `INITBTL.PRG` table now explicitly shows `30` opcode
+  slots sharing that return-zero stub, including named dialog, model, room,
+  battle-end, and music-looking members, and the validated retail `MAP001`
+  route directly samples non-`0x80` members (`0x10`, `0x13`, and `0x44`)
+  hitting the same live stub.
+  This closes the last "maybe `0x80` is uniquely sound-special" table-reading
+  angle and moves the next cleanup step toward neighboring-opcode or
+  prepared-state explanation instead of more table ownership work.
+  Links:
+  [`opcode_0x80_shared_stub_family_audit.md`](decomp/evidence/opcode_0x80_shared_stub_family_audit.md),
+  [`inittbl_opcode_table.json`](decomp/evidence/inittbl_opcode_table.json),
+  [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),
+  [`opcode_0x80_semantic_proof.md`](decomp/evidence/opcode_0x80_semantic_proof.md)
+- `2026-05-01`: completed the first `Pass 5` naming cleanup for `0x80` by
+  retiring the direct `SoundEffects0` claim in the forward-facing decoder row,
+  behavior reference row, and future `MAP001` listener-plan description while
+  preserving the structural `Opcode80SharedStub` wording. This same audit also
+  confirmed that the shared return-zero stub at `0x800B66E4` reaches a much
+  wider opcode family than `0x80-0x82`, so later naming cleanup should start
+  from that family-wide proof question instead of assuming `0x80` is unique.
+  Links:
+  [`dump_mpd_script.py`](dump_mpd_script.py),
+  [`docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md`](docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md),
+  [`decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json`](decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json),
+  [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md)
+- `2026-05-01`: closed `0x80` `Pass 3` with the checked `MAP001` runtime
+  packet, then promoted the target into a `Pass 4` semantic proof that retires
+  the old direct-sound reading in favor of the safer shared-stub
+  interpretation. Links:
+  [`decomp/evidence/opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md),
+  [`decomp/evidence/opcode_0x80_semantic_proof.md`](decomp/evidence/opcode_0x80_semantic_proof.md),
+  [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md),
+  [`decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json)
 - Historical archive moved out of the active ledger on `2026-05-01`:
   [`docs/campaign/RE_CAMPAIGN_HISTORY.md`](docs/campaign/RE_CAMPAIGN_HISTORY.md)
 - Artifact index moved out of the active ledger on `2026-05-01`:

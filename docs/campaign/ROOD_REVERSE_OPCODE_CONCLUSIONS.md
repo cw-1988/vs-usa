@@ -221,7 +221,7 @@ What is still missing for `Confirmed`:
 
 Current local names:
 
-- `0x80 -> SoundEffects0`
+- `0x80 -> Opcode80SharedStub`
 - `0x85 -> LoadSfxSlot`
 - `0x86 -> FreeSfxSlot`
 - `0x88 -> SetCurrentSfx`
@@ -234,38 +234,55 @@ Current local names:
 
 Current narrow:
 
-- This block already reads like a shared sound pipeline rather than unrelated
+- This block still reads like a shared sound pipeline rather than unrelated
   opcodes: resource loads, slot selection, explicit frees, then queue or
   process steps.
-- `0x80` is still unresolved, but not in a way that justifies a clean
-  downgrade back to a generic placeholder. The static dispatch table currently
-  routes `0x80` to `func_800B66E4`, whose matched body is only `return 0;`.
-- A CLI-first replay now proves that directly from the binary too:
-  `decomp/evidence/inittbl_opcode_table.json` exports `0x80 -> 0x800B66E4`,
-  and `decomp/evidence/battle_0x80_handler_slices.json` shows the handler
-  opens with `jr ra` / `clear v0`.
-- At the same time, the nearby unmatched helper `func_800BA2E0` in the same
-  source file consumes the exact 4 argument bytes that `0x80` uses in scripts
-  and calls `vs_main_playSfx(D_800E9B34[arg0[1]], arg0[2], arg0[3], arg0[4])`.
-- The same CLI pass also captured that candidate at the instruction level in
-  `decomp/evidence/battle_sound_candidate_slice.json`, including the
-  `jal 0x80045754` call that `_refs/rood-reverse/config/SLUS_010.40/symbol_addrs.txt`
-  names `vs_main_playSfx`.
-- Real script usage still clusters like a sound cue rather than inert padding:
-  `0x80` appears heavily in cutscene timing slots such as
-  `80 03 1E 80 7F`, `80 03 19 80 7F`, and `80 03 30 7F 7F`, often between
-  camera, wait, and display opcodes where an immediate effect cue would make
-  sense.
+- `0x80` no longer survives as a direct-sound member of that group.
+  The static dispatch table routes `0x80` to `func_800B66E4`, whose matched
+  body is only `return 0;`, and the validated retail `MAP001` runtime pass now
+  shows the live copied table still dispatching `0x80` to that same stub with
+  no observed rewrite before the checked intro call.
+- The nearby helper `func_800BA2E0` still consumes the same 4-byte argument
+  shape and still looks sound-facing, but local evidence now anchors it inside
+  a separate `0x83+` `BATTLE.PRG` subdispatch table rather than treating it as
+  a hidden replacement handler for `0x80`.
+- The widened `0x800B66E4` family audit now makes the structural reading less
+  unique, not more: the same `INITBTL.PRG` table slot also covers named
+  dialog, model, engine-mode, room, battle-end, and music-looking members such
+  as `0x10`, `0x11`, `0x22`, `0x44`, `0x54`, `0x69`, `0x6D`, and `0x92`.
+  That means table membership alone is not standalone user-facing proof for
+  any member of the cluster, including `0x80`.
+- Real script usage still clusters `0x80` near audio-looking cutscene moments,
+  but that is now context evidence only. It is no longer enough to override
+  the verified handler-level fact that the opcode itself lands on the shared
+  stub.
+- A new neighboring-context scan of the checked-in `decoded_scripts` corpus
+  strengthens that cleanup path without reviving the old direct-sound label.
+  Of the `127` files that still contain legacy-rendered `0x80` lines,
+  `88` also co-host at least one explicit sound-family neighbor from
+  `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or `0x9E`.
+  Representative files such as `MAP001`, `MAP026`, and `MAP415` already arm
+  SFX slots, music slots, or sound-file queues through those neighboring
+  opcodes before later `0x80` bursts appear.
+  That makes the old name unnecessary for many audio-looking scenes even
+  before the final consumer path is fully traced.
 - `LoadSoundFileById` and `ProcessSoundQueue` are especially strong locally
   because real scripts commonly pair `9D xx` with a later `9E`.
 - `LoadSfxSlot`, `FreeSfxSlot`, `SetCurrentSfx`, `LoadMusicSlot`, and
   `ClearMusicLoadSlot` are all plausible and internally consistent names, but
   some still rest more on script ordering than on fully cited handler bodies.
+  `Opcode80SharedStub` is intentionally a structural label, not a final
+  user-facing semantic name.
 
 What is still missing for `Confirmed`:
 
-- A handler-level pass that separates pure resource management from immediate
-  playback, especially for `0x80`, `0x88`, and `0x92`.
+- The new neighboring-context packet shows that many representative `0x80`
+  scenes already contain explicit `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or
+  `0x9E` setup, but it still does not identify which downstream consumer turns
+  that prepared state into the audible result for each scene.
+- A consumer-path explanation strong enough to account for those scenes without
+  leaning on the widened `0x800B66E4` stub family as if it were direct audio
+  proof.
 - One cleaner write-up of how the music-slot and sound-file-id paths interact,
   so `LoadMusicSlot` and `MusicPlay` can be documented with the same confidence
   now used for `LoadSoundFileById`.
