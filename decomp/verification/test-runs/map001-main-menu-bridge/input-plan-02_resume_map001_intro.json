@@ -3,7 +3,7 @@
   "pad_slot": 1,
   "pad_number": 1,
   "analog_mode": false,
-  "initial_delay_frames": 45,
+  "initial_delay_frames": 10,
   "load_state": "save-states/init-main-menu.savestate",
   "steps": [
     {
