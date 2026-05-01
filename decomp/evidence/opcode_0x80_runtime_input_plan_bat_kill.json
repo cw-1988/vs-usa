@@ -1,11 +1,10 @@
 {
-  "description": "Starter cold-boot fallback for Vagrant Story (USA) when no near-battle savestate is available. The wrapper now auto-extends timeout to cover the full plan plus slack and can leave screen-capture breadcrumbs. Latest visual checkpoints show the repeated START pulses can now reach the Vagrant Story title/logo, so this scaffold pauses menu navigation until after that title state and only then tries to open and drive the menu. Operator follow-up also confirmed that this build uses PSX-style menu mapping where X cancels and O confirms, so the menu-confirm steps now use CIRCLE instead of CROSS. The repo-local memcards still probe as blank formatted cards, so this revision drops the old Continue/Load branch and instead follows a title-menu New Game route: press CIRCLE on the default entry, wait roughly ten seconds, press START twice with another ten-second gap to skip toward live player control, then wait another roughly five seconds and press CIRCLE as a final probe for the attack-radius or battle-control handoff.",
+  "description": "Preserved cold-boot negative-control route for Vagrant Story (USA). This 12-step plan reaches player control after the New Game intro skips, rotates into the adjacent room, unsheathes, opens the attack sphere, and lands the opening bat attack. The corresponding automated run finished at 2026-05-01T00:51:26Z with frame_count=4886, reader_hit_count=0, write_hit_count=0, candidate_hit_count=0, and no snapshots, so keep this plan as a durable proof that early post-intro control plus the first bat encounter still do not exercise the watched opcode 0x80 runtime reader.",
   "pad_slot": 1,
   "pad_number": 1,
   "analog_mode": false,
   "initial_delay_frames": 900,
   "steps": [
-
     {
       "buttons": [
         "START"
@@ -102,6 +101,5 @@
       "wait_frames_after": 120,
       "note": "attack"
     }
-
   ]
 }

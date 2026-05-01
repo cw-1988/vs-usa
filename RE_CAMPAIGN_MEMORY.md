@@ -197,28 +197,24 @@ Use the artifact index for:
 - `last completed step`: the no-savestate `PCSX-Redux` fallback is now
   instrumented enough to leave screenshot checkpoints, and the latest retunes
   proved that `START` pushes through the intro chain, this build uses `O`
-  confirm / `X` cancel, and the checked-in route can reach the title menu plus
-  the `Load / Memory Card slot 1` screen before stalling. The newest retune
-  then removed that dead `Continue/Load` branch, switched the checked-in
-  scaffold to a title-menu `New Game` route plus two delayed `START` probes,
-  and reran the wrapper for `4380` frames. That replay still produced no
-  runtime-table reader hit, no table-write hit, and no snapshots, but it moved
-  the cold-boot question forward from "wrong menu branch" to "what exact
-  post-title timing finally yields player control or a reader hit?"
-- `next recommended step`: stop iterating on the current `Load` route unless a
-  populated card artifact is added. Prefer running
+  confirm / `X` cancel, and the checked-in route can reach live player control
+  from a `New Game` cold boot. The newest preserved retune rotated into the
+  adjacent room, unsheathed, opened the attack sphere, and attacked the first
+  bat, then timed out at `4886` frames with no `0x800BFBB8` reader hit, no
+  candidate hit, no table-write hit, and no snapshots. That makes the bat-kill
+  route a useful negative control rather than just another failed timing pass:
+  early live gameplay, room transition, and the first combat exchange still do
+  not exercise the watched runtime reader.
+- `next recommended step`: keep the preserved bat-control route as a
+  regression/control artifact, but stop spending passes on blind cold-boot
+  timing tweaks alone. Prefer running
   `decomp/verification/run_opcode_0x80_runtime_capture.ps1` with a near-battle
-  savestate (`-UseNewestSaveState` or `-SaveStatePath`). If no savestate is
-  available yet, keep the cold-boot fallback on the checked-in `New Game`
-  branch and retune only the post-title control-handoff window. Use the latest
-  `step-08`, `step-09`, `step-10`, and `timeout` frame artifacts under
-  `decomp/evidence/opcode_0x80_runtime_frames/` plus
-  `opcode_0x80_runtime_automation_summary.json` to decide whether the next edit
-  should wait longer before the first `START`, wait longer after the second
-  `START`, or add one more skip/control probe after the current ten-step
-  scaffold. Once a run reaches `0x800BFBB8`, capture `after_init` and
-  `pre_dispatch`, then run
-  `decomp/verification/finalize_runtime_observation.py --in-place`. If the
+  or target-cutscene savestate (`-UseNewestSaveState` or `-SaveStatePath`).
+  If no savestate is available yet, pivot the Lua capture toward broader copied
+  table reader discovery instead of assuming `0x800BFBB8` should fire as soon
+  as player control or the first bat encounter begins. Once a run reaches a
+  real reader or rewrite site, capture `after_init` and `pre_dispatch`, then
+  run `decomp/verification/finalize_runtime_observation.py --in-place`. If the
   compare report shows `0x80-0x82` rewrites, immediately import those rows with
   `record_runtime_observation.py import-compare --replace-derived --finalize`.
   If both snapshots match the baseline and no rewrite evidence appears, relabel
@@ -272,6 +268,15 @@ Use the artifact index for:
   [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),
   [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json),
   [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
+- `2026-05-01`: preserved a cold-boot negative-control route that reaches
+  player control, enters the adjacent room, opens the attack sphere, and
+  attacks the first bat, then verified that this wider gameplay sample still
+  records no `0x800BFBB8` reader hit, no table-write hit, and no snapshots.
+  Links:
+  [`decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`](decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json),
+  [`decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md),
+  [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),
+  [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json)
 - `2026-04-30`: made the automated `PCSX-Redux` runtime path savestate-ready
   and validated the scripted capture path against the local disc image. Links:
   [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),
