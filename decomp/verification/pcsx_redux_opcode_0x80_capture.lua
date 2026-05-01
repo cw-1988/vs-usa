@@ -179,6 +179,10 @@ local function add_note(text)
     }
 end
 
+local function log_console(text)
+    print("[opcode_0x80] " .. tostring(text))
+end
+
 local function current_pc_hex()
     return hex32(tonumber(PCSX.getRegisters().pc))
 end
@@ -472,7 +476,7 @@ local function update_input_plan()
             if not step.started then
                 step.started = true
                 plan.started_steps = plan.started_steps + 1
-                add_note(
+                local step_started_message =
                     "input plan step "
                         .. tostring(index)
                         .. " started at frame "
@@ -482,7 +486,8 @@ local function update_input_plan()
                         .. " ["
                         .. table.concat(step.button_names, "+")
                         .. "]"
-                )
+                add_note(step_started_message)
+                log_console(step_started_message)
             end
             for button_index, button_value in ipairs(step.button_values) do
                 desired_buttons[button_value] = step.button_names[button_index]
