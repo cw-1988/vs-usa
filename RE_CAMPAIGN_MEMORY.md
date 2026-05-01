@@ -180,6 +180,21 @@ Current phase: Pass 3 - Copy/patch reconciliation
   The next decisive pass therefore needs either a nearer savestate or a wider
   trigger search beyond that recovered reader chain, not more blind proof that
   "gameplay happened."
+  Validation boundary for the current runtime suite:
+  it is now a checked-in automation and negative-control harness, not a
+  positive trigger-proof packet yet. The preserved runs were executed against
+  the repo-local retail disc image (`Game Data/Vagrant Story (USA).cue`) using
+  cold-boot input plans plus breakpoint/watchpoint instrumentation. That is
+  enough to prove that the wrapper launches, drives the title/menu flow, can
+  reach live player control, and records "no hit" outcomes reproducibly for the
+  tested branches. It is not enough to claim that the disputed live `0x80`
+  trigger was reached or that the copied table was observed at the decisive
+  moment, because no checked-in run has yet produced a reader hit, upstream
+  caller hit, post-init table-write hit, `after_init` snapshot, or
+  `pre_dispatch` snapshot.
+  No local artifact in this pass uses a custom `PRG`, patched executable, or
+  custom ISO as a positive-control trigger source; if a future pass introduces
+  one, keep that proof path labeled separately from retail-runtime evidence.
   If both tracked snapshots still match the baseline and the table write
   watchpoint stays quiet, this contradiction can be downgraded to
   `static_resolved` and carried forward into `Pass 4`. If the next widened
@@ -222,6 +237,9 @@ Use the artifact index for:
   hit, no table-write hit, and no snapshots. That makes the bat-kill route a
   stronger negative control than before: early live gameplay, room transition,
   and the first combat exchange still do not enter the recovered reader chain.
+  This confirms that the retail-disc automation path is functional and
+  reproducible, but it does not yet confirm that the disputed trigger itself
+  has been reached.
 - `next recommended step`: keep the preserved bat-control route as a
   regression/control artifact, but stop spending passes on blind cold-boot
   timing tweaks alone. Preferred order for the next runtime pass:
@@ -255,6 +273,9 @@ Use the artifact index for:
   the result as a compare-only observation. For the cold-boot fallback
   specifically, preserve which menu path, button mapping, and card assumptions
   were actually tested so the next pass does not retry a known dead branch.
+  If a future validation pass uses a custom `PRG`, patched executable, or
+  custom ISO as a positive control for the instrumentation, label that run
+  explicitly as tooling proof rather than retail-runtime opcode proof.
 
 ## Completed Milestones
 
