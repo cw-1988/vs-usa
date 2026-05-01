@@ -228,16 +228,20 @@ Use the artifact index for:
 
 ## Session Handoff
 
-- `last completed step`: the corrected `MAP001` listener-control rerun is now
-  the first real retail-runtime positive control for this packet. It fixed the
-  long-standing pointer-slot mistake by resolving `0x800F4C28` to live table
-  base `0x801119F0`, then proved the reader chain works on the untouched intro:
-  `0x8007A36C` and `0x800BF850` each hit `955` times, `0x800BFBB8` hit
-  `1049` times, the sound-family candidate `0x800BA2E0` hit `13` times, and
-  the decoded-script handler probes fired across dozens of `MAP001` opcode
-  families. Most importantly for the original contradiction, the dispatch log
-  now records `0x80 -> 0x800B66E4` directly from the retail intro while the
-  copied table still shows no post-init write hits.
+- `last completed step`: the latest `MAP001` listener-control regression pass
+  treated the new live-console trigger logging as a tooling change that still
+  had to clear the retail-runtime baseline. It first exposed a blocking
+  `PCSX-Redux` `Update configuration` modal, then hardened the wrapper/Lua
+  path enough to get back to a clean automated rerun. The successful pass kept
+  the pointer-slot fix (`0x800F4C28 -> 0x801119F0`) intact, printed trigger
+  hits into the emulator console as they fired, and still reached the proven
+  reader chain on the untouched intro: `0x8007A36C` and `0x800BF850` each hit
+  `78` times, `0x800BFBB8` hit `76` times, the sound-family candidate
+  `0x800BA2E0` stayed silent, and the decoded-script handler probes still hit
+  across the expected `MAP001` opcode families. Most importantly for the
+  original contradiction, the dispatch log still records
+  `0x80 -> 0x800B66E4` directly from the retail intro while the copied table
+  shows no post-init write hits.
 - `next recommended step`: keep the `MAP001` listener route as the default
   positive-control regression and pivot the runtime work from "does the trigger
   chain work?" to "what makes `0x80` do real work after landing on the shared
@@ -290,6 +294,16 @@ Use the artifact index for:
   [`docs/campaign/RE_CAMPAIGN_HISTORY.md`](docs/campaign/RE_CAMPAIGN_HISTORY.md)
 - Artifact index moved out of the active ledger on `2026-05-01`:
   [`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md)
+- `2026-05-01`: taught the `0x80` runtime capture to print trigger hits live
+  in the `PCSX-Redux` console, then used a fresh `MAP001` rerun to expose and
+  clear a blocking `Update configuration` modal before revalidating the retail
+  intro baseline with `0x8007A36C/0x800BF850` probe hits, `0x800BFBB8` reader
+  hits, and the expected `0x80 -> 0x800B66E4` dispatch samples. Links:
+  [`decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](decomp/verification/pcsx_redux_opcode_0x80_capture.lua),
+  [`decomp/verification/run_opcode_0x80_runtime_capture.ps1`](decomp/verification/run_opcode_0x80_runtime_capture.ps1),
+  [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),
+  [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json),
+  [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
 - `2026-05-01`: added a checked-in no-savestate fallback for the `0x80`
   runtime tie-breaker. Links:
   [`decomp/verification/run_opcode_0x80_runtime_capture.ps1`](decomp/verification/run_opcode_0x80_runtime_capture.ps1),

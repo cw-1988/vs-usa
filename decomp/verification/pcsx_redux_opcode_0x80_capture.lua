@@ -188,6 +188,10 @@ local state = {
     handler_probe_breakpoints_installed = false,
 }
 
+local function log_console(text)
+    print("[opcode_0x80] " .. tostring(text))
+end
+
 local function add_note(text)
     state.notes[#state.notes + 1] = {
         timestamp = utc_now(),
@@ -195,8 +199,14 @@ local function add_note(text)
     }
 end
 
-local function log_console(text)
-    print("[opcode_0x80] " .. tostring(text))
+local function should_log_repeated_hit(hit_count)
+    return hit_count <= 5 or hit_count % 25 == 0
+end
+
+local function log_trigger_hit(label, hit_count, detail)
+    if should_log_repeated_hit(hit_count) then
+        log_console(label .. " hit #" .. tostring(hit_count) .. ": " .. detail)
+    end
 end
 
 local function current_pc_hex()
@@ -397,6 +407,18 @@ local function record_dispatch_observation(entry)
     aggregate.handler_counts[entry.handler_address] = (aggregate.handler_counts[entry.handler_address] or 0) + 1
 
     if aggregate.hit_count == 1 then
+        log_console(
+            "reader dispatch observed "
+                .. entry.opcode
+                .. " -> "
+                .. entry.handler_address
+                .. " from script "
+                .. entry.script_ptr
+                .. " via context "
+                .. entry.context_ptr
+                .. " raw="
+                .. entry.raw_bytes
+        )
         add_note(
             "reader dispatch observed "
                 .. entry.opcode
@@ -839,6 +861,15 @@ breakpoints[#breakpoints + 1] = PCSX.addBreakpoint(
                 state.pre_dispatch_frame = state.frame_count
             end
             if dispatch_entry ~= nil then
+                log_trigger_hit(
+                    "reader breakpoint",
+                    state.reader_hit_count,
+                    pc_hex
+                        .. " for "
+                        .. dispatch_entry.opcode
+                        .. " -> "
+                        .. dispatch_entry.handler_address
+                )
                 add_note(
                     "reader breakpoint hit at "
                         .. pc_hex
@@ -848,6 +879,7 @@ breakpoints[#breakpoints + 1] = PCSX.addBreakpoint(
                         .. dispatch_entry.handler_address
                 )
             else
+                log_trigger_hit("reader breakpoint", state.reader_hit_count, pc_hex)
                 add_note("reader breakpoint hit at " .. pc_hex)
             end
         end)
@@ -875,6 +907,7 @@ local function add_candidate_breakpoint(address, label)
             state.candidate_hits[key] = entry
             state.candidate_hit_count = state.candidate_hit_count + 1
             queue_safe("candidate breakpoint", function()
+                log_trigger_hit(label, entry.hit_count, key)
                 if state.snapshots.pre_dispatch == nil then
                     dump_snapshot("pre_dispatch", config.pre_dispatch_path, "candidate_breakpoint")
                     state.pre_dispatch_frame = state.frame_count
@@ -916,6 +949,7 @@ local function add_probe_breakpoint(address, label)
             entry.pcs[#entry.pcs + 1] = current_pc_hex()
             state.probe_hits[key] = entry
             queue_safe(label .. " breakpoint", function()
+                log_trigger_hit(label, entry.hit_count, key)
                 add_note(label .. " breakpoint hit at " .. key)
             end)
         end
@@ -941,6 +975,7 @@ local function add_runtime_table_write_breakpoint(address)
                     local address_hex = hex32(hit_address)
                     local pc_hex = hex32(pc_value)
                     queue_safe("ignored write note", function()
+                        log_console("ignoring pre-runtime opcode-table write at " .. address_hex .. " from pc " .. pc_hex)
                         add_note("ignoring pre-runtime opcode-table write at " .. address_hex .. " from pc " .. pc_hex)
                     end)
                 end
@@ -950,13 +985,14 @@ local function add_runtime_table_write_breakpoint(address)
             state.write_hit_count = state.write_hit_count + 1
             state.saw_write = true
             state.last_write_cycle = tonumber(PCSX.getCPUCycles())
-            if state.write_hit_count == 1 then
-                local address_hex = hex32(hit_address)
-                local pc_hex = hex32(pc_value)
-                queue_safe("first write note", function()
+            local address_hex = hex32(hit_address)
+            local pc_hex = hex32(pc_value)
+            queue_safe("write note", function()
+                log_trigger_hit("opcode-table write", state.write_hit_count, address_hex .. " from pc " .. pc_hex)
+                if state.write_hit_count == 1 then
                     add_note("first opcode-table write hit at " .. address_hex .. " from pc " .. pc_hex)
-                end)
-            end
+                end
+            end)
         end
     )
     state.table_write_breakpoint_installed = true
@@ -990,6 +1026,7 @@ local function add_handler_probe_breakpoint(target)
             entry.pcs[#entry.pcs + 1] = current_pc_hex()
             state.handler_probe_hits[address_hex] = entry
             queue_safe(label .. " hit", function()
+                log_trigger_hit(label, entry.hit_count, address_hex)
                 add_note("script handler probe hit at " .. address_hex .. " for " .. table.concat(target.opcodes, ","))
             end)
         end

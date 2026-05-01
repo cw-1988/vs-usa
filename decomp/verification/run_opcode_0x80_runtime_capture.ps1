@@ -371,6 +371,41 @@ function Invoke-Recorder {
     & python (Join-Path $RepoRoot "decomp/verification/record_runtime_observation.py") @Arguments
 }
 
+function Initialize-PcsxReduxConfig {
+    param([string]$BiosPath)
+
+    $configRoot = Join-Path $env:APPDATA "pcsx-redux"
+    $configPath = Join-Path $configRoot "pcsx.json"
+    if (-not (Test-Path -LiteralPath $configPath)) {
+        return
+    }
+
+    $config = Get-Content -Raw -LiteralPath $configPath | ConvertFrom-Json
+    if (-not $config.emulator) {
+        return
+    }
+
+    $updated = $false
+    if ($config.emulator.AutoUpdate -ne $false) {
+        $config.emulator.AutoUpdate = $false
+        $updated = $true
+    }
+
+    if (-not $config.emulator.ShownAutoUpdateConfig) {
+        $config.emulator.ShownAutoUpdateConfig = $true
+        $updated = $true
+    }
+
+    if ($BiosPath -and [string]::IsNullOrWhiteSpace([string]$config.emulator.Bios)) {
+        $config.emulator.Bios = $BiosPath
+        $updated = $true
+    }
+
+    if ($updated) {
+        $config | ConvertTo-Json -Depth 32 | Set-Content -LiteralPath $configPath -Encoding UTF8
+    }
+}
+
 $pcsxReduxExe = Resolve-RepoPath -Path $PcsxReduxExe
 $biosPath = Resolve-RepoPath -Path $BiosPath
 $luaScript = Resolve-RepoPath -Path $LuaScript
@@ -421,9 +456,13 @@ if (-not [string]::IsNullOrWhiteSpace($IsoPath)) {
 
 $effectiveSaveStateSearchRoots = @($SaveStateSearchRoots)
 $pcsxReduxDirectory = Split-Path -Parent $pcsxReduxExe
+if ([string]::IsNullOrWhiteSpace($pcsxReduxDirectory)) {
+    $pcsxReduxDirectory = $RepoRoot
+}
 if ($pcsxReduxDirectory -and ($effectiveSaveStateSearchRoots -notcontains $pcsxReduxDirectory)) {
     $effectiveSaveStateSearchRoots += $pcsxReduxDirectory
 }
+Initialize-PcsxReduxConfig -BiosPath $biosPath
 
 if ($UseNewestSaveState) {
     $discoveredSaveState = Get-NewestSaveState -SearchRoots $effectiveSaveStateSearchRoots -Patterns $SaveStatePatterns
@@ -571,7 +610,7 @@ if ($memcard2Path) {
 
 $processExitCode = $null
 try {
-    $process = Start-Process -FilePath $pcsxReduxExe -ArgumentList $args -PassThru
+    $process = Start-Process -FilePath $pcsxReduxExe -ArgumentList $args -WorkingDirectory $pcsxReduxDirectory -PassThru
     $launchDeadline = [DateTime]::UtcNow.AddSeconds($LaunchTimeoutSeconds)
 
     while (-not (Test-Path -LiteralPath $summaryPath) -and -not $process.HasExited) {
@@ -590,7 +629,12 @@ try {
     }
 } catch {
     Write-Warning ("Start-Process failed; falling back to direct launch semantics. " + $_.Exception.Message)
-    & $pcsxReduxExe @args
+    Push-Location $pcsxReduxDirectory
+    try {
+        & $pcsxReduxExe @args
+    } finally {
+        Pop-Location
+    }
     $lastExitCodeVariable = Get-Variable -Name LASTEXITCODE -ErrorAction SilentlyContinue
     $processExitCode = if ($lastExitCodeVariable) { [int]$lastExitCodeVariable.Value } else { 0 }
 }

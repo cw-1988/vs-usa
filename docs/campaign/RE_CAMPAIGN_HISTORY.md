@@ -6,6 +6,15 @@ ledger stays focused on current state, conflicts, and handoff.
 
 ## Milestones
 
+- `2026-05-01`: added live trigger logging to the `PCSX-Redux` `0x80` capture
+  path, then reran the retail `MAP001` listener-control baseline after clearing
+  a blocking `Update configuration` modal so the proof packet preserved both
+  the tooling fix and the still-valid `0x80 -> 0x800B66E4` intro dispatch. Links:
+  [`../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua),
+  [`../../decomp/verification/run_opcode_0x80_runtime_capture.ps1`](../../decomp/verification/run_opcode_0x80_runtime_capture.ps1),
+  [`../../decomp/evidence/opcode_0x80_runtime_automation_summary.json`](../../decomp/evidence/opcode_0x80_runtime_automation_summary.json),
+  [`../../decomp/evidence/opcode_0x80_runtime_observation.json`](../../decomp/evidence/opcode_0x80_runtime_observation.json),
+  [`../../decomp/evidence/opcode_0x80_runtime_support.md`](../../decomp/evidence/opcode_0x80_runtime_support.md)
 - `2026-05-01`: corrected the `0x80` runtime capture to dereference pointer
   slot `0x800F4C28`, added decoded-script handler probes plus selectable
   interpreter/dynarec launch modes, and turned the stripped `MAP001` `New
