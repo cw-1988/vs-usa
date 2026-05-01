@@ -279,6 +279,28 @@ Current narrow:
   `SoundEffects0` reading is usually the already-proven `0x85/0x88`
   prepared-state path, with `MAP026`-style queue re-arms and `MAP415`-style
   music-heavy scenes covering important exceptions.
+- A new residual-context pass now narrows the remaining holdouts more
+  aggressively than the earlier "42 unexplained files" wording.
+  All `42` residual files reach their first `0x80` with no sound-family opcode
+  at all before it, and `38` of those files contain no `0x85-0x9E`
+  sound-family opcode anywhere in the file.
+  The dominant evidence is template reuse, not missing sound setup:
+  `36` residual files share the exact duplicated opener
+  `80 01 41 80 7F` then `80 01 42 80 7F`, most often after the same
+  `DialogHide` -> `Opcode14` -> `SetHeadsUpDisplayMode(1)` lead-in and before
+  the same `Opcode45` -> `ModelControlViaScript` follow-up.
+  Another `3` residual files share the alternate duplicated
+  `80 01 1D 80 7F` then `80 01 1E 80 7F` microcluster.
+  That makes the residual set look more like repeated opener scaffolding than
+  like strong positive sound evidence.
+- The residual pass also narrows the real exceptions.
+  Only `2` residual files later grow a complete neighboring pair in the same
+  file, and only `2` currently have same-title sibling variants in the same
+  area that do stage complete pre-burst pairs:
+  `022-Chamber of Fear (after the quake)` versus `017-Chamber of Fear`, and
+  `408-The Gallows (Mino Zombie, new chest)` versus `026-The Gallows`.
+  Those are now the clearest carry-over or alternate-state candidates, rather
+  than the default explanation for the full residual set.
 - `LoadSoundFileById` and `ProcessSoundQueue` are especially strong locally
   because real scripts commonly pair `9D xx` with a later `9E`.
 - `LoadSfxSlot`, `FreeSfxSlot`, `SetCurrentSfx`, `LoadMusicSlot`, and
@@ -295,12 +317,14 @@ What is still missing for `Confirmed`:
   that prepared state into the audible result for each scene.
 - The stricter first-burst scan leaves a concrete residual set:
   `42` currently decoded `0x80` files still reach their first `0x80` without
-  any complete neighboring sound pair in the same file before it.
-  Those scenes now need carried-state, cross-script, or non-paired neighbor
-  explanations rather than another attempt to reinterpret the verified stub.
-- A consumer-path explanation strong enough to account for those scenes without
-  leaning on the widened `0x800B66E4` stub family as if it were direct audio
-  proof.
+  any complete neighboring sound pair in the same file before it, but the new
+  residual pass shows that most of those files are repeated opener templates
+  rather than fresh audio-heavy holdouts.
+  What remains open is the template-level meaning of the repeated `0x41/0x42`
+  and `0x1D/0x1E` bursts, plus the smaller carry-over or variant subset.
+- A consumer-path explanation for the minority cases that really do look like
+  carry-over or later-rearm scenes, without leaning on the widened
+  `0x800B66E4` stub family as if it were direct audio proof.
 - One cleaner write-up of how the music-slot and sound-file-id paths interact,
   so `LoadMusicSlot` and `MusicPlay` can be documented with the same confidence
   now used for `LoadSoundFileById`.
