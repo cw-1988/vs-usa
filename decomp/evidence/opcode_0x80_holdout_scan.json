@@ -1,0 +1,135 @@
+{
+  "target": "opcode 0x80",
+  "analysis": "holdout provenance for residual singleton or variant 0x80 files",
+  "source_template_scan": "decomp/evidence/opcode_0x80_template_scan.json",
+  "summary": {
+    "residual_selector_family_counts": {
+      "dominant_41_42_family": 38,
+      "other_selector": 1,
+      "paired_1D_1E_family": 3
+    },
+    "holdouts": {
+      "holdout_count": 3,
+      "provenance_counts": {
+        "dominant_selector_singleton": 2,
+        "same_title_variant": 1
+      },
+      "selector_counts": {
+        "0x0E": 1,
+        "0x41": 1,
+        "0x42": 1
+      },
+      "holdouts_without_complete_pair_anywhere": 2,
+      "holdouts_without_complete_pair_before_first_0x80": 3
+    },
+    "resolved_question": "No second structural producer is visible in the remaining holdouts; two reuse the dominant 0x41/0x42 selector family and the last one is best explained as a same-title variant case."
+  },
+  "records": [
+    {
+      "path": "decoded_scripts/1-Wine Cellar/021-Room of Rotten Grapes.txt",
+      "area": "1-Wine Cellar",
+      "first_0x80_address": "0x00BD",
+      "first_0x80_bytes": "80 03 41 80 7F",
+      "second_0x80_bytes": null,
+      "selector_bytes": [
+        65
+      ],
+      "selector_hex": [
+        "0x41"
+      ],
+      "selector_family": "dominant_41_42_family",
+      "provenance_class": "dominant_selector_singleton",
+      "provenance_note": "Reuses the dominant 0x41/0x42 selector family as a singleton or truncated form instead of introducing a new residual family.",
+      "lead_in_lines": [
+        "00B9: E1 01                               SetScreenEffectEnabled(enabled=1)",
+        "00BB: 1A                                  SplashScreenFadeIn()",
+        "00BC: 19                                  SplashScreenHide()"
+      ],
+      "context_after_burst": [
+        "00C2: F0 1E                               Wait(frames=30)",
+        "00C4: 23 00 00 43 00                      ModelSetAnimations(0, 0, 67, 0)",
+        "00C9: F0 1E                               Wait(frames=30)",
+        "00CB: C0 C3 01 16 FF 68 01                CameraDirection(raw=[195, 1, 22, 255, 104, 1])",
+        "00D2: D0 B6 01 13 FD 2E 06                CameraPosition(raw=[182, 1, 19, 253, 46, 6])"
+      ],
+      "family_anywhere": [
+        "music_family",
+        "queue_family",
+        "sfx_family"
+      ],
+      "later_complete_pairs": [],
+      "same_title_variants": []
+    },
+    {
+      "path": "decoded_scripts/1-Wine Cellar/022-Chamber of Fear (after the quake).txt",
+      "area": "1-Wine Cellar",
+      "first_0x80_address": "0x00E6",
+      "first_0x80_bytes": "80 03 0E 80 7F",
+      "second_0x80_bytes": null,
+      "selector_bytes": [
+        14
+      ],
+      "selector_hex": [
+        "0x0E"
+      ],
+      "selector_family": "other_selector",
+      "provenance_class": "same_title_variant",
+      "provenance_note": "The only unique-selector holdout, but it already has a same-title sibling variant that stages a complete pre-burst neighboring pair.",
+      "lead_in_lines": [
+        "00DB: F0 46                               Wait(frames=70)",
+        "00DD: 23 00 00 47 0A                      ModelSetAnimations(0, 0, 71, 10)",
+        "00E2: 5D 00 00 00                         Opcode5D(0, 0, 0)"
+      ],
+      "context_after_burst": [
+        "00EB: F0 14                               Wait(frames=20)",
+        "00ED: 93 7F 78                            Opcode93(127, 120)",
+        "00F0: F4 01                               ScriptCallSlotActive(1)",
+        "00F2: 7C 01                               SetFirstPersonView(1)",
+        "00F4: F5 01 30 00                         ScriptCall(1, 48, 0)"
+      ],
+      "family_anywhere": [
+        "sfx_family"
+      ],
+      "later_complete_pairs": [],
+      "same_title_variants": [
+        {
+          "path": "decoded_scripts/1-Wine Cellar/017-Chamber of Fear.txt",
+          "first_0x80_address": "0x00E3",
+          "before_complete_pairs": [
+            "sfx_pair"
+          ],
+          "first_0x80_bytes": "80 03 01 80 7F"
+        }
+      ]
+    },
+    {
+      "path": "decoded_scripts/1-Wine Cellar/025-The Hero's Winehall.txt",
+      "area": "1-Wine Cellar",
+      "first_0x80_address": "0x0040",
+      "first_0x80_bytes": "80 01 42 80 7F",
+      "second_0x80_bytes": null,
+      "selector_bytes": [
+        66
+      ],
+      "selector_hex": [
+        "0x42"
+      ],
+      "selector_family": "dominant_41_42_family",
+      "provenance_class": "dominant_selector_singleton",
+      "provenance_note": "Reuses the dominant 0x41/0x42 selector family as a singleton or truncated form instead of introducing a new residual family.",
+      "lead_in_lines": [
+        "003B: 3B                                  WaitForFile()",
+        "003C: 3D 01                               Opcode3D(1)",
+        "003E: F0 01                               Wait(frames=1)"
+      ],
+      "context_after_burst": [
+        "0045: 43                                  Opcode43()",
+        "0046: 6E                                  Opcode6E()",
+        "0047: FF                                  return()"
+      ],
+      "family_anywhere": [],
+      "later_complete_pairs": [],
+      "same_title_variants": []
+    }
+  ]
+}

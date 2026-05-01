@@ -1,0 +1,146 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_holdout_provenance",
+    "title": "Opcode `0x80` Holdout Provenance Scan",
+    "summary": "Answer the remaining `Pass 5` question left by the residual-context and template-context packets:",
+    "artifacts": [
+      "decomp/evidence/opcode_0x80_holdout_scan.json",
+      "decomp/verification/analyze_opcode_0x80_holdouts.py",
+      "decomp/evidence/opcode_0x80_template_scan.json",
+      "decoded_scripts/1-Wine Cellar/021-Room of Rotten Grapes.txt",
+      "decoded_scripts/1-Wine Cellar/022-Chamber of Fear (after the quake).txt",
+      "decoded_scripts/1-Wine Cellar/025-The Hero's Winehall.txt",
+      "decoded_scripts/1-Wine Cellar/017-Chamber of Fear.txt"
+    ],
+    "findings": [
+      "The final singleton or variant residual files do not expose a second structural producer for `0x80`.",
+      "`021` and `025` reuse the dominant `0x41/0x42` selector family as singleton or truncated forms.",
+      "`022` is best explained as a same-title variant of `017`, not as new direct-sound evidence.",
+      "No remaining residual holdout currently argues against confirming `Opcode80SharedStub` as the safe structural label."
+    ],
+    "body": {
+      "sections": {
+        "goal": {
+          "heading": "Goal",
+          "content": [
+            {
+              "paragraph": "Answer the remaining `Pass 5` question left by the residual-context and\ntemplate-context packets:",
+              "ulist": [
+                "do the final singleton or variant `0x80` residuals reveal a second\nstructural producer",
+                "or do they still collapse back into the already established room-entry,\ncutscene, or state-variant scaffolds"
+              ]
+            },
+            {
+              "paragraph": "This pass focuses only on the `3` files that were still marked\n`singleton_or_variant` in\n[`opcode_0x80_template_scan.json`](opcode_0x80_template_scan.json)."
+            }
+          ]
+        },
+        "method": {
+          "heading": "Method",
+          "content": [
+            {
+              "ulist": [
+                "Start from the checked-in\n[`opcode_0x80_template_scan.json`](opcode_0x80_template_scan.json) output.",
+                "Reclassify only the `singleton_or_variant` rows by:",
+                "Preserve the result as\n[`opcode_0x80_holdout_scan.json`](opcode_0x80_holdout_scan.json), generated\nby\n[`../verification/analyze_opcode_0x80_holdouts.py`](../verification/analyze_opcode_0x80_holdouts.py)."
+              ]
+            }
+          ]
+        },
+        "corpus-result": {
+          "heading": "Corpus result",
+          "content": [
+            {
+              "paragraph": "The holdout set is now small enough to characterize directly:",
+              "ulist": [
+                "only `3 / 42` residual files were still outside the two repeated paired\nfamilies after the template pass",
+                "`2 / 3` of those holdouts still reuse the dominant `0x41/0x42` selector\nbytes",
+                "the remaining `1 / 3` uses a unique selector byte, but it is also the only\nholdout with a same-title sibling variant that already stages a complete\npre-burst neighboring sound pair",
+                "none of the `3` holdouts introduce a new complete sound pair before their\nfirst `0x80`",
+                "The wider selector view sharpens that even more:",
+                {
+                  "ulist": [
+                    "`38 / 42` residual records now belong to the `0x41/0x42` selector family\nonce the singleton holdouts are included",
+                    "`3 / 42` belong to the repeated `0x1D/0x1E` family",
+                    "only `1 / 42` residual record is left on any other selector byte at all:\n`0x0E` in `MAP022`"
+                  ]
+                }
+              ]
+            },
+            {
+              "paragraph": "That is not the shape of a second unresolved producer family."
+            }
+          ]
+        },
+        "021-and-025-dominant-selector-singletons": {
+          "heading": "`021` and `025`: dominant-selector singletons",
+          "content": [
+            {
+              "paragraph": "Two of the three holdouts reduce cleanly to loosened forms of the dominant\n`0x41/0x42` family:",
+              "ulist": [
+                "[`021-Room of Rotten Grapes`](../../decoded_scripts/1-Wine%20Cellar/021-Room%20of%20Rotten%20Grapes.txt)\nuses a lone `80 03 41 80 7F`",
+                "[`025-The Hero's Winehall`](../../decoded_scripts/1-Wine%20Cellar/025-The%20Hero's%20Winehall.txt)\nuses a lone `80 01 42 80 7F`"
+              ]
+            },
+            {
+              "paragraph": "That matters because those are not fresh selector values.\nThey are the same `0x41` and `0x42` bytes already dominating the `36`-file\npaired family; these scenes just reuse them without the usual immediate partner\nburst."
+            },
+            {
+              "paragraph": "Their surrounding context stays structural, not audio-forward:",
+              "ulist": [
+                "`021` places the `0x41` burst directly after splash-screen load/show/fade\nsetup, then waits, flips model animations, and continues through camera and\nstaging work rather than any complete neighboring sound path",
+                "`025` places the `0x42` burst after `WaitForFile`, `Opcode3D`, and\n`Wait(1)`, then immediately exits through `Opcode43` and `Opcode6E`, which\nreads like a minimal room-state tail instead of a standalone sound action"
+              ]
+            },
+            {
+              "paragraph": "So these two files widen the already-known dominant family.\nThey do not create a new one."
+            }
+          ]
+        },
+        "022-same-title-variant-not-a-second-producer": {
+          "heading": "`022`: same-title variant, not a second producer",
+          "content": [
+            {
+              "paragraph": "The last holdout,\n[`022-Chamber of Fear (after the quake)`](../../decoded_scripts/1-Wine%20Cellar/022-Chamber%20of%20Fear%20(after%20the%20quake).txt),\nis the only residual singleton that does not reuse the dominant selector\nfamily.\nIts first burst is `80 03 0E 80 7F`."
+            },
+            {
+              "paragraph": "Even so, it still does not point to a second structural producer:",
+              "ulist": [
+                "it has no complete neighboring sound pair before the first `0x80`",
+                "its immediate post-burst flow is still cutscene control:\nwait, `Opcode93`, `ScriptCallSlotActive`, first-person toggle, and further\nscripted camera/dialog work",
+                "it is the only holdout with a same-title sibling variant already logged by\nthe residual scan:\n[`017-Chamber of Fear`](../../decoded_scripts/1-Wine%20Cellar/017-Chamber%20of%20Fear.txt)\nstages the explicit `0x85/0x88` SFX setup before its own later `0x80`"
+              ]
+            },
+            {
+              "paragraph": "That makes `022` look more like a state-specific rewrite of the same scene\nfamily than like a new broad producer for inert `0x80` bursts."
+            }
+          ]
+        },
+        "safe-takeaway": {
+          "heading": "Safe takeaway",
+          "content": [
+            {
+              "ulist": [
+                "the final holdouts do **not** reveal a second structural producer for\n`0x80`",
+                "`021` and `025` are best treated as singleton or truncated reuse of the\ndominant `0x41/0x42` scaffold family",
+                "`022` is best treated as a same-title state variant case anchored by `017`,\nnot as fresh direct-sound evidence",
+                "no remaining residual file currently argues against promoting the structural\nlabel `Opcode80SharedStub`"
+              ]
+            },
+            {
+              "paragraph": "This does not explain *why* content-authoring templates kept those inert bursts.\nBut it does close the narrower campaign blocker:\nthe remaining singleton and variant holdouts do not force a second semantic\nreading for `0x80`."
+            }
+          ]
+        }
+      }
+    },
+    "source_markdown_path": "decomp/evidence/opcode_0x80_holdout_provenance.md",
+    "schema_version": "mdjson.v8",
+    "source_sha256": "948642ae2e02c202562dea4c11408975cf5d29863a6676ed12f353f1e8efc7cb",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T22:35:36Z",
+    "raw_markdown": "# Opcode `0x80` Holdout Provenance Scan\n\n## Goal\n\nAnswer the remaining `Pass 5` question left by the residual-context and\ntemplate-context packets:\n\n- do the final singleton or variant `0x80` residuals reveal a second\n  structural producer\n- or do they still collapse back into the already established room-entry,\n  cutscene, or state-variant scaffolds\n\nThis pass focuses only on the `3` files that were still marked\n`singleton_or_variant` in\n[`opcode_0x80_template_scan.json`](opcode_0x80_template_scan.json).\n\n## Method\n\n- Start from the checked-in\n  [`opcode_0x80_template_scan.json`](opcode_0x80_template_scan.json) output.\n- Reclassify only the `singleton_or_variant` rows by:\n  - selector-byte reuse against the dominant residual families\n  - same-title sibling links already recorded by the residual scan\n  - immediate decoded-script context before and after the first `0x80`\n- Preserve the result as\n  [`opcode_0x80_holdout_scan.json`](opcode_0x80_holdout_scan.json), generated\n  by\n  [`../verification/analyze_opcode_0x80_holdouts.py`](../verification/analyze_opcode_0x80_holdouts.py).\n\n## Corpus result\n\nThe holdout set is now small enough to characterize directly:\n\n- only `3 / 42` residual files were still outside the two repeated paired\n  families after the template pass\n- `2 / 3` of those holdouts still reuse the dominant `0x41/0x42` selector\n  bytes\n- the remaining `1 / 3` uses a unique selector byte, but it is also the only\n  holdout with a same-title sibling variant that already stages a complete\n  pre-burst neighboring sound pair\n- none of the `3` holdouts introduce a new complete sound pair before their\n  first `0x80`\n\nThe wider selector view sharpens that even more:\n\n- `38 / 42` residual records now belong to the `0x41/0x42` selector family\n  once the singleton holdouts are included\n- `3 / 42` belong to the repeated `0x1D/0x1E` family\n- only `1 / 42` residual record is left on any other selector byte at all:\n  `0x0E` in `MAP022`\n\nThat is not the shape of a second unresolved producer family.\n\n## `021` and `025`: dominant-selector singletons\n\nTwo of the three holdouts reduce cleanly to loosened forms of the dominant\n`0x41/0x42` family:\n\n- [`021-Room of Rotten Grapes`](../../decoded_scripts/1-Wine%20Cellar/021-Room%20of%20Rotten%20Grapes.txt)\n  uses a lone `80 03 41 80 7F`\n- [`025-The Hero's Winehall`](../../decoded_scripts/1-Wine%20Cellar/025-The%20Hero's%20Winehall.txt)\n  uses a lone `80 01 42 80 7F`\n\nThat matters because those are not fresh selector values.\nThey are the same `0x41` and `0x42` bytes already dominating the `36`-file\npaired family; these scenes just reuse them without the usual immediate partner\nburst.\n\nTheir surrounding context stays structural, not audio-forward:\n\n- `021` places the `0x41` burst directly after splash-screen load/show/fade\n  setup, then waits, flips model animations, and continues through camera and\n  staging work rather than any complete neighboring sound path\n- `025` places the `0x42` burst after `WaitForFile`, `Opcode3D`, and\n  `Wait(1)`, then immediately exits through `Opcode43` and `Opcode6E`, which\n  reads like a minimal room-state tail instead of a standalone sound action\n\nSo these two files widen the already-known dominant family.\nThey do not create a new one.\n\n## `022`: same-title variant, not a second producer\n\nThe last holdout,\n[`022-Chamber of Fear (after the quake)`](../../decoded_scripts/1-Wine%20Cellar/022-Chamber%20of%20Fear%20(after%20the%20quake).txt),\nis the only residual singleton that does not reuse the dominant selector\nfamily.\nIts first burst is `80 03 0E 80 7F`.\n\nEven so, it still does not point to a second structural producer:\n\n- it has no complete neighboring sound pair before the first `0x80`\n- its immediate post-burst flow is still cutscene control:\n  wait, `Opcode93`, `ScriptCallSlotActive`, first-person toggle, and further\n  scripted camera/dialog work\n- it is the only holdout with a same-title sibling variant already logged by\n  the residual scan:\n  [`017-Chamber of Fear`](../../decoded_scripts/1-Wine%20Cellar/017-Chamber%20of%20Fear.txt)\n  stages the explicit `0x85/0x88` SFX setup before its own later `0x80`\n\nThat makes `022` look more like a state-specific rewrite of the same scene\nfamily than like a new broad producer for inert `0x80` bursts.\n\n## Safe takeaway\n\n- the final holdouts do **not** reveal a second structural producer for\n  `0x80`\n- `021` and `025` are best treated as singleton or truncated reuse of the\n  dominant `0x41/0x42` scaffold family\n- `022` is best treated as a same-title state variant case anchored by `017`,\n  not as fresh direct-sound evidence\n- no remaining residual file currently argues against promoting the structural\n  label `Opcode80SharedStub`\n\nThis does not explain *why* content-authoring templates kept those inert bursts.\nBut it does close the narrower campaign blocker:\nthe remaining singleton and variant holdouts do not force a second semantic\nreading for `0x80`.\n",
+    "markdown_with_json_links": "# Opcode `0x80` Holdout Provenance Scan\n\n## Goal\n\nAnswer the remaining `Pass 5` question left by the residual-context and\ntemplate-context packets:\n\n- do the final singleton or variant `0x80` residuals reveal a second\n  structural producer\n- or do they still collapse back into the already established room-entry,\n  cutscene, or state-variant scaffolds\n\nThis pass focuses only on the `3` files that were still marked\n`singleton_or_variant` in\n[`opcode_0x80_template_scan.json`](opcode_0x80_template_scan.json).\n\n## Method\n\n- Start from the checked-in\n  [`opcode_0x80_template_scan.json`](opcode_0x80_template_scan.json) output.\n- Reclassify only the `singleton_or_variant` rows by:\n  - selector-byte reuse against the dominant residual families\n  - same-title sibling links already recorded by the residual scan\n  - immediate decoded-script context before and after the first `0x80`\n- Preserve the result as\n  [`opcode_0x80_holdout_scan.json`](opcode_0x80_holdout_scan.json), generated\n  by\n  [`../verification/analyze_opcode_0x80_holdouts.py`](../verification/analyze_opcode_0x80_holdouts.py).\n\n## Corpus result\n\nThe holdout set is now small enough to characterize directly:\n\n- only `3 / 42` residual files were still outside the two repeated paired\n  families after the template pass\n- `2 / 3` of those holdouts still reuse the dominant `0x41/0x42` selector\n  bytes\n- the remaining `1 / 3` uses a unique selector byte, but it is also the only\n  holdout with a same-title sibling variant that already stages a complete\n  pre-burst neighboring sound pair\n- none of the `3` holdouts introduce a new complete sound pair before their\n  first `0x80`\n\nThe wider selector view sharpens that even more:\n\n- `38 / 42` residual records now belong to the `0x41/0x42` selector family\n  once the singleton holdouts are included\n- `3 / 42` belong to the repeated `0x1D/0x1E` family\n- only `1 / 42` residual record is left on any other selector byte at all:\n  `0x0E` in `MAP022`\n\nThat is not the shape of a second unresolved producer family.\n\n## `021` and `025`: dominant-selector singletons\n\nTwo of the three holdouts reduce cleanly to loosened forms of the dominant\n`0x41/0x42` family:\n\n- [`021-Room of Rotten Grapes`](../../decoded_scripts/1-Wine%20Cellar/021-Room%20of%20Rotten%20Grapes.txt)\n  uses a lone `80 03 41 80 7F`\n- [`025-The Hero's Winehall`](../../decoded_scripts/1-Wine%20Cellar/025-The%20Hero's%20Winehall.txt)\n  uses a lone `80 01 42 80 7F`\n\nThat matters because those are not fresh selector values.\nThey are the same `0x41` and `0x42` bytes already dominating the `36`-file\npaired family; these scenes just reuse them without the usual immediate partner\nburst.\n\nTheir surrounding context stays structural, not audio-forward:\n\n- `021` places the `0x41` burst directly after splash-screen load/show/fade\n  setup, then waits, flips model animations, and continues through camera and\n  staging work rather than any complete neighboring sound path\n- `025` places the `0x42` burst after `WaitForFile`, `Opcode3D`, and\n  `Wait(1)`, then immediately exits through `Opcode43` and `Opcode6E`, which\n  reads like a minimal room-state tail instead of a standalone sound action\n\nSo these two files widen the already-known dominant family.\nThey do not create a new one.\n\n## `022`: same-title variant, not a second producer\n\nThe last holdout,\n[`022-Chamber of Fear (after the quake)`](../../decoded_scripts/1-Wine%20Cellar/022-Chamber%20of%20Fear%20(after%20the%20quake).txt),\nis the only residual singleton that does not reuse the dominant selector\nfamily.\nIts first burst is `80 03 0E 80 7F`.\n\nEven so, it still does not point to a second structural producer:\n\n- it has no complete neighboring sound pair before the first `0x80`\n- its immediate post-burst flow is still cutscene control:\n  wait, `Opcode93`, `ScriptCallSlotActive`, first-person toggle, and further\n  scripted camera/dialog work\n- it is the only holdout with a same-title sibling variant already logged by\n  the residual scan:\n  [`017-Chamber of Fear`](../../decoded_scripts/1-Wine%20Cellar/017-Chamber%20of%20Fear.txt)\n  stages the explicit `0x85/0x88` SFX setup before its own later `0x80`\n\nThat makes `022` look more like a state-specific rewrite of the same scene\nfamily than like a new broad producer for inert `0x80` bursts.\n\n## Safe takeaway\n\n- the final holdouts do **not** reveal a second structural producer for\n  `0x80`\n- `021` and `025` are best treated as singleton or truncated reuse of the\n  dominant `0x41/0x42` scaffold family\n- `022` is best treated as a same-title state variant case anchored by `017`,\n  not as fresh direct-sound evidence\n- no remaining residual file currently argues against promoting the structural\n  label `Opcode80SharedStub`\n\nThis does not explain *why* content-authoring templates kept those inert bursts.\nBut it does close the narrower campaign blocker:\nthe remaining singleton and variant holdouts do not force a second semantic\nreading for `0x80`.\n"
+  }
+}
