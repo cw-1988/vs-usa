@@ -281,7 +281,7 @@ TBL_SINGLE = {
     0x48: "Ì",
     0x49: "ő",
     0x4A: "Î",
-    0x4B: "í",
+    0x4B: "Ï",
     0x4C: "Ò",
     0x4D: "Ó",
     0x4E: "Ô",
@@ -315,8 +315,8 @@ TBL_SINGLE = {
     0x6A: "ü",
     0x87: "‼",
     0x88: "≠",
-    0x89: "≦",
-    0x8A: "≧",
+    0x89: "≤",
+    0x8A: "≥",
     0x8B: "÷",
     0x8C: "-",
     0x8D: "—",
@@ -351,15 +351,6 @@ TBL_SINGLE = {
     0xAC: "}",
     0xAD: "♪",
 }
-
-TBL_DOUBLE = {
-    (0xF8, 0x01): "«p1»",
-    (0xF8, 0x02): "«p2»",
-    (0xF8, 0x08): "«p8»",
-    (0xF8, 0x0A): "«p10»",
-    (0xFA, 0x06): " ",
-}
-
 
 def load_room_name_index() -> tuple[dict[str, dict[str, int | str]], dict[tuple[int, int], dict[str, int | str]]]:
     by_map: dict[str, dict[str, int | str]] = {}
@@ -419,13 +410,23 @@ def decode_text(raw: bytes) -> str:
             out.append("\\n")
             i += 1
             continue
-        if i + 1 < len(raw) and (b, raw[i + 1]) in TBL_DOUBLE:
-            out.append(TBL_DOUBLE[(b, raw[i + 1])])
+        if b == 0xFA and i + 1 < len(raw):
+            if out and not out[-1].endswith((" ", "\\n")):
+                out.append(" ")
             i += 2
+            continue
+        if b in {0xF8, 0xF9, 0xFB, 0xFC, 0xFD, 0xFE} and i + 1 < len(raw):
+            i += 2
+            continue
+        if b == 0xF6:
+            i += 1
             continue
         out.append(TBL_SINGLE.get(b, f"<{b:02X}>"))
         i += 1
-    return "".join(out)
+    text = "".join(out).strip()
+    while text.startswith("\\n"):
+        text = text[2:].lstrip()
+    return text
 
 
 def parse_dialogs(section: bytes, ptr_dialog: int, dialog_limit: int) -> list[str]:
@@ -433,21 +434,21 @@ def parse_dialogs(section: bytes, ptr_dialog: int, dialog_limit: int) -> list[st
     if count == 0:
         return []
 
-    table_base = ptr_dialog
-    first_text_rel = count * 2
-    rel_offsets = [first_text_rel]
-    for i in range(count - 1):
-        rel_offsets.append(u16(section, table_base + 2 + i * 2))
-
     dialogs: list[str] = []
-    for rel in rel_offsets:
-        start = table_base + rel
+    start = ptr_dialog + count * 2
+    for _ in range(count):
+        if start >= dialog_limit:
+            dialogs.append("<truncated>")
+            continue
         end = start
         while end < dialog_limit and section[end] != 0xE7:
             end += 1
         if end < dialog_limit:
             end += 1
         dialogs.append(decode_text(section[start:end]))
+        start = end
+        while start < dialog_limit and section[start] == 0xEB:
+            start += 1
     return dialogs
 
 
