@@ -1,0 +1,84 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_runtime_bat_kill_negative",
+    "title": "Opcode `0x80` Bat-Kill Negative Runtime Control",
+    "summary": "Record a preserved cold-boot negative-control run that reaches early live combat yet still produces no watched `0x80` runtime reader, caller, or table-write hits.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md",
+    "artifacts": [
+      "decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json",
+      "decomp/evidence/opcode_0x80_runtime_automation_summary.json",
+      "decomp/evidence/opcode_0x80_runtime_observation.json",
+      "decomp/evidence/opcode_0x80_runtime_support.md.json",
+      "decomp/evidence/opcode_0x80_runtime_frames"
+    ],
+    "findings": [
+      "The preserved cold-boot run reaches player control, room transition, combat setup, and the first bat attack.",
+      "Despite that deeper route, the run still records zero reader hits, zero write hits, and zero candidate hits.",
+      "This is strong negative-control evidence, not just a failed early title/menu pass.",
+      "The next runtime step should widen reader discovery or move closer with a savestate."
+    ],
+    "body": {
+      "content": [
+        {
+          "paragraph": "Input artifact:",
+          "ulist": [
+            "[`opcode_0x80_runtime_input_plan_bat_kill.json`](opcode_0x80_runtime_input_plan_bat_kill.json)",
+            "Primary run:",
+            {
+              "ulist": [
+                "summary: [`opcode_0x80_runtime_automation_summary.json`](opcode_0x80_runtime_automation_summary.json)",
+                "observation packet: [`opcode_0x80_runtime_observation.json`](opcode_0x80_runtime_observation.json)",
+                "support log: [`decomp/evidence/opcode_0x80_runtime_support.md.json`](decomp/evidence/opcode_0x80_runtime_support.md.json#/body)",
+                "frame captures: [`opcode_0x80_runtime_frames`](opcode_0x80_runtime_frames)"
+              ]
+            },
+            "Run facts from the latest preserved cold-boot pass:",
+            {
+              "ulist": [
+                "started `2026-05-01T00:50:05Z`",
+                "finished `2026-05-01T00:51:26Z`",
+                "`frame_count = 4886`",
+                "`reader_hit_count = 0`",
+                "`write_hit_count = 0`",
+                "`candidate_hit_count = 0`",
+                "no `after_init` or `pre_dispatch` snapshots"
+              ]
+            },
+            "Observed route:",
+            {
+              "ulist": [
+                "cold boot reaches `New Game`",
+                "two delayed `START` skips hand off to player control",
+                "three `R1` taps rotate the camera toward the adjacent room",
+                "held `UP` movement enters the next room",
+                "three `CIRCLE` taps unsheathe, open the attack sphere, and attack"
+              ]
+            },
+            "Why this matters:",
+            {
+              "ulist": [
+                "This is now a durable negative-control run for the active `0x80` runtime\ncontradiction.",
+                "It proves that early live gameplay, room transition, weapon unsheathe,\nattack-sphere open, and the first bat attack are still insufficient to trip\nthe watched `0x800BFBB8` reader or the tracked table-write range.",
+                "Future runtime passes should stop treating \"gain control after the second\nintro skip\" as a likely enough trigger by itself."
+              ]
+            },
+            "Recommended next move:",
+            {
+              "ulist": [
+                "keep this route as a regression/control path",
+                "pivot the runtime tooling toward broader copied-table reader discovery or a\nnearer savestate for the exact cutscene/script moment under dispute"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "aaa6bc36068a2f55c8de28b2ba57f9f5db14307b1fd751e2a309620e8c6cd46e",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:45:30Z",
+    "raw_markdown": "# Opcode `0x80` Bat-Kill Negative Runtime Control\n\nInput artifact:\n\n- [`opcode_0x80_runtime_input_plan_bat_kill.json`](opcode_0x80_runtime_input_plan_bat_kill.json)\n\nPrimary run:\n\n- summary: [`opcode_0x80_runtime_automation_summary.json`](opcode_0x80_runtime_automation_summary.json)\n- observation packet: [`opcode_0x80_runtime_observation.json`](opcode_0x80_runtime_observation.json)\n- support log: [`opcode_0x80_runtime_support.md`](opcode_0x80_runtime_support.md)\n- frame captures: [`opcode_0x80_runtime_frames`](opcode_0x80_runtime_frames)\n\nRun facts from the latest preserved cold-boot pass:\n\n- started `2026-05-01T00:50:05Z`\n- finished `2026-05-01T00:51:26Z`\n- `frame_count = 4886`\n- `reader_hit_count = 0`\n- `write_hit_count = 0`\n- `candidate_hit_count = 0`\n- no `after_init` or `pre_dispatch` snapshots\n\nObserved route:\n\n- cold boot reaches `New Game`\n- two delayed `START` skips hand off to player control\n- three `R1` taps rotate the camera toward the adjacent room\n- held `UP` movement enters the next room\n- three `CIRCLE` taps unsheathe, open the attack sphere, and attack\n\nWhy this matters:\n\n- This is now a durable negative-control run for the active `0x80` runtime\n  contradiction.\n- It proves that early live gameplay, room transition, weapon unsheathe,\n  attack-sphere open, and the first bat attack are still insufficient to trip\n  the watched `0x800BFBB8` reader or the tracked table-write range.\n- Future runtime passes should stop treating \"gain control after the second\n  intro skip\" as a likely enough trigger by itself.\n\nRecommended next move:\n\n- keep this route as a regression/control path\n- pivot the runtime tooling toward broader copied-table reader discovery or a\n  nearer savestate for the exact cutscene/script moment under dispute\n",
+    "markdown_with_json_links": "# Opcode `0x80` Bat-Kill Negative Runtime Control\n\nInput artifact:\n\n- [`opcode_0x80_runtime_input_plan_bat_kill.json`](opcode_0x80_runtime_input_plan_bat_kill.json)\n\nPrimary run:\n\n- summary: [`opcode_0x80_runtime_automation_summary.json`](opcode_0x80_runtime_automation_summary.json)\n- observation packet: [`opcode_0x80_runtime_observation.json`](opcode_0x80_runtime_observation.json)\n- support log: [`decomp/evidence/opcode_0x80_runtime_support.md.json`](decomp/evidence/opcode_0x80_runtime_support.md.json#/body)\n- frame captures: [`opcode_0x80_runtime_frames`](opcode_0x80_runtime_frames)\n\nRun facts from the latest preserved cold-boot pass:\n\n- started `2026-05-01T00:50:05Z`\n- finished `2026-05-01T00:51:26Z`\n- `frame_count = 4886`\n- `reader_hit_count = 0`\n- `write_hit_count = 0`\n- `candidate_hit_count = 0`\n- no `after_init` or `pre_dispatch` snapshots\n\nObserved route:\n\n- cold boot reaches `New Game`\n- two delayed `START` skips hand off to player control\n- three `R1` taps rotate the camera toward the adjacent room\n- held `UP` movement enters the next room\n- three `CIRCLE` taps unsheathe, open the attack sphere, and attack\n\nWhy this matters:\n\n- This is now a durable negative-control run for the active `0x80` runtime\n  contradiction.\n- It proves that early live gameplay, room transition, weapon unsheathe,\n  attack-sphere open, and the first bat attack are still insufficient to trip\n  the watched `0x800BFBB8` reader or the tracked table-write range.\n- Future runtime passes should stop treating \"gain control after the second\n  intro skip\" as a likely enough trigger by itself.\n\nRecommended next move:\n\n- keep this route as a regression/control path\n- pivot the runtime tooling toward broader copied-table reader discovery or a\n  nearer savestate for the exact cutscene/script moment under dispute\n"
+  }
+}

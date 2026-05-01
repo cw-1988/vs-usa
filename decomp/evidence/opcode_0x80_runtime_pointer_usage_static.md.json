@@ -1,0 +1,93 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_runtime_pointer_usage_static",
+    "title": "Opcode `0x80` Runtime Pointer-Usage Notes",
+    "summary": "Trace how the recovered `BATTLE.PRG` reader uses the copied opcode-table pointer after loading it from `0x800F4C28`.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md",
+    "artifacts": [
+      "decomp/evidence/battle_runtime_opcode_table_accesses.json",
+      "decomp/evidence/battle_runtime_opcode_table_xrefs.json",
+      "decomp/evidence/battle_runtime_opcode_table_pointer_usage.json"
+    ],
+    "findings": [
+      "The recovered local `BATTLE.PRG` reader only performs pointer arithmetic and a derived read through the copied table pointer.",
+      "No recovered indirect write-back or tainted pointer handoff appears inside that reader.",
+      "The remaining uncertainty is outside this recovered consumer, not inside it."
+    ],
+    "body": {
+      "sections": {
+        "question": {
+          "heading": "Question",
+          "content": [
+            {
+              "paragraph": "After the local `BATTLE.PRG` reader at `FUN_800BFBB8` loads the copied opcode\ntable pointer from `0x800F4C28`, does it ever store through that pointer or\nhand it to another callee that could patch the copied table indirectly?"
+            }
+          ]
+        },
+        "evidence-used": {
+          "heading": "Evidence used",
+          "content": [
+            {
+              "olit": [
+                "`decomp/evidence/battle_runtime_opcode_table_accesses.json`",
+                "`decomp/evidence/battle_runtime_opcode_table_xrefs.json`",
+                "`decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`"
+              ]
+            }
+          ]
+        },
+        "static-trace": {
+          "heading": "Static trace",
+          "content": [
+            {
+              "paragraph": "`battle_runtime_opcode_table_pointer_usage.json` starts at local function entry\n`0x800BFBB8`, recovers the direct slot read at `0x800BFCFC`, then traces the\nderived pointer uses that follow inside the same recovered function body:",
+              "code": "800bfcfc lw v1,0x4c28(v1)\n800bfd04 addu v0,v0,v1\n800bfd08 lw v0,0x0(v0)\n800bfd10 jalr v0",
+              "language": "text"
+            },
+            {
+              "paragraph": "The derived-usage artifact reports only:",
+              "ulist": [
+                "one `pointer_arithmetic` step at `0x800BFD04`",
+                "one `derived_read` at `0x800BFD08`",
+                "It does **not** report:",
+                {
+                  "ulist": [
+                    "any `derived_write`",
+                    "any `call_with_tainted_args`"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "conclusion": {
+          "heading": "Conclusion",
+          "content": [
+            {
+              "paragraph": "Within the currently recovered local `BATTLE.PRG` consumer,\n`0x800F4C28` is used only to form an indexed table-entry read before `jalr`\ndispatch. This pass did not recover an indirect write-back into the copied\nopcode table and did not recover the copied table pointer being handed to a\ncallee from that reader."
+            }
+          ]
+        },
+        "remaining-gap": {
+          "heading": "Remaining gap",
+          "content": [
+            {
+              "ulist": [
+                "This still covers only the currently recovered direct local reader in\n`BATTLE.PRG`.",
+                "It does not yet prove that some other overlay, unrecovered reader, or\nruntime-only path never mutates the copied buffer later.",
+                "The static contradiction is now narrower: within the four currently swept\nlocal executables that have reproducible base-address notes, the copied table\nhas an init-time writer, a runtime reader, no additional direct slot access\nin `SLUS_010.40` or `TITLE.PRG`, and no recovered traced indirect mutation\npath in the one recovered local reader."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "8f60b17ac0926b00465e10498f3c5594fe07b3aa4e5b5ea27f83ae910b36fbb2",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Opcode `0x80` Runtime Pointer-Usage Notes\n\n## Question\n\nAfter the local `BATTLE.PRG` reader at `FUN_800BFBB8` loads the copied opcode\ntable pointer from `0x800F4C28`, does it ever store through that pointer or\nhand it to another callee that could patch the copied table indirectly?\n\n## Evidence used\n\n1. `decomp/evidence/battle_runtime_opcode_table_accesses.json`\n2. `decomp/evidence/battle_runtime_opcode_table_xrefs.json`\n3. `decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`\n\n## Static trace\n\n`battle_runtime_opcode_table_pointer_usage.json` starts at local function entry\n`0x800BFBB8`, recovers the direct slot read at `0x800BFCFC`, then traces the\nderived pointer uses that follow inside the same recovered function body:\n\n```text\n800bfcfc lw v1,0x4c28(v1)\n800bfd04 addu v0,v0,v1\n800bfd08 lw v0,0x0(v0)\n800bfd10 jalr v0\n```\n\nThe derived-usage artifact reports only:\n\n- one `pointer_arithmetic` step at `0x800BFD04`\n- one `derived_read` at `0x800BFD08`\n\nIt does **not** report:\n\n- any `derived_write`\n- any `call_with_tainted_args`\n\n## Conclusion\n\nWithin the currently recovered local `BATTLE.PRG` consumer,\n`0x800F4C28` is used only to form an indexed table-entry read before `jalr`\ndispatch. This pass did not recover an indirect write-back into the copied\nopcode table and did not recover the copied table pointer being handed to a\ncallee from that reader.\n\n## Remaining gap\n\n- This still covers only the currently recovered direct local reader in\n  `BATTLE.PRG`.\n- It does not yet prove that some other overlay, unrecovered reader, or\n  runtime-only path never mutates the copied buffer later.\n- The static contradiction is now narrower: within the four currently swept\n  local executables that have reproducible base-address notes, the copied table\n  has an init-time writer, a runtime reader, no additional direct slot access\n  in `SLUS_010.40` or `TITLE.PRG`, and no recovered traced indirect mutation\n  path in the one recovered local reader.\n",
+    "markdown_with_json_links": "# Opcode `0x80` Runtime Pointer-Usage Notes\n\n## Question\n\nAfter the local `BATTLE.PRG` reader at `FUN_800BFBB8` loads the copied opcode\ntable pointer from `0x800F4C28`, does it ever store through that pointer or\nhand it to another callee that could patch the copied table indirectly?\n\n## Evidence used\n\n1. `decomp/evidence/battle_runtime_opcode_table_accesses.json`\n2. `decomp/evidence/battle_runtime_opcode_table_xrefs.json`\n3. `decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`\n\n## Static trace\n\n`battle_runtime_opcode_table_pointer_usage.json` starts at local function entry\n`0x800BFBB8`, recovers the direct slot read at `0x800BFCFC`, then traces the\nderived pointer uses that follow inside the same recovered function body:\n\n```text\n800bfcfc lw v1,0x4c28(v1)\n800bfd04 addu v0,v0,v1\n800bfd08 lw v0,0x0(v0)\n800bfd10 jalr v0\n```\n\nThe derived-usage artifact reports only:\n\n- one `pointer_arithmetic` step at `0x800BFD04`\n- one `derived_read` at `0x800BFD08`\n\nIt does **not** report:\n\n- any `derived_write`\n- any `call_with_tainted_args`\n\n## Conclusion\n\nWithin the currently recovered local `BATTLE.PRG` consumer,\n`0x800F4C28` is used only to form an indexed table-entry read before `jalr`\ndispatch. This pass did not recover an indirect write-back into the copied\nopcode table and did not recover the copied table pointer being handed to a\ncallee from that reader.\n\n## Remaining gap\n\n- This still covers only the currently recovered direct local reader in\n  `BATTLE.PRG`.\n- It does not yet prove that some other overlay, unrecovered reader, or\n  runtime-only path never mutates the copied buffer later.\n- The static contradiction is now narrower: within the four currently swept\n  local executables that have reproducible base-address notes, the copied table\n  has an init-time writer, a runtime reader, no additional direct slot access\n  in `SLUS_010.40` or `TITLE.PRG`, and no recovered traced indirect mutation\n  path in the one recovered local reader.\n"
+  }
+}

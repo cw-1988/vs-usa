@@ -1,0 +1,138 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_sound_cluster_static",
+    "title": "Opcode `0x80` Sound-Cluster Static Notes",
+    "summary": "Test whether the nearby helper at `0x800BA2E0` belongs to the visible `0x83+` sound neighborhood rather than serving as a hidden replacement target for `0x80`.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_sound_cluster_static.md",
+    "artifacts": [
+      "decomp/evidence/inittbl_opcode_table.json",
+      "decomp/evidence/battle_sound_candidate_xrefs.json",
+      "decomp/evidence/battle_sound_dispatch_table.json",
+      "decomp/evidence/battle_0x80_sound_cluster_slices.json"
+    ],
+    "findings": [
+      "`0x800BA2E0` is directly anchored inside the local `0x83+` sound-family subdispatch, not floating as an orphan replacement candidate.",
+      "The copied `0x80-0x82` targets remain the strongest local structural evidence for those slots.",
+      "The nearby sound cluster no longer justifies a direct contradiction against the copied stub entry."
+    ],
+    "body": {
+      "sections": {
+        "goal": {
+          "heading": "Goal",
+          "content": [
+            {
+              "paragraph": "Test whether the nearby helper at `0x800BA2E0` is better explained as part of\nthe already-visible `0x83+` sound neighborhood than as a hidden replacement\nfor the copied `0x80` table entry."
+            }
+          ]
+        },
+        "local-static-neighborhood": {
+          "heading": "Local static neighborhood",
+          "content": [
+            {
+              "paragraph": "The exported `INITBTL.PRG` table shows this contiguous block:",
+              "ulist": [
+                "`0x80 -> 0x800B66E4`",
+                "`0x81 -> 0x800B66E4`",
+                "`0x82 -> 0x800B66E4`",
+                "`0x83 -> 0x800BA3E4`",
+                "`0x84 -> 0x800BA404`",
+                "`0x85 -> 0x800BA444`",
+                "`0x86 -> 0x800BA470`"
+              ]
+            },
+            {
+              "paragraph": "That means the table already steps from the `0x80-0x82` stub cluster into a\ndifferent contiguous handler family at `0x83+`."
+            }
+          ]
+        },
+        "local-direct-xref-and-subdispatch-table": {
+          "heading": "Local direct xref and subdispatch table",
+          "content": [
+            {
+              "paragraph": "`decomp/evidence/battle_sound_candidate_xrefs.json` now recovers a direct\nlocal `BATTLE.PRG` data xref from `0x800E9F30 -> 0x800BA2E0`."
+            },
+            {
+              "paragraph": "`decomp/evidence/battle_sound_dispatch_table.json` then exports the local\neight-entry function table rooted at `0x800E9F30`:",
+              "ulist": [
+                "`0x00 -> 0x800BA2E0`",
+                "`0x01 -> 0x800BA35C`",
+                "`0x02 -> 0x800BA39C`",
+                "`0x03 -> 0x800BA3E4`",
+                "`0x04 -> 0x800BA404`",
+                "`0x05 -> 0x800BA444`",
+                "`0x06 -> 0x800BA470`",
+                "`0x07 -> 0x800BA494`"
+              ]
+            },
+            {
+              "paragraph": "That table directly anchors `0x800BA2E0` inside the same local `BATTLE.PRG`\nfamily as the visible `0x83+` handlers instead of leaving it as an orphan\ncandidate."
+            }
+          ]
+        },
+        "local-sound-side-slices": {
+          "heading": "Local sound-side slices",
+          "content": [
+            {
+              "paragraph": "`decomp/evidence/battle_0x80_sound_cluster_slices.json` shows:",
+              "ulist": [
+                "`0x800BA2E0` reading four argument bytes, indexing through a table at\n`0x800E9B34`, and calling `0x80045754`",
+                "`0x800BA35C` unpacking a halfword-like argument and calling\n`0x8007C8A4`",
+                "`0x800BA39C` reading four argument bytes, indexing through the same\n`0x800E9B34` table, and calling `0x80045BFC`",
+                "`0x800BA3E4` calling `0x80045DC0`",
+                "`0x800BA404` indexing through the same `0x800E9B34` table and calling\n`0x80045D64`",
+                "`0x800BA444` calling `0x80045DE0`",
+                "`0x800BA470` calling `0x80045F64`",
+                "`0x800BA494` calling `0x800460C0` and checking `0x800F4C2C`"
+              ]
+            },
+            {
+              "paragraph": "This is a dense local neighborhood of non-stub sound-shaped handlers\nimmediately adjacent to the `0x80-0x82` stub block."
+            }
+          ]
+        },
+        "what-this-changes": {
+          "heading": "What this changes",
+          "content": [
+            {
+              "ulist": [
+                "The nearby `0x800BA2E0` helper is no longer best treated as \"maybe this is\nsecretly the real `0x80` target.\"",
+                "Local static layout now does more than suggest adjacency: it places\n`0x800BA2E0` into a direct local `BATTLE.PRG` subdispatch table that also\ncontains the visible `0x83+` handler family.",
+                "The strongest local static claim for `0x80` still remains the copied\n`0x800B66E4` stub cluster at `0x80-0x82`."
+              ]
+            }
+          ]
+        },
+        "what-remains-unresolved": {
+          "heading": "What remains unresolved",
+          "content": [
+            {
+              "ulist": [
+                "This pass still did not identify the live consumer of `0x800F4C28`.",
+                "This pass also did not identify a later static patch writer that rewrites the\ncopied `0x80-0x84` slots before execution."
+              ]
+            }
+          ]
+        },
+        "current-conclusion": {
+          "heading": "Current conclusion",
+          "content": [
+            {
+              "ulist": [
+                "The competing sound evidence is no longer a strong direct contradiction.",
+                "The current static picture favors \"`0x80-0x82` are real copied stubs, while\n`0x800BA2E0` belongs to a separate local sound subdispatch family that also\ncontains the visible `0x83+` handlers.\"",
+                "The next best static step is now the runtime-side one: recover the live\ndispatch consumer or a later patch path for `0x800F4C28`."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "8041d44190b975acdf0ecc39c0f013f65ce324e9423ae9e600fd040b1a34cd80",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Opcode `0x80` Sound-Cluster Static Notes\n\n## Goal\n\nTest whether the nearby helper at `0x800BA2E0` is better explained as part of\nthe already-visible `0x83+` sound neighborhood than as a hidden replacement\nfor the copied `0x80` table entry.\n\n## Local static neighborhood\n\nThe exported `INITBTL.PRG` table shows this contiguous block:\n\n- `0x80 -> 0x800B66E4`\n- `0x81 -> 0x800B66E4`\n- `0x82 -> 0x800B66E4`\n- `0x83 -> 0x800BA3E4`\n- `0x84 -> 0x800BA404`\n- `0x85 -> 0x800BA444`\n- `0x86 -> 0x800BA470`\n\nThat means the table already steps from the `0x80-0x82` stub cluster into a\ndifferent contiguous handler family at `0x83+`.\n\n## Local direct xref and subdispatch table\n\n`decomp/evidence/battle_sound_candidate_xrefs.json` now recovers a direct\nlocal `BATTLE.PRG` data xref from `0x800E9F30 -> 0x800BA2E0`.\n\n`decomp/evidence/battle_sound_dispatch_table.json` then exports the local\neight-entry function table rooted at `0x800E9F30`:\n\n- `0x00 -> 0x800BA2E0`\n- `0x01 -> 0x800BA35C`\n- `0x02 -> 0x800BA39C`\n- `0x03 -> 0x800BA3E4`\n- `0x04 -> 0x800BA404`\n- `0x05 -> 0x800BA444`\n- `0x06 -> 0x800BA470`\n- `0x07 -> 0x800BA494`\n\nThat table directly anchors `0x800BA2E0` inside the same local `BATTLE.PRG`\nfamily as the visible `0x83+` handlers instead of leaving it as an orphan\ncandidate.\n\n## Local sound-side slices\n\n`decomp/evidence/battle_0x80_sound_cluster_slices.json` shows:\n\n- `0x800BA2E0` reading four argument bytes, indexing through a table at\n  `0x800E9B34`, and calling `0x80045754`\n- `0x800BA35C` unpacking a halfword-like argument and calling\n  `0x8007C8A4`\n- `0x800BA39C` reading four argument bytes, indexing through the same\n  `0x800E9B34` table, and calling `0x80045BFC`\n- `0x800BA3E4` calling `0x80045DC0`\n- `0x800BA404` indexing through the same `0x800E9B34` table and calling\n  `0x80045D64`\n- `0x800BA444` calling `0x80045DE0`\n- `0x800BA470` calling `0x80045F64`\n- `0x800BA494` calling `0x800460C0` and checking `0x800F4C2C`\n\nThis is a dense local neighborhood of non-stub sound-shaped handlers\nimmediately adjacent to the `0x80-0x82` stub block.\n\n## What this changes\n\n- The nearby `0x800BA2E0` helper is no longer best treated as \"maybe this is\n  secretly the real `0x80` target.\"\n- Local static layout now does more than suggest adjacency: it places\n  `0x800BA2E0` into a direct local `BATTLE.PRG` subdispatch table that also\n  contains the visible `0x83+` handler family.\n- The strongest local static claim for `0x80` still remains the copied\n  `0x800B66E4` stub cluster at `0x80-0x82`.\n\n## What remains unresolved\n\n- This pass still did not identify the live consumer of `0x800F4C28`.\n- This pass also did not identify a later static patch writer that rewrites the\n  copied `0x80-0x84` slots before execution.\n\n## Current conclusion\n\n- The competing sound evidence is no longer a strong direct contradiction.\n- The current static picture favors \"`0x80-0x82` are real copied stubs, while\n  `0x800BA2E0` belongs to a separate local sound subdispatch family that also\n  contains the visible `0x83+` handlers.\"\n- The next best static step is now the runtime-side one: recover the live\n  dispatch consumer or a later patch path for `0x800F4C28`.\n",
+    "markdown_with_json_links": "# Opcode `0x80` Sound-Cluster Static Notes\n\n## Goal\n\nTest whether the nearby helper at `0x800BA2E0` is better explained as part of\nthe already-visible `0x83+` sound neighborhood than as a hidden replacement\nfor the copied `0x80` table entry.\n\n## Local static neighborhood\n\nThe exported `INITBTL.PRG` table shows this contiguous block:\n\n- `0x80 -> 0x800B66E4`\n- `0x81 -> 0x800B66E4`\n- `0x82 -> 0x800B66E4`\n- `0x83 -> 0x800BA3E4`\n- `0x84 -> 0x800BA404`\n- `0x85 -> 0x800BA444`\n- `0x86 -> 0x800BA470`\n\nThat means the table already steps from the `0x80-0x82` stub cluster into a\ndifferent contiguous handler family at `0x83+`.\n\n## Local direct xref and subdispatch table\n\n`decomp/evidence/battle_sound_candidate_xrefs.json` now recovers a direct\nlocal `BATTLE.PRG` data xref from `0x800E9F30 -> 0x800BA2E0`.\n\n`decomp/evidence/battle_sound_dispatch_table.json` then exports the local\neight-entry function table rooted at `0x800E9F30`:\n\n- `0x00 -> 0x800BA2E0`\n- `0x01 -> 0x800BA35C`\n- `0x02 -> 0x800BA39C`\n- `0x03 -> 0x800BA3E4`\n- `0x04 -> 0x800BA404`\n- `0x05 -> 0x800BA444`\n- `0x06 -> 0x800BA470`\n- `0x07 -> 0x800BA494`\n\nThat table directly anchors `0x800BA2E0` inside the same local `BATTLE.PRG`\nfamily as the visible `0x83+` handlers instead of leaving it as an orphan\ncandidate.\n\n## Local sound-side slices\n\n`decomp/evidence/battle_0x80_sound_cluster_slices.json` shows:\n\n- `0x800BA2E0` reading four argument bytes, indexing through a table at\n  `0x800E9B34`, and calling `0x80045754`\n- `0x800BA35C` unpacking a halfword-like argument and calling\n  `0x8007C8A4`\n- `0x800BA39C` reading four argument bytes, indexing through the same\n  `0x800E9B34` table, and calling `0x80045BFC`\n- `0x800BA3E4` calling `0x80045DC0`\n- `0x800BA404` indexing through the same `0x800E9B34` table and calling\n  `0x80045D64`\n- `0x800BA444` calling `0x80045DE0`\n- `0x800BA470` calling `0x80045F64`\n- `0x800BA494` calling `0x800460C0` and checking `0x800F4C2C`\n\nThis is a dense local neighborhood of non-stub sound-shaped handlers\nimmediately adjacent to the `0x80-0x82` stub block.\n\n## What this changes\n\n- The nearby `0x800BA2E0` helper is no longer best treated as \"maybe this is\n  secretly the real `0x80` target.\"\n- Local static layout now does more than suggest adjacency: it places\n  `0x800BA2E0` into a direct local `BATTLE.PRG` subdispatch table that also\n  contains the visible `0x83+` handler family.\n- The strongest local static claim for `0x80` still remains the copied\n  `0x800B66E4` stub cluster at `0x80-0x82`.\n\n## What remains unresolved\n\n- This pass still did not identify the live consumer of `0x800F4C28`.\n- This pass also did not identify a later static patch writer that rewrites the\n  copied `0x80-0x84` slots before execution.\n\n## Current conclusion\n\n- The competing sound evidence is no longer a strong direct contradiction.\n- The current static picture favors \"`0x80-0x82` are real copied stubs, while\n  `0x800BA2E0` belongs to a separate local sound subdispatch family that also\n  contains the visible `0x83+` handlers.\"\n- The next best static step is now the runtime-side one: recover the live\n  dispatch consumer or a later patch path for `0x800F4C28`.\n"
+  }
+}

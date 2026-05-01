@@ -3,9 +3,9 @@
 Prefer `jcodemunch-mcp` for source-code exploration when symbol-aware lookup,
 dependency analysis, or impact tracing will help.
 
-For documentation-first work such as `.md` notes, evidence files, research
-logs, and workflow docs, use direct file reads and search first. Do not force
-`jcodemunch-mcp` to locate or read markdown files.
+For documentation-first work such as `.md.json` packets, evidence files,
+research logs, and workflow docs, use direct file reads and search first. Do
+not force `jcodemunch-mcp` to locate or read documentation packets.
 
 If a markdown file points to source code that needs inspection, switch to
 `jcodemunch-mcp` for the code portion of the task.

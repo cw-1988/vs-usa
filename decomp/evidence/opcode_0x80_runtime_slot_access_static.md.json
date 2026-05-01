@@ -1,0 +1,142 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_runtime_slot_access_static",
+    "title": "Opcode `0x80` Runtime-Slot Access Sweep",
+    "summary": "Sweep the local importable executables with known base-address notes for direct absolute accesses to `0x800F4C28`.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_runtime_slot_access_static.md",
+    "artifacts": [
+      "decomp/evidence/inittbl_runtime_opcode_table_accesses.json",
+      "decomp/evidence/battle_runtime_opcode_table_accesses.json",
+      "decomp/evidence/slus_runtime_opcode_table_accesses.json",
+      "decomp/evidence/title_runtime_opcode_table_accesses.json",
+      "decomp/evidence/inittbl_0x80_copy_slice.json",
+      "decomp/evidence/battle_runtime_opcode_table_xrefs.json",
+      "decomp/evidence/inittbl_system_dat_loader_slice.json",
+      "decomp/evidence/system_dat_header_words.json"
+    ],
+    "findings": [
+      "The direct slot-access sweep recovers exactly one local writer and one local reader for `0x800F4C28`.",
+      "No extra direct absolute-slot access appears in `SLUS_010.40` or `TITLE.PRG`.",
+      "The remaining contradiction is now narrower than a missing direct slot rewrite in the currently swept executables."
+    ],
+    "body": {
+      "sections": {
+        "objective": {
+          "heading": "Objective",
+          "content": [
+            {
+              "paragraph": "Check the local importable executables with known base-address notes for direct\nabsolute accesses to `0x800F4C28`, the runtime slot that holds the copied\nopcode table pointer, so the remaining `0x80` conflict can move from\n\"possible later direct rewrite\" to something narrower and explicit."
+            }
+          ]
+        },
+        "inputs": {
+          "heading": "Inputs",
+          "content": [
+            {
+              "olit": [
+                "`decomp/evidence/inittbl_runtime_opcode_table_accesses.json`",
+                "`decomp/evidence/battle_runtime_opcode_table_accesses.json`",
+                "`decomp/evidence/slus_runtime_opcode_table_accesses.json`",
+                "`decomp/evidence/title_runtime_opcode_table_accesses.json`",
+                "`decomp/evidence/inittbl_0x80_copy_slice.json`",
+                "`decomp/evidence/battle_runtime_opcode_table_xrefs.json`",
+                "`decomp/evidence/inittbl_system_dat_loader_slice.json`",
+                "`decomp/evidence/system_dat_header_words.json`"
+              ]
+            }
+          ]
+        },
+        "method": {
+          "heading": "Method",
+          "content": [
+            {
+              "ulist": [
+                "Added a local headless `Ghidra` helper that scans for reconstructed\n`lui reg, hi16(target)` plus `load/store low16(target)(reg)` pairs.",
+                "Refactored the wrapper layer so the same sweep can be reused against any\nimportable executable with a known local base address.",
+                "Ran that sweep against four local executables with tracked base-address\nnotes:",
+                "Used explicit disassembly seeds near the already-known copy and dispatch\nroutines so the sweep would not depend only on auto-analysis coverage."
+              ]
+            }
+          ]
+        },
+        "findings": {
+          "heading": "Findings",
+          "content": [
+            {
+              "olit": [
+                {
+                  "content": [
+                    {
+                      "paragraph": "`decomp/evidence/inittbl_runtime_opcode_table_accesses.json` recovered one\ndirect write in `INITBTL.PRG`:",
+                      "code": "800faaf0 lui v0,0x800f\n800fab00 jal 0x800490b0\n800fab04 _sw a0,0x4c28(v0)",
+                      "language": "text"
+                    },
+                    {
+                      "paragraph": "This is the same init-time store already visible in the focused copy slice,\nbut now captured by a reusable access-sweep artifact tied directly to the\nruntime slot address."
+                    }
+                  ]
+                },
+                {
+                  "content": [
+                    {
+                      "paragraph": "`decomp/evidence/battle_runtime_opcode_table_accesses.json` recovered one\ndirect read in `BATTLE.PRG`:",
+                      "code": "800bfcf4 lui v1,0x800f\n800bfcfc lw v1,0x4c28(v1)\n800bfd10 jalr v0",
+                      "language": "text"
+                    },
+                    {
+                      "paragraph": "This matches the earlier local consumer note for `FUN_800BFBB8`."
+                    }
+                  ]
+                },
+                "`decomp/evidence/slus_runtime_opcode_table_accesses.json` recovered no\ndirect absolute-slot accesses to `0x800F4C28` in `SLUS_010.40`.",
+                "`decomp/evidence/title_runtime_opcode_table_accesses.json` recovered no\ndirect absolute-slot accesses to `0x800F4C28` in `TITLE.PRG`.",
+                "Across the four local executables currently in scope, the direct access\nsweep found no additional absolute-slot accesses beyond the already-known\n`INITBTL.PRG` write and `BATTLE.PRG` read."
+              ]
+            }
+          ]
+        },
+        "interpretation": {
+          "heading": "Interpretation",
+          "content": [
+            {
+              "ulist": [
+                "The local direct-access picture is now:",
+                "No additional direct slot reader or writer was recovered in the main\nexecutable or in `TITLE.PRG`, so the direct-slot contradiction is now\nweaker outside the battle overlays as well.",
+                "That means the earlier \"maybe a later direct static writer rewrites the slot\"\nconcern is no longer supported by the currently importable local executables\nthat have reproducible base-address notes."
+              ]
+            }
+          ]
+        },
+        "remaining-limits": {
+          "heading": "Remaining Limits",
+          "content": [
+            {
+              "ulist": [
+                "This sweep only answers direct absolute accesses to the slot address itself.",
+                "It does not by itself rule out a later path that reads the pointer once and\nmutates the allocated `0x400`-byte table through that pointer.",
+                "`decomp/evidence/opcode_0x80_system_dat_static.md.json` now narrows one earlier speculative\nbranch: the local `_loadSystemDat` slice plus local header words anchor\n`Game Data/BATTLE/SYSTEM.DAT` as a data payload, not as an imported\nexecutable that needs a `BinaryLoader` base note for this sweep.",
+                "Other battle-adjacent code-bearing binaries, if any remain unrecovered,\nstill sit outside this specific sweep until they are identified and imported\nwith reproducible base notes.",
+                "It also does not replace runtime if static tracing of possible indirect table\nmutation stalls."
+              ]
+            }
+          ]
+        },
+        "conclusion": {
+          "heading": "Conclusion",
+          "content": [
+            {
+              "paragraph": "For the four local executables currently in scope with reproducible base-address\nnotes, `0x800F4C28` now has one verified init-time writer and one verified\nruntime consumer, with no additional direct slot rewrites recovered by the\naccess sweep. The remaining `0x80` uncertainty is narrower than before: any\nlater change would need to come from indirect mutation of the copied table\ncontents, from some other still-unrecovered code path, or from a runtime-only\neffect, not from another recovered absolute-slot write in the currently swept\nexecutables or from `SYSTEM.DAT`."
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "db2d233fbe271d81f505b31718efdf5fb9e28a3a2c9e047bba94f80efa00ff7a",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Opcode `0x80` Runtime-Slot Access Sweep\n\n## Objective\n\nCheck the local importable executables with known base-address notes for direct\nabsolute accesses to `0x800F4C28`, the runtime slot that holds the copied\nopcode table pointer, so the remaining `0x80` conflict can move from\n\"possible later direct rewrite\" to something narrower and explicit.\n\n## Inputs\n\n1. `decomp/evidence/inittbl_runtime_opcode_table_accesses.json`\n2. `decomp/evidence/battle_runtime_opcode_table_accesses.json`\n3. `decomp/evidence/slus_runtime_opcode_table_accesses.json`\n4. `decomp/evidence/title_runtime_opcode_table_accesses.json`\n5. `decomp/evidence/inittbl_0x80_copy_slice.json`\n6. `decomp/evidence/battle_runtime_opcode_table_xrefs.json`\n7. `decomp/evidence/inittbl_system_dat_loader_slice.json`\n8. `decomp/evidence/system_dat_header_words.json`\n\n## Method\n\n- Added a local headless `Ghidra` helper that scans for reconstructed\n  `lui reg, hi16(target)` plus `load/store low16(target)(reg)` pairs.\n- Refactored the wrapper layer so the same sweep can be reused against any\n  importable executable with a known local base address.\n- Ran that sweep against four local executables with tracked base-address\n  notes:\n  - `Game Data/BATTLE/INITBTL.PRG`\n  - `Game Data/BATTLE/BATTLE.PRG`\n  - `Game Data/SLUS_010.40`\n  - `Game Data/TITLE/TITLE.PRG`\n- Used explicit disassembly seeds near the already-known copy and dispatch\n  routines so the sweep would not depend only on auto-analysis coverage.\n\n## Findings\n\n1. `decomp/evidence/inittbl_runtime_opcode_table_accesses.json` recovered one\n   direct write in `INITBTL.PRG`:\n\n   ```text\n   800faaf0 lui v0,0x800f\n   800fab00 jal 0x800490b0\n   800fab04 _sw a0,0x4c28(v0)\n   ```\n\n   This is the same init-time store already visible in the focused copy slice,\n   but now captured by a reusable access-sweep artifact tied directly to the\n   runtime slot address.\n\n2. `decomp/evidence/battle_runtime_opcode_table_accesses.json` recovered one\n   direct read in `BATTLE.PRG`:\n\n   ```text\n   800bfcf4 lui v1,0x800f\n   800bfcfc lw v1,0x4c28(v1)\n   800bfd10 jalr v0\n   ```\n\n   This matches the earlier local consumer note for `FUN_800BFBB8`.\n\n3. `decomp/evidence/slus_runtime_opcode_table_accesses.json` recovered no\n   direct absolute-slot accesses to `0x800F4C28` in `SLUS_010.40`.\n\n4. `decomp/evidence/title_runtime_opcode_table_accesses.json` recovered no\n   direct absolute-slot accesses to `0x800F4C28` in `TITLE.PRG`.\n\n5. Across the four local executables currently in scope, the direct access\n   sweep found no additional absolute-slot accesses beyond the already-known\n   `INITBTL.PRG` write and `BATTLE.PRG` read.\n\n## Interpretation\n\n- The local direct-access picture is now:\n  - one init-time `INITBTL.PRG` write of the copied table pointer into\n    `0x800F4C28`\n  - one `BATTLE.PRG` read that uses the stored pointer for opcode dispatch\n- No additional direct slot reader or writer was recovered in the main\n  executable or in `TITLE.PRG`, so the direct-slot contradiction is now\n  weaker outside the battle overlays as well.\n- That means the earlier \"maybe a later direct static writer rewrites the slot\"\n  concern is no longer supported by the currently importable local executables\n  that have reproducible base-address notes.\n\n## Remaining Limits\n\n- This sweep only answers direct absolute accesses to the slot address itself.\n- It does not by itself rule out a later path that reads the pointer once and\n  mutates the allocated `0x400`-byte table through that pointer.\n- `opcode_0x80_system_dat_static.md` now narrows one earlier speculative\n  branch: the local `_loadSystemDat` slice plus local header words anchor\n  `Game Data/BATTLE/SYSTEM.DAT` as a data payload, not as an imported\n  executable that needs a `BinaryLoader` base note for this sweep.\n- Other battle-adjacent code-bearing binaries, if any remain unrecovered,\n  still sit outside this specific sweep until they are identified and imported\n  with reproducible base notes.\n- It also does not replace runtime if static tracing of possible indirect table\n  mutation stalls.\n\n## Conclusion\n\nFor the four local executables currently in scope with reproducible base-address\nnotes, `0x800F4C28` now has one verified init-time writer and one verified\nruntime consumer, with no additional direct slot rewrites recovered by the\naccess sweep. The remaining `0x80` uncertainty is narrower than before: any\nlater change would need to come from indirect mutation of the copied table\ncontents, from some other still-unrecovered code path, or from a runtime-only\neffect, not from another recovered absolute-slot write in the currently swept\nexecutables or from `SYSTEM.DAT`.\n",
+    "markdown_with_json_links": "# Opcode `0x80` Runtime-Slot Access Sweep\n\n## Objective\n\nCheck the local importable executables with known base-address notes for direct\nabsolute accesses to `0x800F4C28`, the runtime slot that holds the copied\nopcode table pointer, so the remaining `0x80` conflict can move from\n\"possible later direct rewrite\" to something narrower and explicit.\n\n## Inputs\n\n1. `decomp/evidence/inittbl_runtime_opcode_table_accesses.json`\n2. `decomp/evidence/battle_runtime_opcode_table_accesses.json`\n3. `decomp/evidence/slus_runtime_opcode_table_accesses.json`\n4. `decomp/evidence/title_runtime_opcode_table_accesses.json`\n5. `decomp/evidence/inittbl_0x80_copy_slice.json`\n6. `decomp/evidence/battle_runtime_opcode_table_xrefs.json`\n7. `decomp/evidence/inittbl_system_dat_loader_slice.json`\n8. `decomp/evidence/system_dat_header_words.json`\n\n## Method\n\n- Added a local headless `Ghidra` helper that scans for reconstructed\n  `lui reg, hi16(target)` plus `load/store low16(target)(reg)` pairs.\n- Refactored the wrapper layer so the same sweep can be reused against any\n  importable executable with a known local base address.\n- Ran that sweep against four local executables with tracked base-address\n  notes:\n  - `Game Data/BATTLE/INITBTL.PRG`\n  - `Game Data/BATTLE/BATTLE.PRG`\n  - `Game Data/SLUS_010.40`\n  - `Game Data/TITLE/TITLE.PRG`\n- Used explicit disassembly seeds near the already-known copy and dispatch\n  routines so the sweep would not depend only on auto-analysis coverage.\n\n## Findings\n\n1. `decomp/evidence/inittbl_runtime_opcode_table_accesses.json` recovered one\n   direct write in `INITBTL.PRG`:\n\n   ```text\n   800faaf0 lui v0,0x800f\n   800fab00 jal 0x800490b0\n   800fab04 _sw a0,0x4c28(v0)\n   ```\n\n   This is the same init-time store already visible in the focused copy slice,\n   but now captured by a reusable access-sweep artifact tied directly to the\n   runtime slot address.\n\n2. `decomp/evidence/battle_runtime_opcode_table_accesses.json` recovered one\n   direct read in `BATTLE.PRG`:\n\n   ```text\n   800bfcf4 lui v1,0x800f\n   800bfcfc lw v1,0x4c28(v1)\n   800bfd10 jalr v0\n   ```\n\n   This matches the earlier local consumer note for `FUN_800BFBB8`.\n\n3. `decomp/evidence/slus_runtime_opcode_table_accesses.json` recovered no\n   direct absolute-slot accesses to `0x800F4C28` in `SLUS_010.40`.\n\n4. `decomp/evidence/title_runtime_opcode_table_accesses.json` recovered no\n   direct absolute-slot accesses to `0x800F4C28` in `TITLE.PRG`.\n\n5. Across the four local executables currently in scope, the direct access\n   sweep found no additional absolute-slot accesses beyond the already-known\n   `INITBTL.PRG` write and `BATTLE.PRG` read.\n\n## Interpretation\n\n- The local direct-access picture is now:\n  - one init-time `INITBTL.PRG` write of the copied table pointer into\n    `0x800F4C28`\n  - one `BATTLE.PRG` read that uses the stored pointer for opcode dispatch\n- No additional direct slot reader or writer was recovered in the main\n  executable or in `TITLE.PRG`, so the direct-slot contradiction is now\n  weaker outside the battle overlays as well.\n- That means the earlier \"maybe a later direct static writer rewrites the slot\"\n  concern is no longer supported by the currently importable local executables\n  that have reproducible base-address notes.\n\n## Remaining Limits\n\n- This sweep only answers direct absolute accesses to the slot address itself.\n- It does not by itself rule out a later path that reads the pointer once and\n  mutates the allocated `0x400`-byte table through that pointer.\n- `decomp/evidence/opcode_0x80_system_dat_static.md.json` now narrows one earlier speculative\n  branch: the local `_loadSystemDat` slice plus local header words anchor\n  `Game Data/BATTLE/SYSTEM.DAT` as a data payload, not as an imported\n  executable that needs a `BinaryLoader` base note for this sweep.\n- Other battle-adjacent code-bearing binaries, if any remain unrecovered,\n  still sit outside this specific sweep until they are identified and imported\n  with reproducible base notes.\n- It also does not replace runtime if static tracing of possible indirect table\n  mutation stalls.\n\n## Conclusion\n\nFor the four local executables currently in scope with reproducible base-address\nnotes, `0x800F4C28` now has one verified init-time writer and one verified\nruntime consumer, with no additional direct slot rewrites recovered by the\naccess sweep. The remaining `0x80` uncertainty is narrower than before: any\nlater change would need to come from indirect mutation of the copied table\ncontents, from some other still-unrecovered code path, or from a runtime-only\neffect, not from another recovered absolute-slot write in the currently swept\nexecutables or from `SYSTEM.DAT`.\n"
+  }
+}

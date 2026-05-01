@@ -1,0 +1,94 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_copy_path_static",
+    "title": "Opcode `0x80` Copy-Path Static Notes",
+    "summary": "Prove how the exported `INITBTL.PRG` opcode table reaches runtime state before looking for any later rewrite or bypass path.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_copy_path_static.md",
+    "artifacts": [
+      "decomp/evidence/inittbl_opcode_table.json",
+      "decomp/evidence/inittbl_0x80_copy_slice.json",
+      "decomp/evidence/inittbl_opcode_table_xrefs.json"
+    ],
+    "findings": [
+      "The exported `INITBTL.PRG` opcode table is copied into a freshly allocated runtime buffer at `0x800F4C28`.",
+      "That copied table is the verified initial runtime state for `0x80-0x82`.",
+      "The unresolved branch after this note is a later rewrite or bypass path, not a bad export."
+    ],
+    "body": {
+      "sections": {
+        "goal": {
+          "heading": "Goal",
+          "content": [
+            {
+              "paragraph": "Tighten the `0x80-0x84` contradiction by proving how the exported\n`INITBTL.PRG` opcode table reaches runtime state before looking for any later\npatch site."
+            }
+          ]
+        },
+        "local-binary-evidence": {
+          "heading": "Local binary evidence",
+          "content": [
+            {
+              "olit": [
+                "`decomp/evidence/inittbl_opcode_table.json` exports the `INITBTL.PRG`\ntable at `0x800FAF7C` and shows `0x80 -> 0x800B66E4`.",
+                "`decomp/evidence/inittbl_0x80_copy_slice.json` captures the candidate\ninit-time copy routine at `0x800FAAAC`.",
+                "That slice shows:"
+              ]
+            },
+            {
+              "code": "800faadc li a0,0x400\n800faae4 jal 0x80043ec4\n800faaec move a0,v0\n800faaf4 lui a1,0x8010\n800faaf8 addiu a1,a1,-0x5084\n800faafc li a2,0x400\n800fab00 jal 0x800490b0\n800fab04 sw a0,0x4c28(v0)",
+              "language": "text"
+            },
+            {
+              "olit": [
+                "`0x8010:0x5084` resolves to `0x800FAF7C`, so the slice shows:"
+              ]
+            }
+          ]
+        },
+        "what-this-resolves": {
+          "heading": "What this resolves",
+          "content": [
+            {
+              "ulist": [
+                "The exported table at `0x800FAF7C` is not a detached binary artifact.",
+                "Runtime battle state starts from a copied `0x400` byte table stored in\n`0x800F4C28`.",
+                "The `0x80-0x82 -> 0x800B66E4` stub cluster is therefore the verified initial\nruntime state, not just a static export snapshot."
+              ]
+            }
+          ]
+        },
+        "what-remains-unresolved": {
+          "heading": "What remains unresolved",
+          "content": [
+            {
+              "ulist": [
+                "`decomp/evidence/inittbl_opcode_table_xrefs.json` did not recover a direct\nheadless xref to `0x800FAF7C` under the current auto-analysis settings.",
+                "No later static patch writer for `0x800F4C28` was identified in this pass.",
+                "No direct live dispatch consumer of `0x800F4C28` was identified in this pass."
+              ]
+            }
+          ]
+        },
+        "current-conclusion": {
+          "heading": "Current conclusion",
+          "content": [
+            {
+              "ulist": [
+                "Local binary evidence now proves the exported table, the runtime destination\nslot, and the init-time copy sequence.",
+                "The contradiction has narrowed from \"did the export pick the wrong slot?\" to\n\"does some later runtime path rewrite or bypass the copied `0x800F4C28`\nentry for `0x80-0x84`?\"",
+                "Runtime work is still not justified yet; the next static step is to recover\nthe live dispatch consumer or a later patch path."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "c31cd1e6c697d2aad2b254b879618cff96ddc2fc7dd0e42438a0e5f4b344d464",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Opcode `0x80` Copy-Path Static Notes\n\n## Goal\n\nTighten the `0x80-0x84` contradiction by proving how the exported\n`INITBTL.PRG` opcode table reaches runtime state before looking for any later\npatch site.\n\n## Local binary evidence\n\n1. `decomp/evidence/inittbl_opcode_table.json` exports the `INITBTL.PRG`\n   table at `0x800FAF7C` and shows `0x80 -> 0x800B66E4`.\n2. `decomp/evidence/inittbl_0x80_copy_slice.json` captures the candidate\n   init-time copy routine at `0x800FAAAC`.\n3. That slice shows:\n\n```text\n800faadc li a0,0x400\n800faae4 jal 0x80043ec4\n800faaec move a0,v0\n800faaf4 lui a1,0x8010\n800faaf8 addiu a1,a1,-0x5084\n800faafc li a2,0x400\n800fab00 jal 0x800490b0\n800fab04 sw a0,0x4c28(v0)\n```\n\n4. `0x8010:0x5084` resolves to `0x800FAF7C`, so the slice shows:\n   - allocation of a `0x400` byte runtime buffer\n   - storage of that buffer to runtime slot `0x800F4C28`\n   - a `0x400` byte copy from the exported table at `0x800FAF7C`\n\n## What this resolves\n\n- The exported table at `0x800FAF7C` is not a detached binary artifact.\n- Runtime battle state starts from a copied `0x400` byte table stored in\n  `0x800F4C28`.\n- The `0x80-0x82 -> 0x800B66E4` stub cluster is therefore the verified initial\n  runtime state, not just a static export snapshot.\n\n## What remains unresolved\n\n- `decomp/evidence/inittbl_opcode_table_xrefs.json` did not recover a direct\n  headless xref to `0x800FAF7C` under the current auto-analysis settings.\n- No later static patch writer for `0x800F4C28` was identified in this pass.\n- No direct live dispatch consumer of `0x800F4C28` was identified in this pass.\n\n## Current conclusion\n\n- Local binary evidence now proves the exported table, the runtime destination\n  slot, and the init-time copy sequence.\n- The contradiction has narrowed from \"did the export pick the wrong slot?\" to\n  \"does some later runtime path rewrite or bypass the copied `0x800F4C28`\n  entry for `0x80-0x84`?\"\n- Runtime work is still not justified yet; the next static step is to recover\n  the live dispatch consumer or a later patch path.\n",
+    "markdown_with_json_links": "# Opcode `0x80` Copy-Path Static Notes\n\n## Goal\n\nTighten the `0x80-0x84` contradiction by proving how the exported\n`INITBTL.PRG` opcode table reaches runtime state before looking for any later\npatch site.\n\n## Local binary evidence\n\n1. `decomp/evidence/inittbl_opcode_table.json` exports the `INITBTL.PRG`\n   table at `0x800FAF7C` and shows `0x80 -> 0x800B66E4`.\n2. `decomp/evidence/inittbl_0x80_copy_slice.json` captures the candidate\n   init-time copy routine at `0x800FAAAC`.\n3. That slice shows:\n\n```text\n800faadc li a0,0x400\n800faae4 jal 0x80043ec4\n800faaec move a0,v0\n800faaf4 lui a1,0x8010\n800faaf8 addiu a1,a1,-0x5084\n800faafc li a2,0x400\n800fab00 jal 0x800490b0\n800fab04 sw a0,0x4c28(v0)\n```\n\n4. `0x8010:0x5084` resolves to `0x800FAF7C`, so the slice shows:\n   - allocation of a `0x400` byte runtime buffer\n   - storage of that buffer to runtime slot `0x800F4C28`\n   - a `0x400` byte copy from the exported table at `0x800FAF7C`\n\n## What this resolves\n\n- The exported table at `0x800FAF7C` is not a detached binary artifact.\n- Runtime battle state starts from a copied `0x400` byte table stored in\n  `0x800F4C28`.\n- The `0x80-0x82 -> 0x800B66E4` stub cluster is therefore the verified initial\n  runtime state, not just a static export snapshot.\n\n## What remains unresolved\n\n- `decomp/evidence/inittbl_opcode_table_xrefs.json` did not recover a direct\n  headless xref to `0x800FAF7C` under the current auto-analysis settings.\n- No later static patch writer for `0x800F4C28` was identified in this pass.\n- No direct live dispatch consumer of `0x800F4C28` was identified in this pass.\n\n## Current conclusion\n\n- Local binary evidence now proves the exported table, the runtime destination\n  slot, and the init-time copy sequence.\n- The contradiction has narrowed from \"did the export pick the wrong slot?\" to\n  \"does some later runtime path rewrite or bypass the copied `0x800F4C28`\n  entry for `0x80-0x84`?\"\n- Runtime work is still not justified yet; the next static step is to recover\n  the live dispatch consumer or a later patch path.\n"
+  }
+}

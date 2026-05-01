@@ -1,0 +1,58 @@
+{
+  "content": {
+    "document_type": "directory_note",
+    "packet_id": "decomp_evidence_readme",
+    "title": "Decomp Evidence",
+    "summary": "Directory guidance for small machine-readable exports and proof packets used by the decomp campaign.",
+    "source_markdown_path": "decomp/evidence/README.md",
+    "findings": [
+      "This directory is meant for small machine-readable evidence exports and proof packets.",
+      "Summary packets and narrowly scoped support notes should stay split instead of duplicating each other."
+    ],
+    "body": {
+      "content": [
+        {
+          "paragraph": "Store machine-readable exported evidence here."
+        },
+        {
+          "paragraph": "Examples:",
+          "ulist": [
+            "opcode table JSON exports",
+            "function coverage reports",
+            "contradiction reports",
+            "small proof packets for disputed opcodes",
+            "For disputed opcode families, prefer this split:",
+            {
+              "ulist": [
+                "one summary proof packet that states inputs, produced artifacts, and current\nconclusion",
+                "separate narrowly scoped support notes for copy paths, xref gaps, or nearby\ncompeting handlers"
+              ]
+            }
+          ]
+        },
+        {
+          "ulist": [
+            "That keeps the summary packet durable without turning every support note into a\nsecond copy of the whole argument.",
+            "Keep these artifacts small and text-based when possible.",
+            "Each proof packet should try to include:",
+            {
+              "ulist": [
+                "exact binary input",
+                "relevant base address or table address",
+                "produced export files",
+                "short conclusion",
+                "open conflicts, if any"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "4cd204dace396d09c62c88178572bb05ba353a999250aecf249af3304b7a432a",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Decomp Evidence\n\nStore machine-readable exported evidence here.\n\nExamples:\n\n- opcode table JSON exports\n- function coverage reports\n- contradiction reports\n- small proof packets for disputed opcodes\n\nFor disputed opcode families, prefer this split:\n\n- one summary proof packet that states inputs, produced artifacts, and current\n  conclusion\n- separate narrowly scoped support notes for copy paths, xref gaps, or nearby\n  competing handlers\n\nThat keeps the summary packet durable without turning every support note into a\nsecond copy of the whole argument.\n\nKeep these artifacts small and text-based when possible.\n\nEach proof packet should try to include:\n\n- exact binary input\n- relevant base address or table address\n- produced export files\n- short conclusion\n- open conflicts, if any\n",
+    "markdown_with_json_links": "# Decomp Evidence\n\nStore machine-readable exported evidence here.\n\nExamples:\n\n- opcode table JSON exports\n- function coverage reports\n- contradiction reports\n- small proof packets for disputed opcodes\n\nFor disputed opcode families, prefer this split:\n\n- one summary proof packet that states inputs, produced artifacts, and current\n  conclusion\n- separate narrowly scoped support notes for copy paths, xref gaps, or nearby\n  competing handlers\n\nThat keeps the summary packet durable without turning every support note into a\nsecond copy of the whole argument.\n\nKeep these artifacts small and text-based when possible.\n\nEach proof packet should try to include:\n\n- exact binary input\n- relevant base address or table address\n- produced export files\n- short conclusion\n- open conflicts, if any\n"
+  }
+}

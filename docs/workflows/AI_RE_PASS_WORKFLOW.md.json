@@ -1,0 +1,698 @@
+{
+  "content": {
+    "document_type": "workflow_guide",
+    "title": "AI Reverse-Engineering Pass Workflow",
+    "phases": [
+      {
+        "phase": "Mission",
+        "steps": [
+          "picks one narrow RE question",
+          "turns it into a concrete improvement in code, notes, or tooling",
+          "verifies the result against real data, source, or runtime behavior",
+          "makes the local conventional commit unless config disables commits",
+          "`RE_CAMPAIGN_MEMORY.md.json`: current phase, priority targets, unresolved conflicts, and session handoff",
+          "`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`: grouped export, proof-packet, and verification-helper inventory",
+          "`docs/workflows/DECOMPILATION_STRATEGY.md.json`: evidence authority and proof standards",
+          "`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`: default export, reconciliation, and runtime escalation flow"
+        ],
+        "checklist": [
+          "`Priority Targets`",
+          "`Session Handoff -> next recommended step`",
+          "the active pass structure in `Pass Plan`",
+          "the original binary and runtime behavior are the ground truth",
+          "our local decomp/evidence should be the authority for final conclusions",
+          "`_refs/rood-reverse` is a helper decomp, not a final source by itself",
+          "helper-repo findings must be converted into local `decomp/` artifacts before they are used as pass evidence in the ledger or a proof packet"
+        ]
+      },
+      {
+        "phase": "Exploration Notes",
+        "steps": [
+          "Most campaign state for this repo lives in markdown notes and evidence files, so read those directly first.",
+          "Use `jcodemunch-mcp` when those notes point you into source code or when you need symbol, dependency, or impact analysis.",
+          "Do not force `plan_turn` or symbol-first tooling for markdown-only work."
+        ],
+        "checklist": []
+      },
+      {
+        "phase": "Main Lanes",
+        "steps": [],
+        "checklist": [
+          "Script and opcode work: file_:../../dump_mpd_script.py, file_:../../decoded_scripts, file_:docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json, file_:docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json, file_:docs/workflows/GHIDRA_OPCODE_RE_WORKFLOW.md.json",
+          "Room and scene work: file_:../../analyze_room_graph.py, file_:docs/research/ROOM_CONNECTION_FINDINGS.md.json, file_:../../room_names.tsv",
+          "Broad engine and format work: file_:README.md.json, file_:docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md.json, file_:../../_refs/rood-reverse",
+          "`src/` for matched code",
+          "`config/**/symbol_addrs.txt` and `splat.yaml` for lookup anchors",
+          "`assets/**/*.yaml` for strings and menu-side confirmation"
+        ]
+      },
+      {
+        "phase": "Local Tools",
+        "steps": [],
+        "checklist": [
+          "`dump_mpd_script.py`: opcode meaning, argument layout, event sequencing, repeated room patterns",
+          "`analyze_room_graph.py`: room types, `sceneId`, `sectionF`, reachability, TSV refreshes",
+          "`decomp/verification`: local static reconciliation scripts before runtime",
+          "`Ghidra`: nonmatching code, xrefs, data layout, control flow",
+          "`PCSX-Redux` CLI automation: last-resort runtime conflict breaker when static evidence still conflicts"
+        ]
+      },
+      {
+        "phase": "Local Config",
+        "steps": [],
+        "checklist": [
+          "`commit_mode = \"auto\"`: make the local commit yourself",
+          "`commit_mode = \"no-commit\"`: stage the intended changes and stop before `git commit`"
+        ]
+      },
+      {
+        "phase": "Working Style",
+        "steps": [
+          "check repo state in each repo you might edit",
+          "if a repo is dirty and you need to edit it, warn the user before stashing",
+          "stash pre-existing changes in repos you will edit, then restore them at the end",
+          "read the current conclusions note before renaming anything",
+          "avoid unrelated edits",
+          "prefer one strong improvement over several weak ones",
+          "if a helper decomp, dispatch table, and real script usage disagree, record the conflict instead of forcing a clean rename"
+        ],
+        "checklist": []
+      },
+      {
+        "phase": "Good Targets",
+        "steps": [],
+        "checklist": [
+          "opcode naming or argument rendering improvements",
+          "helper or internal renames backed by direct code proof",
+          "struct or data-layout interpretation improvements",
+          "room, scene, or reachability classification improvements",
+          "menu, sound, or overlay behavior clarified through code plus assets",
+          "runtime validation of a static theory",
+          "decoder, parser, or note improvements that unblock future passes"
+        ]
+      },
+      {
+        "phase": "0. Anchor on the ledger",
+        "steps": [],
+        "checklist": [
+          "current phase",
+          "target or handoff step you are taking",
+          "unresolved conflict, if any",
+          "artifact shape you expect to produce"
+        ]
+      },
+      {
+        "phase": "1. Pick one narrow question",
+        "steps": [],
+        "checklist": [
+          "does a current opcode name overclaim its meaning?",
+          "can one raw parameter blob be rendered more usefully?",
+          "is one `Strong` result actually `Confirmed`, or should it stay `Strong`?",
+          "does one scene or room field deserve a clearer explanation?",
+          "is one helper understandable enough to justify a conservative rename?"
+        ]
+      },
+      {
+        "phase": "2. Pull the best evidence first",
+        "steps": [],
+        "checklist": [
+          "`decoded_scripts` for usage patterns",
+          "`_refs/rood-reverse` for candidate handlers, names, and consumers",
+          "`Ghidra` for binary tables, function boundaries, xrefs, and gaps in matched code",
+          "scripted `PCSX-Redux` CLI capture for runtime proof and dispatch confirmation",
+          "`MAP*.MPD` and `SCEN*.ARM` for layout questions"
+        ]
+      },
+      {
+        "phase": "3. Confirm the direct anchor",
+        "steps": [
+          "check the real script contexts",
+          "check the current handler or table mapping",
+          "check nearby function-shaped candidates in the same address block",
+          "check whether binary or runtime evidence is needed to break the tie",
+          "whether the import used the correct base address from `splat.yaml`",
+          "whether the script is headless-safe in the current `Ghidra` setup",
+          "whether a fast instruction dump would answer the question without a full analysis pass"
+        ],
+        "checklist": [
+          "for opcodes, prefer the dispatch table and symbol-address anchors, but do not stop there if nearby orphan helpers or runtime behavior disagree",
+          "for room and scene work, prefer exact parser anchors such as `sectionB + 0x50`, `sectionF`, and `SCEN*.ARM` marker flags",
+          "for menu or sound work, cross-check matched source, config lookup anchors, and asset yaml names"
+        ]
+      },
+      {
+        "phase": "4. Trace the consumer path",
+        "steps": [],
+        "checklist": [
+          "export JSON",
+          "small proof packet under `decomp/evidence`",
+          "wording update that marks the result `Tentative` or `Conflicted`",
+          "ledger update in `RE_CAMPAIGN_MEMORY.md.json`"
+        ]
+      },
+      {
+        "phase": "5. Make the smallest honest update",
+        "steps": [],
+        "checklist": [
+          "confirmed rename",
+          "confirmed helper or internal rename",
+          "confidence held or downgraded with a clearer note",
+          "argument rendering improvement",
+          "room or scene classification improvement",
+          "parser or analysis improvement",
+          "runtime-confirmed interpretation"
+        ]
+      },
+      {
+        "phase": "Good Outputs",
+        "steps": [],
+        "checklist": [
+          "file_:RE_CAMPAIGN_MEMORY.md.json",
+          "file_:../../dump_mpd_script.py",
+          "file_:docs/workflows/DECOMPILATION_STRATEGY.md.json",
+          "file_:docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json",
+          "file_:docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json",
+          "file_:docs/workflows/GHIDRA_OPCODE_RE_WORKFLOW.md.json",
+          "file_:../../analyze_room_graph.py",
+          "file_:docs/research/ROOM_CONNECTION_FINDINGS.md.json",
+          "file_:../../room_names.tsv",
+          "file_:README.md.json",
+          "file_:docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md.json"
+        ]
+      },
+      {
+        "phase": "Verification",
+        "steps": [
+          "verify against at least one strong source, preferably two",
+          "confirm the new result is more accurate or more informative than before",
+          "reread the final wording and make sure it does not claim too much",
+          "confirm the binary import setup was correct for any raw-overlay `Ghidra` export used as proof"
+        ],
+        "checklist": [
+          "decoded output now renders a structure instead of a blob",
+          "a rename fits several real rooms",
+          "a helper rename matches implementation and local call sites",
+          "a helper-decomp claim survives binary or runtime reconciliation",
+          "timing or signedness matches raw bytes",
+          "runtime behavior matches the theory",
+          "room-graph counts or exclusions still make sense after a graph change"
+        ]
+      },
+      {
+        "phase": "Finish Line",
+        "steps": [
+          "the intended files are updated",
+          "the diff is focused",
+          "verification is done",
+          "`RE_CAMPAIGN_MEMORY.md.json` is updated in the relevant sections: `Current Phase`, `Priority Targets`, `Known Conflicts`, `Session Handoff`, and optional `Completed Milestones`",
+          "`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json` is updated if new durable artifacts were added",
+          "the AI commits locally when `commit_mode = \"auto\"`, or stages only when `commit_mode = \"no-commit\"`",
+          "any temporary stash is restored",
+          "the user gets a short conclusions summary plus the exact commit message for each touched repo"
+        ],
+        "checklist": []
+      },
+      {
+        "phase": "Final Report",
+        "steps": [
+          "the question you targeted",
+          "what evidence mattered most",
+          "what still blocks any remaining confidence bump",
+          "which files changed",
+          "how you verified it",
+          "how `RE_CAMPAIGN_MEMORY.md.json` was updated",
+          "the short conclusions summary",
+          "the exact commit message for each touched repo",
+          "the commit hash for each local commit, or explicit confirmation that commits were skipped because `commit_mode = \"no-commit\"`",
+          "whether any stash was restored"
+        ],
+        "checklist": []
+      },
+      {
+        "phase": "Avoid",
+        "steps": [],
+        "checklist": [
+          "fight headless Ghidra first",
+          "trust a raw-overlay headless import before confirming its base address",
+          "rename multiple weak opcodes in one pass",
+          "rename helpers based only on adjacency or vibes",
+          "treat helper decompiled C as final proof when the binary or runtime has not been checked yet",
+          "let `_refs/rood-reverse` links carry more evidentiary weight than local `decomp/` artifacts",
+          "treat a confidence bump as the default success condition",
+          "convert tentative notes into confident names without proof",
+          "leave unexplained experimental edits behind",
+          "end with only future ideas and no concrete artifact"
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "language": "powershell",
+        "code": "python dump_mpd_script.py \"Game Data/MAP\"\npython analyze_room_graph.py\npython analyze_room_graph.py --update-tsv"
+      },
+      {
+        "language": "text",
+        "code": "feat(re): improve opcode 0x7A argument rendering\nfix(tooling): refine room graph classification\ndocs(re): tighten evidence for menu sound behavior"
+      },
+      {
+        "language": "text",
+        "code": "Do one focused RE pass, use the right local tools for the question, make the smallest honest verified improvement you can justify, commit locally unless config disables it, restore any temporary stash, summarize the result, and stop without pushing."
+      }
+    ],
+    "source_markdown_path": "docs/workflows/AI_RE_PASS_WORKFLOW.md",
+    "summary": "This is the execution brief for the next AI pass on the Vagrant Story USA RE workspace.",
+    "body": {
+      "content": [
+        {
+          "ulist": [
+            "This is the execution brief for the next AI pass on the Vagrant Story USA RE\nworkspace.",
+            "The goal is simple: make one evidence-backed improvement, verify it, leave the\nworkspace cleaner than before, and stop without pushing.",
+            "If a capable model choice is available, prefer `gpt-5.4` with high reasoning\neffort."
+          ]
+        }
+      ],
+      "sections": {
+        "mission": {
+          "heading": "Mission",
+          "content": [
+            {
+              "paragraph": "Complete one focused pass that:",
+              "olit": [
+                "picks one narrow RE question",
+                "turns it into a concrete improvement in code, notes, or tooling",
+                "verifies the result against real data, source, or runtime behavior",
+                "makes the local conventional commit unless config disables commits"
+              ]
+            },
+            {
+              "ulist": [
+                "It is fine for the result to be a tighter note, a safer name, or a confidence\nhold instead of a flashy rename. Accuracy matters more than novelty.",
+                "Before starting, read\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body),\n[`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body),\n[`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body), and\n[`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json#/body).",
+                "Use that sequence deliberately:",
+                {
+                  "olit": [
+                    "`RE_CAMPAIGN_MEMORY.md.json`: current phase, priority targets, unresolved\nconflicts, and session handoff",
+                    "`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`: grouped export, proof-packet, and\nverification-helper inventory",
+                    "`docs/workflows/DECOMPILATION_STRATEGY.md.json`: evidence authority and proof standards",
+                    "`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`: default export, reconciliation, and runtime\nescalation flow"
+                  ]
+                },
+                "`RE_CAMPAIGN_MEMORY.md.json` is the cross-session campaign authority for in-progress\nopcode/decomp work. Pick the question for this pass only from:",
+                {
+                  "ulist": [
+                    "`Priority Targets`",
+                    "`Session Handoff -> next recommended step`",
+                    "the active pass structure in `Pass Plan`"
+                  ]
+                },
+                "Together those files define the local authority model:",
+                {
+                  "ulist": [
+                    "the original binary and runtime behavior are the ground truth",
+                    "our local decomp/evidence should be the authority for final conclusions",
+                    "`_refs/rood-reverse` is a helper decomp, not a final source by itself",
+                    "helper-repo findings must be converted into local `decomp/` artifacts before\nthey are used as pass evidence in the ledger or a proof packet"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "exploration-notes": {
+          "heading": "Exploration Notes",
+          "content": [
+            {
+              "olit": [
+                "Most campaign state for this repo lives in markdown notes and evidence\nfiles, so read those directly first.",
+                "Use `jcodemunch-mcp` when those notes point you into source code or when you\nneed symbol, dependency, or impact analysis.",
+                "Do not force `plan_turn` or symbol-first tooling for markdown-only work."
+              ]
+            }
+          ]
+        },
+        "main-lanes": {
+          "heading": "Main Lanes",
+          "content": [
+            {
+              "paragraph": "Pick the lane that best matches the question."
+            },
+            {
+              "ulist": [
+                "Script and opcode work:\n[`../../dump_mpd_script.py`](../../dump_mpd_script.py),\n[`../../decoded_scripts`](../../decoded_scripts),\n[`docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json`](docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json#/body),\n[`docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json`](docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json#/body),\n[`docs/workflows/GHIDRA_OPCODE_RE_WORKFLOW.md.json`](docs/workflows/GHIDRA_OPCODE_RE_WORKFLOW.md.json#/body)",
+                "Room and scene work:\n[`../../analyze_room_graph.py`](../../analyze_room_graph.py),\n[`docs/research/ROOM_CONNECTION_FINDINGS.md.json`](docs/research/ROOM_CONNECTION_FINDINGS.md.json#/body),\n[`../../room_names.tsv`](../../room_names.tsv)",
+                "Broad engine and format work:\n[`README.md.json`](README.md.json#/body),\n[`docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md.json`](docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md.json#/body),\n[`../../_refs/rood-reverse`](../../_refs/rood-reverse)",
+                "Useful reference anchors inside `_refs/rood-reverse`:",
+                {
+                  "ulist": [
+                    "`src/` for matched code",
+                    "`config/**/symbol_addrs.txt` and `splat.yaml` for lookup anchors",
+                    "`assets/**/*.yaml` for strings and menu-side confirmation"
+                  ]
+                }
+              ]
+            },
+            {
+              "ulist": [
+                "Treat those as lead-generating helpers. If a helper-decomp claim matters to the\nresult, reconcile it against `Ghidra`, scripted `PCSX-Redux` CLI capture, or\nboth before calling it final.",
+                "Do not cite `_refs/rood-reverse/src/*` or `_refs/rood-reverse/assets/*` as the\nmain evidence line in a local proof packet when you can produce a local export,\ninstruction dump, xref dump, verification script result, or runtime capture."
+              ]
+            }
+          ]
+        },
+        "local-tools": {
+          "heading": "Local Tools",
+          "content": [
+            {
+              "ulist": [
+                "`dump_mpd_script.py`: opcode meaning, argument layout, event sequencing,\nrepeated room patterns",
+                "`analyze_room_graph.py`: room types, `sceneId`, `sectionF`, reachability,\nTSV refreshes",
+                "`decomp/verification`: local static reconciliation scripts before runtime",
+                "`Ghidra`: nonmatching code, xrefs, data layout, control flow",
+                "`PCSX-Redux` CLI automation: last-resort runtime conflict breaker when static\nevidence still conflicts"
+              ]
+            },
+            {
+              "paragraph": "Common commands:",
+              "code": "python dump_mpd_script.py \"Game Data/MAP\"\npython analyze_room_graph.py\npython analyze_room_graph.py --update-tsv",
+              "language": "powershell"
+            }
+          ]
+        },
+        "local-config": {
+          "heading": "Local Config",
+          "content": [
+            {
+              "paragraph": "Read [`../../AI_RE_PASS_WORKFLOW.config.toml`](../../AI_RE_PASS_WORKFLOW.config.toml) if it\nexists. Otherwise use\n[`../../AI_RE_PASS_WORKFLOW.config.example.toml`](../../AI_RE_PASS_WORKFLOW.config.example.toml)."
+            },
+            {
+              "paragraph": "Supported setting:",
+              "ulist": [
+                "`commit_mode = \"auto\"`: make the local commit yourself",
+                "`commit_mode = \"no-commit\"`: stage the intended changes and stop before\n`git commit`"
+              ]
+            },
+            {
+              "paragraph": "Never push."
+            }
+          ]
+        },
+        "working-style": {
+          "heading": "Working Style",
+          "content": [
+            {
+              "paragraph": "Before substantial work:",
+              "olit": [
+                "check repo state in each repo you might edit",
+                "if a repo is dirty and you need to edit it, warn the user before stashing",
+                "stash pre-existing changes in repos you will edit, then restore them at the\nend",
+                "read the current conclusions note before renaming anything",
+                "avoid unrelated edits",
+                "prefer one strong improvement over several weak ones",
+                "if a helper decomp, dispatch table, and real script usage disagree, record\nthe conflict instead of forcing a clean rename"
+              ]
+            },
+            {
+              "paragraph": "If both this workspace and `_refs/rood-reverse` need updates, keep each repo's\nchanges focused and report the exact commit message used for each one."
+            }
+          ]
+        },
+        "good-targets": {
+          "heading": "Good Targets",
+          "content": [
+            {
+              "ulist": [
+                "opcode naming or argument rendering improvements",
+                "helper or internal renames backed by direct code proof",
+                "struct or data-layout interpretation improvements",
+                "room, scene, or reachability classification improvements",
+                "menu, sound, or overlay behavior clarified through code plus assets",
+                "runtime validation of a static theory",
+                "decoder, parser, or note improvements that unblock future passes"
+              ]
+            },
+            {
+              "paragraph": "Do not rename something just to eliminate a placeholder."
+            }
+          ]
+        },
+        "workflow": {
+          "heading": "Workflow",
+          "sections": {
+            "anchor-on-the-ledger": {
+              "heading": "0. Anchor on the ledger",
+              "content": [
+                {
+                  "paragraph": "Before choosing a target, record the current campaign state from\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body):",
+                  "ulist": [
+                    "current phase",
+                    "target or handoff step you are taking",
+                    "unresolved conflict, if any",
+                    "artifact shape you expect to produce"
+                  ]
+                },
+                {
+                  "paragraph": "Do not start a free-floating opcode pass outside that ledger context."
+                }
+              ]
+            },
+            "pick-one-narrow-question": {
+              "heading": "1. Pick one narrow question",
+              "content": [
+                {
+                  "paragraph": "Examples pulled from the ledger-backed campaign:",
+                  "ulist": [
+                    "does a current opcode name overclaim its meaning?",
+                    "can one raw parameter blob be rendered more usefully?",
+                    "is one `Strong` result actually `Confirmed`, or should it stay `Strong`?",
+                    "does one scene or room field deserve a clearer explanation?",
+                    "is one helper understandable enough to justify a conservative rename?"
+                  ]
+                }
+              ]
+            },
+            "pull-the-best-evidence-first": {
+              "heading": "2. Pull the best evidence first",
+              "content": [
+                {
+                  "paragraph": "Use the most informative source for the question:",
+                  "ulist": [
+                    "`decoded_scripts` for usage patterns",
+                    "`_refs/rood-reverse` for candidate handlers, names, and consumers",
+                    "`Ghidra` for binary tables, function boundaries, xrefs, and gaps in matched\ncode",
+                    "scripted `PCSX-Redux` CLI capture for runtime proof and dispatch confirmation",
+                    "`MAP*.MPD` and `SCEN*.ARM` for layout questions"
+                  ]
+                },
+                {
+                  "ulist": [
+                    "For opcode work, preserve repeated context, timing values, stepped scalars, and\nneighboring setup or cleanup opcodes.",
+                    "For room and scene work, preserve exact `sceneId` sources, marker flag checks,\ncross-zone examples, and special cases such as scene `0`."
+                  ]
+                }
+              ]
+            },
+            "confirm-the-direct-anchor": {
+              "heading": "3. Confirm the direct anchor",
+              "content": [
+                {
+                  "paragraph": "Do not infer from proximity if a stronger anchor exists."
+                },
+                {
+                  "ulist": [
+                    "for opcodes, prefer the dispatch table and symbol-address anchors, but do not\nstop there if nearby orphan helpers or runtime behavior disagree",
+                    "for room and scene work, prefer exact parser anchors such as\n`sectionB + 0x50`, `sectionF`, and `SCEN*.ARM` marker flags",
+                    "for menu or sound work, cross-check matched source, config lookup anchors,\nand asset yaml names",
+                    "For any confidence-changing opcode pass, do one contradiction scan:",
+                    {
+                      "olit": [
+                        "check the real script contexts",
+                        "check the current handler or table mapping",
+                        "check nearby function-shaped candidates in the same address block",
+                        "check whether binary or runtime evidence is needed to break the tie"
+                      ]
+                    },
+                    "Before trusting any headless `Ghidra` export from a raw overlay, also check:",
+                    {
+                      "olit": [
+                        "whether the import used the correct base address from `splat.yaml`",
+                        "whether the script is headless-safe in the current `Ghidra` setup",
+                        "whether a fast instruction dump would answer the question without a full\nanalysis pass"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "trace-the-consumer-path": {
+              "heading": "4. Trace the consumer path",
+              "content": [
+                {
+                  "ulist": [
+                    "Do not stop at \"this writes field X.\" Keep following until the user-facing\nmeaning becomes clear, the proof runs out, or a broader claim would overstate\nthe evidence.",
+                    "If code, strings, assets, and config disagree, document the disagreement\ninstead of hiding it.",
+                    "If helper decompiled C and the stronger binary or runtime evidence disagree,\nprefer the stronger evidence and call out the helper-decomp mismatch explicitly.",
+                    "If helper material suggested the right target, record that only as provenance.\nThe proof itself should point at local artifacts under `decomp/`.",
+                    "If the pass ends in a real contradiction, leave a concrete artifact behind:",
+                    {
+                      "ulist": [
+                        "export JSON",
+                        "small proof packet under `decomp/evidence`",
+                        "wording update that marks the result `Tentative` or `Conflicted`",
+                        "ledger update in `RE_CAMPAIGN_MEMORY.md.json`"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "Do not leave the contradiction only in terminal output or memory."
+                }
+              ]
+            },
+            "make-the-smallest-honest-update": {
+              "heading": "5. Make the smallest honest update",
+              "content": [
+                {
+                  "paragraph": "Valid results include:",
+                  "ulist": [
+                    "confirmed rename",
+                    "confirmed helper or internal rename",
+                    "confidence held or downgraded with a clearer note",
+                    "argument rendering improvement",
+                    "room or scene classification improvement",
+                    "parser or analysis improvement",
+                    "runtime-confirmed interpretation"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "good-outputs": {
+          "heading": "Good Outputs",
+          "content": [
+            {
+              "paragraph": "A good pass usually updates one or more of:",
+              "ulist": [
+                "[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body)",
+                "[`../../dump_mpd_script.py`](../../dump_mpd_script.py)",
+                "[`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body)",
+                "[`docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json`](docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json#/body)",
+                "[`docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json`](docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json#/body)",
+                "[`docs/workflows/GHIDRA_OPCODE_RE_WORKFLOW.md.json`](docs/workflows/GHIDRA_OPCODE_RE_WORKFLOW.md.json#/body)",
+                "[`../../analyze_room_graph.py`](../../analyze_room_graph.py)",
+                "[`docs/research/ROOM_CONNECTION_FINDINGS.md.json`](docs/research/ROOM_CONNECTION_FINDINGS.md.json#/body)",
+                "[`../../room_names.tsv`](../../room_names.tsv)",
+                "[`README.md.json`](README.md.json#/body)",
+                "[`docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md.json`](docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md.json#/body)"
+              ]
+            }
+          ]
+        },
+        "verification": {
+          "heading": "Verification",
+          "content": [
+            {
+              "paragraph": "Before stopping:",
+              "olit": [
+                "verify against at least one strong source, preferably two",
+                "confirm the new result is more accurate or more informative than before",
+                "reread the final wording and make sure it does not claim too much",
+                "confirm the binary import setup was correct for any raw-overlay `Ghidra`\nexport used as proof",
+                "Examples:",
+                {
+                  "ulist": [
+                    "decoded output now renders a structure instead of a blob",
+                    "a rename fits several real rooms",
+                    "a helper rename matches implementation and local call sites",
+                    "a helper-decomp claim survives binary or runtime reconciliation",
+                    "timing or signedness matches raw bytes",
+                    "runtime behavior matches the theory",
+                    "room-graph counts or exclusions still make sense after a graph change"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "finish-line": {
+          "heading": "Finish Line",
+          "content": [
+            {
+              "paragraph": "The pass is done when:",
+              "olit": [
+                "the intended files are updated",
+                "the diff is focused",
+                "verification is done",
+                "`RE_CAMPAIGN_MEMORY.md.json` is updated in the relevant sections:\n`Current Phase`, `Priority Targets`, `Known Conflicts`,\n`Session Handoff`, and optional `Completed Milestones`",
+                "`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json` is updated if new durable artifacts were\nadded",
+                "the AI commits locally when `commit_mode = \"auto\"`, or stages only when\n`commit_mode = \"no-commit\"`",
+                "any temporary stash is restored",
+                "the user gets a short conclusions summary plus the exact commit message for\neach touched repo"
+              ]
+            },
+            {
+              "paragraph": "Use conventional commits. Good shapes:",
+              "code": "feat(re): improve opcode 0x7A argument rendering\nfix(tooling): refine room graph classification\ndocs(re): tighten evidence for menu sound behavior",
+              "language": "text"
+            }
+          ]
+        },
+        "final-report": {
+          "heading": "Final Report",
+          "content": [
+            {
+              "paragraph": "At the end, report:",
+              "olit": [
+                "the question you targeted",
+                "what evidence mattered most",
+                "what still blocks any remaining confidence bump",
+                "which files changed",
+                "how you verified it",
+                "how `RE_CAMPAIGN_MEMORY.md.json` was updated",
+                "the short conclusions summary",
+                "the exact commit message for each touched repo",
+                "the commit hash for each local commit, or explicit confirmation that commits\nwere skipped because `commit_mode = \"no-commit\"`",
+                "whether any stash was restored"
+              ]
+            }
+          ]
+        },
+        "avoid": {
+          "heading": "Avoid",
+          "content": [
+            {
+              "paragraph": "Do not:",
+              "ulist": [
+                "fight headless Ghidra first",
+                "trust a raw-overlay headless import before confirming its base address",
+                "rename multiple weak opcodes in one pass",
+                "rename helpers based only on adjacency or vibes",
+                "treat helper decompiled C as final proof when the binary or runtime has not\nbeen checked yet",
+                "let `_refs/rood-reverse` links carry more evidentiary weight than local\n`decomp/` artifacts",
+                "treat a confidence bump as the default success condition",
+                "convert tentative notes into confident names without proof",
+                "leave unexplained experimental edits behind",
+                "end with only future ideas and no concrete artifact"
+              ]
+            }
+          ]
+        },
+        "kickoff-line": {
+          "heading": "Kickoff Line",
+          "content": [
+            {
+              "code": "Do one focused RE pass, use the right local tools for the question, make the smallest honest verified improvement you can justify, commit locally unless config disables it, restore any temporary stash, summarize the result, and stop without pushing.",
+              "language": "text"
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "9bb45aa14bc804eb3215e9902cc6d69204fcce27b363f1f9d158e1ceca63e02b",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:44:15Z",
+    "raw_markdown": "# AI Reverse-Engineering Pass Workflow\n\nThis is the execution brief for the next AI pass on the Vagrant Story USA RE\nworkspace.\n\nThe goal is simple: make one evidence-backed improvement, verify it, leave the\nworkspace cleaner than before, and stop without pushing.\n\nIf a capable model choice is available, prefer `gpt-5.4` with high reasoning\neffort.\n\n## Mission\n\nComplete one focused pass that:\n\n1. picks one narrow RE question\n2. turns it into a concrete improvement in code, notes, or tooling\n3. verifies the result against real data, source, or runtime behavior\n4. makes the local conventional commit unless config disables commits\n\nIt is fine for the result to be a tighter note, a safer name, or a confidence\nhold instead of a flashy rename. Accuracy matters more than novelty.\n\nBefore starting, read\n[`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md),\n[`../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md),\n[`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md), and\n[`CLI_DECOMPILATION_WORKFLOW.md`](CLI_DECOMPILATION_WORKFLOW.md).\n\nUse that sequence deliberately:\n\n1. `RE_CAMPAIGN_MEMORY.md`: current phase, priority targets, unresolved\n   conflicts, and session handoff\n2. `RE_CAMPAIGN_ARTIFACT_INDEX.md`: grouped export, proof-packet, and\n   verification-helper inventory\n3. `DECOMPILATION_STRATEGY.md`: evidence authority and proof standards\n4. `CLI_DECOMPILATION_WORKFLOW.md`: default export, reconciliation, and runtime\n   escalation flow\n\n`RE_CAMPAIGN_MEMORY.md` is the cross-session campaign authority for in-progress\nopcode/decomp work. Pick the question for this pass only from:\n\n- `Priority Targets`\n- `Session Handoff -> next recommended step`\n- the active pass structure in `Pass Plan`\n\nTogether those files define the local authority model:\n\n- the original binary and runtime behavior are the ground truth\n- our local decomp/evidence should be the authority for final conclusions\n- `_refs/rood-reverse` is a helper decomp, not a final source by itself\n- helper-repo findings must be converted into local `decomp/` artifacts before\n  they are used as pass evidence in the ledger or a proof packet\n\n## Exploration Notes\n\n1. Most campaign state for this repo lives in markdown notes and evidence\n   files, so read those directly first.\n2. Use `jcodemunch-mcp` when those notes point you into source code or when you\n   need symbol, dependency, or impact analysis.\n3. Do not force `plan_turn` or symbol-first tooling for markdown-only work.\n\n## Main Lanes\n\nPick the lane that best matches the question.\n\n- Script and opcode work:\n  [`../../dump_mpd_script.py`](../../dump_mpd_script.py),\n  [`../../decoded_scripts`](../../decoded_scripts),\n  [`../campaign/OPCODE_BEHAVIOR_REFERENCE.md`](../campaign/OPCODE_BEHAVIOR_REFERENCE.md),\n  [`../campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](../campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md),\n  [`GHIDRA_OPCODE_RE_WORKFLOW.md`](GHIDRA_OPCODE_RE_WORKFLOW.md)\n- Room and scene work:\n  [`../../analyze_room_graph.py`](../../analyze_room_graph.py),\n  [`../research/ROOM_CONNECTION_FINDINGS.md`](../research/ROOM_CONNECTION_FINDINGS.md),\n  [`../../room_names.tsv`](../../room_names.tsv)\n- Broad engine and format work:\n  [`../../README.md`](../../README.md),\n  [`../research/VAGRANT_STORY_MODDING_OVERVIEW.md`](../research/VAGRANT_STORY_MODDING_OVERVIEW.md),\n  [`../../_refs/rood-reverse`](../../_refs/rood-reverse)\n\nUseful reference anchors inside `_refs/rood-reverse`:\n\n- `src/` for matched code\n- `config/**/symbol_addrs.txt` and `splat.yaml` for lookup anchors\n- `assets/**/*.yaml` for strings and menu-side confirmation\n\nTreat those as lead-generating helpers. If a helper-decomp claim matters to the\nresult, reconcile it against `Ghidra`, scripted `PCSX-Redux` CLI capture, or\nboth before calling it final.\n\nDo not cite `_refs/rood-reverse/src/*` or `_refs/rood-reverse/assets/*` as the\nmain evidence line in a local proof packet when you can produce a local export,\ninstruction dump, xref dump, verification script result, or runtime capture.\n\n## Local Tools\n\n- `dump_mpd_script.py`: opcode meaning, argument layout, event sequencing,\n  repeated room patterns\n- `analyze_room_graph.py`: room types, `sceneId`, `sectionF`, reachability,\n  TSV refreshes\n- `decomp/verification`: local static reconciliation scripts before runtime\n- `Ghidra`: nonmatching code, xrefs, data layout, control flow\n- `PCSX-Redux` CLI automation: last-resort runtime conflict breaker when static\n  evidence still conflicts\n\nCommon commands:\n\n```powershell\npython dump_mpd_script.py \"Game Data/MAP\"\npython analyze_room_graph.py\npython analyze_room_graph.py --update-tsv\n```\n\n## Local Config\n\nRead [`../../AI_RE_PASS_WORKFLOW.config.toml`](../../AI_RE_PASS_WORKFLOW.config.toml) if it\nexists. Otherwise use\n[`../../AI_RE_PASS_WORKFLOW.config.example.toml`](../../AI_RE_PASS_WORKFLOW.config.example.toml).\n\nSupported setting:\n\n- `commit_mode = \"auto\"`: make the local commit yourself\n- `commit_mode = \"no-commit\"`: stage the intended changes and stop before\n  `git commit`\n\nNever push.\n\n## Working Style\n\nBefore substantial work:\n\n1. check repo state in each repo you might edit\n2. if a repo is dirty and you need to edit it, warn the user before stashing\n3. stash pre-existing changes in repos you will edit, then restore them at the\n   end\n4. read the current conclusions note before renaming anything\n5. avoid unrelated edits\n6. prefer one strong improvement over several weak ones\n7. if a helper decomp, dispatch table, and real script usage disagree, record\n   the conflict instead of forcing a clean rename\n\nIf both this workspace and `_refs/rood-reverse` need updates, keep each repo's\nchanges focused and report the exact commit message used for each one.\n\n## Good Targets\n\n- opcode naming or argument rendering improvements\n- helper or internal renames backed by direct code proof\n- struct or data-layout interpretation improvements\n- room, scene, or reachability classification improvements\n- menu, sound, or overlay behavior clarified through code plus assets\n- runtime validation of a static theory\n- decoder, parser, or note improvements that unblock future passes\n\nDo not rename something just to eliminate a placeholder.\n\n## Workflow\n\n### 0. Anchor on the ledger\n\nBefore choosing a target, record the current campaign state from\n[`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md):\n\n- current phase\n- target or handoff step you are taking\n- unresolved conflict, if any\n- artifact shape you expect to produce\n\nDo not start a free-floating opcode pass outside that ledger context.\n\n### 1. Pick one narrow question\n\nExamples pulled from the ledger-backed campaign:\n\n- does a current opcode name overclaim its meaning?\n- can one raw parameter blob be rendered more usefully?\n- is one `Strong` result actually `Confirmed`, or should it stay `Strong`?\n- does one scene or room field deserve a clearer explanation?\n- is one helper understandable enough to justify a conservative rename?\n\n### 2. Pull the best evidence first\n\nUse the most informative source for the question:\n\n- `decoded_scripts` for usage patterns\n- `_refs/rood-reverse` for candidate handlers, names, and consumers\n- `Ghidra` for binary tables, function boundaries, xrefs, and gaps in matched\n  code\n- scripted `PCSX-Redux` CLI capture for runtime proof and dispatch confirmation\n- `MAP*.MPD` and `SCEN*.ARM` for layout questions\n\nFor opcode work, preserve repeated context, timing values, stepped scalars, and\nneighboring setup or cleanup opcodes.\n\nFor room and scene work, preserve exact `sceneId` sources, marker flag checks,\ncross-zone examples, and special cases such as scene `0`.\n\n### 3. Confirm the direct anchor\n\nDo not infer from proximity if a stronger anchor exists.\n\n- for opcodes, prefer the dispatch table and symbol-address anchors, but do not\n  stop there if nearby orphan helpers or runtime behavior disagree\n- for room and scene work, prefer exact parser anchors such as\n  `sectionB + 0x50`, `sectionF`, and `SCEN*.ARM` marker flags\n- for menu or sound work, cross-check matched source, config lookup anchors,\n  and asset yaml names\n\nFor any confidence-changing opcode pass, do one contradiction scan:\n\n1. check the real script contexts\n2. check the current handler or table mapping\n3. check nearby function-shaped candidates in the same address block\n4. check whether binary or runtime evidence is needed to break the tie\n\nBefore trusting any headless `Ghidra` export from a raw overlay, also check:\n\n1. whether the import used the correct base address from `splat.yaml`\n2. whether the script is headless-safe in the current `Ghidra` setup\n3. whether a fast instruction dump would answer the question without a full\n   analysis pass\n\n### 4. Trace the consumer path\n\nDo not stop at \"this writes field X.\" Keep following until the user-facing\nmeaning becomes clear, the proof runs out, or a broader claim would overstate\nthe evidence.\n\nIf code, strings, assets, and config disagree, document the disagreement\ninstead of hiding it.\n\nIf helper decompiled C and the stronger binary or runtime evidence disagree,\nprefer the stronger evidence and call out the helper-decomp mismatch explicitly.\n\nIf helper material suggested the right target, record that only as provenance.\nThe proof itself should point at local artifacts under `decomp/`.\n\nIf the pass ends in a real contradiction, leave a concrete artifact behind:\n\n- export JSON\n- small proof packet under `decomp/evidence`\n- wording update that marks the result `Tentative` or `Conflicted`\n- ledger update in `RE_CAMPAIGN_MEMORY.md`\n\nDo not leave the contradiction only in terminal output or memory.\n\n### 5. Make the smallest honest update\n\nValid results include:\n\n- confirmed rename\n- confirmed helper or internal rename\n- confidence held or downgraded with a clearer note\n- argument rendering improvement\n- room or scene classification improvement\n- parser or analysis improvement\n- runtime-confirmed interpretation\n\n## Good Outputs\n\nA good pass usually updates one or more of:\n\n- [`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md)\n- [`../../dump_mpd_script.py`](../../dump_mpd_script.py)\n- [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md)\n- [`../campaign/OPCODE_BEHAVIOR_REFERENCE.md`](../campaign/OPCODE_BEHAVIOR_REFERENCE.md)\n- [`../campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](../campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md)\n- [`GHIDRA_OPCODE_RE_WORKFLOW.md`](GHIDRA_OPCODE_RE_WORKFLOW.md)\n- [`../../analyze_room_graph.py`](../../analyze_room_graph.py)\n- [`../research/ROOM_CONNECTION_FINDINGS.md`](../research/ROOM_CONNECTION_FINDINGS.md)\n- [`../../room_names.tsv`](../../room_names.tsv)\n- [`../../README.md`](../../README.md)\n- [`../research/VAGRANT_STORY_MODDING_OVERVIEW.md`](../research/VAGRANT_STORY_MODDING_OVERVIEW.md)\n\n## Verification\n\nBefore stopping:\n\n1. verify against at least one strong source, preferably two\n2. confirm the new result is more accurate or more informative than before\n3. reread the final wording and make sure it does not claim too much\n4. confirm the binary import setup was correct for any raw-overlay `Ghidra`\n   export used as proof\n\nExamples:\n\n- decoded output now renders a structure instead of a blob\n- a rename fits several real rooms\n- a helper rename matches implementation and local call sites\n- a helper-decomp claim survives binary or runtime reconciliation\n- timing or signedness matches raw bytes\n- runtime behavior matches the theory\n- room-graph counts or exclusions still make sense after a graph change\n\n## Finish Line\n\nThe pass is done when:\n\n1. the intended files are updated\n2. the diff is focused\n3. verification is done\n4. `RE_CAMPAIGN_MEMORY.md` is updated in the relevant sections:\n   `Current Phase`, `Priority Targets`, `Known Conflicts`,\n   `Session Handoff`, and optional `Completed Milestones`\n5. `RE_CAMPAIGN_ARTIFACT_INDEX.md` is updated if new durable artifacts were\n   added\n6. the AI commits locally when `commit_mode = \"auto\"`, or stages only when\n   `commit_mode = \"no-commit\"`\n7. any temporary stash is restored\n8. the user gets a short conclusions summary plus the exact commit message for\n   each touched repo\n\nUse conventional commits. Good shapes:\n\n```text\nfeat(re): improve opcode 0x7A argument rendering\nfix(tooling): refine room graph classification\ndocs(re): tighten evidence for menu sound behavior\n```\n\n## Final Report\n\nAt the end, report:\n\n1. the question you targeted\n2. what evidence mattered most\n3. what still blocks any remaining confidence bump\n4. which files changed\n5. how you verified it\n6. how `RE_CAMPAIGN_MEMORY.md` was updated\n7. the short conclusions summary\n8. the exact commit message for each touched repo\n9. the commit hash for each local commit, or explicit confirmation that commits\n   were skipped because `commit_mode = \"no-commit\"`\n10. whether any stash was restored\n\n## Avoid\n\nDo not:\n\n- fight headless Ghidra first\n- trust a raw-overlay headless import before confirming its base address\n- rename multiple weak opcodes in one pass\n- rename helpers based only on adjacency or vibes\n- treat helper decompiled C as final proof when the binary or runtime has not\n  been checked yet\n- let `_refs/rood-reverse` links carry more evidentiary weight than local\n  `decomp/` artifacts\n- treat a confidence bump as the default success condition\n- convert tentative notes into confident names without proof\n- leave unexplained experimental edits behind\n- end with only future ideas and no concrete artifact\n\n## Kickoff Line\n\n```text\nDo one focused RE pass, use the right local tools for the question, make the smallest honest verified improvement you can justify, commit locally unless config disables it, restore any temporary stash, summarize the result, and stop without pushing.\n```\n",
+    "markdown_with_json_links": "# AI Reverse-Engineering Pass Workflow\n\nThis is the execution brief for the next AI pass on the Vagrant Story USA RE\nworkspace.\n\nThe goal is simple: make one evidence-backed improvement, verify it, leave the\nworkspace cleaner than before, and stop without pushing.\n\nIf a capable model choice is available, prefer `gpt-5.4` with high reasoning\neffort.\n\n## Mission\n\nComplete one focused pass that:\n\n1. picks one narrow RE question\n2. turns it into a concrete improvement in code, notes, or tooling\n3. verifies the result against real data, source, or runtime behavior\n4. makes the local conventional commit unless config disables commits\n\nIt is fine for the result to be a tighter note, a safer name, or a confidence\nhold instead of a flashy rename. Accuracy matters more than novelty.\n\nBefore starting, read\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body),\n[`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body),\n[`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body), and\n[`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json#/body).\n\nUse that sequence deliberately:\n\n1. `RE_CAMPAIGN_MEMORY.md.json`: current phase, priority targets, unresolved\n   conflicts, and session handoff\n2. `docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`: grouped export, proof-packet, and\n   verification-helper inventory\n3. `docs/workflows/DECOMPILATION_STRATEGY.md.json`: evidence authority and proof standards\n4. `docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`: default export, reconciliation, and runtime\n   escalation flow\n\n`RE_CAMPAIGN_MEMORY.md.json` is the cross-session campaign authority for in-progress\nopcode/decomp work. Pick the question for this pass only from:\n\n- `Priority Targets`\n- `Session Handoff -> next recommended step`\n- the active pass structure in `Pass Plan`\n\nTogether those files define the local authority model:\n\n- the original binary and runtime behavior are the ground truth\n- our local decomp/evidence should be the authority for final conclusions\n- `_refs/rood-reverse` is a helper decomp, not a final source by itself\n- helper-repo findings must be converted into local `decomp/` artifacts before\n  they are used as pass evidence in the ledger or a proof packet\n\n## Exploration Notes\n\n1. Most campaign state for this repo lives in markdown notes and evidence\n   files, so read those directly first.\n2. Use `jcodemunch-mcp` when those notes point you into source code or when you\n   need symbol, dependency, or impact analysis.\n3. Do not force `plan_turn` or symbol-first tooling for markdown-only work.\n\n## Main Lanes\n\nPick the lane that best matches the question.\n\n- Script and opcode work:\n  [`../../dump_mpd_script.py`](../../dump_mpd_script.py),\n  [`../../decoded_scripts`](../../decoded_scripts),\n  [`docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json`](docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json#/body),\n  [`docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json`](docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json#/body),\n  [`docs/workflows/GHIDRA_OPCODE_RE_WORKFLOW.md.json`](docs/workflows/GHIDRA_OPCODE_RE_WORKFLOW.md.json#/body)\n- Room and scene work:\n  [`../../analyze_room_graph.py`](../../analyze_room_graph.py),\n  [`docs/research/ROOM_CONNECTION_FINDINGS.md.json`](docs/research/ROOM_CONNECTION_FINDINGS.md.json#/body),\n  [`../../room_names.tsv`](../../room_names.tsv)\n- Broad engine and format work:\n  [`README.md.json`](README.md.json#/body),\n  [`docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md.json`](docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md.json#/body),\n  [`../../_refs/rood-reverse`](../../_refs/rood-reverse)\n\nUseful reference anchors inside `_refs/rood-reverse`:\n\n- `src/` for matched code\n- `config/**/symbol_addrs.txt` and `splat.yaml` for lookup anchors\n- `assets/**/*.yaml` for strings and menu-side confirmation\n\nTreat those as lead-generating helpers. If a helper-decomp claim matters to the\nresult, reconcile it against `Ghidra`, scripted `PCSX-Redux` CLI capture, or\nboth before calling it final.\n\nDo not cite `_refs/rood-reverse/src/*` or `_refs/rood-reverse/assets/*` as the\nmain evidence line in a local proof packet when you can produce a local export,\ninstruction dump, xref dump, verification script result, or runtime capture.\n\n## Local Tools\n\n- `dump_mpd_script.py`: opcode meaning, argument layout, event sequencing,\n  repeated room patterns\n- `analyze_room_graph.py`: room types, `sceneId`, `sectionF`, reachability,\n  TSV refreshes\n- `decomp/verification`: local static reconciliation scripts before runtime\n- `Ghidra`: nonmatching code, xrefs, data layout, control flow\n- `PCSX-Redux` CLI automation: last-resort runtime conflict breaker when static\n  evidence still conflicts\n\nCommon commands:\n\n```powershell\npython dump_mpd_script.py \"Game Data/MAP\"\npython analyze_room_graph.py\npython analyze_room_graph.py --update-tsv\n```\n\n## Local Config\n\nRead [`../../AI_RE_PASS_WORKFLOW.config.toml`](../../AI_RE_PASS_WORKFLOW.config.toml) if it\nexists. Otherwise use\n[`../../AI_RE_PASS_WORKFLOW.config.example.toml`](../../AI_RE_PASS_WORKFLOW.config.example.toml).\n\nSupported setting:\n\n- `commit_mode = \"auto\"`: make the local commit yourself\n- `commit_mode = \"no-commit\"`: stage the intended changes and stop before\n  `git commit`\n\nNever push.\n\n## Working Style\n\nBefore substantial work:\n\n1. check repo state in each repo you might edit\n2. if a repo is dirty and you need to edit it, warn the user before stashing\n3. stash pre-existing changes in repos you will edit, then restore them at the\n   end\n4. read the current conclusions note before renaming anything\n5. avoid unrelated edits\n6. prefer one strong improvement over several weak ones\n7. if a helper decomp, dispatch table, and real script usage disagree, record\n   the conflict instead of forcing a clean rename\n\nIf both this workspace and `_refs/rood-reverse` need updates, keep each repo's\nchanges focused and report the exact commit message used for each one.\n\n## Good Targets\n\n- opcode naming or argument rendering improvements\n- helper or internal renames backed by direct code proof\n- struct or data-layout interpretation improvements\n- room, scene, or reachability classification improvements\n- menu, sound, or overlay behavior clarified through code plus assets\n- runtime validation of a static theory\n- decoder, parser, or note improvements that unblock future passes\n\nDo not rename something just to eliminate a placeholder.\n\n## Workflow\n\n### 0. Anchor on the ledger\n\nBefore choosing a target, record the current campaign state from\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body):\n\n- current phase\n- target or handoff step you are taking\n- unresolved conflict, if any\n- artifact shape you expect to produce\n\nDo not start a free-floating opcode pass outside that ledger context.\n\n### 1. Pick one narrow question\n\nExamples pulled from the ledger-backed campaign:\n\n- does a current opcode name overclaim its meaning?\n- can one raw parameter blob be rendered more usefully?\n- is one `Strong` result actually `Confirmed`, or should it stay `Strong`?\n- does one scene or room field deserve a clearer explanation?\n- is one helper understandable enough to justify a conservative rename?\n\n### 2. Pull the best evidence first\n\nUse the most informative source for the question:\n\n- `decoded_scripts` for usage patterns\n- `_refs/rood-reverse` for candidate handlers, names, and consumers\n- `Ghidra` for binary tables, function boundaries, xrefs, and gaps in matched\n  code\n- scripted `PCSX-Redux` CLI capture for runtime proof and dispatch confirmation\n- `MAP*.MPD` and `SCEN*.ARM` for layout questions\n\nFor opcode work, preserve repeated context, timing values, stepped scalars, and\nneighboring setup or cleanup opcodes.\n\nFor room and scene work, preserve exact `sceneId` sources, marker flag checks,\ncross-zone examples, and special cases such as scene `0`.\n\n### 3. Confirm the direct anchor\n\nDo not infer from proximity if a stronger anchor exists.\n\n- for opcodes, prefer the dispatch table and symbol-address anchors, but do not\n  stop there if nearby orphan helpers or runtime behavior disagree\n- for room and scene work, prefer exact parser anchors such as\n  `sectionB + 0x50`, `sectionF`, and `SCEN*.ARM` marker flags\n- for menu or sound work, cross-check matched source, config lookup anchors,\n  and asset yaml names\n\nFor any confidence-changing opcode pass, do one contradiction scan:\n\n1. check the real script contexts\n2. check the current handler or table mapping\n3. check nearby function-shaped candidates in the same address block\n4. check whether binary or runtime evidence is needed to break the tie\n\nBefore trusting any headless `Ghidra` export from a raw overlay, also check:\n\n1. whether the import used the correct base address from `splat.yaml`\n2. whether the script is headless-safe in the current `Ghidra` setup\n3. whether a fast instruction dump would answer the question without a full\n   analysis pass\n\n### 4. Trace the consumer path\n\nDo not stop at \"this writes field X.\" Keep following until the user-facing\nmeaning becomes clear, the proof runs out, or a broader claim would overstate\nthe evidence.\n\nIf code, strings, assets, and config disagree, document the disagreement\ninstead of hiding it.\n\nIf helper decompiled C and the stronger binary or runtime evidence disagree,\nprefer the stronger evidence and call out the helper-decomp mismatch explicitly.\n\nIf helper material suggested the right target, record that only as provenance.\nThe proof itself should point at local artifacts under `decomp/`.\n\nIf the pass ends in a real contradiction, leave a concrete artifact behind:\n\n- export JSON\n- small proof packet under `decomp/evidence`\n- wording update that marks the result `Tentative` or `Conflicted`\n- ledger update in `RE_CAMPAIGN_MEMORY.md.json`\n\nDo not leave the contradiction only in terminal output or memory.\n\n### 5. Make the smallest honest update\n\nValid results include:\n\n- confirmed rename\n- confirmed helper or internal rename\n- confidence held or downgraded with a clearer note\n- argument rendering improvement\n- room or scene classification improvement\n- parser or analysis improvement\n- runtime-confirmed interpretation\n\n## Good Outputs\n\nA good pass usually updates one or more of:\n\n- [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body)\n- [`../../dump_mpd_script.py`](../../dump_mpd_script.py)\n- [`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body)\n- [`docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json`](docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json#/body)\n- [`docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json`](docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json#/body)\n- [`docs/workflows/GHIDRA_OPCODE_RE_WORKFLOW.md.json`](docs/workflows/GHIDRA_OPCODE_RE_WORKFLOW.md.json#/body)\n- [`../../analyze_room_graph.py`](../../analyze_room_graph.py)\n- [`docs/research/ROOM_CONNECTION_FINDINGS.md.json`](docs/research/ROOM_CONNECTION_FINDINGS.md.json#/body)\n- [`../../room_names.tsv`](../../room_names.tsv)\n- [`README.md.json`](README.md.json#/body)\n- [`docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md.json`](docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md.json#/body)\n\n## Verification\n\nBefore stopping:\n\n1. verify against at least one strong source, preferably two\n2. confirm the new result is more accurate or more informative than before\n3. reread the final wording and make sure it does not claim too much\n4. confirm the binary import setup was correct for any raw-overlay `Ghidra`\n   export used as proof\n\nExamples:\n\n- decoded output now renders a structure instead of a blob\n- a rename fits several real rooms\n- a helper rename matches implementation and local call sites\n- a helper-decomp claim survives binary or runtime reconciliation\n- timing or signedness matches raw bytes\n- runtime behavior matches the theory\n- room-graph counts or exclusions still make sense after a graph change\n\n## Finish Line\n\nThe pass is done when:\n\n1. the intended files are updated\n2. the diff is focused\n3. verification is done\n4. `RE_CAMPAIGN_MEMORY.md.json` is updated in the relevant sections:\n   `Current Phase`, `Priority Targets`, `Known Conflicts`,\n   `Session Handoff`, and optional `Completed Milestones`\n5. `docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json` is updated if new durable artifacts were\n   added\n6. the AI commits locally when `commit_mode = \"auto\"`, or stages only when\n   `commit_mode = \"no-commit\"`\n7. any temporary stash is restored\n8. the user gets a short conclusions summary plus the exact commit message for\n   each touched repo\n\nUse conventional commits. Good shapes:\n\n```text\nfeat(re): improve opcode 0x7A argument rendering\nfix(tooling): refine room graph classification\ndocs(re): tighten evidence for menu sound behavior\n```\n\n## Final Report\n\nAt the end, report:\n\n1. the question you targeted\n2. what evidence mattered most\n3. what still blocks any remaining confidence bump\n4. which files changed\n5. how you verified it\n6. how `RE_CAMPAIGN_MEMORY.md.json` was updated\n7. the short conclusions summary\n8. the exact commit message for each touched repo\n9. the commit hash for each local commit, or explicit confirmation that commits\n   were skipped because `commit_mode = \"no-commit\"`\n10. whether any stash was restored\n\n## Avoid\n\nDo not:\n\n- fight headless Ghidra first\n- trust a raw-overlay headless import before confirming its base address\n- rename multiple weak opcodes in one pass\n- rename helpers based only on adjacency or vibes\n- treat helper decompiled C as final proof when the binary or runtime has not\n  been checked yet\n- let `_refs/rood-reverse` links carry more evidentiary weight than local\n  `decomp/` artifacts\n- treat a confidence bump as the default success condition\n- convert tentative notes into confident names without proof\n- leave unexplained experimental edits behind\n- end with only future ideas and no concrete artifact\n\n## Kickoff Line\n\n```text\nDo one focused RE pass, use the right local tools for the question, make the smallest honest verified improvement you can justify, commit locally unless config disables it, restore any temporary stash, summarize the result, and stop without pushing.\n```\n"
+  }
+}

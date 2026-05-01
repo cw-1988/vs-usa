@@ -1,0 +1,972 @@
+{
+  "content": {
+    "document_type": "workflow_guide",
+    "title": "Ghidra Opcode RE Workflow",
+    "phases": [
+      {
+        "phase": "Ghidra Opcode RE Workflow",
+        "steps": [],
+        "checklist": [
+          "workspace root: file_:../..",
+          "local Ghidra install: file_:../../tools/ghidra_12.0.4_PUBLIC",
+          "local Ghidra project: file_:../../tools/ghidra-project",
+          "game overlay of interest: file_:../../Game Data/BATTLE/BATTLE.PRG",
+          "decomp reference checkout: file_:../../_refs/rood-reverse"
+        ]
+      },
+      {
+        "phase": "Short Version",
+        "steps": [
+          "Start from the opcode table and decoded script usage in file_:../../dump_mpd_script.py and file_:../../decoded_scripts.",
+          "Use file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c as the main candidate opcode-handler map.",
+          "Use file_:../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c as the current helper-decomp dispatch table when source order is ambiguous.",
+          "Use file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c and file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h for camera, room, audio, and effect consumers.",
+          "Use file_:../../_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt when a function is referenced but not easy to locate by browsing alone.",
+          "Use live `Ghidra` and `PCSX-Redux` whenever an opcode claim matters and the helper decomp does not already agree cleanly with script usage, function boundaries, and consumer paths.",
+          "decoded scripts",
+          "headless or scripted `Ghidra` exports",
+          "local reconciliation scripts under file_:../../decomp/verification",
+          "`PCSX-Redux` only if those still disagree"
+        ],
+        "checklist": []
+      },
+      {
+        "phase": "1. Start from real script usage first",
+        "steps": [],
+        "checklist": [
+          "repeated usage patterns immediately tell you whether an opcode behaves like flow control, camera staging, sound setup, mechanism control, or a visual effect pulse",
+          "this keeps names script-friendly instead of overfitting internal field names",
+          "`0x7A` repeatedly brackets cutscene takeover and cleanup in `MAP062` and `MAP138`",
+          "`0xE2` clusters around camera setup and camera motion blocks",
+          "`0xE3` appears inside a visual-effect block with nearby `E1/E4/E5/E6/E7` opcodes",
+          "`0xED` and `0xEF` both appear in short repeated bursts, but they do not drive the same target path"
+        ]
+      },
+      {
+        "phase": "2. Treat `4A0A8.c` as the opcode hub, not the final truth",
+        "steps": [],
+        "checklist": [
+          "file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c",
+          "it is still a helper decomp view",
+          "function order and boundaries can be incomplete",
+          "nearby orphan helpers can matter even if the current local headers or tables do not mention them",
+          "search for the opcode byte or the handler function",
+          "follow direct helper calls out of the handler",
+          "then inspect where the written field gets consumed",
+          "`0x7A` narrowed through `func_800BA108`",
+          "`0xE2` and `0xE3` narrowed through `func_800BD444`",
+          "the timed effect cluster narrowed through `func_800BDAB4` and nearby update code"
+        ]
+      },
+      {
+        "phase": "2.5. Use `12AC.c` to propose the opcode-to-handler mapping",
+        "steps": [],
+        "checklist": [
+          "file_:../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c",
+          "source order in `4A0A8.c` is not reliable enough by itself once multiple camera and effect helpers sit near each other",
+          "the helper dispatch table is a strong local anchor before opening the binary",
+          "do not call the helper table \"exact\" ground truth unless the binary table, function boundaries, and runtime behavior all agree",
+          "if a helper table slot points to a stub but nearby function-shaped code and real scripts strongly suggest meaningful behavior, escalate to `Ghidra` or `PCSX-Redux` instead of forcing a downgrade",
+          "`0xE1 -> func_800BB450`",
+          "`0xE2 -> func_800BD444`",
+          "`0xE3 -> func_800BD444`",
+          "`0xE4/0xE5/0xE6/0xE7/0xED -> func_800BD6C4`",
+          "`0xEA/0xEB/0xEC/0xEE/0xEF -> func_800BDC9C`",
+          "`0xE1` no longer needs to be inferred from script pattern alone because the helper table maps it directly to the wrapper that calls `func_8007DD50(arg0[1])`"
+        ]
+      },
+      {
+        "phase": "3. Use `146C.h` more aggressively",
+        "steps": [],
+        "checklist": [
+          "file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h",
+          "some formerly unknown camera fields are already partially named there",
+          "the struct layout gives stronger evidence than old rough notes",
+          "`camera_t2` already exposes: - `position` - `lookAt` - `pitch` - `yaw` - `unk5C` - `unk60` - `farClip`"
+        ]
+      },
+      {
+        "phase": "4. Use the decomp config as a symbol index, not a completeness guarantee",
+        "steps": [],
+        "checklist": [
+          "file_:../../_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt",
+          "a function name appears in decompiled code but you want confirmation that it really exists in the symbol map",
+          "you want to search for nearby related functions by address family",
+          "it confirmed `func_800BD444` and `func_800BE180` in the camera/effect handler area",
+          "it exposes `_opcodeFunctionTable`, which is the easiest way to anchor the `INITBTL` dispatch table by address or symbol search"
+        ]
+      },
+      {
+        "phase": "Step 1. Find unresolved names in the local decoder",
+        "steps": [],
+        "checklist": [
+          "file_:../../dump_mpd_script.py",
+          "file_:docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json",
+          "look for placeholder names like `OpcodeXX`",
+          "compare that against the conclusions note to see whether the opcode is truly unresolved or just not yet renamed locally"
+        ]
+      },
+      {
+        "phase": "Step 3. Find the handler in `4A0A8.c`",
+        "steps": [],
+        "checklist": [
+          "the opcode hex value if it appears in a switch",
+          "helper names called from the handler",
+          "known field setters called after the handler updates state",
+          "`_opcodeFunctionTable` when the handler identity itself is still uncertain"
+        ]
+      },
+      {
+        "phase": "Step 4. Follow the consumer, not just the setter",
+        "steps": [],
+        "checklist": [
+          "`func_8007AC94(arg0)` writes `_camera.t2.unk5C`",
+          "`func_8007DDAC(arg0)` writes `D_800F1A2C`",
+          "`vs_screff2_setParamPair(param0, param1)` writes two persistent parameters in `SCREFF2.PRG`",
+          "`func_800BE180` advances two waveform slots whose outputs are rotated into camera-relative offsets and added to `cameraLookAt` and `cameraPos`",
+          "`camera-side angle tween` from",
+          "`screen-effect-side angle tween`"
+        ]
+      },
+      {
+        "phase": "Step 4.5. Do a contradiction scan before changing confidence",
+        "steps": [
+          "the helper dispatch table",
+          "the current handler body",
+          "nearby helper candidates in the same address block",
+          "real script usage",
+          "binary or runtime confirmation when the first four disagree"
+        ],
+        "checklist": []
+      },
+      {
+        "phase": "Step 5. Rename locally only when the script-facing meaning is honest",
+        "steps": [],
+        "checklist": [
+          "`SetRoomAmbientSoundSuspended`",
+          "`CameraRollTween`",
+          "`ScreenEffectAngleTween`",
+          "`CameraOscillationInit`",
+          "`0xEF` now uses the local decoder name `CameraOscillationInit`, but it is still not hard-renamed upstream because the exact control-word layout and final player-facing label are not nailed down yet"
+        ]
+      },
+      {
+        "phase": "Installed local pieces",
+        "steps": [],
+        "checklist": [
+          "file_:../../tools/ghidra_12.0.4_PUBLIC",
+          "file_:../../tools/ghidra-project",
+          "`ghidra_psx_ldr`",
+          "`C:\\Users\\Chris\\AppData\\Roaming\\ghidra\\ghidra_12.0.4_PUBLIC\\Extensions\\ghidra_psx_ldr`",
+          "the extension loader name is `PSX Executables Loader`",
+          "`psx/PsxLoader.java`",
+          "`PSX:LE:32:default`"
+        ]
+      },
+      {
+        "phase": "What the local Ghidra project looked like",
+        "steps": [],
+        "checklist": [
+          "file_:../../tools/ghidra-project/Vagrant Story USA.gpr",
+          "file_:../../tools/ghidra-project/Vagrant Story USA.rep",
+          "file_:../../tools/ghidra-project/Vagrant Story USA.lock",
+          "the project had a lock file during this session",
+          "headless opening of the live project failed with a lock error"
+        ]
+      },
+      {
+        "phase": "1. Headless open failed on the live project because of the lock",
+        "steps": [],
+        "checklist": [
+          "`Unable to lock project`",
+          "do not start by poking the live project headlessly",
+          "either open the project interactively in Ghidra, or copy the project to a scratch location first"
+        ]
+      },
+      {
+        "phase": "2. Copying the project avoided the lock, but `-process BATTLE.PRG` still failed",
+        "steps": [],
+        "checklist": [
+          "`Requested project program file(s) not found: BATTLE.PRG`",
+          "the copied project was not immediately usable as a drop-in headless target for `-process BATTLE.PRG`",
+          "do not assume the local project already contains a program object with the exact expected name"
+        ]
+      },
+      {
+        "phase": "3. Headless automation was a worse first step than source + grep",
+        "steps": [],
+        "checklist": [
+          "`rood-reverse` source plus `rg` plus decoded script samples got us real progress fast",
+          "headless Ghidra burned time before we even reached the actual code question"
+        ]
+      },
+      {
+        "phase": "Preferred path",
+        "steps": [
+          "Open the local Ghidra GUI project manually.",
+          "Confirm the exact imported program names inside the project before trying any headless `-process` use.",
+          "If the GUI project is awkward, import `Game Data/BATTLE/BATTLE.PRG` into a fresh scratch project using the PSX loader rather than debugging the old project structure first.",
+          "Use Ghidra mainly for: - verifying dispatch-table bytes in the original binary - checking whether function boundaries in the helper decomp are complete - xrefs to still-unnamed globals - browsing nonmatching consumers - checking data layout when decompiled source is partial"
+        ],
+        "checklist": [
+          "verifying dispatch-table bytes in the original binary",
+          "checking whether function boundaries in the helper decomp are complete",
+          "xrefs to still-unnamed globals",
+          "browsing nonmatching consumers",
+          "checking data layout when decompiled source is partial"
+        ]
+      },
+      {
+        "phase": "If creating a fresh scratch project",
+        "steps": [],
+        "checklist": [
+          "loader: `PSX Executables Loader`",
+          "language: `PSX:LE:32:default`",
+          "`Game Data/BATTLE/BATTLE.PRG`",
+          "the opcode handler area around the `4A0A8.c` address family",
+          "camera/effect consumers around the `146C.c` address family"
+        ]
+      },
+      {
+        "phase": "Main handler file",
+        "steps": [],
+        "checklist": [
+          "file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c"
+        ]
+      },
+      {
+        "phase": "Main consumer file",
+        "steps": [],
+        "checklist": [
+          "file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c"
+        ]
+      },
+      {
+        "phase": "Effect-side helper",
+        "steps": [],
+        "checklist": [
+          "file_:../../_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c"
+        ]
+      },
+      {
+        "phase": "Best current examples",
+        "steps": [],
+        "checklist": [
+          "`0x7A`: room ambient sound suspend/restore around cutscene control",
+          "`0xE2`: camera-side angle tween writing `_camera.t2.unk5C`",
+          "`0xE3`: effect-side angle tween writing `D_800F1A2C`",
+          "`0xED`: direct two-parameter `SCREFF2` tween feeding `vs_screff2_setParamPair`",
+          "`0xEF`: camera-relative oscillation init feeding two waveform slots through `func_800BE180`"
+        ]
+      },
+      {
+        "phase": "Good Starting Queries Next Session",
+        "steps": [],
+        "checklist": [
+          "`E1`",
+          "`E4`",
+          "`E5`",
+          "`E6`",
+          "`E7`",
+          "`ED`",
+          "`EF`"
+        ]
+      },
+      {
+        "phase": "Suggested Next Targets",
+        "steps": [
+          "Recover the exact control-word layout behind `0xEF`, especially slot and envelope selection.",
+          "Reconcile disputed helper-table versus script-behavior cases such as `0x80-0x84` against the binary and runtime.",
+          "Confirm whether `0xE6` is best described as effect offset, drift, or some more specific render-space term.",
+          "Use Ghidra xrefs to identify the real user-facing meaning of `D_800F1A2C` and the two `SCREFF2` parameter fields fed by `0xED`.",
+          "Add comments in the `rood-reverse` reference checkout around the handler and consumer code.",
+          "Keep the local decoder and conclusions note synchronized as confidence improves."
+        ],
+        "checklist": []
+      },
+      {
+        "phase": "Session Reminder",
+        "steps": [],
+        "checklist": [
+          "decoded script pattern",
+          "helper decomp candidate",
+          "binary or runtime check when needed",
+          "matched or recovered consumer",
+          "only then Ghidra for the remaining unnamed field"
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "language": "powershell",
+        "code": "rg -n \"Opcode7A|SetScreenEffectEnabled|CameraRollTween|ScreenEffectAngleTween|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|CameraOscillationInit|OpcodeEF\" decoded_scripts"
+      },
+      {
+        "language": "powershell",
+        "code": "rg -n \"_opcodeFunctionTable|func_800BB450|func_800BD444|func_800BD6C4|func_800BDC9C\" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt\nrg -n \"0x7A|0xE2|0xE3|0xED|0xEF|func_8007AC94|func_8007DDAC|func_8007DDB8|func_8007DDD4|func_8007DDF8|vs_screff2_setParamPair|func_800BE180\" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c _refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c"
+      },
+      {
+        "language": "powershell",
+        "code": "tools\\ghidra_12.0.4_PUBLIC\\support\\analyzeHeadless.bat ..."
+      },
+      {
+        "language": "powershell",
+        "code": "rg -n \"_opcodeFunctionTable|func_800BB450|func_800BD444|func_800BD6C4|func_800BDC9C\" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt\nrg -n \"0x7A|0xE2|0xE3|0xED|0xEF\" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c\nrg -n \"func_8007AC94|func_8007DDAC|func_8007DDB8|func_8007DDD4|func_8007DDF8|vs_screff2_setParamPair|func_800BE180|unk5C|D_800F1A2C\" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c _refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c\nrg -n \"Opcode7A|SetScreenEffectEnabled|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|CameraOscillationInit|OpcodeEF|CameraRollTween|ScreenEffectAngleTween\" decoded_scripts"
+      }
+    ],
+    "source_markdown_path": "docs/workflows/GHIDRA_OPCODE_RE_WORKFLOW.md",
+    "summary": "This note is for the next opcode-reversing session so we can resume quickly instead of re-learning the same setup and toolchain friction.",
+    "body": {
+      "content": [
+        {
+          "ulist": [
+            "This note is for the next opcode-reversing session so we can resume quickly\ninstead of re-learning the same setup and toolchain friction.",
+            "Read [`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body) first.\nThis workflow is about how to use `Ghidra` and local helper material well, not\nabout treating helper decompiled C as final authority.",
+            "For the CLI-first static pipeline, also read\n[`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json#/body).",
+            "Current local context:",
+            {
+              "ulist": [
+                "workspace root: [`../..`](../..)",
+                "local Ghidra install: [`../../tools/ghidra_12.0.4_PUBLIC`](../../tools/ghidra_12.0.4_PUBLIC)",
+                "local Ghidra project: [`../../tools/ghidra-project`](../../tools/ghidra-project)",
+                "game overlay of interest: [`../../Game Data/BATTLE/BATTLE.PRG`](../../Game%20Data/BATTLE/BATTLE.PRG)",
+                "decomp reference checkout: [`../../_refs/rood-reverse`](../../_refs/rood-reverse)"
+              ]
+            }
+          ]
+        }
+      ],
+      "sections": {
+        "short-version": {
+          "heading": "Short Version",
+          "content": [
+            {
+              "paragraph": "If the goal is to reverse more script opcodes fast, the best workflow is:",
+              "olit": [
+                "Start from the opcode table and decoded script usage in\n[`../../dump_mpd_script.py`](../../dump_mpd_script.py)\nand [`../../decoded_scripts`](../../decoded_scripts).",
+                "Use [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)\nas the main candidate opcode-handler map.",
+                "Use\n[`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)\nas the current helper-decomp dispatch table when source order is ambiguous.",
+                "Use\n[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\nand [`146C.h`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)\nfor camera, room, audio, and effect consumers.",
+                "Use\n[`../../_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](../../_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt)\nwhen a function is referenced but not easy to locate by browsing alone.",
+                "Use live `Ghidra` and `PCSX-Redux` whenever an opcode claim matters and the\nhelper decomp does not already agree cleanly with script usage, function\nboundaries, and consumer paths.",
+                "In normal cases, prefer:",
+                {
+                  "olit": [
+                    "decoded scripts",
+                    "headless or scripted `Ghidra` exports",
+                    "local reconciliation scripts under [`../../decomp/verification`](../../decomp/verification)",
+                    "`PCSX-Redux` only if those still disagree"
+                  ]
+                }
+              ]
+            },
+            {
+              "paragraph": "That is the path that produced useful progress. The time sink was trying to\nforce headless Ghidra automation before confirming the local project state."
+            }
+          ]
+        },
+        "what-worked-best": {
+          "heading": "What Worked Best",
+          "sections": {
+            "start-from-real-script-usage-first": {
+              "heading": "1. Start from real script usage first",
+              "content": [
+                {
+                  "paragraph": "Before naming an opcode, find several real script contexts in\n[`../../decoded_scripts`](../../decoded_scripts)."
+                },
+                {
+                  "paragraph": "Why:",
+                  "ulist": [
+                    "repeated usage patterns immediately tell you whether an opcode behaves like\nflow control, camera staging, sound setup, mechanism control, or a visual\neffect pulse",
+                    "this keeps names script-friendly instead of overfitting internal field names",
+                    "Useful examples from this session:",
+                    {
+                      "ulist": [
+                        "`0x7A` repeatedly brackets cutscene takeover and cleanup in `MAP062` and\n`MAP138`",
+                        "`0xE2` clusters around camera setup and camera motion blocks",
+                        "`0xE3` appears inside a visual-effect block with nearby `E1/E4/E5/E6/E7`\nopcodes",
+                        "`0xED` and `0xEF` both appear in short repeated bursts, but they do not drive\nthe same target path"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "treat-4a0a8c-as-the-opcode-hub-not-the-final-truth": {
+              "heading": "2. Treat `4A0A8.c` as the opcode hub, not the final truth",
+              "content": [
+                {
+                  "paragraph": "The main file for script handler work is:",
+                  "ulist": [
+                    "[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)"
+                  ]
+                },
+                {
+                  "paragraph": "This is where the most useful wins came from."
+                },
+                {
+                  "paragraph": "But remember:",
+                  "ulist": [
+                    "it is still a helper decomp view",
+                    "function order and boundaries can be incomplete",
+                    "nearby orphan helpers can matter even if the current local headers or tables\ndo not mention them",
+                    "What to do there:",
+                    {
+                      "ulist": [
+                        "search for the opcode byte or the handler function",
+                        "follow direct helper calls out of the handler",
+                        "then inspect where the written field gets consumed"
+                      ]
+                    },
+                    "Examples from this session:",
+                    {
+                      "ulist": [
+                        "`0x7A` narrowed through `func_800BA108`",
+                        "`0xE2` and `0xE3` narrowed through `func_800BD444`",
+                        "the timed effect cluster narrowed through `func_800BDAB4` and nearby update\ncode"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "25-use-12acc-to-propose-the-opcode-to-handler-mapping": {
+              "heading": "2.5. Use `12AC.c` to propose the opcode-to-handler mapping",
+              "content": [
+                {
+                  "paragraph": "File:",
+                  "ulist": [
+                    "[`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)",
+                    "Why it mattered:",
+                    {
+                      "ulist": [
+                        "source order in `4A0A8.c` is not reliable enough by itself once multiple\ncamera and effect helpers sit near each other",
+                        "the helper dispatch table is a strong local anchor before opening the binary"
+                      ]
+                    },
+                    "Important caution:",
+                    {
+                      "ulist": [
+                        "do not call the helper table \"exact\" ground truth unless the binary table,\nfunction boundaries, and runtime behavior all agree",
+                        "if a helper table slot points to a stub but nearby function-shaped code and\nreal scripts strongly suggest meaningful behavior, escalate to `Ghidra` or\n`PCSX-Redux` instead of forcing a downgrade"
+                      ]
+                    },
+                    "Useful helper-table mappings from the current pass:",
+                    {
+                      "ulist": [
+                        "`0xE1 -> func_800BB450`",
+                        "`0xE2 -> func_800BD444`",
+                        "`0xE3 -> func_800BD444`",
+                        "`0xE4/0xE5/0xE6/0xE7/0xED -> func_800BD6C4`",
+                        "`0xEA/0xEB/0xEC/0xEE/0xEF -> func_800BDC9C`"
+                      ]
+                    },
+                    "Important example:",
+                    {
+                      "ulist": [
+                        "`0xE1` no longer needs to be inferred from script pattern alone because the\nhelper table maps it directly to the wrapper that calls\n`func_8007DD50(arg0[1])`"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "use-146ch-more-aggressively": {
+              "heading": "3. Use `146C.h` more aggressively",
+              "content": [
+                {
+                  "paragraph": "This helped a lot more than expected."
+                },
+                {
+                  "paragraph": "File:",
+                  "ulist": [
+                    "[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)",
+                    "Why it mattered:",
+                    {
+                      "ulist": [
+                        "some formerly unknown camera fields are already partially named there",
+                        "the struct layout gives stronger evidence than old rough notes"
+                      ]
+                    },
+                    "Important example:",
+                    {
+                      "ulist": [
+                        "`camera_t2` already exposes:"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "That made `0xE2` much stronger as a camera-angle-style tween because its target\nis a separate camera field immediately after pitch/yaw, not a generic room or\nactor value."
+                }
+              ]
+            },
+            "use-the-decomp-config-as-a-symbol-index-not-a-completeness-guarantee": {
+              "heading": "4. Use the decomp config as a symbol index, not a completeness guarantee",
+              "content": [
+                {
+                  "paragraph": "Useful file:",
+                  "ulist": [
+                    "[`../../_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](../../_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt)",
+                    "This is handy when:",
+                    {
+                      "ulist": [
+                        "a function name appears in decompiled code but you want confirmation that it\nreally exists in the symbol map",
+                        "you want to search for nearby related functions by address family"
+                      ]
+                    },
+                    "Example:",
+                    {
+                      "ulist": [
+                        "it confirmed `func_800BD444` and `func_800BE180` in the camera/effect handler\narea",
+                        "it exposes `_opcodeFunctionTable`, which is the easiest way to anchor the\n`INITBTL` dispatch table by address or symbol search"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "But if a function-shaped block exists in source and does not appear in the\nsymbol map, treat that as a warning sign to investigate further in `Ghidra`."
+                }
+              ]
+            }
+          }
+        },
+        "proven-local-workflow": {
+          "heading": "Proven Local Workflow",
+          "sections": {
+            "step-1-find-unresolved-names-in-the-local-decoder": {
+              "heading": "Step 1. Find unresolved names in the local decoder",
+              "content": [
+                {
+                  "paragraph": "Open:",
+                  "ulist": [
+                    "[`../../dump_mpd_script.py`](../../dump_mpd_script.py)",
+                    "[`docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json`](docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json#/body)",
+                    "The fastest pattern is:",
+                    {
+                      "ulist": [
+                        "look for placeholder names like `OpcodeXX`",
+                        "compare that against the conclusions note to see whether the opcode is truly\nunresolved or just not yet renamed locally"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "step-2-pull-sample-script-contexts": {
+              "heading": "Step 2. Pull sample script contexts",
+              "content": [
+                {
+                  "paragraph": "Use the decoded scripts to gather multiple contexts before opening more code."
+                },
+                {
+                  "paragraph": "Good quick approach:",
+                  "code": "rg -n \"Opcode7A|SetScreenEffectEnabled|CameraRollTween|ScreenEffectAngleTween|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|CameraOscillationInit|OpcodeEF\" decoded_scripts",
+                  "language": "powershell"
+                },
+                {
+                  "ulist": [
+                    "If the current local names differ, search by raw opcode byte or the old name.",
+                    "For `0xEF`, do not stop at one example. Pull several rooms and compare the full\nfive-byte argument pattern, especially repeated control-word pairs like\n`0x0067/0x005B` or `0x0193/0x019B`."
+                  ]
+                }
+              ]
+            },
+            "step-3-find-the-handler-in-4a0a8c": {
+              "heading": "Step 3. Find the handler in `4A0A8.c`",
+              "content": [
+                {
+                  "paragraph": "Good search terms:",
+                  "ulist": [
+                    "the opcode hex value if it appears in a switch",
+                    "helper names called from the handler",
+                    "known field setters called after the handler updates state",
+                    "`_opcodeFunctionTable` when the handler identity itself is still uncertain"
+                  ]
+                },
+                {
+                  "paragraph": "Useful commands:",
+                  "code": "rg -n \"_opcodeFunctionTable|func_800BB450|func_800BD444|func_800BD6C4|func_800BDC9C\" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt\nrg -n \"0x7A|0xE2|0xE3|0xED|0xEF|func_8007AC94|func_8007DDAC|func_8007DDB8|func_8007DDD4|func_8007DDF8|vs_screff2_setParamPair|func_800BE180\" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c _refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c",
+                  "language": "powershell"
+                }
+              ]
+            },
+            "step-4-follow-the-consumer-not-just-the-setter": {
+              "heading": "Step 4. Follow the consumer, not just the setter",
+              "content": [
+                {
+                  "paragraph": "This was the key difference between a vague subsystem guess and a useful name."
+                },
+                {
+                  "paragraph": "Examples:",
+                  "ulist": [
+                    "`func_8007AC94(arg0)` writes `_camera.t2.unk5C`",
+                    "`func_8007DDAC(arg0)` writes `D_800F1A2C`",
+                    "`vs_screff2_setParamPair(param0, param1)` writes two persistent parameters in\n`SCREFF2.PRG`",
+                    "`func_800BE180` advances two waveform slots whose outputs are rotated into\ncamera-relative offsets and added to `cameraLookAt` and `cameraPos`",
+                    "That consumer-side tracing is what separated:",
+                    {
+                      "ulist": [
+                        "`camera-side angle tween`"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "from"
+                },
+                {
+                  "ulist": [
+                    "`screen-effect-side angle tween`"
+                  ]
+                }
+              ]
+            },
+            "step-45-do-a-contradiction-scan-before-changing-confidence": {
+              "heading": "Step 4.5. Do a contradiction scan before changing confidence",
+              "content": [
+                {
+                  "paragraph": "For disputed opcodes, check all of:",
+                  "olit": [
+                    "the helper dispatch table",
+                    "the current handler body",
+                    "nearby helper candidates in the same address block",
+                    "real script usage",
+                    "binary or runtime confirmation when the first four disagree"
+                  ]
+                },
+                {
+                  "paragraph": "If those disagree, stop calling the current theory `Confirmed`."
+                }
+              ]
+            },
+            "step-5-rename-locally-only-when-the-script-facing-meaning-is-honest": {
+              "heading": "Step 5. Rename locally only when the script-facing meaning is honest",
+              "content": [
+                {
+                  "paragraph": "Local decoder names do not need to wait for upstream-perfect certainty, but they\nshould still be honest."
+                },
+                {
+                  "paragraph": "Good examples from this session:",
+                  "ulist": [
+                    "`SetRoomAmbientSoundSuspended`",
+                    "`CameraRollTween`",
+                    "`ScreenEffectAngleTween`",
+                    "`CameraOscillationInit`",
+                    "What stayed conservative:",
+                    {
+                      "ulist": [
+                        "`0xEF` now uses the local decoder name `CameraOscillationInit`, but it is\nstill not hard-renamed upstream because the exact control-word layout and\nfinal player-facing label are not nailed down yet"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "ghidra-setup-notes": {
+          "heading": "Ghidra Setup Notes",
+          "sections": {
+            "installed-local-pieces": {
+              "heading": "Installed local pieces",
+              "content": [
+                {
+                  "paragraph": "Main install:",
+                  "ulist": [
+                    "[`../../tools/ghidra_12.0.4_PUBLIC`](../../tools/ghidra_12.0.4_PUBLIC)",
+                    "Project:",
+                    {
+                      "ulist": [
+                        "[`../../tools/ghidra-project`](../../tools/ghidra-project)"
+                      ]
+                    },
+                    "PSX loader extension:",
+                    {
+                      "ulist": [
+                        "`ghidra_psx_ldr`"
+                      ]
+                    },
+                    "Important extension location:",
+                    {
+                      "ulist": [
+                        "`C:\\Users\\Chris\\AppData\\Roaming\\ghidra\\ghidra_12.0.4_PUBLIC\\Extensions\\ghidra_psx_ldr`"
+                      ]
+                    },
+                    "Important loader fact:",
+                    {
+                      "ulist": [
+                        "the extension loader name is `PSX Executables Loader`"
+                      ]
+                    },
+                    "The extension source zip includes:",
+                    {
+                      "ulist": [
+                        "`psx/PsxLoader.java`"
+                      ]
+                    },
+                    "That file confirms the loader name and that it uses PSX language id:",
+                    {
+                      "ulist": [
+                        "`PSX:LE:32:default`"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "what-the-local-ghidra-project-looked-like": {
+              "heading": "What the local Ghidra project looked like",
+              "content": [
+                {
+                  "paragraph": "Current files:",
+                  "ulist": [
+                    "[`../../tools/ghidra-project/Vagrant Story USA.gpr`](../../tools/ghidra-project/Vagrant%20Story%20USA.gpr)",
+                    "[`../../tools/ghidra-project/Vagrant Story USA.rep`](../../tools/ghidra-project/Vagrant%20Story%20USA.rep)",
+                    "[`../../tools/ghidra-project/Vagrant Story USA.lock`](../../tools/ghidra-project/Vagrant%20Story%20USA.lock)",
+                    "Important caution:",
+                    {
+                      "ulist": [
+                        "the project had a lock file during this session",
+                        "headless opening of the live project failed with a lock error"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "ghidra-walls-hit-this-session": {
+          "heading": "Ghidra Walls Hit This Session",
+          "sections": {
+            "headless-open-failed-on-the-live-project-because-of-the-lock": {
+              "heading": "1. Headless open failed on the live project because of the lock",
+              "content": [
+                {
+                  "paragraph": "Command style attempted:",
+                  "code": "tools\\ghidra_12.0.4_PUBLIC\\support\\analyzeHeadless.bat ...",
+                  "language": "powershell"
+                },
+                {
+                  "paragraph": "Observed problem:",
+                  "ulist": [
+                    "`Unable to lock project`",
+                    "Practical takeaway:",
+                    {
+                      "ulist": [
+                        "do not start by poking the live project headlessly",
+                        "either open the project interactively in Ghidra, or copy the project to a\nscratch location first"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "copying-the-project-avoided-the-lock-but--process-battleprg-still-failed": {
+              "heading": "2. Copying the project avoided the lock, but `-process BATTLE.PRG` still failed",
+              "content": [
+                {
+                  "paragraph": "After copying the project and removing copied lock files, headless access got\npast the lock but then failed with:",
+                  "ulist": [
+                    "`Requested project program file(s) not found: BATTLE.PRG`",
+                    "Practical takeaway:",
+                    {
+                      "ulist": [
+                        "the copied project was not immediately usable as a drop-in headless target for\n`-process BATTLE.PRG`",
+                        "do not assume the local project already contains a program object with the\nexact expected name"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "headless-automation-was-a-worse-first-step-than-source-grep": {
+              "heading": "3. Headless automation was a worse first step than source + grep",
+              "content": [
+                {
+                  "paragraph": "This is the biggest lesson."
+                },
+                {
+                  "paragraph": "For opcode naming specifically:",
+                  "ulist": [
+                    "`rood-reverse` source plus `rg` plus decoded script samples got us real\nprogress fast",
+                    "headless Ghidra burned time before we even reached the actual code question"
+                  ]
+                },
+                {
+                  "ulist": [
+                    "So the next session should only push harder on headless scripting if the source\nwalk truly bottoms out.",
+                    "That does not mean `Ghidra` is optional when evidence conflicts.\nIt means interactive or targeted binary inspection is more valuable than trying\nto automate the whole session up front."
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "best-ghidra-strategy-next-time": {
+          "heading": "Best Ghidra Strategy Next Time",
+          "sections": {
+            "preferred-path": {
+              "heading": "Preferred path",
+              "content": [
+                {
+                  "olit": [
+                    "Open the local Ghidra GUI project manually.",
+                    "Confirm the exact imported program names inside the project before trying any\nheadless `-process` use.",
+                    "If the GUI project is awkward, import `Game Data/BATTLE/BATTLE.PRG` into a\nfresh scratch project using the PSX loader rather than debugging the old\nproject structure first.",
+                    "Use Ghidra mainly for:"
+                  ]
+                }
+              ]
+            },
+            "if-creating-a-fresh-scratch-project": {
+              "heading": "If creating a fresh scratch project",
+              "content": [
+                {
+                  "paragraph": "Use:",
+                  "ulist": [
+                    "loader: `PSX Executables Loader`",
+                    "language: `PSX:LE:32:default`",
+                    "Priority target:",
+                    {
+                      "ulist": [
+                        "`Game Data/BATTLE/BATTLE.PRG`"
+                      ]
+                    },
+                    "Then immediately locate:",
+                    {
+                      "ulist": [
+                        "the opcode handler area around the `4A0A8.c` address family",
+                        "camera/effect consumers around the `146C.c` address family"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "known-useful-re-anchors": {
+          "heading": "Known Useful RE Anchors",
+          "sections": {
+            "main-handler-file": {
+              "heading": "Main handler file",
+              "content": [
+                {
+                  "ulist": [
+                    "[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)"
+                  ]
+                }
+              ]
+            },
+            "main-consumer-file": {
+              "heading": "Main consumer file",
+              "content": [
+                {
+                  "ulist": [
+                    "[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)"
+                  ]
+                }
+              ]
+            },
+            "effect-side-helper": {
+              "heading": "Effect-side helper",
+              "content": [
+                {
+                  "ulist": [
+                    "[`../../_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c`](../../_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c)"
+                  ]
+                }
+              ]
+            },
+            "best-current-examples": {
+              "heading": "Best current examples",
+              "content": [
+                {
+                  "ulist": [
+                    "`0x7A`: room ambient sound suspend/restore around cutscene control",
+                    "`0xE2`: camera-side angle tween writing `_camera.t2.unk5C`",
+                    "`0xE3`: effect-side angle tween writing `D_800F1A2C`",
+                    "`0xED`: direct two-parameter `SCREFF2` tween feeding\n`vs_screff2_setParamPair`",
+                    "`0xEF`: camera-relative oscillation init feeding two waveform slots through\n`func_800BE180`"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "good-starting-queries-next-session": {
+          "heading": "Good Starting Queries Next Session",
+          "content": [
+            {
+              "paragraph": "Use these first:",
+              "code": "rg -n \"_opcodeFunctionTable|func_800BB450|func_800BD444|func_800BD6C4|func_800BDC9C\" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt\nrg -n \"0x7A|0xE2|0xE3|0xED|0xEF\" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c\nrg -n \"func_8007AC94|func_8007DDAC|func_8007DDB8|func_8007DDD4|func_8007DDF8|vs_screff2_setParamPair|func_800BE180|unk5C|D_800F1A2C\" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c _refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c\nrg -n \"Opcode7A|SetScreenEffectEnabled|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|CameraOscillationInit|OpcodeEF|CameraRollTween|ScreenEffectAngleTween\" decoded_scripts",
+              "language": "powershell"
+            },
+            {
+              "paragraph": "If looking for the next best unknown after this session, inspect nearby `E`-range\nhandlers as a group instead of singly:",
+              "ulist": [
+                "`E1`",
+                "`E4`",
+                "`E5`",
+                "`E6`",
+                "`E7`",
+                "`ED`",
+                "`EF`"
+              ]
+            },
+            {
+              "paragraph": "Those clearly participate in one effect subsystem."
+            }
+          ]
+        },
+        "suggested-next-targets": {
+          "heading": "Suggested Next Targets",
+          "content": [
+            {
+              "paragraph": "Most promising:",
+              "olit": [
+                "Recover the exact control-word layout behind `0xEF`, especially slot and\nenvelope selection.",
+                "Reconcile disputed helper-table versus script-behavior cases such as\n`0x80-0x84` against the binary and runtime.",
+                "Confirm whether `0xE6` is best described as effect offset, drift, or some\nmore specific render-space term.",
+                "Use Ghidra xrefs to identify the real user-facing meaning of `D_800F1A2C`\nand the two `SCREFF2` parameter fields fed by `0xED`.",
+                "Nice follow-up:",
+                {
+                  "olit": [
+                    "Add comments in the `rood-reverse` reference checkout around the handler and\nconsumer code.",
+                    "Keep the local decoder and conclusions note synchronized as confidence improves."
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "session-reminder": {
+          "heading": "Session Reminder",
+          "content": [
+            {
+              "paragraph": "Do not begin by fighting headless Ghidra again unless there is a concrete reason."
+            },
+            {
+              "paragraph": "The fastest route is:",
+              "ulist": [
+                "decoded script pattern",
+                "helper decomp candidate",
+                "binary or runtime check when needed",
+                "matched or recovered consumer",
+                "only then Ghidra for the remaining unnamed field"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "6f37109f0215c7529db4e4cd0b629d704aa0217deb70dd56ab7af449e2d3f3c5",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Ghidra Opcode RE Workflow\n\nThis note is for the next opcode-reversing session so we can resume quickly\ninstead of re-learning the same setup and toolchain friction.\n\nRead [`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md) first.\nThis workflow is about how to use `Ghidra` and local helper material well, not\nabout treating helper decompiled C as final authority.\n\nFor the CLI-first static pipeline, also read\n[`CLI_DECOMPILATION_WORKFLOW.md`](CLI_DECOMPILATION_WORKFLOW.md).\n\nCurrent local context:\n\n- workspace root: [`../..`](../..)\n- local Ghidra install: [`../../tools/ghidra_12.0.4_PUBLIC`](../../tools/ghidra_12.0.4_PUBLIC)\n- local Ghidra project: [`../../tools/ghidra-project`](../../tools/ghidra-project)\n- game overlay of interest: [`../../Game Data/BATTLE/BATTLE.PRG`](../../Game%20Data/BATTLE/BATTLE.PRG)\n- decomp reference checkout: [`../../_refs/rood-reverse`](../../_refs/rood-reverse)\n\n## Short Version\n\nIf the goal is to reverse more script opcodes fast, the best workflow is:\n\n1. Start from the opcode table and decoded script usage in\n   [`../../dump_mpd_script.py`](../../dump_mpd_script.py)\n   and [`../../decoded_scripts`](../../decoded_scripts).\n2. Use [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)\n   as the main candidate opcode-handler map.\n3. Use\n   [`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)\n   as the current helper-decomp dispatch table when source order is ambiguous.\n4. Use\n   [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\n   and [`146C.h`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)\n   for camera, room, audio, and effect consumers.\n5. Use\n   [`../../_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](../../_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt)\n   when a function is referenced but not easy to locate by browsing alone.\n6. Use live `Ghidra` and `PCSX-Redux` whenever an opcode claim matters and the\n   helper decomp does not already agree cleanly with script usage, function\n   boundaries, and consumer paths.\n\nIn normal cases, prefer:\n\n1. decoded scripts\n2. headless or scripted `Ghidra` exports\n3. local reconciliation scripts under [`../../decomp/verification`](../../decomp/verification)\n4. `PCSX-Redux` only if those still disagree\n\nThat is the path that produced useful progress. The time sink was trying to\nforce headless Ghidra automation before confirming the local project state.\n\n## What Worked Best\n\n### 1. Start from real script usage first\n\nBefore naming an opcode, find several real script contexts in\n[`../../decoded_scripts`](../../decoded_scripts).\n\nWhy:\n\n- repeated usage patterns immediately tell you whether an opcode behaves like\n  flow control, camera staging, sound setup, mechanism control, or a visual\n  effect pulse\n- this keeps names script-friendly instead of overfitting internal field names\n\nUseful examples from this session:\n\n- `0x7A` repeatedly brackets cutscene takeover and cleanup in `MAP062` and\n  `MAP138`\n- `0xE2` clusters around camera setup and camera motion blocks\n- `0xE3` appears inside a visual-effect block with nearby `E1/E4/E5/E6/E7`\n  opcodes\n- `0xED` and `0xEF` both appear in short repeated bursts, but they do not drive\n  the same target path\n\n### 2. Treat `4A0A8.c` as the opcode hub, not the final truth\n\nThe main file for script handler work is:\n\n- [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)\n\nThis is where the most useful wins came from.\n\nBut remember:\n\n- it is still a helper decomp view\n- function order and boundaries can be incomplete\n- nearby orphan helpers can matter even if the current local headers or tables\n  do not mention them\n\nWhat to do there:\n\n- search for the opcode byte or the handler function\n- follow direct helper calls out of the handler\n- then inspect where the written field gets consumed\n\nExamples from this session:\n\n- `0x7A` narrowed through `func_800BA108`\n- `0xE2` and `0xE3` narrowed through `func_800BD444`\n- the timed effect cluster narrowed through `func_800BDAB4` and nearby update\n  code\n\n### 2.5. Use `12AC.c` to propose the opcode-to-handler mapping\n\nFile:\n\n- [`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)\n\nWhy it mattered:\n\n- source order in `4A0A8.c` is not reliable enough by itself once multiple\n  camera and effect helpers sit near each other\n- the helper dispatch table is a strong local anchor before opening the binary\n\nImportant caution:\n\n- do not call the helper table \"exact\" ground truth unless the binary table,\n  function boundaries, and runtime behavior all agree\n- if a helper table slot points to a stub but nearby function-shaped code and\n  real scripts strongly suggest meaningful behavior, escalate to `Ghidra` or\n  `PCSX-Redux` instead of forcing a downgrade\n\nUseful helper-table mappings from the current pass:\n\n- `0xE1 -> func_800BB450`\n- `0xE2 -> func_800BD444`\n- `0xE3 -> func_800BD444`\n- `0xE4/0xE5/0xE6/0xE7/0xED -> func_800BD6C4`\n- `0xEA/0xEB/0xEC/0xEE/0xEF -> func_800BDC9C`\n\nImportant example:\n\n- `0xE1` no longer needs to be inferred from script pattern alone because the\n  helper table maps it directly to the wrapper that calls\n  `func_8007DD50(arg0[1])`\n\n### 3. Use `146C.h` more aggressively\n\nThis helped a lot more than expected.\n\nFile:\n\n- [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)\n\nWhy it mattered:\n\n- some formerly unknown camera fields are already partially named there\n- the struct layout gives stronger evidence than old rough notes\n\nImportant example:\n\n- `camera_t2` already exposes:\n  - `position`\n  - `lookAt`\n  - `pitch`\n  - `yaw`\n  - `unk5C`\n  - `unk60`\n  - `farClip`\n\nThat made `0xE2` much stronger as a camera-angle-style tween because its target\nis a separate camera field immediately after pitch/yaw, not a generic room or\nactor value.\n\n### 4. Use the decomp config as a symbol index, not a completeness guarantee\n\nUseful file:\n\n- [`../../_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](../../_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt)\n\nThis is handy when:\n\n- a function name appears in decompiled code but you want confirmation that it\n  really exists in the symbol map\n- you want to search for nearby related functions by address family\n\nExample:\n\n- it confirmed `func_800BD444` and `func_800BE180` in the camera/effect handler\n  area\n- it exposes `_opcodeFunctionTable`, which is the easiest way to anchor the\n  `INITBTL` dispatch table by address or symbol search\n\nBut if a function-shaped block exists in source and does not appear in the\nsymbol map, treat that as a warning sign to investigate further in `Ghidra`.\n\n## Proven Local Workflow\n\n### Step 1. Find unresolved names in the local decoder\n\nOpen:\n\n- [`../../dump_mpd_script.py`](../../dump_mpd_script.py)\n- [`../campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](../campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md)\n\nThe fastest pattern is:\n\n- look for placeholder names like `OpcodeXX`\n- compare that against the conclusions note to see whether the opcode is truly\n  unresolved or just not yet renamed locally\n\n### Step 2. Pull sample script contexts\n\nUse the decoded scripts to gather multiple contexts before opening more code.\n\nGood quick approach:\n\n```powershell\nrg -n \"Opcode7A|SetScreenEffectEnabled|CameraRollTween|ScreenEffectAngleTween|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|CameraOscillationInit|OpcodeEF\" decoded_scripts\n```\n\nIf the current local names differ, search by raw opcode byte or the old name.\n\nFor `0xEF`, do not stop at one example. Pull several rooms and compare the full\nfive-byte argument pattern, especially repeated control-word pairs like\n`0x0067/0x005B` or `0x0193/0x019B`.\n\n### Step 3. Find the handler in `4A0A8.c`\n\nGood search terms:\n\n- the opcode hex value if it appears in a switch\n- helper names called from the handler\n- known field setters called after the handler updates state\n- `_opcodeFunctionTable` when the handler identity itself is still uncertain\n\nUseful commands:\n\n```powershell\nrg -n \"_opcodeFunctionTable|func_800BB450|func_800BD444|func_800BD6C4|func_800BDC9C\" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt\nrg -n \"0x7A|0xE2|0xE3|0xED|0xEF|func_8007AC94|func_8007DDAC|func_8007DDB8|func_8007DDD4|func_8007DDF8|vs_screff2_setParamPair|func_800BE180\" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c _refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c\n```\n\n### Step 4. Follow the consumer, not just the setter\n\nThis was the key difference between a vague subsystem guess and a useful name.\n\nExamples:\n\n- `func_8007AC94(arg0)` writes `_camera.t2.unk5C`\n- `func_8007DDAC(arg0)` writes `D_800F1A2C`\n- `vs_screff2_setParamPair(param0, param1)` writes two persistent parameters in\n  `SCREFF2.PRG`\n- `func_800BE180` advances two waveform slots whose outputs are rotated into\n  camera-relative offsets and added to `cameraLookAt` and `cameraPos`\n\nThat consumer-side tracing is what separated:\n\n- `camera-side angle tween`\nfrom\n- `screen-effect-side angle tween`\n\n### Step 4.5. Do a contradiction scan before changing confidence\n\nFor disputed opcodes, check all of:\n\n1. the helper dispatch table\n2. the current handler body\n3. nearby helper candidates in the same address block\n4. real script usage\n5. binary or runtime confirmation when the first four disagree\n\nIf those disagree, stop calling the current theory `Confirmed`.\n\n### Step 5. Rename locally only when the script-facing meaning is honest\n\nLocal decoder names do not need to wait for upstream-perfect certainty, but they\nshould still be honest.\n\nGood examples from this session:\n\n- `SetRoomAmbientSoundSuspended`\n- `CameraRollTween`\n- `ScreenEffectAngleTween`\n- `CameraOscillationInit`\n\nWhat stayed conservative:\n\n- `0xEF` now uses the local decoder name `CameraOscillationInit`, but it is\n  still not hard-renamed upstream because the exact control-word layout and\n  final player-facing label are not nailed down yet\n\n## Ghidra Setup Notes\n\n### Installed local pieces\n\nMain install:\n\n- [`../../tools/ghidra_12.0.4_PUBLIC`](../../tools/ghidra_12.0.4_PUBLIC)\n\nProject:\n\n- [`../../tools/ghidra-project`](../../tools/ghidra-project)\n\nPSX loader extension:\n\n- `ghidra_psx_ldr`\n\nImportant extension location:\n\n- `C:\\Users\\Chris\\AppData\\Roaming\\ghidra\\ghidra_12.0.4_PUBLIC\\Extensions\\ghidra_psx_ldr`\n\nImportant loader fact:\n\n- the extension loader name is `PSX Executables Loader`\n\nThe extension source zip includes:\n\n- `psx/PsxLoader.java`\n\nThat file confirms the loader name and that it uses PSX language id:\n\n- `PSX:LE:32:default`\n\n### What the local Ghidra project looked like\n\nCurrent files:\n\n- [`../../tools/ghidra-project/Vagrant Story USA.gpr`](../../tools/ghidra-project/Vagrant%20Story%20USA.gpr)\n- [`../../tools/ghidra-project/Vagrant Story USA.rep`](../../tools/ghidra-project/Vagrant%20Story%20USA.rep)\n- [`../../tools/ghidra-project/Vagrant Story USA.lock`](../../tools/ghidra-project/Vagrant%20Story%20USA.lock)\n\nImportant caution:\n\n- the project had a lock file during this session\n- headless opening of the live project failed with a lock error\n\n## Ghidra Walls Hit This Session\n\n### 1. Headless open failed on the live project because of the lock\n\nCommand style attempted:\n\n```powershell\ntools\\ghidra_12.0.4_PUBLIC\\support\\analyzeHeadless.bat ...\n```\n\nObserved problem:\n\n- `Unable to lock project`\n\nPractical takeaway:\n\n- do not start by poking the live project headlessly\n- either open the project interactively in Ghidra, or copy the project to a\n  scratch location first\n\n### 2. Copying the project avoided the lock, but `-process BATTLE.PRG` still failed\n\nAfter copying the project and removing copied lock files, headless access got\npast the lock but then failed with:\n\n- `Requested project program file(s) not found: BATTLE.PRG`\n\nPractical takeaway:\n\n- the copied project was not immediately usable as a drop-in headless target for\n  `-process BATTLE.PRG`\n- do not assume the local project already contains a program object with the\n  exact expected name\n\n### 3. Headless automation was a worse first step than source + grep\n\nThis is the biggest lesson.\n\nFor opcode naming specifically:\n\n- `rood-reverse` source plus `rg` plus decoded script samples got us real\n  progress fast\n- headless Ghidra burned time before we even reached the actual code question\n\nSo the next session should only push harder on headless scripting if the source\nwalk truly bottoms out.\n\nThat does not mean `Ghidra` is optional when evidence conflicts.\nIt means interactive or targeted binary inspection is more valuable than trying\nto automate the whole session up front.\n\n## Best Ghidra Strategy Next Time\n\n### Preferred path\n\n1. Open the local Ghidra GUI project manually.\n2. Confirm the exact imported program names inside the project before trying any\n   headless `-process` use.\n3. If the GUI project is awkward, import `Game Data/BATTLE/BATTLE.PRG` into a\n   fresh scratch project using the PSX loader rather than debugging the old\n   project structure first.\n4. Use Ghidra mainly for:\n   - verifying dispatch-table bytes in the original binary\n   - checking whether function boundaries in the helper decomp are complete\n   - xrefs to still-unnamed globals\n   - browsing nonmatching consumers\n   - checking data layout when decompiled source is partial\n\n### If creating a fresh scratch project\n\nUse:\n\n- loader: `PSX Executables Loader`\n- language: `PSX:LE:32:default`\n\nPriority target:\n\n- `Game Data/BATTLE/BATTLE.PRG`\n\nThen immediately locate:\n\n- the opcode handler area around the `4A0A8.c` address family\n- camera/effect consumers around the `146C.c` address family\n\n## Known Useful RE Anchors\n\n### Main handler file\n\n- [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)\n\n### Main consumer file\n\n- [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\n\n### Effect-side helper\n\n- [`../../_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c`](../../_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c)\n\n### Best current examples\n\n- `0x7A`: room ambient sound suspend/restore around cutscene control\n- `0xE2`: camera-side angle tween writing `_camera.t2.unk5C`\n- `0xE3`: effect-side angle tween writing `D_800F1A2C`\n- `0xED`: direct two-parameter `SCREFF2` tween feeding\n  `vs_screff2_setParamPair`\n- `0xEF`: camera-relative oscillation init feeding two waveform slots through\n  `func_800BE180`\n\n## Good Starting Queries Next Session\n\nUse these first:\n\n```powershell\nrg -n \"_opcodeFunctionTable|func_800BB450|func_800BD444|func_800BD6C4|func_800BDC9C\" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt\nrg -n \"0x7A|0xE2|0xE3|0xED|0xEF\" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c\nrg -n \"func_8007AC94|func_8007DDAC|func_8007DDB8|func_8007DDD4|func_8007DDF8|vs_screff2_setParamPair|func_800BE180|unk5C|D_800F1A2C\" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c _refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c\nrg -n \"Opcode7A|SetScreenEffectEnabled|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|CameraOscillationInit|OpcodeEF|CameraRollTween|ScreenEffectAngleTween\" decoded_scripts\n```\n\nIf looking for the next best unknown after this session, inspect nearby `E`-range\nhandlers as a group instead of singly:\n\n- `E1`\n- `E4`\n- `E5`\n- `E6`\n- `E7`\n- `ED`\n- `EF`\n\nThose clearly participate in one effect subsystem.\n\n## Suggested Next Targets\n\nMost promising:\n\n1. Recover the exact control-word layout behind `0xEF`, especially slot and\n   envelope selection.\n2. Reconcile disputed helper-table versus script-behavior cases such as\n   `0x80-0x84` against the binary and runtime.\n3. Confirm whether `0xE6` is best described as effect offset, drift, or some\n   more specific render-space term.\n4. Use Ghidra xrefs to identify the real user-facing meaning of `D_800F1A2C`\n   and the two `SCREFF2` parameter fields fed by `0xED`.\n\nNice follow-up:\n\n1. Add comments in the `rood-reverse` reference checkout around the handler and\n   consumer code.\n2. Keep the local decoder and conclusions note synchronized as confidence improves.\n\n## Session Reminder\n\nDo not begin by fighting headless Ghidra again unless there is a concrete reason.\n\nThe fastest route is:\n\n- decoded script pattern\n- helper decomp candidate\n- binary or runtime check when needed\n- matched or recovered consumer\n- only then Ghidra for the remaining unnamed field\n",
+    "markdown_with_json_links": "# Ghidra Opcode RE Workflow\n\nThis note is for the next opcode-reversing session so we can resume quickly\ninstead of re-learning the same setup and toolchain friction.\n\nRead [`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body) first.\nThis workflow is about how to use `Ghidra` and local helper material well, not\nabout treating helper decompiled C as final authority.\n\nFor the CLI-first static pipeline, also read\n[`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json#/body).\n\nCurrent local context:\n\n- workspace root: [`../..`](../..)\n- local Ghidra install: [`../../tools/ghidra_12.0.4_PUBLIC`](../../tools/ghidra_12.0.4_PUBLIC)\n- local Ghidra project: [`../../tools/ghidra-project`](../../tools/ghidra-project)\n- game overlay of interest: [`../../Game Data/BATTLE/BATTLE.PRG`](../../Game%20Data/BATTLE/BATTLE.PRG)\n- decomp reference checkout: [`../../_refs/rood-reverse`](../../_refs/rood-reverse)\n\n## Short Version\n\nIf the goal is to reverse more script opcodes fast, the best workflow is:\n\n1. Start from the opcode table and decoded script usage in\n   [`../../dump_mpd_script.py`](../../dump_mpd_script.py)\n   and [`../../decoded_scripts`](../../decoded_scripts).\n2. Use [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)\n   as the main candidate opcode-handler map.\n3. Use\n   [`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)\n   as the current helper-decomp dispatch table when source order is ambiguous.\n4. Use\n   [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\n   and [`146C.h`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)\n   for camera, room, audio, and effect consumers.\n5. Use\n   [`../../_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](../../_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt)\n   when a function is referenced but not easy to locate by browsing alone.\n6. Use live `Ghidra` and `PCSX-Redux` whenever an opcode claim matters and the\n   helper decomp does not already agree cleanly with script usage, function\n   boundaries, and consumer paths.\n\nIn normal cases, prefer:\n\n1. decoded scripts\n2. headless or scripted `Ghidra` exports\n3. local reconciliation scripts under [`../../decomp/verification`](../../decomp/verification)\n4. `PCSX-Redux` only if those still disagree\n\nThat is the path that produced useful progress. The time sink was trying to\nforce headless Ghidra automation before confirming the local project state.\n\n## What Worked Best\n\n### 1. Start from real script usage first\n\nBefore naming an opcode, find several real script contexts in\n[`../../decoded_scripts`](../../decoded_scripts).\n\nWhy:\n\n- repeated usage patterns immediately tell you whether an opcode behaves like\n  flow control, camera staging, sound setup, mechanism control, or a visual\n  effect pulse\n- this keeps names script-friendly instead of overfitting internal field names\n\nUseful examples from this session:\n\n- `0x7A` repeatedly brackets cutscene takeover and cleanup in `MAP062` and\n  `MAP138`\n- `0xE2` clusters around camera setup and camera motion blocks\n- `0xE3` appears inside a visual-effect block with nearby `E1/E4/E5/E6/E7`\n  opcodes\n- `0xED` and `0xEF` both appear in short repeated bursts, but they do not drive\n  the same target path\n\n### 2. Treat `4A0A8.c` as the opcode hub, not the final truth\n\nThe main file for script handler work is:\n\n- [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)\n\nThis is where the most useful wins came from.\n\nBut remember:\n\n- it is still a helper decomp view\n- function order and boundaries can be incomplete\n- nearby orphan helpers can matter even if the current local headers or tables\n  do not mention them\n\nWhat to do there:\n\n- search for the opcode byte or the handler function\n- follow direct helper calls out of the handler\n- then inspect where the written field gets consumed\n\nExamples from this session:\n\n- `0x7A` narrowed through `func_800BA108`\n- `0xE2` and `0xE3` narrowed through `func_800BD444`\n- the timed effect cluster narrowed through `func_800BDAB4` and nearby update\n  code\n\n### 2.5. Use `12AC.c` to propose the opcode-to-handler mapping\n\nFile:\n\n- [`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)\n\nWhy it mattered:\n\n- source order in `4A0A8.c` is not reliable enough by itself once multiple\n  camera and effect helpers sit near each other\n- the helper dispatch table is a strong local anchor before opening the binary\n\nImportant caution:\n\n- do not call the helper table \"exact\" ground truth unless the binary table,\n  function boundaries, and runtime behavior all agree\n- if a helper table slot points to a stub but nearby function-shaped code and\n  real scripts strongly suggest meaningful behavior, escalate to `Ghidra` or\n  `PCSX-Redux` instead of forcing a downgrade\n\nUseful helper-table mappings from the current pass:\n\n- `0xE1 -> func_800BB450`\n- `0xE2 -> func_800BD444`\n- `0xE3 -> func_800BD444`\n- `0xE4/0xE5/0xE6/0xE7/0xED -> func_800BD6C4`\n- `0xEA/0xEB/0xEC/0xEE/0xEF -> func_800BDC9C`\n\nImportant example:\n\n- `0xE1` no longer needs to be inferred from script pattern alone because the\n  helper table maps it directly to the wrapper that calls\n  `func_8007DD50(arg0[1])`\n\n### 3. Use `146C.h` more aggressively\n\nThis helped a lot more than expected.\n\nFile:\n\n- [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)\n\nWhy it mattered:\n\n- some formerly unknown camera fields are already partially named there\n- the struct layout gives stronger evidence than old rough notes\n\nImportant example:\n\n- `camera_t2` already exposes:\n  - `position`\n  - `lookAt`\n  - `pitch`\n  - `yaw`\n  - `unk5C`\n  - `unk60`\n  - `farClip`\n\nThat made `0xE2` much stronger as a camera-angle-style tween because its target\nis a separate camera field immediately after pitch/yaw, not a generic room or\nactor value.\n\n### 4. Use the decomp config as a symbol index, not a completeness guarantee\n\nUseful file:\n\n- [`../../_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt`](../../_refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt)\n\nThis is handy when:\n\n- a function name appears in decompiled code but you want confirmation that it\n  really exists in the symbol map\n- you want to search for nearby related functions by address family\n\nExample:\n\n- it confirmed `func_800BD444` and `func_800BE180` in the camera/effect handler\n  area\n- it exposes `_opcodeFunctionTable`, which is the easiest way to anchor the\n  `INITBTL` dispatch table by address or symbol search\n\nBut if a function-shaped block exists in source and does not appear in the\nsymbol map, treat that as a warning sign to investigate further in `Ghidra`.\n\n## Proven Local Workflow\n\n### Step 1. Find unresolved names in the local decoder\n\nOpen:\n\n- [`../../dump_mpd_script.py`](../../dump_mpd_script.py)\n- [`docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json`](docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json#/body)\n\nThe fastest pattern is:\n\n- look for placeholder names like `OpcodeXX`\n- compare that against the conclusions note to see whether the opcode is truly\n  unresolved or just not yet renamed locally\n\n### Step 2. Pull sample script contexts\n\nUse the decoded scripts to gather multiple contexts before opening more code.\n\nGood quick approach:\n\n```powershell\nrg -n \"Opcode7A|SetScreenEffectEnabled|CameraRollTween|ScreenEffectAngleTween|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|CameraOscillationInit|OpcodeEF\" decoded_scripts\n```\n\nIf the current local names differ, search by raw opcode byte or the old name.\n\nFor `0xEF`, do not stop at one example. Pull several rooms and compare the full\nfive-byte argument pattern, especially repeated control-word pairs like\n`0x0067/0x005B` or `0x0193/0x019B`.\n\n### Step 3. Find the handler in `4A0A8.c`\n\nGood search terms:\n\n- the opcode hex value if it appears in a switch\n- helper names called from the handler\n- known field setters called after the handler updates state\n- `_opcodeFunctionTable` when the handler identity itself is still uncertain\n\nUseful commands:\n\n```powershell\nrg -n \"_opcodeFunctionTable|func_800BB450|func_800BD444|func_800BD6C4|func_800BDC9C\" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt\nrg -n \"0x7A|0xE2|0xE3|0xED|0xEF|func_8007AC94|func_8007DDAC|func_8007DDB8|func_8007DDD4|func_8007DDF8|vs_screff2_setParamPair|func_800BE180\" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c _refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c\n```\n\n### Step 4. Follow the consumer, not just the setter\n\nThis was the key difference between a vague subsystem guess and a useful name.\n\nExamples:\n\n- `func_8007AC94(arg0)` writes `_camera.t2.unk5C`\n- `func_8007DDAC(arg0)` writes `D_800F1A2C`\n- `vs_screff2_setParamPair(param0, param1)` writes two persistent parameters in\n  `SCREFF2.PRG`\n- `func_800BE180` advances two waveform slots whose outputs are rotated into\n  camera-relative offsets and added to `cameraLookAt` and `cameraPos`\n\nThat consumer-side tracing is what separated:\n\n- `camera-side angle tween`\nfrom\n- `screen-effect-side angle tween`\n\n### Step 4.5. Do a contradiction scan before changing confidence\n\nFor disputed opcodes, check all of:\n\n1. the helper dispatch table\n2. the current handler body\n3. nearby helper candidates in the same address block\n4. real script usage\n5. binary or runtime confirmation when the first four disagree\n\nIf those disagree, stop calling the current theory `Confirmed`.\n\n### Step 5. Rename locally only when the script-facing meaning is honest\n\nLocal decoder names do not need to wait for upstream-perfect certainty, but they\nshould still be honest.\n\nGood examples from this session:\n\n- `SetRoomAmbientSoundSuspended`\n- `CameraRollTween`\n- `ScreenEffectAngleTween`\n- `CameraOscillationInit`\n\nWhat stayed conservative:\n\n- `0xEF` now uses the local decoder name `CameraOscillationInit`, but it is\n  still not hard-renamed upstream because the exact control-word layout and\n  final player-facing label are not nailed down yet\n\n## Ghidra Setup Notes\n\n### Installed local pieces\n\nMain install:\n\n- [`../../tools/ghidra_12.0.4_PUBLIC`](../../tools/ghidra_12.0.4_PUBLIC)\n\nProject:\n\n- [`../../tools/ghidra-project`](../../tools/ghidra-project)\n\nPSX loader extension:\n\n- `ghidra_psx_ldr`\n\nImportant extension location:\n\n- `C:\\Users\\Chris\\AppData\\Roaming\\ghidra\\ghidra_12.0.4_PUBLIC\\Extensions\\ghidra_psx_ldr`\n\nImportant loader fact:\n\n- the extension loader name is `PSX Executables Loader`\n\nThe extension source zip includes:\n\n- `psx/PsxLoader.java`\n\nThat file confirms the loader name and that it uses PSX language id:\n\n- `PSX:LE:32:default`\n\n### What the local Ghidra project looked like\n\nCurrent files:\n\n- [`../../tools/ghidra-project/Vagrant Story USA.gpr`](../../tools/ghidra-project/Vagrant%20Story%20USA.gpr)\n- [`../../tools/ghidra-project/Vagrant Story USA.rep`](../../tools/ghidra-project/Vagrant%20Story%20USA.rep)\n- [`../../tools/ghidra-project/Vagrant Story USA.lock`](../../tools/ghidra-project/Vagrant%20Story%20USA.lock)\n\nImportant caution:\n\n- the project had a lock file during this session\n- headless opening of the live project failed with a lock error\n\n## Ghidra Walls Hit This Session\n\n### 1. Headless open failed on the live project because of the lock\n\nCommand style attempted:\n\n```powershell\ntools\\ghidra_12.0.4_PUBLIC\\support\\analyzeHeadless.bat ...\n```\n\nObserved problem:\n\n- `Unable to lock project`\n\nPractical takeaway:\n\n- do not start by poking the live project headlessly\n- either open the project interactively in Ghidra, or copy the project to a\n  scratch location first\n\n### 2. Copying the project avoided the lock, but `-process BATTLE.PRG` still failed\n\nAfter copying the project and removing copied lock files, headless access got\npast the lock but then failed with:\n\n- `Requested project program file(s) not found: BATTLE.PRG`\n\nPractical takeaway:\n\n- the copied project was not immediately usable as a drop-in headless target for\n  `-process BATTLE.PRG`\n- do not assume the local project already contains a program object with the\n  exact expected name\n\n### 3. Headless automation was a worse first step than source + grep\n\nThis is the biggest lesson.\n\nFor opcode naming specifically:\n\n- `rood-reverse` source plus `rg` plus decoded script samples got us real\n  progress fast\n- headless Ghidra burned time before we even reached the actual code question\n\nSo the next session should only push harder on headless scripting if the source\nwalk truly bottoms out.\n\nThat does not mean `Ghidra` is optional when evidence conflicts.\nIt means interactive or targeted binary inspection is more valuable than trying\nto automate the whole session up front.\n\n## Best Ghidra Strategy Next Time\n\n### Preferred path\n\n1. Open the local Ghidra GUI project manually.\n2. Confirm the exact imported program names inside the project before trying any\n   headless `-process` use.\n3. If the GUI project is awkward, import `Game Data/BATTLE/BATTLE.PRG` into a\n   fresh scratch project using the PSX loader rather than debugging the old\n   project structure first.\n4. Use Ghidra mainly for:\n   - verifying dispatch-table bytes in the original binary\n   - checking whether function boundaries in the helper decomp are complete\n   - xrefs to still-unnamed globals\n   - browsing nonmatching consumers\n   - checking data layout when decompiled source is partial\n\n### If creating a fresh scratch project\n\nUse:\n\n- loader: `PSX Executables Loader`\n- language: `PSX:LE:32:default`\n\nPriority target:\n\n- `Game Data/BATTLE/BATTLE.PRG`\n\nThen immediately locate:\n\n- the opcode handler area around the `4A0A8.c` address family\n- camera/effect consumers around the `146C.c` address family\n\n## Known Useful RE Anchors\n\n### Main handler file\n\n- [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)\n\n### Main consumer file\n\n- [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\n\n### Effect-side helper\n\n- [`../../_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c`](../../_refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c)\n\n### Best current examples\n\n- `0x7A`: room ambient sound suspend/restore around cutscene control\n- `0xE2`: camera-side angle tween writing `_camera.t2.unk5C`\n- `0xE3`: effect-side angle tween writing `D_800F1A2C`\n- `0xED`: direct two-parameter `SCREFF2` tween feeding\n  `vs_screff2_setParamPair`\n- `0xEF`: camera-relative oscillation init feeding two waveform slots through\n  `func_800BE180`\n\n## Good Starting Queries Next Session\n\nUse these first:\n\n```powershell\nrg -n \"_opcodeFunctionTable|func_800BB450|func_800BD444|func_800BD6C4|func_800BDC9C\" _refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c _refs/rood-reverse/config/BATTLE/BATTLE.PRG/symbol_addrs.txt\nrg -n \"0x7A|0xE2|0xE3|0xED|0xEF\" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c\nrg -n \"func_8007AC94|func_8007DDAC|func_8007DDB8|func_8007DDD4|func_8007DDF8|vs_screff2_setParamPair|func_800BE180|unk5C|D_800F1A2C\" _refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c _refs/rood-reverse/src/GIM/SCREFF2.PRG/0.c _refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c\nrg -n \"Opcode7A|SetScreenEffectEnabled|ScreenEffectScaleTween|ScreenEffectColorTween|ScreenEffectOffsetTween|ScreenEffectParamPairTween|CameraOscillationInit|OpcodeEF|CameraRollTween|ScreenEffectAngleTween\" decoded_scripts\n```\n\nIf looking for the next best unknown after this session, inspect nearby `E`-range\nhandlers as a group instead of singly:\n\n- `E1`\n- `E4`\n- `E5`\n- `E6`\n- `E7`\n- `ED`\n- `EF`\n\nThose clearly participate in one effect subsystem.\n\n## Suggested Next Targets\n\nMost promising:\n\n1. Recover the exact control-word layout behind `0xEF`, especially slot and\n   envelope selection.\n2. Reconcile disputed helper-table versus script-behavior cases such as\n   `0x80-0x84` against the binary and runtime.\n3. Confirm whether `0xE6` is best described as effect offset, drift, or some\n   more specific render-space term.\n4. Use Ghidra xrefs to identify the real user-facing meaning of `D_800F1A2C`\n   and the two `SCREFF2` parameter fields fed by `0xED`.\n\nNice follow-up:\n\n1. Add comments in the `rood-reverse` reference checkout around the handler and\n   consumer code.\n2. Keep the local decoder and conclusions note synchronized as confidence improves.\n\n## Session Reminder\n\nDo not begin by fighting headless Ghidra again unless there is a concrete reason.\n\nThe fastest route is:\n\n- decoded script pattern\n- helper decomp candidate\n- binary or runtime check when needed\n- matched or recovered consumer\n- only then Ghidra for the remaining unnamed field\n"
+  }
+}

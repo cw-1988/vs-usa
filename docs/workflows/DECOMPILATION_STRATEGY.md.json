@@ -1,0 +1,511 @@
+{
+  "content": {
+    "document_type": "workflow_guide",
+    "title": "Vagrant Story USA Decompilation Strategy",
+    "phases": [
+      {
+        "phase": "Vagrant Story USA Decompilation Strategy",
+        "steps": [],
+        "checklist": [
+          "`RE_CAMPAIGN_MEMORY.md.json` is the local campaign authority for in-progress state",
+          "our decomp and evidence notes should be the authority for local conclusions",
+          "the original binary plus runtime behavior are the ground truth",
+          "file_:../../_refs/rood-reverse is a valuable helper decomp, not an authority by itself",
+          "readable decompiled C is useful, but it is not enough unless it survives binary-level and runtime checks where confidence matters"
+        ]
+      },
+      {
+        "phase": "1. Binary first",
+        "steps": [],
+        "checklist": [
+          "Ghidra function boundaries",
+          "decompiler output",
+          "local helper names",
+          "`rood-reverse` source",
+          "old notes and opcode tables"
+        ]
+      },
+      {
+        "phase": "2. Our decomp is the local authority",
+        "steps": [],
+        "checklist": [
+          "file_:RE_CAMPAIGN_MEMORY.md.json tracks the current phase, priorities, unresolved conflicts, and handoff state for the next pass",
+          "local notes should separate proven facts from borrowed ideas",
+          "local opcode names should only become authoritative after independent verification",
+          "local workflow docs should describe how to prove claims, not just how to browse previous work quickly"
+        ]
+      },
+      {
+        "phase": "3. `rood-reverse` is a helper, not a final source",
+        "steps": [],
+        "checklist": [
+          "candidate handler locations",
+          "useful subsystem names",
+          "rough function boundaries",
+          "likely struct layouts",
+          "dispatch-table leads",
+          "prior naming work worth checking",
+          "exact opcode-to-handler mapping",
+          "final function boundaries",
+          "definitive names",
+          "claims that a handler is inert, complete, or matched enough to settle a dispute",
+          "do not cite `_refs/rood-reverse/src/*` as the main evidence line in a local proof packet or ledger conflict entry",
+          "convert helper-derived ideas into local `decomp/` artifacts first",
+          "treat helper links as provenance or competing-lead notes, not as the final proof anchor"
+        ]
+      },
+      {
+        "phase": "4. Runtime beats plausible static theory",
+        "steps": [],
+        "checklist": [
+          "which function address an opcode really dispatches to",
+          "whether a copied dispatch table is later patched in RAM",
+          "whether an opcode reads a field the decompiled source seems to ignore",
+          "whether two nearby helper candidates are both active or one is dead code"
+        ]
+      },
+      {
+        "phase": "Evidence Ladder",
+        "steps": [
+          "runtime trace or automated capture in `PCSX-Redux`",
+          "raw table bytes or disassembly in `Ghidra`",
+          "verified function boundaries and xrefs in `Ghidra`",
+          "matched local or helper decompiled source that agrees with the binary",
+          "script-pattern clustering and decoded usage examples",
+          "historical notes, inherited names, or subsystem guesses"
+        ],
+        "checklist": []
+      },
+      {
+        "phase": "Required Checks For Disputed Opcode Work",
+        "steps": [
+          "real script usage in file_:../../decoded_scripts",
+          "the relevant dispatch table in source and, when important, in the binary",
+          "the current handler body",
+          "nearby orphan or unmatched helper candidates with similar argument shape",
+          "consumer paths or side effects",
+          "whether runtime agrees with the current static theory"
+        ],
+        "checklist": []
+      },
+      {
+        "phase": "Function Status Model",
+        "steps": [],
+        "checklist": [
+          "`matched`",
+          "`nonmatching but identified`",
+          "`orphan candidate`",
+          "`unknown gap`",
+          "a function-shaped block exists",
+          "it looks semantically meaningful",
+          "but it is missing from headers, symbol maps, or dispatch notes"
+        ]
+      },
+      {
+        "phase": "What Counts As Rock-Solid Ground Truth",
+        "steps": [
+          "the opcode byte",
+          "the dispatch table address or table entry source",
+          "the resolved handler address",
+          "the function-boundary evidence",
+          "one or more real script examples",
+          "the main consumer or side-effect path",
+          "optional runtime trace if the area is disputed"
+        ],
+        "checklist": []
+      },
+      {
+        "phase": "Ghidra Role",
+        "steps": [],
+        "checklist": [
+          "raw dispatch tables",
+          "function boundaries",
+          "xrefs",
+          "data layout",
+          "gaps between named functions",
+          "consumer tracing when decompiled source is incomplete",
+          "disassembly",
+          "function starts and ends",
+          "pointer tables",
+          "literal data references",
+          "A correct-looking decompiler view can still be anchored to the wrong import base if the raw overlay was loaded incorrectly.",
+          "For raw PS1 overlays, treat the `splat.yaml` base address as part of the ground-truth setup, not as an optional convenience.",
+          "If the address setup is wrong, every downstream table check can look precise while still being false."
+        ]
+      },
+      {
+        "phase": "PCSX-Redux Role",
+        "steps": [],
+        "checklist": [
+          "opcode dispatch breakpoints",
+          "handler-address confirmation",
+          "RAM watchpoints on copied function tables",
+          "validation of side effects",
+          "confirmation that a disputed static interpretation really occurs in play"
+        ]
+      },
+      {
+        "phase": "Completeness Audits We Should Eventually Maintain",
+        "steps": [],
+        "checklist": [
+          "source functions missing from symbol maps",
+          "symbol-map entries missing from source",
+          "suspicious gaps between adjacent function addresses",
+          "dispatch tables that reference stubs while nearby orphan candidates look meaningful",
+          "claims marked `Confirmed` without a binary or runtime anchor"
+        ]
+      },
+      {
+        "phase": "Known Failure Modes To Guard Against",
+        "steps": [],
+        "checklist": [
+          "raw-binary import drift: the overlay is loaded at the wrong base address, so table reads and function checks are offset while still looking consistent",
+          "helper-decomp overtrust: a readable helper function gets treated as authority before binary mapping confirms it",
+          "stub overpromotion: a dispatch-table hit to a real stub gets treated as the whole story before nearby orphan candidates are checked",
+          "reconciliation gaps: a contradiction is noticed, but no proof packet is written, so the same uncertainty has to be rediscovered later"
+        ]
+      },
+      {
+        "phase": "Practical Working Model",
+        "steps": [],
+        "checklist": [
+          "file_:RE_CAMPAIGN_MEMORY.md.json: campaign authority for in-progress state, target selection, and handoff memory",
+          "local scripts and notes: current research workspace",
+          "local decomp/evidence docs: emerging authority",
+          "`Ghidra` project: binary truth and structure recovery",
+          "`PCSX-Redux` CLI capture: runtime truth",
+          "file_:../../_refs/rood-reverse: helper reference corpus"
+        ]
+      }
+    ],
+    "commands": [],
+    "source_markdown_path": "docs/workflows/DECOMPILATION_STRATEGY.md",
+    "summary": "This note defines the local decompilation standard for this workspace.",
+    "body": {
+      "content": [
+        {
+          "ulist": [
+            "This note defines the local decompilation standard for this workspace.",
+            "For the campaign-state ledger and CLI-first implementation layer, also read\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body) and\n[`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json#/body).",
+            "The short version:",
+            {
+              "ulist": [
+                "`RE_CAMPAIGN_MEMORY.md.json` is the local campaign authority for in-progress state",
+                "our decomp and evidence notes should be the authority for local conclusions",
+                "the original binary plus runtime behavior are the ground truth",
+                "[`../../_refs/rood-reverse`](../../_refs/rood-reverse) is a valuable helper decomp, not\nan authority by itself",
+                "readable decompiled C is useful, but it is not enough unless it survives\nbinary-level and runtime checks where confidence matters"
+              ]
+            }
+          ]
+        }
+      ],
+      "sections": {
+        "core-principles": {
+          "heading": "Core Principles",
+          "sections": {
+            "binary-first": {
+              "heading": "1. Binary first",
+              "content": [
+                {
+                  "paragraph": "The original game binaries are the ground truth."
+                },
+                {
+                  "paragraph": "Everything else is an interpretation layer:",
+                  "ulist": [
+                    "Ghidra function boundaries",
+                    "decompiler output",
+                    "local helper names",
+                    "`rood-reverse` source",
+                    "old notes and opcode tables"
+                  ]
+                },
+                {
+                  "paragraph": "If those layers disagree, prefer the binary and runtime evidence over any\nexisting C source or notes."
+                }
+              ]
+            },
+            "our-decomp-is-the-local-authority": {
+              "heading": "2. Our decomp is the local authority",
+              "content": [
+                {
+                  "paragraph": "This workspace should gradually build its own standards-driven decompilation\nrecord instead of inheriting authority from upstream helper repos."
+                },
+                {
+                  "paragraph": "That means:",
+                  "ulist": [
+                    "[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body) tracks the current phase,\npriorities, unresolved conflicts, and handoff state for the next pass",
+                    "local notes should separate proven facts from borrowed ideas",
+                    "local opcode names should only become authoritative after independent\nverification",
+                    "local workflow docs should describe how to prove claims, not just how to\nbrowse previous work quickly"
+                  ]
+                }
+              ]
+            },
+            "rood-reverse-is-a-helper-not-a-final-source": {
+              "heading": "3. `rood-reverse` is a helper, not a final source",
+              "content": [
+                {
+                  "paragraph": "Use [`../../_refs/rood-reverse`](../../_refs/rood-reverse) for:",
+                  "ulist": [
+                    "candidate handler locations",
+                    "useful subsystem names",
+                    "rough function boundaries",
+                    "likely struct layouts",
+                    "dispatch-table leads",
+                    "prior naming work worth checking",
+                    "Do not treat it as final proof by itself for:",
+                    {
+                      "ulist": [
+                        "exact opcode-to-handler mapping",
+                        "final function boundaries",
+                        "definitive names",
+                        "claims that a handler is inert, complete, or matched enough to settle a\ndispute"
+                      ]
+                    },
+                    "In practical terms:",
+                    {
+                      "ulist": [
+                        "do not cite `_refs/rood-reverse/src/*` as the main evidence line in a local\nproof packet or ledger conflict entry",
+                        "convert helper-derived ideas into local `decomp/` artifacts first",
+                        "treat helper links as provenance or competing-lead notes, not as the final\nproof anchor"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "runtime-beats-plausible-static-theory": {
+              "heading": "4. Runtime beats plausible static theory",
+              "content": [
+                {
+                  "paragraph": "When a claim is important and static evidence conflicts, use automated\n`PCSX-Redux` CLI capture to observe what actually runs."
+                },
+                {
+                  "paragraph": "Typical examples:",
+                  "ulist": [
+                    "which function address an opcode really dispatches to",
+                    "whether a copied dispatch table is later patched in RAM",
+                    "whether an opcode reads a field the decompiled source seems to ignore",
+                    "whether two nearby helper candidates are both active or one is dead code"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "evidence-ladder": {
+          "heading": "Evidence Ladder",
+          "content": [
+            {
+              "paragraph": "Use this rough priority order when deciding what to trust:",
+              "olit": [
+                "runtime trace or automated capture in `PCSX-Redux`",
+                "raw table bytes or disassembly in `Ghidra`",
+                "verified function boundaries and xrefs in `Ghidra`",
+                "matched local or helper decompiled source that agrees with the binary",
+                "script-pattern clustering and decoded usage examples",
+                "historical notes, inherited names, or subsystem guesses"
+              ]
+            },
+            {
+              "paragraph": "Lower evidence can suggest a theory. Higher evidence is needed to settle it."
+            }
+          ]
+        },
+        "required-checks-for-disputed-opcode-work": {
+          "heading": "Required Checks For Disputed Opcode Work",
+          "content": [
+            {
+              "paragraph": "Before promoting, downgrading, or rewriting an opcode meaning, check all of:",
+              "olit": [
+                "real script usage in [`../../decoded_scripts`](../../decoded_scripts)",
+                "the relevant dispatch table in source and, when important, in the binary",
+                "the current handler body",
+                "nearby orphan or unmatched helper candidates with similar argument shape",
+                "consumer paths or side effects",
+                "whether runtime agrees with the current static theory"
+              ]
+            },
+            {
+              "paragraph": "If those checks disagree, the result is not `Confirmed`.\nDocument the contradiction instead."
+            }
+          ]
+        },
+        "function-status-model": {
+          "heading": "Function Status Model",
+          "content": [
+            {
+              "paragraph": "When working on local decompilation, each function should be treated as one of:",
+              "ulist": [
+                "`matched`",
+                "`nonmatching but identified`",
+                "`orphan candidate`",
+                "`unknown gap`",
+                "The most dangerous category for opcode work is `orphan candidate`:",
+                {
+                  "ulist": [
+                    "a function-shaped block exists",
+                    "it looks semantically meaningful",
+                    "but it is missing from headers, symbol maps, or dispatch notes"
+                  ]
+                }
+              ]
+            },
+            {
+              "paragraph": "That is exactly the kind of mismatch that can make a table look settled when it\nis not."
+            }
+          ]
+        },
+        "what-counts-as-rock-solid-ground-truth": {
+          "heading": "What Counts As Rock-Solid Ground Truth",
+          "content": [
+            {
+              "paragraph": "For a high-confidence opcode or helper conclusion, aim to collect a small proof\npacket containing:",
+              "olit": [
+                "the opcode byte",
+                "the dispatch table address or table entry source",
+                "the resolved handler address",
+                "the function-boundary evidence",
+                "one or more real script examples",
+                "the main consumer or side-effect path",
+                "optional runtime trace if the area is disputed"
+              ]
+            },
+            {
+              "paragraph": "If a claim cannot survive this packet, keep it tentative, and record the\nconflict summary in [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body)\nand register the durable artifact in\n[`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body)\ninstead of leaving the state implicit."
+            }
+          ]
+        },
+        "ghidra-role": {
+          "heading": "Ghidra Role",
+          "content": [
+            {
+              "paragraph": "Use `Ghidra` for:",
+              "ulist": [
+                "raw dispatch tables",
+                "function boundaries",
+                "xrefs",
+                "data layout",
+                "gaps between named functions",
+                "consumer tracing when decompiled source is incomplete"
+              ]
+            },
+            {
+              "paragraph": "Do not treat decompiler output alone as ground truth."
+            },
+            {
+              "paragraph": "When a helper decomp and `Ghidra` disagree, go back to:",
+              "ulist": [
+                "disassembly",
+                "function starts and ends",
+                "pointer tables",
+                "literal data references",
+                "Practical caution:",
+                {
+                  "ulist": [
+                    "A correct-looking decompiler view can still be anchored to the wrong import\nbase if the raw overlay was loaded incorrectly.",
+                    "For raw PS1 overlays, treat the `splat.yaml` base address as part of the\nground-truth setup, not as an optional convenience.",
+                    "If the address setup is wrong, every downstream table check can look precise\nwhile still being false."
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "pcsx-redux-role": {
+          "heading": "PCSX-Redux Role",
+          "content": [
+            {
+              "paragraph": "Use `PCSX-Redux` primarily through scripted CLI capture for:",
+              "ulist": [
+                "opcode dispatch breakpoints",
+                "handler-address confirmation",
+                "RAM watchpoints on copied function tables",
+                "validation of side effects",
+                "confirmation that a disputed static interpretation really occurs in play"
+              ]
+            },
+            {
+              "ulist": [
+                "Manual debugger interaction is now fallback work for cases where the scripted\npath does not yet reach the needed launch point or breakpoint shape.",
+                "If static and runtime disagree, the static model is incomplete."
+              ]
+            }
+          ]
+        },
+        "completeness-audits-we-should-eventually-maintain": {
+          "heading": "Completeness Audits We Should Eventually Maintain",
+          "content": [
+            {
+              "paragraph": "The local decomp becomes more trustworthy when we can regularly audit:",
+              "ulist": [
+                "source functions missing from symbol maps",
+                "symbol-map entries missing from source",
+                "suspicious gaps between adjacent function addresses",
+                "dispatch tables that reference stubs while nearby orphan candidates look\nmeaningful",
+                "claims marked `Confirmed` without a binary or runtime anchor"
+              ]
+            },
+            {
+              "ulist": [
+                "These audits can be manual at first and automated later.",
+                "The tracked home for that automation work is [`../../decomp`](../../decomp)."
+              ]
+            }
+          ]
+        },
+        "known-failure-modes-to-guard-against": {
+          "heading": "Known Failure Modes To Guard Against",
+          "content": [
+            {
+              "paragraph": "The most important recurring ways to fool ourselves are:",
+              "ulist": [
+                "raw-binary import drift: the overlay is loaded at the wrong base address, so\ntable reads and function checks are offset while still looking consistent",
+                "helper-decomp overtrust: a readable helper function gets treated as authority\nbefore binary mapping confirms it",
+                "stub overpromotion: a dispatch-table hit to a real stub gets treated as the\nwhole story before nearby orphan candidates are checked",
+                "reconciliation gaps: a contradiction is noticed, but no proof packet is\nwritten, so the same uncertainty has to be rediscovered later"
+              ]
+            },
+            {
+              "paragraph": "The fix for all four is the same: preserve the binary setup, export the facts,\nrecord the conflict, and only then escalate to runtime if the conflict still\nmatters."
+            }
+          ]
+        },
+        "practical-working-model": {
+          "heading": "Practical Working Model",
+          "content": [
+            {
+              "paragraph": "Use this repo structure mentally:",
+              "ulist": [
+                "[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body): campaign authority for\nin-progress state, target selection, and handoff memory",
+                "local scripts and notes: current research workspace",
+                "local decomp/evidence docs: emerging authority",
+                "`Ghidra` project: binary truth and structure recovery",
+                "`PCSX-Redux` CLI capture: runtime truth",
+                "[`../../_refs/rood-reverse`](../../_refs/rood-reverse): helper reference corpus"
+              ]
+            },
+            {
+              "paragraph": "That lets us move fast without confusing borrowed confidence for proven local\ntruth."
+            }
+          ]
+        },
+        "default-rule": {
+          "heading": "Default Rule",
+          "content": [
+            {
+              "paragraph": "If a conclusion depends on trusting helper decompiled C more than the binary or\nruntime, it is not ready to be treated as final local ground truth."
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "1203a275a4aa70013c80895fa3a5ece57546bf256f9f4a325e0ad7ee912277fb",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:44:25Z",
+    "raw_markdown": "# Vagrant Story USA Decompilation Strategy\n\nThis note defines the local decompilation standard for this workspace.\n\nFor the campaign-state ledger and CLI-first implementation layer, also read\n[`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md) and\n[`CLI_DECOMPILATION_WORKFLOW.md`](CLI_DECOMPILATION_WORKFLOW.md).\n\nThe short version:\n\n- `RE_CAMPAIGN_MEMORY.md` is the local campaign authority for in-progress state\n- our decomp and evidence notes should be the authority for local conclusions\n- the original binary plus runtime behavior are the ground truth\n- [`../../_refs/rood-reverse`](../../_refs/rood-reverse) is a valuable helper decomp, not\n  an authority by itself\n- readable decompiled C is useful, but it is not enough unless it survives\n  binary-level and runtime checks where confidence matters\n\n## Core Principles\n\n### 1. Binary first\n\nThe original game binaries are the ground truth.\n\nEverything else is an interpretation layer:\n\n- Ghidra function boundaries\n- decompiler output\n- local helper names\n- `rood-reverse` source\n- old notes and opcode tables\n\nIf those layers disagree, prefer the binary and runtime evidence over any\nexisting C source or notes.\n\n### 2. Our decomp is the local authority\n\nThis workspace should gradually build its own standards-driven decompilation\nrecord instead of inheriting authority from upstream helper repos.\n\nThat means:\n\n- [`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md) tracks the current phase,\n  priorities, unresolved conflicts, and handoff state for the next pass\n- local notes should separate proven facts from borrowed ideas\n- local opcode names should only become authoritative after independent\n  verification\n- local workflow docs should describe how to prove claims, not just how to\n  browse previous work quickly\n\n### 3. `rood-reverse` is a helper, not a final source\n\nUse [`../../_refs/rood-reverse`](../../_refs/rood-reverse) for:\n\n- candidate handler locations\n- useful subsystem names\n- rough function boundaries\n- likely struct layouts\n- dispatch-table leads\n- prior naming work worth checking\n\nDo not treat it as final proof by itself for:\n\n- exact opcode-to-handler mapping\n- final function boundaries\n- definitive names\n- claims that a handler is inert, complete, or matched enough to settle a\n  dispute\n\nIn practical terms:\n\n- do not cite `_refs/rood-reverse/src/*` as the main evidence line in a local\n  proof packet or ledger conflict entry\n- convert helper-derived ideas into local `decomp/` artifacts first\n- treat helper links as provenance or competing-lead notes, not as the final\n  proof anchor\n\n### 4. Runtime beats plausible static theory\n\nWhen a claim is important and static evidence conflicts, use automated\n`PCSX-Redux` CLI capture to observe what actually runs.\n\nTypical examples:\n\n- which function address an opcode really dispatches to\n- whether a copied dispatch table is later patched in RAM\n- whether an opcode reads a field the decompiled source seems to ignore\n- whether two nearby helper candidates are both active or one is dead code\n\n## Evidence Ladder\n\nUse this rough priority order when deciding what to trust:\n\n1. runtime trace or automated capture in `PCSX-Redux`\n2. raw table bytes or disassembly in `Ghidra`\n3. verified function boundaries and xrefs in `Ghidra`\n4. matched local or helper decompiled source that agrees with the binary\n5. script-pattern clustering and decoded usage examples\n6. historical notes, inherited names, or subsystem guesses\n\nLower evidence can suggest a theory. Higher evidence is needed to settle it.\n\n## Required Checks For Disputed Opcode Work\n\nBefore promoting, downgrading, or rewriting an opcode meaning, check all of:\n\n1. real script usage in [`../../decoded_scripts`](../../decoded_scripts)\n2. the relevant dispatch table in source and, when important, in the binary\n3. the current handler body\n4. nearby orphan or unmatched helper candidates with similar argument shape\n5. consumer paths or side effects\n6. whether runtime agrees with the current static theory\n\nIf those checks disagree, the result is not `Confirmed`.\nDocument the contradiction instead.\n\n## Function Status Model\n\nWhen working on local decompilation, each function should be treated as one of:\n\n- `matched`\n- `nonmatching but identified`\n- `orphan candidate`\n- `unknown gap`\n\nThe most dangerous category for opcode work is `orphan candidate`:\n\n- a function-shaped block exists\n- it looks semantically meaningful\n- but it is missing from headers, symbol maps, or dispatch notes\n\nThat is exactly the kind of mismatch that can make a table look settled when it\nis not.\n\n## What Counts As Rock-Solid Ground Truth\n\nFor a high-confidence opcode or helper conclusion, aim to collect a small proof\npacket containing:\n\n1. the opcode byte\n2. the dispatch table address or table entry source\n3. the resolved handler address\n4. the function-boundary evidence\n5. one or more real script examples\n6. the main consumer or side-effect path\n7. optional runtime trace if the area is disputed\n\nIf a claim cannot survive this packet, keep it tentative, and record the\nconflict summary in [`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md)\nand register the durable artifact in\n[`../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md)\ninstead of leaving the state implicit.\n\n## Ghidra Role\n\nUse `Ghidra` for:\n\n- raw dispatch tables\n- function boundaries\n- xrefs\n- data layout\n- gaps between named functions\n- consumer tracing when decompiled source is incomplete\n\nDo not treat decompiler output alone as ground truth.\n\nWhen a helper decomp and `Ghidra` disagree, go back to:\n\n- disassembly\n- function starts and ends\n- pointer tables\n- literal data references\n\nPractical caution:\n\n- A correct-looking decompiler view can still be anchored to the wrong import\n  base if the raw overlay was loaded incorrectly.\n- For raw PS1 overlays, treat the `splat.yaml` base address as part of the\n  ground-truth setup, not as an optional convenience.\n- If the address setup is wrong, every downstream table check can look precise\n  while still being false.\n\n## PCSX-Redux Role\n\nUse `PCSX-Redux` primarily through scripted CLI capture for:\n\n- opcode dispatch breakpoints\n- handler-address confirmation\n- RAM watchpoints on copied function tables\n- validation of side effects\n- confirmation that a disputed static interpretation really occurs in play\n\nManual debugger interaction is now fallback work for cases where the scripted\npath does not yet reach the needed launch point or breakpoint shape.\n\nIf static and runtime disagree, the static model is incomplete.\n\n## Completeness Audits We Should Eventually Maintain\n\nThe local decomp becomes more trustworthy when we can regularly audit:\n\n- source functions missing from symbol maps\n- symbol-map entries missing from source\n- suspicious gaps between adjacent function addresses\n- dispatch tables that reference stubs while nearby orphan candidates look\n  meaningful\n- claims marked `Confirmed` without a binary or runtime anchor\n\nThese audits can be manual at first and automated later.\n\nThe tracked home for that automation work is [`../../decomp`](../../decomp).\n\n## Known Failure Modes To Guard Against\n\nThe most important recurring ways to fool ourselves are:\n\n- raw-binary import drift: the overlay is loaded at the wrong base address, so\n  table reads and function checks are offset while still looking consistent\n- helper-decomp overtrust: a readable helper function gets treated as authority\n  before binary mapping confirms it\n- stub overpromotion: a dispatch-table hit to a real stub gets treated as the\n  whole story before nearby orphan candidates are checked\n- reconciliation gaps: a contradiction is noticed, but no proof packet is\n  written, so the same uncertainty has to be rediscovered later\n\nThe fix for all four is the same: preserve the binary setup, export the facts,\nrecord the conflict, and only then escalate to runtime if the conflict still\nmatters.\n\n## Practical Working Model\n\nUse this repo structure mentally:\n\n- [`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md): campaign authority for\n  in-progress state, target selection, and handoff memory\n- local scripts and notes: current research workspace\n- local decomp/evidence docs: emerging authority\n- `Ghidra` project: binary truth and structure recovery\n- `PCSX-Redux` CLI capture: runtime truth\n- [`../../_refs/rood-reverse`](../../_refs/rood-reverse): helper reference corpus\n\nThat lets us move fast without confusing borrowed confidence for proven local\ntruth.\n\n## Default Rule\n\nIf a conclusion depends on trusting helper decompiled C more than the binary or\nruntime, it is not ready to be treated as final local ground truth.\n",
+    "markdown_with_json_links": "# Vagrant Story USA Decompilation Strategy\n\nThis note defines the local decompilation standard for this workspace.\n\nFor the campaign-state ledger and CLI-first implementation layer, also read\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body) and\n[`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json#/body).\n\nThe short version:\n\n- `RE_CAMPAIGN_MEMORY.md.json` is the local campaign authority for in-progress state\n- our decomp and evidence notes should be the authority for local conclusions\n- the original binary plus runtime behavior are the ground truth\n- [`../../_refs/rood-reverse`](../../_refs/rood-reverse) is a valuable helper decomp, not\n  an authority by itself\n- readable decompiled C is useful, but it is not enough unless it survives\n  binary-level and runtime checks where confidence matters\n\n## Core Principles\n\n### 1. Binary first\n\nThe original game binaries are the ground truth.\n\nEverything else is an interpretation layer:\n\n- Ghidra function boundaries\n- decompiler output\n- local helper names\n- `rood-reverse` source\n- old notes and opcode tables\n\nIf those layers disagree, prefer the binary and runtime evidence over any\nexisting C source or notes.\n\n### 2. Our decomp is the local authority\n\nThis workspace should gradually build its own standards-driven decompilation\nrecord instead of inheriting authority from upstream helper repos.\n\nThat means:\n\n- [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body) tracks the current phase,\n  priorities, unresolved conflicts, and handoff state for the next pass\n- local notes should separate proven facts from borrowed ideas\n- local opcode names should only become authoritative after independent\n  verification\n- local workflow docs should describe how to prove claims, not just how to\n  browse previous work quickly\n\n### 3. `rood-reverse` is a helper, not a final source\n\nUse [`../../_refs/rood-reverse`](../../_refs/rood-reverse) for:\n\n- candidate handler locations\n- useful subsystem names\n- rough function boundaries\n- likely struct layouts\n- dispatch-table leads\n- prior naming work worth checking\n\nDo not treat it as final proof by itself for:\n\n- exact opcode-to-handler mapping\n- final function boundaries\n- definitive names\n- claims that a handler is inert, complete, or matched enough to settle a\n  dispute\n\nIn practical terms:\n\n- do not cite `_refs/rood-reverse/src/*` as the main evidence line in a local\n  proof packet or ledger conflict entry\n- convert helper-derived ideas into local `decomp/` artifacts first\n- treat helper links as provenance or competing-lead notes, not as the final\n  proof anchor\n\n### 4. Runtime beats plausible static theory\n\nWhen a claim is important and static evidence conflicts, use automated\n`PCSX-Redux` CLI capture to observe what actually runs.\n\nTypical examples:\n\n- which function address an opcode really dispatches to\n- whether a copied dispatch table is later patched in RAM\n- whether an opcode reads a field the decompiled source seems to ignore\n- whether two nearby helper candidates are both active or one is dead code\n\n## Evidence Ladder\n\nUse this rough priority order when deciding what to trust:\n\n1. runtime trace or automated capture in `PCSX-Redux`\n2. raw table bytes or disassembly in `Ghidra`\n3. verified function boundaries and xrefs in `Ghidra`\n4. matched local or helper decompiled source that agrees with the binary\n5. script-pattern clustering and decoded usage examples\n6. historical notes, inherited names, or subsystem guesses\n\nLower evidence can suggest a theory. Higher evidence is needed to settle it.\n\n## Required Checks For Disputed Opcode Work\n\nBefore promoting, downgrading, or rewriting an opcode meaning, check all of:\n\n1. real script usage in [`../../decoded_scripts`](../../decoded_scripts)\n2. the relevant dispatch table in source and, when important, in the binary\n3. the current handler body\n4. nearby orphan or unmatched helper candidates with similar argument shape\n5. consumer paths or side effects\n6. whether runtime agrees with the current static theory\n\nIf those checks disagree, the result is not `Confirmed`.\nDocument the contradiction instead.\n\n## Function Status Model\n\nWhen working on local decompilation, each function should be treated as one of:\n\n- `matched`\n- `nonmatching but identified`\n- `orphan candidate`\n- `unknown gap`\n\nThe most dangerous category for opcode work is `orphan candidate`:\n\n- a function-shaped block exists\n- it looks semantically meaningful\n- but it is missing from headers, symbol maps, or dispatch notes\n\nThat is exactly the kind of mismatch that can make a table look settled when it\nis not.\n\n## What Counts As Rock-Solid Ground Truth\n\nFor a high-confidence opcode or helper conclusion, aim to collect a small proof\npacket containing:\n\n1. the opcode byte\n2. the dispatch table address or table entry source\n3. the resolved handler address\n4. the function-boundary evidence\n5. one or more real script examples\n6. the main consumer or side-effect path\n7. optional runtime trace if the area is disputed\n\nIf a claim cannot survive this packet, keep it tentative, and record the\nconflict summary in [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body)\nand register the durable artifact in\n[`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body)\ninstead of leaving the state implicit.\n\n## Ghidra Role\n\nUse `Ghidra` for:\n\n- raw dispatch tables\n- function boundaries\n- xrefs\n- data layout\n- gaps between named functions\n- consumer tracing when decompiled source is incomplete\n\nDo not treat decompiler output alone as ground truth.\n\nWhen a helper decomp and `Ghidra` disagree, go back to:\n\n- disassembly\n- function starts and ends\n- pointer tables\n- literal data references\n\nPractical caution:\n\n- A correct-looking decompiler view can still be anchored to the wrong import\n  base if the raw overlay was loaded incorrectly.\n- For raw PS1 overlays, treat the `splat.yaml` base address as part of the\n  ground-truth setup, not as an optional convenience.\n- If the address setup is wrong, every downstream table check can look precise\n  while still being false.\n\n## PCSX-Redux Role\n\nUse `PCSX-Redux` primarily through scripted CLI capture for:\n\n- opcode dispatch breakpoints\n- handler-address confirmation\n- RAM watchpoints on copied function tables\n- validation of side effects\n- confirmation that a disputed static interpretation really occurs in play\n\nManual debugger interaction is now fallback work for cases where the scripted\npath does not yet reach the needed launch point or breakpoint shape.\n\nIf static and runtime disagree, the static model is incomplete.\n\n## Completeness Audits We Should Eventually Maintain\n\nThe local decomp becomes more trustworthy when we can regularly audit:\n\n- source functions missing from symbol maps\n- symbol-map entries missing from source\n- suspicious gaps between adjacent function addresses\n- dispatch tables that reference stubs while nearby orphan candidates look\n  meaningful\n- claims marked `Confirmed` without a binary or runtime anchor\n\nThese audits can be manual at first and automated later.\n\nThe tracked home for that automation work is [`../../decomp`](../../decomp).\n\n## Known Failure Modes To Guard Against\n\nThe most important recurring ways to fool ourselves are:\n\n- raw-binary import drift: the overlay is loaded at the wrong base address, so\n  table reads and function checks are offset while still looking consistent\n- helper-decomp overtrust: a readable helper function gets treated as authority\n  before binary mapping confirms it\n- stub overpromotion: a dispatch-table hit to a real stub gets treated as the\n  whole story before nearby orphan candidates are checked\n- reconciliation gaps: a contradiction is noticed, but no proof packet is\n  written, so the same uncertainty has to be rediscovered later\n\nThe fix for all four is the same: preserve the binary setup, export the facts,\nrecord the conflict, and only then escalate to runtime if the conflict still\nmatters.\n\n## Practical Working Model\n\nUse this repo structure mentally:\n\n- [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body): campaign authority for\n  in-progress state, target selection, and handoff memory\n- local scripts and notes: current research workspace\n- local decomp/evidence docs: emerging authority\n- `Ghidra` project: binary truth and structure recovery\n- `PCSX-Redux` CLI capture: runtime truth\n- [`../../_refs/rood-reverse`](../../_refs/rood-reverse): helper reference corpus\n\nThat lets us move fast without confusing borrowed confidence for proven local\ntruth.\n\n## Default Rule\n\nIf a conclusion depends on trusting helper decompiled C more than the binary or\nruntime, it is not ready to be treated as final local ground truth.\n"
+  }
+}

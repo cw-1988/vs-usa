@@ -1,0 +1,129 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_runtime_reader_call_chain_static",
+    "title": "Opcode `0x80` Runtime Reader Call-Chain Notes",
+    "summary": "Recover the local caller chain above `FUN_800BFBB8` so the next runtime pass can target a real upstream control-flow region instead of a floating breakpoint.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md",
+    "artifacts": [
+      "decomp/evidence/battle_runtime_opcode_table_xrefs.json",
+      "decomp/evidence/battle_runtime_reader_xrefs.json",
+      "decomp/evidence/battle_runtime_reader_caller_xrefs.json",
+      "decomp/evidence/battle_runtime_reader_call_chain_slices.json",
+      "decomp/evidence/battle_runtime_reader_caller_slice.json",
+      "decomp/evidence/opcode_0x80_runtime_automation_summary.json"
+    ],
+    "findings": [
+      "`FUN_800BFBB8` currently has two recovered direct calls, both from `FUN_800BF850`.",
+      "`FUN_800BF850` currently has one recovered direct caller at `0x8007A36C`.",
+      "The stronger negative-control route now stays silent on the reader, its caller, and its recovered upstream site.",
+      "The next runtime target is the concrete `0x8007A36C -> 0x800BF850 -> FUN_800BFBB8` chain."
+    ],
+    "body": {
+      "sections": {
+        "goal": {
+          "heading": "Goal",
+          "content": [
+            {
+              "paragraph": "Narrow the next `0x80` runtime trigger by tracing who actually calls the\nrecovered runtime-table reader `FUN_800BFBB8` instead of treating that reader\nas an isolated breakpoint target."
+            }
+          ]
+        },
+        "evidence-used": {
+          "heading": "Evidence used",
+          "content": [
+            {
+              "olit": [
+                "`decomp/evidence/battle_runtime_opcode_table_xrefs.json`",
+                "`decomp/evidence/battle_runtime_reader_xrefs.json`",
+                "`decomp/evidence/battle_runtime_reader_caller_xrefs.json`",
+                "`decomp/evidence/battle_runtime_reader_call_chain_slices.json`",
+                "`decomp/evidence/battle_runtime_reader_caller_slice.json`",
+                "`decomp/evidence/opcode_0x80_runtime_automation_summary.json`"
+              ]
+            }
+          ]
+        },
+        "static-call-chain-recovery": {
+          "heading": "Static call-chain recovery",
+          "content": [
+            {
+              "paragraph": "`battle_runtime_reader_xrefs.json` shows that `FUN_800BFBB8` is not called\nfrom many unrelated places. The current local import recovers exactly two\ndirect call sites, both from `FUN_800BF850`:",
+              "code": "800bfa30 addiu a0,a0,0x4c38\n800bfa34 jal 0x800bfbb8\n800bfa38 _clear a1\n\n800bfab0 addu a0,v0,s1\n800bfab4 lw v0,0x0(a0)\n800bfabc beq v0,zero,0x800bfad0\n800bfac4 jal 0x800bfbb8\n800bfac8 _nop",
+              "language": "text"
+            },
+            {
+              "paragraph": "The wider caller slice makes that structure clearer:",
+              "ulist": [
+                "`FUN_800BF850` first checks `lh 0x4c22` and then calls\n`FUN_800BFBB8(a0 = 0x800F4C38, a1 = 0)`.",
+                "It then seeds `s1 = 0x800F4C38`, starts `s0 = 1`, and loops while `s0 < 4`.",
+                "For each iteration it reads a word from `0x800F4C38 + index * 4`; when that\nslot is nonzero it calls `FUN_800BFBB8` again with that slot-derived pointer."
+              ]
+            },
+            {
+              "paragraph": "That means the recovered reader already sits under a smaller local dispatch\nfamily than the campaign previously assumed: one base pointer call plus up to\nthree additional pointer-table entries under `0x800F4C38`."
+            }
+          ]
+        },
+        "one-more-hop-upward": {
+          "heading": "One more hop upward",
+          "content": [
+            {
+              "paragraph": "`battle_runtime_reader_caller_xrefs.json` narrows the next layer as well:\n`FUN_800BF850` currently has one recovered direct caller at `0x8007A36C`."
+            },
+            {
+              "paragraph": "The surrounding slice at `0x8007A340` shows a state-gated path rather than a\ngeneric \"every frame, always\" trampoline:",
+              "code": "8007a35c bne v0,zero,0x8007a36c\n8007a364 jal 0x8006e7f0\n8007a36c jal 0x800bf850\n8007a374 lw v1,0x196c(s8)\n8007a37c beq v1,s6,0x8007a3bc\n8007a384 beq v0,zero,0x8007a39c\n8007a39c beq v1,v0,0x8007a3ac",
+              "language": "text"
+            },
+            {
+              "paragraph": "The exact semantics of `0x196c(s8)` are still unrecovered locally, but the\nimportant narrowing is already usable: the `0x800F4C28 -> FUN_800BFBB8` reader\npath is gated under one concrete upstream `BATTLE.PRG` control-flow region\ninstead of being a free-floating gameplay breakpoint."
+            }
+          ]
+        },
+        "runtime-consequence": {
+          "heading": "Runtime consequence",
+          "content": [
+            {
+              "paragraph": "The widened cold-boot bat-control rerun reused the preserved 12-step\n`opcode_0x80_runtime_input_plan_bat_kill.json` route and added upstream probe\nbreakpoints for:",
+              "ulist": [
+                "`0x800BF850` (`reader caller`)",
+                "`0x8007A36C` (`reader grandcaller`)",
+                "The refreshed `opcode_0x80_runtime_automation_summary.json` still recorded:",
+                {
+                  "ulist": [
+                    "`reader_hit_count = 0`",
+                    "`write_hit_count = 0`",
+                    "`candidate_hit_count = 0`",
+                    "`probe_hits = []`"
+                  ]
+                }
+              ]
+            },
+            {
+              "paragraph": "So the negative-control result is now stronger than before: early live\ngameplay plus the first bat exchange still do not reach the recovered reader,\nits direct caller, or the one recovered upstream caller."
+            }
+          ]
+        },
+        "conclusion": {
+          "heading": "Conclusion",
+          "content": [
+            {
+              "ulist": [
+                "The next runtime pass should stop asking only \"does early gameplay hit\n`0x800BFBB8`?\"",
+                "The sharper question is now \"what battle-state or script transition reaches\nthe `0x8007A36C -> 0x800BF850 -> FUN_800BFBB8` chain, or what later\nalternative reader path bypasses that recovered chain entirely?\"",
+                "Near-battle or target-cutscene savestates are still preferred, but if the\nnext pass must stay cold-boot, breakpoint expansion should move outward from\n`0x8007A36C` and the `0x800F4C38` pointer family rather than repeating the\nsame early-control/bat trigger assumption."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "a7c3cb6694a3f0f2ef8833ae2951979ae48d73da0843463f7f4c9a3125c76084",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Opcode `0x80` Runtime Reader Call-Chain Notes\n\n## Goal\n\nNarrow the next `0x80` runtime trigger by tracing who actually calls the\nrecovered runtime-table reader `FUN_800BFBB8` instead of treating that reader\nas an isolated breakpoint target.\n\n## Evidence used\n\n1. `decomp/evidence/battle_runtime_opcode_table_xrefs.json`\n2. `decomp/evidence/battle_runtime_reader_xrefs.json`\n3. `decomp/evidence/battle_runtime_reader_caller_xrefs.json`\n4. `decomp/evidence/battle_runtime_reader_call_chain_slices.json`\n5. `decomp/evidence/battle_runtime_reader_caller_slice.json`\n6. `decomp/evidence/opcode_0x80_runtime_automation_summary.json`\n\n## Static call-chain recovery\n\n`battle_runtime_reader_xrefs.json` shows that `FUN_800BFBB8` is not called\nfrom many unrelated places. The current local import recovers exactly two\ndirect call sites, both from `FUN_800BF850`:\n\n```text\n800bfa30 addiu a0,a0,0x4c38\n800bfa34 jal 0x800bfbb8\n800bfa38 _clear a1\n\n800bfab0 addu a0,v0,s1\n800bfab4 lw v0,0x0(a0)\n800bfabc beq v0,zero,0x800bfad0\n800bfac4 jal 0x800bfbb8\n800bfac8 _nop\n```\n\nThe wider caller slice makes that structure clearer:\n\n- `FUN_800BF850` first checks `lh 0x4c22` and then calls\n  `FUN_800BFBB8(a0 = 0x800F4C38, a1 = 0)`.\n- It then seeds `s1 = 0x800F4C38`, starts `s0 = 1`, and loops while `s0 < 4`.\n- For each iteration it reads a word from `0x800F4C38 + index * 4`; when that\n  slot is nonzero it calls `FUN_800BFBB8` again with that slot-derived pointer.\n\nThat means the recovered reader already sits under a smaller local dispatch\nfamily than the campaign previously assumed: one base pointer call plus up to\nthree additional pointer-table entries under `0x800F4C38`.\n\n## One more hop upward\n\n`battle_runtime_reader_caller_xrefs.json` narrows the next layer as well:\n`FUN_800BF850` currently has one recovered direct caller at `0x8007A36C`.\n\nThe surrounding slice at `0x8007A340` shows a state-gated path rather than a\ngeneric \"every frame, always\" trampoline:\n\n```text\n8007a35c bne v0,zero,0x8007a36c\n8007a364 jal 0x8006e7f0\n8007a36c jal 0x800bf850\n8007a374 lw v1,0x196c(s8)\n8007a37c beq v1,s6,0x8007a3bc\n8007a384 beq v0,zero,0x8007a39c\n8007a39c beq v1,v0,0x8007a3ac\n```\n\nThe exact semantics of `0x196c(s8)` are still unrecovered locally, but the\nimportant narrowing is already usable: the `0x800F4C28 -> FUN_800BFBB8` reader\npath is gated under one concrete upstream `BATTLE.PRG` control-flow region\ninstead of being a free-floating gameplay breakpoint.\n\n## Runtime consequence\n\nThe widened cold-boot bat-control rerun reused the preserved 12-step\n`opcode_0x80_runtime_input_plan_bat_kill.json` route and added upstream probe\nbreakpoints for:\n\n- `0x800BF850` (`reader caller`)\n- `0x8007A36C` (`reader grandcaller`)\n\nThe refreshed `opcode_0x80_runtime_automation_summary.json` still recorded:\n\n- `reader_hit_count = 0`\n- `write_hit_count = 0`\n- `candidate_hit_count = 0`\n- `probe_hits = []`\n\nSo the negative-control result is now stronger than before: early live\ngameplay plus the first bat exchange still do not reach the recovered reader,\nits direct caller, or the one recovered upstream caller.\n\n## Conclusion\n\n- The next runtime pass should stop asking only \"does early gameplay hit\n  `0x800BFBB8`?\"\n- The sharper question is now \"what battle-state or script transition reaches\n  the `0x8007A36C -> 0x800BF850 -> FUN_800BFBB8` chain, or what later\n  alternative reader path bypasses that recovered chain entirely?\"\n- Near-battle or target-cutscene savestates are still preferred, but if the\n  next pass must stay cold-boot, breakpoint expansion should move outward from\n  `0x8007A36C` and the `0x800F4C38` pointer family rather than repeating the\n  same early-control/bat trigger assumption.\n",
+    "markdown_with_json_links": "# Opcode `0x80` Runtime Reader Call-Chain Notes\n\n## Goal\n\nNarrow the next `0x80` runtime trigger by tracing who actually calls the\nrecovered runtime-table reader `FUN_800BFBB8` instead of treating that reader\nas an isolated breakpoint target.\n\n## Evidence used\n\n1. `decomp/evidence/battle_runtime_opcode_table_xrefs.json`\n2. `decomp/evidence/battle_runtime_reader_xrefs.json`\n3. `decomp/evidence/battle_runtime_reader_caller_xrefs.json`\n4. `decomp/evidence/battle_runtime_reader_call_chain_slices.json`\n5. `decomp/evidence/battle_runtime_reader_caller_slice.json`\n6. `decomp/evidence/opcode_0x80_runtime_automation_summary.json`\n\n## Static call-chain recovery\n\n`battle_runtime_reader_xrefs.json` shows that `FUN_800BFBB8` is not called\nfrom many unrelated places. The current local import recovers exactly two\ndirect call sites, both from `FUN_800BF850`:\n\n```text\n800bfa30 addiu a0,a0,0x4c38\n800bfa34 jal 0x800bfbb8\n800bfa38 _clear a1\n\n800bfab0 addu a0,v0,s1\n800bfab4 lw v0,0x0(a0)\n800bfabc beq v0,zero,0x800bfad0\n800bfac4 jal 0x800bfbb8\n800bfac8 _nop\n```\n\nThe wider caller slice makes that structure clearer:\n\n- `FUN_800BF850` first checks `lh 0x4c22` and then calls\n  `FUN_800BFBB8(a0 = 0x800F4C38, a1 = 0)`.\n- It then seeds `s1 = 0x800F4C38`, starts `s0 = 1`, and loops while `s0 < 4`.\n- For each iteration it reads a word from `0x800F4C38 + index * 4`; when that\n  slot is nonzero it calls `FUN_800BFBB8` again with that slot-derived pointer.\n\nThat means the recovered reader already sits under a smaller local dispatch\nfamily than the campaign previously assumed: one base pointer call plus up to\nthree additional pointer-table entries under `0x800F4C38`.\n\n## One more hop upward\n\n`battle_runtime_reader_caller_xrefs.json` narrows the next layer as well:\n`FUN_800BF850` currently has one recovered direct caller at `0x8007A36C`.\n\nThe surrounding slice at `0x8007A340` shows a state-gated path rather than a\ngeneric \"every frame, always\" trampoline:\n\n```text\n8007a35c bne v0,zero,0x8007a36c\n8007a364 jal 0x8006e7f0\n8007a36c jal 0x800bf850\n8007a374 lw v1,0x196c(s8)\n8007a37c beq v1,s6,0x8007a3bc\n8007a384 beq v0,zero,0x8007a39c\n8007a39c beq v1,v0,0x8007a3ac\n```\n\nThe exact semantics of `0x196c(s8)` are still unrecovered locally, but the\nimportant narrowing is already usable: the `0x800F4C28 -> FUN_800BFBB8` reader\npath is gated under one concrete upstream `BATTLE.PRG` control-flow region\ninstead of being a free-floating gameplay breakpoint.\n\n## Runtime consequence\n\nThe widened cold-boot bat-control rerun reused the preserved 12-step\n`opcode_0x80_runtime_input_plan_bat_kill.json` route and added upstream probe\nbreakpoints for:\n\n- `0x800BF850` (`reader caller`)\n- `0x8007A36C` (`reader grandcaller`)\n\nThe refreshed `opcode_0x80_runtime_automation_summary.json` still recorded:\n\n- `reader_hit_count = 0`\n- `write_hit_count = 0`\n- `candidate_hit_count = 0`\n- `probe_hits = []`\n\nSo the negative-control result is now stronger than before: early live\ngameplay plus the first bat exchange still do not reach the recovered reader,\nits direct caller, or the one recovered upstream caller.\n\n## Conclusion\n\n- The next runtime pass should stop asking only \"does early gameplay hit\n  `0x800BFBB8`?\"\n- The sharper question is now \"what battle-state or script transition reaches\n  the `0x8007A36C -> 0x800BF850 -> FUN_800BFBB8` chain, or what later\n  alternative reader path bypasses that recovered chain entirely?\"\n- Near-battle or target-cutscene savestates are still preferred, but if the\n  next pass must stay cold-boot, breakpoint expansion should move outward from\n  `0x8007A36C` and the `0x800F4C38` pointer family rather than repeating the\n  same early-control/bat trigger assumption.\n"
+  }
+}

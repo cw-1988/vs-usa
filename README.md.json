@@ -1,0 +1,283 @@
+{
+  "content": {
+    "document_type": "readme_navigation",
+    "readme_scope": "repo",
+    "title": "Vagrant Story USA Script RE Workspace",
+    "summary": "This project is a working reverse-engineering workspace for the USA release of **Vagrant Story**.",
+    "source_markdown_path": "README.md",
+    "body": {
+      "content": [
+        {
+          "ulist": [
+            "This project is a working reverse-engineering workspace for the USA release of **Vagrant Story**.",
+            "The current focus is the game's room and event scripting, especially the `MAP*.MPD` script sections. The goal is not just to rename files or tweak values, but to gradually identify the still-missing script opcodes and understand how they drive room logic, cutscenes, camera behavior, sound, loading, and transitions.",
+            "Long term, that should make it possible to build more ambitious custom content than simple numeric stat edits, including new event behavior and more meaningful map or scenario changes.",
+            "For substantial opcode or decomp work, start with\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body). It is the cross-session\ncampaign ledger and handoff entrypoint, and it should be read before\n[`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body)\nand\n[`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json#/body)\nwhen choosing the next opcode/decomp pass.",
+            "For a minimal handoff set, use the `Next-Instance Starter Pack` near the top\nof [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body)."
+          ]
+        }
+      ],
+      "sections": {
+        "what-the-project-does": {
+          "heading": "What the project does",
+          "content": [
+            {
+              "paragraph": "Right now the repo mainly provides:",
+              "ulist": [
+                "a batch script disassembler for `MAP*.MPD` files",
+                "decoded text output grouped by area and room name",
+                "room-name lookup support through `room_names.tsv`",
+                "supporting research notes for opcode naming and room connectivity",
+                "a second analysis script for scene and room graph work",
+                "a documented `_refs` workspace for outside reverse-engineering repos"
+              ]
+            },
+            {
+              "paragraph": "The main script is [`dump_mpd_script.py`](dump_mpd_script.py). It reads the script section from each `MAP*.MPD`, decodes known opcodes into readable names where possible, preserves unknown ones, and writes text files into [`decoded_scripts`](decoded_scripts)."
+            },
+            {
+              "paragraph": "That output is useful for:",
+              "ulist": [
+                "spotting repeated opcode patterns",
+                "comparing similar rooms and cutscenes",
+                "testing tentative opcode meanings",
+                "identifying room transitions and script-controlled behavior"
+              ]
+            }
+          ]
+        },
+        "repository-layout": {
+          "heading": "Repository layout",
+          "content": [
+            {
+              "ulist": [
+                "[`dump_mpd_script.py`](dump_mpd_script.py): batch-disassembles `MAP*.MPD` script sections",
+                "[`analyze_room_graph.py`](analyze_room_graph.py): analyzes room and scene connectivity",
+                "[`room_names.tsv`](room_names.tsv): map, zone, area, and room name lookup table",
+                "[`decoded_scripts`](decoded_scripts): generated decoded script output",
+                "[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body): cross-session campaign\nmemory and handoff ledger for opcode/decomp work",
+                "[`docs`](docs): organized documentation tree for workflows, campaign notes,\nand research notes",
+                "[`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body): grouped catalog of durable exports, proof packets, and verification helpers",
+                "[`docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json`](docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json#/body): opcode conclusions and naming notes",
+                "[`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body): local standards for\nbinary-first decompilation and helper-decomp verification",
+                "[`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json#/body): CLI-first\ndecomp workflow and when runtime should break ties",
+                "[`docs/research/ROOM_CONNECTION_FINDINGS.md.json`](docs/research/ROOM_CONNECTION_FINDINGS.md.json#/body): room and scene connectivity notes",
+                "[`docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md.json`](docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md.json#/body): higher-level notes on the extracted disc contents",
+                "[`decomp`](decomp): tracked local decomp scripts, verification helpers, and\nmachine-readable evidence",
+                "[`Game Data`](Game%20Data): place the extracted USA disc contents here",
+                "[`tools`](tools): local reverse-engineering tools and debugger builds kept outside version control",
+                "[`_refs/README.md.json`](_refs/README.md.json#/body): notes for external reference repos used alongside this workspace"
+              ]
+            }
+          ]
+        },
+        "tools-and-references": {
+          "heading": "Tools and references",
+          "content": [
+            {
+              "paragraph": "This workspace uses three layers of tooling: repo-local analysis scripts, local reverse-engineering tools under `tools/`, and optional reference repos under `_refs/`."
+            }
+          ],
+          "sections": {
+            "in-repo-scripts": {
+              "heading": "In-repo scripts",
+              "content": [
+                {
+                  "ulist": [
+                    "[`dump_mpd_script.py`](dump_mpd_script.py): batch script extraction and readable opcode output",
+                    "[`analyze_room_graph.py`](analyze_room_graph.py): scene and room connectivity analysis"
+                  ]
+                }
+              ]
+            },
+            "local-reverse-engineering-toolchain": {
+              "heading": "Local reverse-engineering toolchain",
+              "content": [
+                {
+                  "ulist": [
+                    "[`tools/ghidra_12.0.4_PUBLIC`](tools/ghidra_12.0.4_PUBLIC): main static analysis environment, launched with [`ghidraRun.bat`](tools/ghidra_12.0.4_PUBLIC/ghidraRun.bat)",
+                    "`ghidra_psx_ldr`: installed into the local Ghidra setup to improve PlayStation-specific analysis",
+                    "[`tools/pcsx-redux`](tools/pcsx-redux): runtime debugger and scriptable\ncapture build, launched with [`pcsx-redux.exe`](tools/pcsx-redux/pcsx-redux.exe)"
+                  ]
+                },
+                {
+                  "paragraph": "In practice, `Ghidra` is where opcode handlers and control flow are studied,\nwhile `PCSX-Redux` is used through scripted CLI capture to verify live\nbehavior and settle runtime contradictions. The `tools/` folder stays\nGit-ignored because it holds large local binaries, extracted archives, and\nworking tool checkouts."
+                }
+              ]
+            },
+            "reference-repos": {
+              "heading": "Reference repos",
+              "content": [
+                {
+                  "ulist": [
+                    "[`_refs/rood-reverse`](_refs/rood-reverse): optional local clone of the upstream Vagrant Story decompilation project",
+                    "upstream `rood-reverse`: <https://github.com/ser-pounce/rood-reverse>"
+                  ]
+                },
+                {
+                  "paragraph": "`rood-reverse` is especially useful for matching guessed opcode behavior to\nengine code and checking naming, function boundaries, and subsystem behavior.\nIt should still be treated as a helper reference repo rather than final local\nground truth; see\n[`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body).\nWhen a helper clue matters to a pass result, convert it into a local\n`decomp/` artifact before citing it as evidence."
+                }
+              ]
+            },
+            "optional-companion-tools": {
+              "heading": "Optional companion tools",
+              "content": [
+                {
+                  "ulist": [
+                    "`Capstone`: useful for lightweight scripted instruction decoding, bulk scans, and automation",
+                    "`splat`: useful if the work expands into broader binary splitting and decomp project structure",
+                    "`m2c`: useful for MIPS-focused decompiler passes outside a full interactive RE session",
+                    "`objdiff`: useful once matching or rebuilding compiled objects becomes important",
+                    "`mkpsxiso`: useful later if the project reaches patched PlayStation disc rebuilds"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "how-to-use": {
+          "heading": "How to use",
+          "sections": {
+            "put-the-game-data-in-place": {
+              "heading": "1. Put the game data in place",
+              "content": [
+                {
+                  "paragraph": "Extract the **Vagrant Story USA** disc contents and place them under:",
+                  "code": "Game Data/",
+                  "language": "text"
+                },
+                {
+                  "paragraph": "At minimum, the current scripts expect folders like:",
+                  "code": "Game Data/MAP\nGame Data/SMALL",
+                  "language": "text"
+                },
+                {
+                  "paragraph": "The `MAP` folder is needed for `MAP*.MPD`, and `SMALL` is used by the room graph analysis for `SCEN*.ARM`."
+                }
+              ]
+            },
+            "decode-all-map-scripts": {
+              "heading": "2. Decode all map scripts",
+              "content": [
+                {
+                  "paragraph": "Run:",
+                  "code": "python dump_mpd_script.py \"Game Data/MAP\"",
+                  "language": "powershell"
+                },
+                {
+                  "paragraph": "By default this writes decoded files to:",
+                  "code": "decoded_scripts/",
+                  "language": "text"
+                },
+                {
+                  "paragraph": "You can choose a different output folder with:",
+                  "code": "python dump_mpd_script.py \"Game Data/MAP\" -o \"decoded_scripts\"",
+                  "language": "powershell"
+                }
+              ]
+            },
+            "review-the-decoded-output": {
+              "heading": "3. Review the decoded output",
+              "content": [
+                {
+                  "paragraph": "Each decoded file includes:",
+                  "ulist": [
+                    "the source `MAPxxx.MPD`",
+                    "area and room metadata when available",
+                    "the script header",
+                    "decoded opcode lines",
+                    "extracted dialog text"
+                  ]
+                },
+                {
+                  "paragraph": "Known opcodes are rendered with better names where the current reverse-engineering work is confident. Unknown or still-uncertain opcodes are intentionally kept visible so they can be studied instead of hidden."
+                }
+              ]
+            },
+            "analyze-room-connectivity": {
+              "heading": "4. Analyze room connectivity",
+              "content": [
+                {
+                  "paragraph": "Run:",
+                  "code": "python analyze_room_graph.py",
+                  "language": "powershell"
+                },
+                {
+                  "paragraph": "This uses:",
+                  "ulist": [
+                    "`Game Data/MAP` for MPD files",
+                    "`Game Data/SMALL` for scene files",
+                    "`decoded_scripts` for decoded room metadata",
+                    "`room_names.tsv` for labels"
+                  ]
+                },
+                {
+                  "paragraph": "To also write room classification back into the TSV:",
+                  "code": "python analyze_room_graph.py --update-tsv",
+                  "language": "powershell"
+                }
+              ]
+            }
+          }
+        },
+        "reverse-engineering-goal": {
+          "heading": "Reverse-engineering goal",
+          "content": [
+            {
+              "paragraph": "The main research goal is to keep shrinking the set of unknown or weakly named opcodes."
+            },
+            {
+              "paragraph": "That matters because once opcode behavior is understood well enough, the project can move beyond:",
+              "ulist": [
+                "changing existing numbers",
+                "swapping assets in fixed slots",
+                "making only shallow data edits",
+                "and toward:",
+                {
+                  "ulist": [
+                    "understanding how room events are actually authored",
+                    "modifying cutscene and interaction flow more safely",
+                    "enabling more custom behavior in maps and scenarios",
+                    "eventually supporting richer custom content creation"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "current-limitations": {
+          "heading": "Current limitations",
+          "content": [
+            {
+              "ulist": [
+                "This is a research workspace, not a polished modding toolkit yet.",
+                "Some opcode names are still placeholders.",
+                "A few opcode sizes are still marked as unsafe or unresolved.",
+                "The scripts currently decode and analyze data, but they do not rebuild game files back into a patched disc image."
+              ]
+            }
+          ]
+        },
+        "notes": {
+          "heading": "Notes",
+          "content": [
+            {
+              "ulist": [
+                "The scripts are written for Python 3.",
+                "The repo is currently centered on the USA game data layout.",
+                "If a decoded file only shows partial meaning for an opcode, that is expected; preserving uncertain data is part of the workflow.",
+                "The current local toolchain is centered around Ghidra for static analysis and\nautomated `PCSX-Redux` CLI capture for runtime verification."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "779f3f12358695dbbd868889e8e974c11922ba5ebf501c0cfeb649a36ed7674f",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:15Z",
+    "raw_markdown": "# Vagrant Story USA Script RE Workspace\n\nThis project is a working reverse-engineering workspace for the USA release of **Vagrant Story**.\n\nThe current focus is the game's room and event scripting, especially the `MAP*.MPD` script sections. The goal is not just to rename files or tweak values, but to gradually identify the still-missing script opcodes and understand how they drive room logic, cutscenes, camera behavior, sound, loading, and transitions.\n\nLong term, that should make it possible to build more ambitious custom content than simple numeric stat edits, including new event behavior and more meaningful map or scenario changes.\n\nFor substantial opcode or decomp work, start with\n[`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md). It is the cross-session\ncampaign ledger and handoff entrypoint, and it should be read before\n[`docs/workflows/DECOMPILATION_STRATEGY.md`](docs/workflows/DECOMPILATION_STRATEGY.md)\nand\n[`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md)\nwhen choosing the next opcode/decomp pass.\n\nFor a minimal handoff set, use the `Next-Instance Starter Pack` near the top\nof [`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md).\n\n## What the project does\n\nRight now the repo mainly provides:\n\n- a batch script disassembler for `MAP*.MPD` files\n- decoded text output grouped by area and room name\n- room-name lookup support through `room_names.tsv`\n- supporting research notes for opcode naming and room connectivity\n- a second analysis script for scene and room graph work\n- a documented `_refs` workspace for outside reverse-engineering repos\n\nThe main script is [`dump_mpd_script.py`](dump_mpd_script.py). It reads the script section from each `MAP*.MPD`, decodes known opcodes into readable names where possible, preserves unknown ones, and writes text files into [`decoded_scripts`](decoded_scripts).\n\nThat output is useful for:\n\n- spotting repeated opcode patterns\n- comparing similar rooms and cutscenes\n- testing tentative opcode meanings\n- identifying room transitions and script-controlled behavior\n\n## Repository layout\n\n- [`dump_mpd_script.py`](dump_mpd_script.py): batch-disassembles `MAP*.MPD` script sections\n- [`analyze_room_graph.py`](analyze_room_graph.py): analyzes room and scene connectivity\n- [`room_names.tsv`](room_names.tsv): map, zone, area, and room name lookup table\n- [`decoded_scripts`](decoded_scripts): generated decoded script output\n- [`RE_CAMPAIGN_MEMORY.md`](RE_CAMPAIGN_MEMORY.md): cross-session campaign\n  memory and handoff ledger for opcode/decomp work\n- [`docs`](docs): organized documentation tree for workflows, campaign notes,\n  and research notes\n- [`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md): grouped catalog of durable exports, proof packets, and verification helpers\n- [`docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md`](docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md): opcode conclusions and naming notes\n- [`docs/workflows/DECOMPILATION_STRATEGY.md`](docs/workflows/DECOMPILATION_STRATEGY.md): local standards for\n  binary-first decompilation and helper-decomp verification\n- [`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md): CLI-first\n  decomp workflow and when runtime should break ties\n- [`docs/research/ROOM_CONNECTION_FINDINGS.md`](docs/research/ROOM_CONNECTION_FINDINGS.md): room and scene connectivity notes\n- [`docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md`](docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md): higher-level notes on the extracted disc contents\n- [`decomp`](decomp): tracked local decomp scripts, verification helpers, and\n  machine-readable evidence\n- [`Game Data`](Game%20Data): place the extracted USA disc contents here\n- [`tools`](tools): local reverse-engineering tools and debugger builds kept outside version control\n- [`_refs/README.md`](_refs/README.md): notes for external reference repos used alongside this workspace\n\n## Tools and references\n\nThis workspace uses three layers of tooling: repo-local analysis scripts, local reverse-engineering tools under `tools/`, and optional reference repos under `_refs/`.\n\n### In-repo scripts\n\n- [`dump_mpd_script.py`](dump_mpd_script.py): batch script extraction and readable opcode output\n- [`analyze_room_graph.py`](analyze_room_graph.py): scene and room connectivity analysis\n\n### Local reverse-engineering toolchain\n\n- [`tools/ghidra_12.0.4_PUBLIC`](tools/ghidra_12.0.4_PUBLIC): main static analysis environment, launched with [`ghidraRun.bat`](tools/ghidra_12.0.4_PUBLIC/ghidraRun.bat)\n- `ghidra_psx_ldr`: installed into the local Ghidra setup to improve PlayStation-specific analysis\n- [`tools/pcsx-redux`](tools/pcsx-redux): runtime debugger and scriptable\n  capture build, launched with [`pcsx-redux.exe`](tools/pcsx-redux/pcsx-redux.exe)\n\nIn practice, `Ghidra` is where opcode handlers and control flow are studied,\nwhile `PCSX-Redux` is used through scripted CLI capture to verify live\nbehavior and settle runtime contradictions. The `tools/` folder stays\nGit-ignored because it holds large local binaries, extracted archives, and\nworking tool checkouts.\n\n### Reference repos\n\n- [`_refs/rood-reverse`](_refs/rood-reverse): optional local clone of the upstream Vagrant Story decompilation project\n- upstream `rood-reverse`: <https://github.com/ser-pounce/rood-reverse>\n\n`rood-reverse` is especially useful for matching guessed opcode behavior to\nengine code and checking naming, function boundaries, and subsystem behavior.\nIt should still be treated as a helper reference repo rather than final local\nground truth; see\n[`docs/workflows/DECOMPILATION_STRATEGY.md`](docs/workflows/DECOMPILATION_STRATEGY.md).\nWhen a helper clue matters to a pass result, convert it into a local\n`decomp/` artifact before citing it as evidence.\n\n### Optional companion tools\n\n- `Capstone`: useful for lightweight scripted instruction decoding, bulk scans, and automation\n- `splat`: useful if the work expands into broader binary splitting and decomp project structure\n- `m2c`: useful for MIPS-focused decompiler passes outside a full interactive RE session\n- `objdiff`: useful once matching or rebuilding compiled objects becomes important\n- `mkpsxiso`: useful later if the project reaches patched PlayStation disc rebuilds\n\n## How to use\n\n### 1. Put the game data in place\n\nExtract the **Vagrant Story USA** disc contents and place them under:\n\n```text\nGame Data/\n```\n\nAt minimum, the current scripts expect folders like:\n\n```text\nGame Data/MAP\nGame Data/SMALL\n```\n\nThe `MAP` folder is needed for `MAP*.MPD`, and `SMALL` is used by the room graph analysis for `SCEN*.ARM`.\n\n### 2. Decode all map scripts\n\nRun:\n\n```powershell\npython dump_mpd_script.py \"Game Data/MAP\"\n```\n\nBy default this writes decoded files to:\n\n```text\ndecoded_scripts/\n```\n\nYou can choose a different output folder with:\n\n```powershell\npython dump_mpd_script.py \"Game Data/MAP\" -o \"decoded_scripts\"\n```\n\n### 3. Review the decoded output\n\nEach decoded file includes:\n\n- the source `MAPxxx.MPD`\n- area and room metadata when available\n- the script header\n- decoded opcode lines\n- extracted dialog text\n\nKnown opcodes are rendered with better names where the current reverse-engineering work is confident. Unknown or still-uncertain opcodes are intentionally kept visible so they can be studied instead of hidden.\n\n### 4. Analyze room connectivity\n\nRun:\n\n```powershell\npython analyze_room_graph.py\n```\n\nThis uses:\n\n- `Game Data/MAP` for MPD files\n- `Game Data/SMALL` for scene files\n- `decoded_scripts` for decoded room metadata\n- `room_names.tsv` for labels\n\nTo also write room classification back into the TSV:\n\n```powershell\npython analyze_room_graph.py --update-tsv\n```\n\n## Reverse-engineering goal\n\nThe main research goal is to keep shrinking the set of unknown or weakly named opcodes.\n\nThat matters because once opcode behavior is understood well enough, the project can move beyond:\n\n- changing existing numbers\n- swapping assets in fixed slots\n- making only shallow data edits\n\nand toward:\n\n- understanding how room events are actually authored\n- modifying cutscene and interaction flow more safely\n- enabling more custom behavior in maps and scenarios\n- eventually supporting richer custom content creation\n\n## Current limitations\n\n- This is a research workspace, not a polished modding toolkit yet.\n- Some opcode names are still placeholders.\n- A few opcode sizes are still marked as unsafe or unresolved.\n- The scripts currently decode and analyze data, but they do not rebuild game files back into a patched disc image.\n\n## Notes\n\n- The scripts are written for Python 3.\n- The repo is currently centered on the USA game data layout.\n- If a decoded file only shows partial meaning for an opcode, that is expected; preserving uncertain data is part of the workflow.\n- The current local toolchain is centered around Ghidra for static analysis and\n  automated `PCSX-Redux` CLI capture for runtime verification.\n",
+    "markdown_with_json_links": "# Vagrant Story USA Script RE Workspace\n\nThis project is a working reverse-engineering workspace for the USA release of **Vagrant Story**.\n\nThe current focus is the game's room and event scripting, especially the `MAP*.MPD` script sections. The goal is not just to rename files or tweak values, but to gradually identify the still-missing script opcodes and understand how they drive room logic, cutscenes, camera behavior, sound, loading, and transitions.\n\nLong term, that should make it possible to build more ambitious custom content than simple numeric stat edits, including new event behavior and more meaningful map or scenario changes.\n\nFor substantial opcode or decomp work, start with\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body). It is the cross-session\ncampaign ledger and handoff entrypoint, and it should be read before\n[`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body)\nand\n[`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json#/body)\nwhen choosing the next opcode/decomp pass.\n\nFor a minimal handoff set, use the `Next-Instance Starter Pack` near the top\nof [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body).\n\n## What the project does\n\nRight now the repo mainly provides:\n\n- a batch script disassembler for `MAP*.MPD` files\n- decoded text output grouped by area and room name\n- room-name lookup support through `room_names.tsv`\n- supporting research notes for opcode naming and room connectivity\n- a second analysis script for scene and room graph work\n- a documented `_refs` workspace for outside reverse-engineering repos\n\nThe main script is [`dump_mpd_script.py`](dump_mpd_script.py). It reads the script section from each `MAP*.MPD`, decodes known opcodes into readable names where possible, preserves unknown ones, and writes text files into [`decoded_scripts`](decoded_scripts).\n\nThat output is useful for:\n\n- spotting repeated opcode patterns\n- comparing similar rooms and cutscenes\n- testing tentative opcode meanings\n- identifying room transitions and script-controlled behavior\n\n## Repository layout\n\n- [`dump_mpd_script.py`](dump_mpd_script.py): batch-disassembles `MAP*.MPD` script sections\n- [`analyze_room_graph.py`](analyze_room_graph.py): analyzes room and scene connectivity\n- [`room_names.tsv`](room_names.tsv): map, zone, area, and room name lookup table\n- [`decoded_scripts`](decoded_scripts): generated decoded script output\n- [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body): cross-session campaign\n  memory and handoff ledger for opcode/decomp work\n- [`docs`](docs): organized documentation tree for workflows, campaign notes,\n  and research notes\n- [`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body): grouped catalog of durable exports, proof packets, and verification helpers\n- [`docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json`](docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md.json#/body): opcode conclusions and naming notes\n- [`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body): local standards for\n  binary-first decompilation and helper-decomp verification\n- [`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json#/body): CLI-first\n  decomp workflow and when runtime should break ties\n- [`docs/research/ROOM_CONNECTION_FINDINGS.md.json`](docs/research/ROOM_CONNECTION_FINDINGS.md.json#/body): room and scene connectivity notes\n- [`docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md.json`](docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md.json#/body): higher-level notes on the extracted disc contents\n- [`decomp`](decomp): tracked local decomp scripts, verification helpers, and\n  machine-readable evidence\n- [`Game Data`](Game%20Data): place the extracted USA disc contents here\n- [`tools`](tools): local reverse-engineering tools and debugger builds kept outside version control\n- [`_refs/README.md.json`](_refs/README.md.json#/body): notes for external reference repos used alongside this workspace\n\n## Tools and references\n\nThis workspace uses three layers of tooling: repo-local analysis scripts, local reverse-engineering tools under `tools/`, and optional reference repos under `_refs/`.\n\n### In-repo scripts\n\n- [`dump_mpd_script.py`](dump_mpd_script.py): batch script extraction and readable opcode output\n- [`analyze_room_graph.py`](analyze_room_graph.py): scene and room connectivity analysis\n\n### Local reverse-engineering toolchain\n\n- [`tools/ghidra_12.0.4_PUBLIC`](tools/ghidra_12.0.4_PUBLIC): main static analysis environment, launched with [`ghidraRun.bat`](tools/ghidra_12.0.4_PUBLIC/ghidraRun.bat)\n- `ghidra_psx_ldr`: installed into the local Ghidra setup to improve PlayStation-specific analysis\n- [`tools/pcsx-redux`](tools/pcsx-redux): runtime debugger and scriptable\n  capture build, launched with [`pcsx-redux.exe`](tools/pcsx-redux/pcsx-redux.exe)\n\nIn practice, `Ghidra` is where opcode handlers and control flow are studied,\nwhile `PCSX-Redux` is used through scripted CLI capture to verify live\nbehavior and settle runtime contradictions. The `tools/` folder stays\nGit-ignored because it holds large local binaries, extracted archives, and\nworking tool checkouts.\n\n### Reference repos\n\n- [`_refs/rood-reverse`](_refs/rood-reverse): optional local clone of the upstream Vagrant Story decompilation project\n- upstream `rood-reverse`: <https://github.com/ser-pounce/rood-reverse>\n\n`rood-reverse` is especially useful for matching guessed opcode behavior to\nengine code and checking naming, function boundaries, and subsystem behavior.\nIt should still be treated as a helper reference repo rather than final local\nground truth; see\n[`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body).\nWhen a helper clue matters to a pass result, convert it into a local\n`decomp/` artifact before citing it as evidence.\n\n### Optional companion tools\n\n- `Capstone`: useful for lightweight scripted instruction decoding, bulk scans, and automation\n- `splat`: useful if the work expands into broader binary splitting and decomp project structure\n- `m2c`: useful for MIPS-focused decompiler passes outside a full interactive RE session\n- `objdiff`: useful once matching or rebuilding compiled objects becomes important\n- `mkpsxiso`: useful later if the project reaches patched PlayStation disc rebuilds\n\n## How to use\n\n### 1. Put the game data in place\n\nExtract the **Vagrant Story USA** disc contents and place them under:\n\n```text\nGame Data/\n```\n\nAt minimum, the current scripts expect folders like:\n\n```text\nGame Data/MAP\nGame Data/SMALL\n```\n\nThe `MAP` folder is needed for `MAP*.MPD`, and `SMALL` is used by the room graph analysis for `SCEN*.ARM`.\n\n### 2. Decode all map scripts\n\nRun:\n\n```powershell\npython dump_mpd_script.py \"Game Data/MAP\"\n```\n\nBy default this writes decoded files to:\n\n```text\ndecoded_scripts/\n```\n\nYou can choose a different output folder with:\n\n```powershell\npython dump_mpd_script.py \"Game Data/MAP\" -o \"decoded_scripts\"\n```\n\n### 3. Review the decoded output\n\nEach decoded file includes:\n\n- the source `MAPxxx.MPD`\n- area and room metadata when available\n- the script header\n- decoded opcode lines\n- extracted dialog text\n\nKnown opcodes are rendered with better names where the current reverse-engineering work is confident. Unknown or still-uncertain opcodes are intentionally kept visible so they can be studied instead of hidden.\n\n### 4. Analyze room connectivity\n\nRun:\n\n```powershell\npython analyze_room_graph.py\n```\n\nThis uses:\n\n- `Game Data/MAP` for MPD files\n- `Game Data/SMALL` for scene files\n- `decoded_scripts` for decoded room metadata\n- `room_names.tsv` for labels\n\nTo also write room classification back into the TSV:\n\n```powershell\npython analyze_room_graph.py --update-tsv\n```\n\n## Reverse-engineering goal\n\nThe main research goal is to keep shrinking the set of unknown or weakly named opcodes.\n\nThat matters because once opcode behavior is understood well enough, the project can move beyond:\n\n- changing existing numbers\n- swapping assets in fixed slots\n- making only shallow data edits\n\nand toward:\n\n- understanding how room events are actually authored\n- modifying cutscene and interaction flow more safely\n- enabling more custom behavior in maps and scenarios\n- eventually supporting richer custom content creation\n\n## Current limitations\n\n- This is a research workspace, not a polished modding toolkit yet.\n- Some opcode names are still placeholders.\n- A few opcode sizes are still marked as unsafe or unresolved.\n- The scripts currently decode and analyze data, but they do not rebuild game files back into a patched disc image.\n\n## Notes\n\n- The scripts are written for Python 3.\n- The repo is currently centered on the USA game data layout.\n- If a decoded file only shows partial meaning for an opcode, that is expected; preserving uncertain data is part of the workflow.\n- The current local toolchain is centered around Ghidra for static analysis and\n  automated `PCSX-Redux` CLI capture for runtime verification.\n"
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_cli_pass",
+    "title": "Opcode `0x80` Proof Packet",
+    "summary": "Top-level proof packet for the `0x80` campaign, collecting inputs, support notes, runtime evidence, and the current safest conclusion.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_cli_pass.md",
+    "artifacts": [
+      "decomp/evidence/inittbl_opcode_table.json",
+      "decomp/evidence/inittbl_0x80_copy_slice.json",
+      "decomp/evidence/battle_0x80_handler_slices.json",
+      "decomp/evidence/battle_sound_candidate_slice.json",
+      "decomp/evidence/battle_sound_candidate_xrefs.json",
+      "decomp/evidence/battle_sound_dispatch_table.json",
+      "decomp/evidence/battle_0x80_sound_cluster_slices.json",
+      "decomp/evidence/inittbl_runtime_opcode_table_accesses.json",
+      "decomp/evidence/battle_runtime_opcode_table_accesses.json",
+      "decomp/evidence/slus_runtime_opcode_table_accesses.json",
+      "decomp/evidence/title_runtime_opcode_table_accesses.json",
+      "decomp/evidence/battle_runtime_opcode_table_pointer_usage.json",
+      "decomp/evidence/inittbl_system_dat_loader_slice.json",
+      "decomp/evidence/system_dat_header_words.json",
+      "decomp/evidence/runtime_opcode_table_binary_scan.json",
+      "decomp/evidence/opcode_0x80_copy_path_static.md.json",
+      "decomp/evidence/opcode_0x80_sound_cluster_static.md.json",
+      "decomp/evidence/opcode_0x80_runtime_slot_access_static.md.json",
+      "decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md.json",
+      "decomp/evidence/opcode_0x80_system_dat_static.md.json",
+      "decomp/evidence/opcode_0x80_binary_address_scan.md.json",
+      "decomp/evidence/opcode_0x80_runtime_capture_plan.md.json",
+      "decomp/evidence/opcode_0x80_runtime_observation.json",
+      "decomp/evidence/opcode_0x80_runtime_snapshot_compare.json",
+      "decomp/evidence/opcode_0x80_runtime_support.md.json",
+      "decomp/evidence/opcode_0x80_runtime_expected_table.bin",
+      "decomp/evidence/opcode_0x80_semantic_proof.md.json",
+      "decomp/evidence/opcode_0x80_shared_stub_family_audit.md.json"
+    ],
+    "findings": [
+      "The copied runtime table path is now closed from export to runtime consumer.",
+      "Checked runtime snapshots stayed identical to the reconstructed `INITBTL.PRG` baseline in the validated retail route.",
+      "The nearby sound candidate no longer justifies reviving a direct sound label for `0x80`.",
+      "The top-level proof packet now supports carrying `0x80` as a shared-stub slot with semantic caution rather than as a runtime contradiction."
+    ],
+    "body": {
+      "sections": {
+        "inputs": {
+          "heading": "Inputs",
+          "content": [
+            {
+              "ulist": [
+                "`Game Data/BATTLE/INITBTL.PRG`",
+                "`Game Data/BATTLE/BATTLE.PRG`",
+                "`Game Data/SLUS_010.40`",
+                "`Game Data/TITLE/TITLE.PRG`",
+                "`Game Data/BATTLE/SYSTEM.DAT`",
+                "`decomp/ghidra/export_inittbl_opcode_table.ps1`",
+                "`decomp/ghidra/export_inittbl_0x80_copy_slice.ps1`",
+                "`decomp/ghidra/export_inittbl_system_dat_loader_slice.ps1`",
+                "`decomp/ghidra/export_battle_0x80_sound_cluster_slices.ps1`",
+                "`decomp/ghidra/export_runtime_opcode_table_accesses.ps1`",
+                "`decomp/ghidra/export_inittbl_runtime_opcode_table_accesses.ps1`",
+                "`decomp/ghidra/export_battle_runtime_opcode_table_accesses.ps1`",
+                "`decomp/ghidra/export_slus_runtime_opcode_table_accesses.ps1`",
+                "`decomp/ghidra/export_title_runtime_opcode_table_accesses.ps1`",
+                "`decomp/ghidra/export_battle_runtime_opcode_table_pointer_usage.ps1`",
+                "`decomp/ghidra/ExportFunctionTable.java`",
+                "`decomp/ghidra/DumpInstructions.java`",
+                "`decomp/ghidra/DumpXrefs.java`",
+                "`decomp/ghidra/DumpAddressAccesses.java`",
+                "`decomp/ghidra/TracePointerDerivedAccesses.java`",
+                "`decomp/verification/scan_mips_address_accesses.py`",
+                "`decomp/verification/compare_opcode_table_snapshots.py`",
+                "`decomp/verification/record_runtime_observation.py`",
+                "`decomp/verification/finalize_runtime_observation.py`"
+              ]
+            }
+          ]
+        },
+        "produced-artifacts": {
+          "heading": "Produced artifacts",
+          "content": [
+            {
+              "ulist": [
+                "`decomp/evidence/inittbl_opcode_table.json`",
+                "`decomp/evidence/inittbl_0x80_copy_slice.json`",
+                "`decomp/evidence/inittbl_opcode_table_xrefs.json`",
+                "`decomp/evidence/battle_0x80_handler_slices.json`",
+                "`decomp/evidence/battle_sound_candidate_slice.json`",
+                "`decomp/evidence/battle_sound_candidate_xrefs.json`",
+                "`decomp/evidence/battle_sound_dispatch_table.json`",
+                "`decomp/evidence/battle_0x80_sound_cluster_slices.json`",
+                "`decomp/evidence/inittbl_runtime_opcode_table_accesses.json`",
+                "`decomp/evidence/battle_runtime_opcode_table_accesses.json`",
+                "`decomp/evidence/slus_runtime_opcode_table_accesses.json`",
+                "`decomp/evidence/title_runtime_opcode_table_accesses.json`",
+                "`decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`",
+                "`decomp/evidence/inittbl_system_dat_loader_slice.json`",
+                "`decomp/evidence/system_dat_header_words.json`",
+                "`decomp/evidence/runtime_opcode_table_binary_scan.json`",
+                "`decomp/evidence/opcode_0x80_runtime_slot_access_static.md.json`",
+                "`decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md.json`",
+                "`decomp/evidence/opcode_0x80_system_dat_static.md.json`",
+                "`decomp/evidence/opcode_0x80_binary_address_scan.md.json`",
+                "`decomp/evidence/opcode_0x80_runtime_capture_plan.md.json`",
+                "`decomp/evidence/opcode_0x80_runtime_observation_template.json`",
+                "`decomp/evidence/opcode_0x80_runtime_observation.json`",
+                "`decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`",
+                "`decomp/evidence/opcode_0x80_runtime_support.md.json`",
+                "`decomp/evidence/opcode_0x80_runtime_expected_table.bin`",
+                "`decomp/evidence/opcode_0x80_semantic_proof.md.json`",
+                "`decomp/evidence/opcode_0x80_shared_stub_family_audit.md.json`"
+              ]
+            }
+          ]
+        },
+        "packet-structure": {
+          "heading": "Packet structure",
+          "content": [
+            {
+              "ulist": [
+                "This file is the top-level `0x80` proof packet.",
+                "`decomp/evidence/opcode_0x80_copy_path_static.md.json` is the focused support note for the\n`0x800FAF7C -> 0x800F4C28` copy path.",
+                "`decomp/evidence/opcode_0x80_sound_cluster_static.md.json` is the focused support note for the\nnearby `0x800BA2E0` sound-family interpretation.",
+                "`decomp/evidence/opcode_0x80_runtime_slot_access_static.md.json` is the focused support note for\ndirect absolute accesses to runtime slot `0x800F4C28` across the currently\nimportable local executables with known base-address notes.",
+                "`decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md.json` is the focused support note\nfor how the recovered `BATTLE.PRG` reader actually uses the copied table\npointer after loading it from `0x800F4C28`.",
+                "`decomp/evidence/opcode_0x80_system_dat_static.md.json` is the focused support note for why the\nlocally loaded `SYSTEM.DAT` blob should no longer be treated as the main\nmissing executable-overlay candidate in this pass.",
+                "`decomp/evidence/opcode_0x80_binary_address_scan.md.json` is the focused support note for the raw\npackaged-binary heuristic scan that checks whether any other local\n`.PRG`/`.BIN` asset still builds the same absolute `0x800F4C28` access\npattern.",
+                "`decomp/evidence/opcode_0x80_runtime_capture_plan.md.json` is the focused support note for the\nruntime tie-breaker: exact watch addresses, expected dump points, and the\ncompare-helper invocation for the copied table at `0x800F4C28`.",
+                "`opcode_0x80_runtime_observation_template.json` is the structured handoff\nfile for recording breakpoint hits, dump paths, and final runtime\nobservations during that pass.",
+                "`opcode_0x80_runtime_observation.json` is the checked-in scaffolded\nobservation packet for the next runtime pass; it already carries the planned\nbreakpoints, expected dump paths, and current missing-snapshot checklist.",
+                "`record_runtime_observation.py` is the CLI helper for appending snapshot\npaths, breakpoint hits, dispatches, mutations, and notes into that checked-in\npacket during the runtime pass instead of hand-editing JSON; it can also\nimport changed compare-report rows back into `table_mutations`.",
+                "`opcode_0x80_runtime_snapshot_compare.json` is the generated compare report\nthat currently records the missing dump files and should refresh in place\nonce real RAM snapshots are added; it now also records the baseline export\nhash plus per-dump size/hash metadata for any compared snapshots.",
+                "`decomp/evidence/opcode_0x80_runtime_support.md.json` is the generated runtime support note that\nnow doubles as a ready-to-use runtime checklist because it includes the\nplanned breakpoints, missing snapshot captures, and the reconstructed\nbaseline blob metadata even before the dumps exist.",
+                "`opcode_0x80_runtime_expected_table.bin` is the reconstructed binary-derived\nbaseline table image that the compare/finalize helpers now refresh alongside\nthe JSON report so a runtime pass has a stable byte-for-byte artifact to\ndiff against.",
+                "`decomp/evidence/opcode_0x80_semantic_proof.md.json` is the post-runtime semantic write-up that\nretires the old rewrite blocker and captures the safest local interpretation\nfor `0x80`.",
+                "`decomp/evidence/opcode_0x80_shared_stub_family_audit.md.json` is the guardrail packet that\nmakes the widened `0x800B66E4` family explicit before any later naming pass\ntries to treat this one shared stub as direct proof for dialog, room,\nmusic, or audio semantics."
+              ]
+            }
+          ]
+        },
+        "static-findings": {
+          "heading": "Static findings",
+          "content": [
+            {
+              "ulist": [
+                "The binary-derived `INITBTL.PRG` opcode table export places `0x80` at\n`0x800B66E4`.",
+                "`0x81` and `0x82` also point to `0x800B66E4`.",
+                "`0x83` and `0x84` move on to different handlers (`0x800BA3E4`,\n`0x800BA404`), so the `0x80-0x82` cluster is a real repeated target rather\nthan an export error.",
+                "The code slice starting at `0x800B66E4` begins with:"
+              ]
+            },
+            {
+              "code": "800b66e4 jr ra\n800b66e8 clear v0",
+              "language": "text"
+            },
+            {
+              "ulist": [
+                "That is a real binary stub, not just a decompiler artifact."
+              ]
+            }
+          ]
+        },
+        "copy-path-findings": {
+          "heading": "Copy-path findings",
+          "content": [
+            {
+              "ulist": [
+                "`inittbl_0x80_copy_slice.json` proves that the exported table at `0x800FAF7C`\nis copied into runtime slot `0x800F4C28` during init.",
+                "`inittbl_opcode_table_xrefs.json` is still empty under the current headless\nanalysis settings, so the copy-path claim currently rests on the local\ninstruction slice rather than an auto-recovered xref.",
+                "See `decomp/evidence/opcode_0x80_copy_path_static.md.json` for the exact copy-sequence argument."
+              ]
+            }
+          ]
+        },
+        "conflicting-nearby-evidence": {
+          "heading": "Conflicting nearby evidence",
+          "content": [
+            {
+              "ulist": [
+                "`battle_sound_candidate_slice.json` still shows `0x800BA2E0` consuming the\nsame four-byte argument block as the visible sound family.",
+                "`battle_sound_candidate_xrefs.json` now recovers a direct local data xref\nfrom `0x800E9F30 -> 0x800BA2E0`.",
+                "`battle_sound_dispatch_table.json` then exports that `0x800E9F30` table as\nan eight-entry local `BATTLE.PRG` handler family containing `0x800BA2E0`,\n`0x800BA35C`, `0x800BA39C`, and the already-visible `0x800BA3E4+`\nneighborhood.",
+                "`battle_0x80_sound_cluster_slices.json` now covers that fuller local family,\nwhich makes `0x800BA2E0` look like a member of a separate sound\nsubdispatch block rather than a hidden replacement for the copied `0x80`\nslot.",
+                "See `decomp/evidence/opcode_0x80_sound_cluster_static.md.json` for the local neighborhood case."
+              ]
+            }
+          ]
+        },
+        "runtime-tie-break-findings": {
+          "heading": "Runtime tie-break findings",
+          "content": [
+            {
+              "ulist": [
+                "The validated `MAP001` listener-control route now resolves the live runtime\ntable pointer slot `0x800F4C28 -> 0x801119F0`, reaches the recovered reader\nchain `0x8007A36C -> 0x800BF850 -> 0x800BFBB8`, and records direct retail\n`0x80 -> 0x800B66E4` dispatch samples.",
+                "`decomp/evidence/opcode_0x80_runtime_support.md.json` now compares both checked snapshots against\nthe reconstructed baseline and reports `256` matching entries and `0`\nchanged entries for both `after_init` and `pre_dispatch`.",
+                "The live write watchpoint over `0x801119F0-0x80111DEF` records `0` hits in\nthat same validated route.",
+                "That closes the old \"maybe the copied slot is rewritten before the intro\nuses it\" branch for the checked retail runtime path."
+              ]
+            }
+          ]
+        },
+        "current-conclusion": {
+          "heading": "Current conclusion",
+          "content": [
+            {
+              "ulist": [
+                "`0x80` is no longer `runtime needed`.",
+                "Local binary and retail runtime evidence now agree on the same structural\nfloor: `0x80` dispatches through the copied runtime table and still lands on\n`0x800B66E4`, the shared return-zero stub.",
+                "The old copy/patch contradiction is closed strongly enough to move the target\ninto `Pass 4`/`tentative` semantic status.",
+                "A widened local access sweep of `INITBTL.PRG`, `BATTLE.PRG`,\n`SLUS_010.40`, and `TITLE.PRG` still finds only one direct init-time write\nto `0x800F4C28`, one direct runtime read from it, and no additional\nrecovered direct slot accesses in the other importable executables with\nknown base notes.",
+                "A local pointer-usage trace of the recovered `BATTLE.PRG` reader at\n`FUN_800BFBB8` still shows only pointer arithmetic plus one indexed\ntable-entry read before `jalr`, with no recovered indirect write-back or\ntainted pointer-argument call in that local consumer.",
+                "A local `INITBTL.PRG` loader slice plus the first eight dwords of the local\n`SYSTEM.DAT` file still show `SYSTEM.DAT` being loaded as offset-indexed\nasset/payload data and then freed, which keeps the old \"`SYSTEM.DAT`\nmight be the missing code overlay\" branch weak.",
+                "A raw packaged-binary heuristic scan across `356` local `.PRG`/`.BIN`/`.40`\nfiles still recovers the same absolute `0x800F4C28` access pattern in\nexactly two files, `INITBTL.PRG` and `BATTLE.PRG`, with no third match in\nthe `EFFECT` plugin corpus or elsewhere in `Game Data`.",
+                "The nearby sound-shaped helper no longer justifies a direct `0x80` sound\nlabel. The safer local interpretation is the one captured in\n`decomp/evidence/opcode_0x80_semantic_proof.md.json`: `0x80` is currently best treated as a\nshared stub slot, while the visible direct sound family begins in the\nseparate `0x83+` subdispatch block.",
+                "A widened local family audit now also shows `0x800B66E4` is reused by `30`\nheterogeneous `INITBTL.PRG` opcode slots, including currently named dialog,\nmodel, room, battle-end, and music-looking members, so the table hit must be\ntreated as structural evidence only.",
+                "`SoundEffects0` should therefore stay retired as an overclaim until a later\npass produces handler-level evidence that reconnects `0x80` itself to an\naudible effect."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "a4d687d6148149d6832aa894266f608d3279f06dca93312251f004b27f087fdd",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:45:30Z",
+    "raw_markdown": "# Opcode `0x80` Proof Packet\n\n## Inputs\n\n- `Game Data/BATTLE/INITBTL.PRG`\n- `Game Data/BATTLE/BATTLE.PRG`\n- `Game Data/SLUS_010.40`\n- `Game Data/TITLE/TITLE.PRG`\n- `Game Data/BATTLE/SYSTEM.DAT`\n- `decomp/ghidra/export_inittbl_opcode_table.ps1`\n- `decomp/ghidra/export_inittbl_0x80_copy_slice.ps1`\n- `decomp/ghidra/export_inittbl_system_dat_loader_slice.ps1`\n- `decomp/ghidra/export_battle_0x80_sound_cluster_slices.ps1`\n- `decomp/ghidra/export_runtime_opcode_table_accesses.ps1`\n- `decomp/ghidra/export_inittbl_runtime_opcode_table_accesses.ps1`\n- `decomp/ghidra/export_battle_runtime_opcode_table_accesses.ps1`\n- `decomp/ghidra/export_slus_runtime_opcode_table_accesses.ps1`\n- `decomp/ghidra/export_title_runtime_opcode_table_accesses.ps1`\n- `decomp/ghidra/export_battle_runtime_opcode_table_pointer_usage.ps1`\n- `decomp/ghidra/ExportFunctionTable.java`\n- `decomp/ghidra/DumpInstructions.java`\n- `decomp/ghidra/DumpXrefs.java`\n- `decomp/ghidra/DumpAddressAccesses.java`\n- `decomp/ghidra/TracePointerDerivedAccesses.java`\n- `decomp/verification/scan_mips_address_accesses.py`\n- `decomp/verification/compare_opcode_table_snapshots.py`\n- `decomp/verification/record_runtime_observation.py`\n- `decomp/verification/finalize_runtime_observation.py`\n\n## Produced artifacts\n\n- `decomp/evidence/inittbl_opcode_table.json`\n- `decomp/evidence/inittbl_0x80_copy_slice.json`\n- `decomp/evidence/inittbl_opcode_table_xrefs.json`\n- `decomp/evidence/battle_0x80_handler_slices.json`\n- `decomp/evidence/battle_sound_candidate_slice.json`\n- `decomp/evidence/battle_sound_candidate_xrefs.json`\n- `decomp/evidence/battle_sound_dispatch_table.json`\n- `decomp/evidence/battle_0x80_sound_cluster_slices.json`\n- `decomp/evidence/inittbl_runtime_opcode_table_accesses.json`\n- `decomp/evidence/battle_runtime_opcode_table_accesses.json`\n- `decomp/evidence/slus_runtime_opcode_table_accesses.json`\n- `decomp/evidence/title_runtime_opcode_table_accesses.json`\n- `decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`\n- `decomp/evidence/inittbl_system_dat_loader_slice.json`\n- `decomp/evidence/system_dat_header_words.json`\n- `decomp/evidence/runtime_opcode_table_binary_scan.json`\n- `decomp/evidence/opcode_0x80_runtime_slot_access_static.md`\n- `decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md`\n- `decomp/evidence/opcode_0x80_system_dat_static.md`\n- `decomp/evidence/opcode_0x80_binary_address_scan.md`\n- `decomp/evidence/opcode_0x80_runtime_capture_plan.md`\n- `decomp/evidence/opcode_0x80_runtime_observation_template.json`\n- `decomp/evidence/opcode_0x80_runtime_observation.json`\n- `decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`\n- `decomp/evidence/opcode_0x80_runtime_support.md`\n- `decomp/evidence/opcode_0x80_runtime_expected_table.bin`\n- `decomp/evidence/opcode_0x80_semantic_proof.md`\n- `decomp/evidence/opcode_0x80_shared_stub_family_audit.md`\n\n## Packet structure\n\n- This file is the top-level `0x80` proof packet.\n- `opcode_0x80_copy_path_static.md` is the focused support note for the\n  `0x800FAF7C -> 0x800F4C28` copy path.\n- `opcode_0x80_sound_cluster_static.md` is the focused support note for the\n  nearby `0x800BA2E0` sound-family interpretation.\n- `opcode_0x80_runtime_slot_access_static.md` is the focused support note for\n  direct absolute accesses to runtime slot `0x800F4C28` across the currently\n  importable local executables with known base-address notes.\n- `opcode_0x80_runtime_pointer_usage_static.md` is the focused support note\n  for how the recovered `BATTLE.PRG` reader actually uses the copied table\n  pointer after loading it from `0x800F4C28`.\n- `opcode_0x80_system_dat_static.md` is the focused support note for why the\n  locally loaded `SYSTEM.DAT` blob should no longer be treated as the main\n  missing executable-overlay candidate in this pass.\n- `opcode_0x80_binary_address_scan.md` is the focused support note for the raw\n  packaged-binary heuristic scan that checks whether any other local\n  `.PRG`/`.BIN` asset still builds the same absolute `0x800F4C28` access\n  pattern.\n- `opcode_0x80_runtime_capture_plan.md` is the focused support note for the\n  runtime tie-breaker: exact watch addresses, expected dump points, and the\n  compare-helper invocation for the copied table at `0x800F4C28`.\n- `opcode_0x80_runtime_observation_template.json` is the structured handoff\n  file for recording breakpoint hits, dump paths, and final runtime\n  observations during that pass.\n- `opcode_0x80_runtime_observation.json` is the checked-in scaffolded\n  observation packet for the next runtime pass; it already carries the planned\n  breakpoints, expected dump paths, and current missing-snapshot checklist.\n- `record_runtime_observation.py` is the CLI helper for appending snapshot\n  paths, breakpoint hits, dispatches, mutations, and notes into that checked-in\n  packet during the runtime pass instead of hand-editing JSON; it can also\n  import changed compare-report rows back into `table_mutations`.\n- `opcode_0x80_runtime_snapshot_compare.json` is the generated compare report\n  that currently records the missing dump files and should refresh in place\n  once real RAM snapshots are added; it now also records the baseline export\n  hash plus per-dump size/hash metadata for any compared snapshots.\n- `opcode_0x80_runtime_support.md` is the generated runtime support note that\n  now doubles as a ready-to-use runtime checklist because it includes the\n  planned breakpoints, missing snapshot captures, and the reconstructed\n  baseline blob metadata even before the dumps exist.\n- `opcode_0x80_runtime_expected_table.bin` is the reconstructed binary-derived\n  baseline table image that the compare/finalize helpers now refresh alongside\n  the JSON report so a runtime pass has a stable byte-for-byte artifact to\n  diff against.\n- `opcode_0x80_semantic_proof.md` is the post-runtime semantic write-up that\n  retires the old rewrite blocker and captures the safest local interpretation\n  for `0x80`.\n- `opcode_0x80_shared_stub_family_audit.md` is the guardrail packet that\n  makes the widened `0x800B66E4` family explicit before any later naming pass\n  tries to treat this one shared stub as direct proof for dialog, room,\n  music, or audio semantics.\n\n## Static findings\n\n- The binary-derived `INITBTL.PRG` opcode table export places `0x80` at\n  `0x800B66E4`.\n- `0x81` and `0x82` also point to `0x800B66E4`.\n- `0x83` and `0x84` move on to different handlers (`0x800BA3E4`,\n  `0x800BA404`), so the `0x80-0x82` cluster is a real repeated target rather\n  than an export error.\n- The code slice starting at `0x800B66E4` begins with:\n\n```text\n800b66e4 jr ra\n800b66e8 clear v0\n```\n\n- That is a real binary stub, not just a decompiler artifact.\n\n## Copy-path findings\n\n- `inittbl_0x80_copy_slice.json` proves that the exported table at `0x800FAF7C`\n  is copied into runtime slot `0x800F4C28` during init.\n- `inittbl_opcode_table_xrefs.json` is still empty under the current headless\n  analysis settings, so the copy-path claim currently rests on the local\n  instruction slice rather than an auto-recovered xref.\n- See `opcode_0x80_copy_path_static.md` for the exact copy-sequence argument.\n\n## Conflicting nearby evidence\n\n- `battle_sound_candidate_slice.json` still shows `0x800BA2E0` consuming the\n  same four-byte argument block as the visible sound family.\n- `battle_sound_candidate_xrefs.json` now recovers a direct local data xref\n  from `0x800E9F30 -> 0x800BA2E0`.\n- `battle_sound_dispatch_table.json` then exports that `0x800E9F30` table as\n  an eight-entry local `BATTLE.PRG` handler family containing `0x800BA2E0`,\n  `0x800BA35C`, `0x800BA39C`, and the already-visible `0x800BA3E4+`\n  neighborhood.\n- `battle_0x80_sound_cluster_slices.json` now covers that fuller local family,\n  which makes `0x800BA2E0` look like a member of a separate sound\n  subdispatch block rather than a hidden replacement for the copied `0x80`\n  slot.\n- See `opcode_0x80_sound_cluster_static.md` for the local neighborhood case.\n\n## Runtime tie-break findings\n\n- The validated `MAP001` listener-control route now resolves the live runtime\n  table pointer slot `0x800F4C28 -> 0x801119F0`, reaches the recovered reader\n  chain `0x8007A36C -> 0x800BF850 -> 0x800BFBB8`, and records direct retail\n  `0x80 -> 0x800B66E4` dispatch samples.\n- `opcode_0x80_runtime_support.md` now compares both checked snapshots against\n  the reconstructed baseline and reports `256` matching entries and `0`\n  changed entries for both `after_init` and `pre_dispatch`.\n- The live write watchpoint over `0x801119F0-0x80111DEF` records `0` hits in\n  that same validated route.\n- That closes the old \"maybe the copied slot is rewritten before the intro\n  uses it\" branch for the checked retail runtime path.\n\n## Current conclusion\n\n- `0x80` is no longer `runtime needed`.\n- Local binary and retail runtime evidence now agree on the same structural\n  floor: `0x80` dispatches through the copied runtime table and still lands on\n  `0x800B66E4`, the shared return-zero stub.\n- The old copy/patch contradiction is closed strongly enough to move the target\n  into `Pass 4`/`tentative` semantic status.\n- A widened local access sweep of `INITBTL.PRG`, `BATTLE.PRG`,\n  `SLUS_010.40`, and `TITLE.PRG` still finds only one direct init-time write\n  to `0x800F4C28`, one direct runtime read from it, and no additional\n  recovered direct slot accesses in the other importable executables with\n  known base notes.\n- A local pointer-usage trace of the recovered `BATTLE.PRG` reader at\n  `FUN_800BFBB8` still shows only pointer arithmetic plus one indexed\n  table-entry read before `jalr`, with no recovered indirect write-back or\n  tainted pointer-argument call in that local consumer.\n- A local `INITBTL.PRG` loader slice plus the first eight dwords of the local\n  `SYSTEM.DAT` file still show `SYSTEM.DAT` being loaded as offset-indexed\n  asset/payload data and then freed, which keeps the old \"`SYSTEM.DAT`\n  might be the missing code overlay\" branch weak.\n- A raw packaged-binary heuristic scan across `356` local `.PRG`/`.BIN`/`.40`\n  files still recovers the same absolute `0x800F4C28` access pattern in\n  exactly two files, `INITBTL.PRG` and `BATTLE.PRG`, with no third match in\n  the `EFFECT` plugin corpus or elsewhere in `Game Data`.\n- The nearby sound-shaped helper no longer justifies a direct `0x80` sound\n  label. The safer local interpretation is the one captured in\n  `opcode_0x80_semantic_proof.md`: `0x80` is currently best treated as a\n  shared stub slot, while the visible direct sound family begins in the\n  separate `0x83+` subdispatch block.\n- A widened local family audit now also shows `0x800B66E4` is reused by `30`\n  heterogeneous `INITBTL.PRG` opcode slots, including currently named dialog,\n  model, room, battle-end, and music-looking members, so the table hit must be\n  treated as structural evidence only.\n- `SoundEffects0` should therefore stay retired as an overclaim until a later\n  pass produces handler-level evidence that reconnects `0x80` itself to an\n  audible effect.\n",
+    "markdown_with_json_links": "# Opcode `0x80` Proof Packet\n\n## Inputs\n\n- `Game Data/BATTLE/INITBTL.PRG`\n- `Game Data/BATTLE/BATTLE.PRG`\n- `Game Data/SLUS_010.40`\n- `Game Data/TITLE/TITLE.PRG`\n- `Game Data/BATTLE/SYSTEM.DAT`\n- `decomp/ghidra/export_inittbl_opcode_table.ps1`\n- `decomp/ghidra/export_inittbl_0x80_copy_slice.ps1`\n- `decomp/ghidra/export_inittbl_system_dat_loader_slice.ps1`\n- `decomp/ghidra/export_battle_0x80_sound_cluster_slices.ps1`\n- `decomp/ghidra/export_runtime_opcode_table_accesses.ps1`\n- `decomp/ghidra/export_inittbl_runtime_opcode_table_accesses.ps1`\n- `decomp/ghidra/export_battle_runtime_opcode_table_accesses.ps1`\n- `decomp/ghidra/export_slus_runtime_opcode_table_accesses.ps1`\n- `decomp/ghidra/export_title_runtime_opcode_table_accesses.ps1`\n- `decomp/ghidra/export_battle_runtime_opcode_table_pointer_usage.ps1`\n- `decomp/ghidra/ExportFunctionTable.java`\n- `decomp/ghidra/DumpInstructions.java`\n- `decomp/ghidra/DumpXrefs.java`\n- `decomp/ghidra/DumpAddressAccesses.java`\n- `decomp/ghidra/TracePointerDerivedAccesses.java`\n- `decomp/verification/scan_mips_address_accesses.py`\n- `decomp/verification/compare_opcode_table_snapshots.py`\n- `decomp/verification/record_runtime_observation.py`\n- `decomp/verification/finalize_runtime_observation.py`\n\n## Produced artifacts\n\n- `decomp/evidence/inittbl_opcode_table.json`\n- `decomp/evidence/inittbl_0x80_copy_slice.json`\n- `decomp/evidence/inittbl_opcode_table_xrefs.json`\n- `decomp/evidence/battle_0x80_handler_slices.json`\n- `decomp/evidence/battle_sound_candidate_slice.json`\n- `decomp/evidence/battle_sound_candidate_xrefs.json`\n- `decomp/evidence/battle_sound_dispatch_table.json`\n- `decomp/evidence/battle_0x80_sound_cluster_slices.json`\n- `decomp/evidence/inittbl_runtime_opcode_table_accesses.json`\n- `decomp/evidence/battle_runtime_opcode_table_accesses.json`\n- `decomp/evidence/slus_runtime_opcode_table_accesses.json`\n- `decomp/evidence/title_runtime_opcode_table_accesses.json`\n- `decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`\n- `decomp/evidence/inittbl_system_dat_loader_slice.json`\n- `decomp/evidence/system_dat_header_words.json`\n- `decomp/evidence/runtime_opcode_table_binary_scan.json`\n- `decomp/evidence/opcode_0x80_runtime_slot_access_static.md.json`\n- `decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md.json`\n- `decomp/evidence/opcode_0x80_system_dat_static.md.json`\n- `decomp/evidence/opcode_0x80_binary_address_scan.md.json`\n- `decomp/evidence/opcode_0x80_runtime_capture_plan.md.json`\n- `decomp/evidence/opcode_0x80_runtime_observation_template.json`\n- `decomp/evidence/opcode_0x80_runtime_observation.json`\n- `decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`\n- `decomp/evidence/opcode_0x80_runtime_support.md.json`\n- `decomp/evidence/opcode_0x80_runtime_expected_table.bin`\n- `decomp/evidence/opcode_0x80_semantic_proof.md.json`\n- `decomp/evidence/opcode_0x80_shared_stub_family_audit.md.json`\n\n## Packet structure\n\n- This file is the top-level `0x80` proof packet.\n- `decomp/evidence/opcode_0x80_copy_path_static.md.json` is the focused support note for the\n  `0x800FAF7C -> 0x800F4C28` copy path.\n- `decomp/evidence/opcode_0x80_sound_cluster_static.md.json` is the focused support note for the\n  nearby `0x800BA2E0` sound-family interpretation.\n- `decomp/evidence/opcode_0x80_runtime_slot_access_static.md.json` is the focused support note for\n  direct absolute accesses to runtime slot `0x800F4C28` across the currently\n  importable local executables with known base-address notes.\n- `decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md.json` is the focused support note\n  for how the recovered `BATTLE.PRG` reader actually uses the copied table\n  pointer after loading it from `0x800F4C28`.\n- `decomp/evidence/opcode_0x80_system_dat_static.md.json` is the focused support note for why the\n  locally loaded `SYSTEM.DAT` blob should no longer be treated as the main\n  missing executable-overlay candidate in this pass.\n- `decomp/evidence/opcode_0x80_binary_address_scan.md.json` is the focused support note for the raw\n  packaged-binary heuristic scan that checks whether any other local\n  `.PRG`/`.BIN` asset still builds the same absolute `0x800F4C28` access\n  pattern.\n- `decomp/evidence/opcode_0x80_runtime_capture_plan.md.json` is the focused support note for the\n  runtime tie-breaker: exact watch addresses, expected dump points, and the\n  compare-helper invocation for the copied table at `0x800F4C28`.\n- `opcode_0x80_runtime_observation_template.json` is the structured handoff\n  file for recording breakpoint hits, dump paths, and final runtime\n  observations during that pass.\n- `opcode_0x80_runtime_observation.json` is the checked-in scaffolded\n  observation packet for the next runtime pass; it already carries the planned\n  breakpoints, expected dump paths, and current missing-snapshot checklist.\n- `record_runtime_observation.py` is the CLI helper for appending snapshot\n  paths, breakpoint hits, dispatches, mutations, and notes into that checked-in\n  packet during the runtime pass instead of hand-editing JSON; it can also\n  import changed compare-report rows back into `table_mutations`.\n- `opcode_0x80_runtime_snapshot_compare.json` is the generated compare report\n  that currently records the missing dump files and should refresh in place\n  once real RAM snapshots are added; it now also records the baseline export\n  hash plus per-dump size/hash metadata for any compared snapshots.\n- `decomp/evidence/opcode_0x80_runtime_support.md.json` is the generated runtime support note that\n  now doubles as a ready-to-use runtime checklist because it includes the\n  planned breakpoints, missing snapshot captures, and the reconstructed\n  baseline blob metadata even before the dumps exist.\n- `opcode_0x80_runtime_expected_table.bin` is the reconstructed binary-derived\n  baseline table image that the compare/finalize helpers now refresh alongside\n  the JSON report so a runtime pass has a stable byte-for-byte artifact to\n  diff against.\n- `decomp/evidence/opcode_0x80_semantic_proof.md.json` is the post-runtime semantic write-up that\n  retires the old rewrite blocker and captures the safest local interpretation\n  for `0x80`.\n- `decomp/evidence/opcode_0x80_shared_stub_family_audit.md.json` is the guardrail packet that\n  makes the widened `0x800B66E4` family explicit before any later naming pass\n  tries to treat this one shared stub as direct proof for dialog, room,\n  music, or audio semantics.\n\n## Static findings\n\n- The binary-derived `INITBTL.PRG` opcode table export places `0x80` at\n  `0x800B66E4`.\n- `0x81` and `0x82` also point to `0x800B66E4`.\n- `0x83` and `0x84` move on to different handlers (`0x800BA3E4`,\n  `0x800BA404`), so the `0x80-0x82` cluster is a real repeated target rather\n  than an export error.\n- The code slice starting at `0x800B66E4` begins with:\n\n```text\n800b66e4 jr ra\n800b66e8 clear v0\n```\n\n- That is a real binary stub, not just a decompiler artifact.\n\n## Copy-path findings\n\n- `inittbl_0x80_copy_slice.json` proves that the exported table at `0x800FAF7C`\n  is copied into runtime slot `0x800F4C28` during init.\n- `inittbl_opcode_table_xrefs.json` is still empty under the current headless\n  analysis settings, so the copy-path claim currently rests on the local\n  instruction slice rather than an auto-recovered xref.\n- See `decomp/evidence/opcode_0x80_copy_path_static.md.json` for the exact copy-sequence argument.\n\n## Conflicting nearby evidence\n\n- `battle_sound_candidate_slice.json` still shows `0x800BA2E0` consuming the\n  same four-byte argument block as the visible sound family.\n- `battle_sound_candidate_xrefs.json` now recovers a direct local data xref\n  from `0x800E9F30 -> 0x800BA2E0`.\n- `battle_sound_dispatch_table.json` then exports that `0x800E9F30` table as\n  an eight-entry local `BATTLE.PRG` handler family containing `0x800BA2E0`,\n  `0x800BA35C`, `0x800BA39C`, and the already-visible `0x800BA3E4+`\n  neighborhood.\n- `battle_0x80_sound_cluster_slices.json` now covers that fuller local family,\n  which makes `0x800BA2E0` look like a member of a separate sound\n  subdispatch block rather than a hidden replacement for the copied `0x80`\n  slot.\n- See `decomp/evidence/opcode_0x80_sound_cluster_static.md.json` for the local neighborhood case.\n\n## Runtime tie-break findings\n\n- The validated `MAP001` listener-control route now resolves the live runtime\n  table pointer slot `0x800F4C28 -> 0x801119F0`, reaches the recovered reader\n  chain `0x8007A36C -> 0x800BF850 -> 0x800BFBB8`, and records direct retail\n  `0x80 -> 0x800B66E4` dispatch samples.\n- `decomp/evidence/opcode_0x80_runtime_support.md.json` now compares both checked snapshots against\n  the reconstructed baseline and reports `256` matching entries and `0`\n  changed entries for both `after_init` and `pre_dispatch`.\n- The live write watchpoint over `0x801119F0-0x80111DEF` records `0` hits in\n  that same validated route.\n- That closes the old \"maybe the copied slot is rewritten before the intro\n  uses it\" branch for the checked retail runtime path.\n\n## Current conclusion\n\n- `0x80` is no longer `runtime needed`.\n- Local binary and retail runtime evidence now agree on the same structural\n  floor: `0x80` dispatches through the copied runtime table and still lands on\n  `0x800B66E4`, the shared return-zero stub.\n- The old copy/patch contradiction is closed strongly enough to move the target\n  into `Pass 4`/`tentative` semantic status.\n- A widened local access sweep of `INITBTL.PRG`, `BATTLE.PRG`,\n  `SLUS_010.40`, and `TITLE.PRG` still finds only one direct init-time write\n  to `0x800F4C28`, one direct runtime read from it, and no additional\n  recovered direct slot accesses in the other importable executables with\n  known base notes.\n- A local pointer-usage trace of the recovered `BATTLE.PRG` reader at\n  `FUN_800BFBB8` still shows only pointer arithmetic plus one indexed\n  table-entry read before `jalr`, with no recovered indirect write-back or\n  tainted pointer-argument call in that local consumer.\n- A local `INITBTL.PRG` loader slice plus the first eight dwords of the local\n  `SYSTEM.DAT` file still show `SYSTEM.DAT` being loaded as offset-indexed\n  asset/payload data and then freed, which keeps the old \"`SYSTEM.DAT`\n  might be the missing code overlay\" branch weak.\n- A raw packaged-binary heuristic scan across `356` local `.PRG`/`.BIN`/`.40`\n  files still recovers the same absolute `0x800F4C28` access pattern in\n  exactly two files, `INITBTL.PRG` and `BATTLE.PRG`, with no third match in\n  the `EFFECT` plugin corpus or elsewhere in `Game Data`.\n- The nearby sound-shaped helper no longer justifies a direct `0x80` sound\n  label. The safer local interpretation is the one captured in\n  `decomp/evidence/opcode_0x80_semantic_proof.md.json`: `0x80` is currently best treated as a\n  shared stub slot, while the visible direct sound family begins in the\n  separate `0x83+` subdispatch block.\n- A widened local family audit now also shows `0x800B66E4` is reused by `30`\n  heterogeneous `INITBTL.PRG` opcode slots, including currently named dialog,\n  model, room, battle-end, and music-looking members, so the table hit must be\n  treated as structural evidence only.\n- `SoundEffects0` should therefore stay retired as an overclaim until a later\n  pass produces handler-level evidence that reconnects `0x80` itself to an\n  audible effect.\n"
+  }
+}

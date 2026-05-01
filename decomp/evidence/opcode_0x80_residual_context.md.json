@@ -1,0 +1,209 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_residual_context",
+    "title": "Opcode `0x80` Residual Context Scan",
+    "summary": "Tighten the remaining semantic cleanup around `0x80` after the first-burst neighboring-consumer comparison.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_residual_context.md",
+    "artifacts": [
+      "decomp/evidence/opcode_0x80_residual_scan.json",
+      "decomp/verification/analyze_opcode_0x80_residuals.py",
+      "decoded_scripts/1-Wine Cellar/018-The Reckoning Room.txt",
+      "decoded_scripts/11-Iron Maiden B1/360-The Cauldron.txt",
+      "decoded_scripts/22-Iron Maiden B2/382-The Eunics' Lot.txt",
+      "decoded_scripts/2-Catacombs/029-The Last Blessing.txt",
+      "decoded_scripts/6-Abandoned Mines B1/271-The Passion of Lovers.txt",
+      "decoded_scripts/6-Abandoned Mines B1/272-The Hall of Hope.txt",
+      "decoded_scripts/1-Wine Cellar/021-Room of Rotten Grapes.txt",
+      "decoded_scripts/1-Wine Cellar/022-Chamber of Fear (after the quake).txt",
+      "decoded_scripts/1-Wine Cellar/025-The Hero's Winehall.txt",
+      "decoded_scripts/1-Wine Cellar/017-Chamber of Fear.txt",
+      "decoded_scripts/1-Wine Cellar/408-The Gallows (Mino Zombie, new chest).txt",
+      "decoded_scripts/1-Wine Cellar/026-The Gallows.txt",
+      "decoded_scripts/14-Abandoned Mines B2/290-Dining in Darkness.txt",
+      "decoded_scripts/18-Limestone Quarry/334-Torture Without End.txt"
+    ],
+    "findings": [
+      "None of the `42` residual files stage any sound-family opcode before the first `0x80`.",
+      "Most residual files have no `0x85-0x9E` sound-family opcode anywhere in the file.",
+      "The dominant residual explanation is shared template reuse, not hidden direct sound behavior.",
+      "The repeated `0x41/0x42` opener family explains `36 / 42` cases, and the `0x1D/0x1E` microcluster explains `3 / 42` more.",
+      "Only a few variant or later-pair exceptions remain, and they still do not restore a direct sound reading for the opening `0x80` burst."
+    ],
+    "body": {
+      "sections": {
+        "goal": {
+          "heading": "Goal",
+          "content": [
+            {
+              "ulist": [
+                "Tighten the remaining semantic cleanup around `0x80` after the first-burst\nneighboring-consumer comparison.",
+                "The earlier pass explained the majority case: `85` of the `127`\nlegacy-rendered `0x80` files already stage a complete neighboring sound pair\nbefore the first `0x80`.\nThis pass focuses only on the residual `42` files that do not."
+              ]
+            }
+          ]
+        },
+        "method": {
+          "heading": "Method",
+          "content": [
+            {
+              "ulist": [
+                "Scan the checked-in `decoded_scripts` corpus for each file whose first\nopcode `0x80` appears before any complete in-file `0x85/0x88`,\n`0x90/0x92`, or `0x9D/0x9E` pair.",
+                "Record whether any sound-family opcodes appear before that first `0x80`,\nwhether any complete pair appears later in the same file, and whether the\nresidual files cluster around repeated `0x80` byte patterns or surrounding\nopcode bundles.",
+                "Cross-check same-title room variants within the same area so obvious\nalternate-state scripts do not get mistaken for fresh direct-sound evidence."
+              ]
+            },
+            {
+              "paragraph": "The raw packet for this pass lives in\n[`opcode_0x80_residual_scan.json`](opcode_0x80_residual_scan.json), generated\nby\n[`../verification/analyze_opcode_0x80_residuals.py`](../verification/analyze_opcode_0x80_residuals.py)."
+            }
+          ]
+        },
+        "corpus-result": {
+          "heading": "Corpus result",
+          "content": [
+            {
+              "paragraph": "Across the `42` residual files:",
+              "ulist": [
+                "`42 / 42` contain no sound-family opcode at all before the first `0x80`",
+                "`38 / 42` contain no `0x85-0x9E` sound-family opcode anywhere in the file",
+                "only `2 / 42` later grow a complete pair in the same file:\n`MAP290` later stages all three neighboring families, and `MAP334` later\nstages the SFX and queue pairs"
+              ]
+            },
+            {
+              "paragraph": "That immediately changes the burden of proof.\nMost of the residual set is no longer \"audio-looking but missing the pair\";\nit is \"no local sound-family evidence exists in the file at all.\""
+            }
+          ]
+        },
+        "dominant-residual-clusters": {
+          "heading": "Dominant residual clusters",
+          "sections": {
+            "36-42-repeated-0x410x42-opener-bundle": {
+              "heading": "`36 / 42`: repeated `0x41/0x42` opener bundle",
+              "content": [
+                {
+                  "paragraph": "The dominant residual pattern is the duplicated pair:",
+                  "ulist": [
+                    "`80 01 41 80 7F`",
+                    "immediately followed by `80 01 42 80 7F`"
+                  ]
+                },
+                {
+                  "paragraph": "This exact two-line burst appears in `36` of the `42` residual files."
+                },
+                {
+                  "paragraph": "Its surrounding context also clusters heavily:",
+                  "ulist": [
+                    "`28` files use the same three-opcode lead-in:\n`DialogHide(0)` -> `Opcode14(0)` -> `SetHeadsUpDisplayMode(1)`",
+                    "`21` files then continue with the same immediate follow-up:\nsecond `0x80` -> `Opcode45(...)` -> `ModelControlViaScript(...)`",
+                    "Representative files:",
+                    {
+                      "ulist": [
+                        "[`../../decoded_scripts/1-Wine Cellar/018-The Reckoning Room.txt`](../../decoded_scripts/1-Wine%20Cellar/018-The%20Reckoning%20Room.txt)",
+                        "[`../../decoded_scripts/11-Iron Maiden B1/360-The Cauldron.txt`](../../decoded_scripts/11-Iron%20Maiden%20B1/360-The%20Cauldron.txt)",
+                        "[`../../decoded_scripts/22-Iron Maiden B2/382-The Eunics' Lot.txt`](../../decoded_scripts/22-Iron%20Maiden%20B2/382-The%20Eunics'%20Lot.txt)"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "These repeated opener bundles look much more like shared cutscene or room-entry\nscaffolding than like unique proof that `0x80` itself is the direct sound\nconsumer."
+                }
+              ]
+            },
+            "3-42-repeated-0x1d0x1e-microcluster": {
+              "heading": "`3 / 42`: repeated `0x1D/0x1E` microcluster",
+              "content": [
+                {
+                  "paragraph": "Three residual files instead use:",
+                  "ulist": [
+                    "`80 01 1D 80 7F`",
+                    "immediately followed by `80 01 1E 80 7F`",
+                    "Representative files:",
+                    {
+                      "ulist": [
+                        "[`../../decoded_scripts/2-Catacombs/029-The Last Blessing.txt`](../../decoded_scripts/2-Catacombs/029-The%20Last%20Blessing.txt)",
+                        "[`../../decoded_scripts/6-Abandoned Mines B1/271-The Passion of Lovers.txt`](../../decoded_scripts/6-Abandoned%20Mines%20B1/271-The%20Passion%20of%20Lovers.txt)",
+                        "[`../../decoded_scripts/6-Abandoned Mines B1/272-The Hall of Hope.txt`](../../decoded_scripts/6-Abandoned%20Mines%20B1/272-The%20Hall%20of%20Hope.txt)"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "This smaller cluster again arrives with no neighboring sound-family setup\nbeforehand, which makes it a second residual template family rather than a new\nsound-path rescue."
+                }
+              ]
+            },
+            "3-42-one-off-residuals": {
+              "heading": "`3 / 42`: one-off residuals",
+              "content": [
+                {
+                  "paragraph": "Only three residual files fall outside those two repeated template groups:",
+                  "ulist": [
+                    "[`../../decoded_scripts/1-Wine Cellar/021-Room of Rotten Grapes.txt`](../../decoded_scripts/1-Wine%20Cellar/021-Room%20of%20Rotten%20Grapes.txt)",
+                    "[`../../decoded_scripts/1-Wine Cellar/022-Chamber of Fear (after the quake).txt`](../../decoded_scripts/1-Wine%20Cellar/022-Chamber%20of%20Fear%20(after%20the%20quake).txt)",
+                    "[`../../decoded_scripts/1-Wine Cellar/025-The Hero's Winehall.txt`](../../decoded_scripts/1-Wine%20Cellar/025-The%20Hero's%20Winehall.txt)"
+                  ]
+                },
+                {
+                  "paragraph": "Even these one-offs still do not stage any complete sound pair before the\nfirst `0x80`."
+                }
+              ]
+            }
+          }
+        },
+        "variant-and-carry-over-hints": {
+          "heading": "Variant and carry-over hints",
+          "content": [
+            {
+              "paragraph": "Only two residual files currently have same-title sibling variants in the same\narea that *do* stage a complete pair before their own first `0x80`:",
+              "ulist": [
+                "[`022-Chamber of Fear (after the quake)`](../../decoded_scripts/1-Wine%20Cellar/022-Chamber%20of%20Fear%20(after%20the%20quake).txt)\nversus\n[`017-Chamber of Fear`](../../decoded_scripts/1-Wine%20Cellar/017-Chamber%20of%20Fear.txt)",
+                "[`408-The Gallows (Mino Zombie, new chest)`](../../decoded_scripts/1-Wine%20Cellar/408-The%20Gallows%20(Mino%20Zombie,%20new%20chest).txt)\nversus\n[`026-The Gallows`](../../decoded_scripts/1-Wine%20Cellar/026-The%20Gallows.txt)"
+              ]
+            },
+            {
+              "paragraph": "Those are the clearest carry-over or alternate-state candidates in the current\nresidual set.\nThey are exceptions, not the dominant pattern."
+            }
+          ]
+        },
+        "later-same-file-exceptions": {
+          "heading": "Later same-file exceptions",
+          "content": [
+            {
+              "paragraph": "Only two residual files later stage complete neighboring pairs in the same\nfile after the first `0x80`:",
+              "ulist": [
+                "[`290-Dining in Darkness`](../../decoded_scripts/14-Abandoned%20Mines%20B2/290-Dining%20in%20Darkness.txt)\nlater reaches the SFX, music, and queue pairs",
+                "[`334-Torture Without End`](../../decoded_scripts/18-Limestone%20Quarry/334-Torture%20Without%20End.txt)\nlater reaches the SFX and queue pairs"
+              ]
+            },
+            {
+              "paragraph": "These later same-file re-arms matter for scene-local explanation, but they do\nnot restore a direct sound role for the *opening* residual burst itself."
+            }
+          ]
+        },
+        "safe-takeaway": {
+          "heading": "Safe takeaway",
+          "content": [
+            {
+              "ulist": [
+                "The residual set is now much less sound-facing than the earlier\n\"42 unexplained files\" framing suggested.",
+                "Most residual files do not merely lack a *complete* pair before the first\n`0x80`; they lack any local sound-family setup at all.",
+                "The dominant evidence is now shared template reuse:\na `36`-file `0x41/0x42` opener family and a `3`-file `0x1D/0x1E`\nmicrocluster.",
+                "The best remaining open question is no longer \"which sound pair explains all\n`42` files?\" but rather \"why do these shared opener templates still include\nthe stubbed `0x80` burst at all?\""
+              ]
+            },
+            {
+              "paragraph": "Until that template-level meaning is better understood, `Opcode80SharedStub`\nremains the safest local name, and the residual set should no longer be treated\nas strong positive evidence for the retired direct-sound label."
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "827c50fb0eeb079dc604b4c835ba40637ccfddf24ac793ab2b85ab97435aa0b9",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Opcode `0x80` Residual Context Scan\n\n## Goal\n\nTighten the remaining semantic cleanup around `0x80` after the first-burst\nneighboring-consumer comparison.\n\nThe earlier pass explained the majority case: `85` of the `127`\nlegacy-rendered `0x80` files already stage a complete neighboring sound pair\nbefore the first `0x80`.\nThis pass focuses only on the residual `42` files that do not.\n\n## Method\n\n- Scan the checked-in `decoded_scripts` corpus for each file whose first\n  opcode `0x80` appears before any complete in-file `0x85/0x88`,\n  `0x90/0x92`, or `0x9D/0x9E` pair.\n- Record whether any sound-family opcodes appear before that first `0x80`,\n  whether any complete pair appears later in the same file, and whether the\n  residual files cluster around repeated `0x80` byte patterns or surrounding\n  opcode bundles.\n- Cross-check same-title room variants within the same area so obvious\n  alternate-state scripts do not get mistaken for fresh direct-sound evidence.\n\nThe raw packet for this pass lives in\n[`opcode_0x80_residual_scan.json`](opcode_0x80_residual_scan.json), generated\nby\n[`../verification/analyze_opcode_0x80_residuals.py`](../verification/analyze_opcode_0x80_residuals.py).\n\n## Corpus result\n\nAcross the `42` residual files:\n\n- `42 / 42` contain no sound-family opcode at all before the first `0x80`\n- `38 / 42` contain no `0x85-0x9E` sound-family opcode anywhere in the file\n- only `2 / 42` later grow a complete pair in the same file:\n  `MAP290` later stages all three neighboring families, and `MAP334` later\n  stages the SFX and queue pairs\n\nThat immediately changes the burden of proof.\nMost of the residual set is no longer \"audio-looking but missing the pair\";\nit is \"no local sound-family evidence exists in the file at all.\"\n\n## Dominant residual clusters\n\n### `36 / 42`: repeated `0x41/0x42` opener bundle\n\nThe dominant residual pattern is the duplicated pair:\n\n- `80 01 41 80 7F`\n- immediately followed by `80 01 42 80 7F`\n\nThis exact two-line burst appears in `36` of the `42` residual files.\n\nIts surrounding context also clusters heavily:\n\n- `28` files use the same three-opcode lead-in:\n  `DialogHide(0)` -> `Opcode14(0)` -> `SetHeadsUpDisplayMode(1)`\n- `21` files then continue with the same immediate follow-up:\n  second `0x80` -> `Opcode45(...)` -> `ModelControlViaScript(...)`\n\nRepresentative files:\n\n- [`../../decoded_scripts/1-Wine Cellar/018-The Reckoning Room.txt`](../../decoded_scripts/1-Wine%20Cellar/018-The%20Reckoning%20Room.txt)\n- [`../../decoded_scripts/11-Iron Maiden B1/360-The Cauldron.txt`](../../decoded_scripts/11-Iron%20Maiden%20B1/360-The%20Cauldron.txt)\n- [`../../decoded_scripts/22-Iron Maiden B2/382-The Eunics' Lot.txt`](../../decoded_scripts/22-Iron%20Maiden%20B2/382-The%20Eunics'%20Lot.txt)\n\nThese repeated opener bundles look much more like shared cutscene or room-entry\nscaffolding than like unique proof that `0x80` itself is the direct sound\nconsumer.\n\n### `3 / 42`: repeated `0x1D/0x1E` microcluster\n\nThree residual files instead use:\n\n- `80 01 1D 80 7F`\n- immediately followed by `80 01 1E 80 7F`\n\nRepresentative files:\n\n- [`../../decoded_scripts/2-Catacombs/029-The Last Blessing.txt`](../../decoded_scripts/2-Catacombs/029-The%20Last%20Blessing.txt)\n- [`../../decoded_scripts/6-Abandoned Mines B1/271-The Passion of Lovers.txt`](../../decoded_scripts/6-Abandoned%20Mines%20B1/271-The%20Passion%20of%20Lovers.txt)\n- [`../../decoded_scripts/6-Abandoned Mines B1/272-The Hall of Hope.txt`](../../decoded_scripts/6-Abandoned%20Mines%20B1/272-The%20Hall%20of%20Hope.txt)\n\nThis smaller cluster again arrives with no neighboring sound-family setup\nbeforehand, which makes it a second residual template family rather than a new\nsound-path rescue.\n\n### `3 / 42`: one-off residuals\n\nOnly three residual files fall outside those two repeated template groups:\n\n- [`../../decoded_scripts/1-Wine Cellar/021-Room of Rotten Grapes.txt`](../../decoded_scripts/1-Wine%20Cellar/021-Room%20of%20Rotten%20Grapes.txt)\n- [`../../decoded_scripts/1-Wine Cellar/022-Chamber of Fear (after the quake).txt`](../../decoded_scripts/1-Wine%20Cellar/022-Chamber%20of%20Fear%20(after%20the%20quake).txt)\n- [`../../decoded_scripts/1-Wine Cellar/025-The Hero's Winehall.txt`](../../decoded_scripts/1-Wine%20Cellar/025-The%20Hero's%20Winehall.txt)\n\nEven these one-offs still do not stage any complete sound pair before the\nfirst `0x80`.\n\n## Variant and carry-over hints\n\nOnly two residual files currently have same-title sibling variants in the same\narea that *do* stage a complete pair before their own first `0x80`:\n\n- [`022-Chamber of Fear (after the quake)`](../../decoded_scripts/1-Wine%20Cellar/022-Chamber%20of%20Fear%20(after%20the%20quake).txt)\n  versus\n  [`017-Chamber of Fear`](../../decoded_scripts/1-Wine%20Cellar/017-Chamber%20of%20Fear.txt)\n- [`408-The Gallows (Mino Zombie, new chest)`](../../decoded_scripts/1-Wine%20Cellar/408-The%20Gallows%20(Mino%20Zombie,%20new%20chest).txt)\n  versus\n  [`026-The Gallows`](../../decoded_scripts/1-Wine%20Cellar/026-The%20Gallows.txt)\n\nThose are the clearest carry-over or alternate-state candidates in the current\nresidual set.\nThey are exceptions, not the dominant pattern.\n\n## Later same-file exceptions\n\nOnly two residual files later stage complete neighboring pairs in the same\nfile after the first `0x80`:\n\n- [`290-Dining in Darkness`](../../decoded_scripts/14-Abandoned%20Mines%20B2/290-Dining%20in%20Darkness.txt)\n  later reaches the SFX, music, and queue pairs\n- [`334-Torture Without End`](../../decoded_scripts/18-Limestone%20Quarry/334-Torture%20Without%20End.txt)\n  later reaches the SFX and queue pairs\n\nThese later same-file re-arms matter for scene-local explanation, but they do\nnot restore a direct sound role for the *opening* residual burst itself.\n\n## Safe takeaway\n\n- The residual set is now much less sound-facing than the earlier\n  \"42 unexplained files\" framing suggested.\n- Most residual files do not merely lack a *complete* pair before the first\n  `0x80`; they lack any local sound-family setup at all.\n- The dominant evidence is now shared template reuse:\n  a `36`-file `0x41/0x42` opener family and a `3`-file `0x1D/0x1E`\n  microcluster.\n- The best remaining open question is no longer \"which sound pair explains all\n  `42` files?\" but rather \"why do these shared opener templates still include\n  the stubbed `0x80` burst at all?\"\n\nUntil that template-level meaning is better understood, `Opcode80SharedStub`\nremains the safest local name, and the residual set should no longer be treated\nas strong positive evidence for the retired direct-sound label.\n",
+    "markdown_with_json_links": "# Opcode `0x80` Residual Context Scan\n\n## Goal\n\nTighten the remaining semantic cleanup around `0x80` after the first-burst\nneighboring-consumer comparison.\n\nThe earlier pass explained the majority case: `85` of the `127`\nlegacy-rendered `0x80` files already stage a complete neighboring sound pair\nbefore the first `0x80`.\nThis pass focuses only on the residual `42` files that do not.\n\n## Method\n\n- Scan the checked-in `decoded_scripts` corpus for each file whose first\n  opcode `0x80` appears before any complete in-file `0x85/0x88`,\n  `0x90/0x92`, or `0x9D/0x9E` pair.\n- Record whether any sound-family opcodes appear before that first `0x80`,\n  whether any complete pair appears later in the same file, and whether the\n  residual files cluster around repeated `0x80` byte patterns or surrounding\n  opcode bundles.\n- Cross-check same-title room variants within the same area so obvious\n  alternate-state scripts do not get mistaken for fresh direct-sound evidence.\n\nThe raw packet for this pass lives in\n[`opcode_0x80_residual_scan.json`](opcode_0x80_residual_scan.json), generated\nby\n[`../verification/analyze_opcode_0x80_residuals.py`](../verification/analyze_opcode_0x80_residuals.py).\n\n## Corpus result\n\nAcross the `42` residual files:\n\n- `42 / 42` contain no sound-family opcode at all before the first `0x80`\n- `38 / 42` contain no `0x85-0x9E` sound-family opcode anywhere in the file\n- only `2 / 42` later grow a complete pair in the same file:\n  `MAP290` later stages all three neighboring families, and `MAP334` later\n  stages the SFX and queue pairs\n\nThat immediately changes the burden of proof.\nMost of the residual set is no longer \"audio-looking but missing the pair\";\nit is \"no local sound-family evidence exists in the file at all.\"\n\n## Dominant residual clusters\n\n### `36 / 42`: repeated `0x41/0x42` opener bundle\n\nThe dominant residual pattern is the duplicated pair:\n\n- `80 01 41 80 7F`\n- immediately followed by `80 01 42 80 7F`\n\nThis exact two-line burst appears in `36` of the `42` residual files.\n\nIts surrounding context also clusters heavily:\n\n- `28` files use the same three-opcode lead-in:\n  `DialogHide(0)` -> `Opcode14(0)` -> `SetHeadsUpDisplayMode(1)`\n- `21` files then continue with the same immediate follow-up:\n  second `0x80` -> `Opcode45(...)` -> `ModelControlViaScript(...)`\n\nRepresentative files:\n\n- [`../../decoded_scripts/1-Wine Cellar/018-The Reckoning Room.txt`](../../decoded_scripts/1-Wine%20Cellar/018-The%20Reckoning%20Room.txt)\n- [`../../decoded_scripts/11-Iron Maiden B1/360-The Cauldron.txt`](../../decoded_scripts/11-Iron%20Maiden%20B1/360-The%20Cauldron.txt)\n- [`../../decoded_scripts/22-Iron Maiden B2/382-The Eunics' Lot.txt`](../../decoded_scripts/22-Iron%20Maiden%20B2/382-The%20Eunics'%20Lot.txt)\n\nThese repeated opener bundles look much more like shared cutscene or room-entry\nscaffolding than like unique proof that `0x80` itself is the direct sound\nconsumer.\n\n### `3 / 42`: repeated `0x1D/0x1E` microcluster\n\nThree residual files instead use:\n\n- `80 01 1D 80 7F`\n- immediately followed by `80 01 1E 80 7F`\n\nRepresentative files:\n\n- [`../../decoded_scripts/2-Catacombs/029-The Last Blessing.txt`](../../decoded_scripts/2-Catacombs/029-The%20Last%20Blessing.txt)\n- [`../../decoded_scripts/6-Abandoned Mines B1/271-The Passion of Lovers.txt`](../../decoded_scripts/6-Abandoned%20Mines%20B1/271-The%20Passion%20of%20Lovers.txt)\n- [`../../decoded_scripts/6-Abandoned Mines B1/272-The Hall of Hope.txt`](../../decoded_scripts/6-Abandoned%20Mines%20B1/272-The%20Hall%20of%20Hope.txt)\n\nThis smaller cluster again arrives with no neighboring sound-family setup\nbeforehand, which makes it a second residual template family rather than a new\nsound-path rescue.\n\n### `3 / 42`: one-off residuals\n\nOnly three residual files fall outside those two repeated template groups:\n\n- [`../../decoded_scripts/1-Wine Cellar/021-Room of Rotten Grapes.txt`](../../decoded_scripts/1-Wine%20Cellar/021-Room%20of%20Rotten%20Grapes.txt)\n- [`../../decoded_scripts/1-Wine Cellar/022-Chamber of Fear (after the quake).txt`](../../decoded_scripts/1-Wine%20Cellar/022-Chamber%20of%20Fear%20(after%20the%20quake).txt)\n- [`../../decoded_scripts/1-Wine Cellar/025-The Hero's Winehall.txt`](../../decoded_scripts/1-Wine%20Cellar/025-The%20Hero's%20Winehall.txt)\n\nEven these one-offs still do not stage any complete sound pair before the\nfirst `0x80`.\n\n## Variant and carry-over hints\n\nOnly two residual files currently have same-title sibling variants in the same\narea that *do* stage a complete pair before their own first `0x80`:\n\n- [`022-Chamber of Fear (after the quake)`](../../decoded_scripts/1-Wine%20Cellar/022-Chamber%20of%20Fear%20(after%20the%20quake).txt)\n  versus\n  [`017-Chamber of Fear`](../../decoded_scripts/1-Wine%20Cellar/017-Chamber%20of%20Fear.txt)\n- [`408-The Gallows (Mino Zombie, new chest)`](../../decoded_scripts/1-Wine%20Cellar/408-The%20Gallows%20(Mino%20Zombie,%20new%20chest).txt)\n  versus\n  [`026-The Gallows`](../../decoded_scripts/1-Wine%20Cellar/026-The%20Gallows.txt)\n\nThose are the clearest carry-over or alternate-state candidates in the current\nresidual set.\nThey are exceptions, not the dominant pattern.\n\n## Later same-file exceptions\n\nOnly two residual files later stage complete neighboring pairs in the same\nfile after the first `0x80`:\n\n- [`290-Dining in Darkness`](../../decoded_scripts/14-Abandoned%20Mines%20B2/290-Dining%20in%20Darkness.txt)\n  later reaches the SFX, music, and queue pairs\n- [`334-Torture Without End`](../../decoded_scripts/18-Limestone%20Quarry/334-Torture%20Without%20End.txt)\n  later reaches the SFX and queue pairs\n\nThese later same-file re-arms matter for scene-local explanation, but they do\nnot restore a direct sound role for the *opening* residual burst itself.\n\n## Safe takeaway\n\n- The residual set is now much less sound-facing than the earlier\n  \"42 unexplained files\" framing suggested.\n- Most residual files do not merely lack a *complete* pair before the first\n  `0x80`; they lack any local sound-family setup at all.\n- The dominant evidence is now shared template reuse:\n  a `36`-file `0x41/0x42` opener family and a `3`-file `0x1D/0x1E`\n  microcluster.\n- The best remaining open question is no longer \"which sound pair explains all\n  `42` files?\" but rather \"why do these shared opener templates still include\n  the stubbed `0x80` burst at all?\"\n\nUntil that template-level meaning is better understood, `Opcode80SharedStub`\nremains the safest local name, and the residual set should no longer be treated\nas strong positive evidence for the retired direct-sound label.\n"
+  }
+}

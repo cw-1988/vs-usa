@@ -1,0 +1,138 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_system_dat_static",
+    "title": "Opcode `0x80` `SYSTEM.DAT` Loader Check",
+    "summary": "Resolve whether `Game Data/BATTLE/SYSTEM.DAT` behaves like a plausible late static code overlay or like plain data payload loaded by `INITBTL.PRG`.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_system_dat_static.md",
+    "artifacts": [
+      "decomp/evidence/inittbl_system_dat_loader_slice.json",
+      "decomp/evidence/system_dat_header_words.json",
+      "Game Data/BATTLE/SYSTEM.DAT"
+    ],
+    "findings": [
+      "`SYSTEM.DAT` is loaded, walked by offsets, consumed as payload data, and freed.",
+      "Its header words look like monotonic data offsets rather than code-entry metadata.",
+      "This file is a weak code-overlay candidate and should not carry the remaining contradiction."
+    ],
+    "body": {
+      "sections": {
+        "objective": {
+          "heading": "Objective",
+          "content": [
+            {
+              "paragraph": "Resolve whether `Game Data/BATTLE/SYSTEM.DAT` is a plausible late static code\noverlay in the remaining `0x80` copy/patch contradiction, or whether the local\nbinary evidence instead anchors it as a data payload loaded by\n`INITBTL.PRG`."
+            }
+          ]
+        },
+        "inputs": {
+          "heading": "Inputs",
+          "content": [
+            {
+              "olit": [
+                "`decomp/evidence/inittbl_system_dat_loader_slice.json`",
+                "`decomp/evidence/system_dat_header_words.json`",
+                "`Game Data/BATTLE/SYSTEM.DAT`"
+              ]
+            }
+          ]
+        },
+        "method": {
+          "heading": "Method",
+          "content": [
+            {
+              "ulist": [
+                "Dumped a local `INITBTL.PRG` instruction slice starting at `0x800F989C`,\nthe `_loadSystemDat` entry identified during the current battle bootstrap\npass.",
+                "Compared the loader's first eight `lw`-driven offsets against the first\neight little-endian dwords from the local `SYSTEM.DAT` file header.",
+                "Checked whether the recovered control flow looks like executable-overlay\nsetup or a plain data/image unpack path."
+              ]
+            }
+          ]
+        },
+        "findings": {
+          "heading": "Findings",
+          "content": [
+            {
+              "olit": [
+                {
+                  "content": [
+                    {
+                      "paragraph": "`inittbl_system_dat_loader_slice.json` starts with:",
+                      "code": "800f98a0 lui a0,0x2\n800f98a4 ori a0,a0,0xe000\n800f98ac jal 0x80043e3c\n800f98b4 li a0,0x56b\n800f98b8 lui a1,0x2\n800f98bc ori a1,a1,0xe000\n800f98c4 jal 0x8004493c",
+                      "language": "text"
+                    },
+                    {
+                      "paragraph": "The function allocates `0x2E000` bytes, then loads file/LBA `0x56B` into\nthat buffer before any header walks begin."
+                    }
+                  ]
+                },
+                {
+                  "content": [
+                    {
+                      "paragraph": "The same slice then repeatedly treats the loaded buffer as offset-indexed\nstructured data, for example:",
+                      "code": "800f98cc lw v0,0x0(s0)\n800f98d4 addu v1,s0,v0\n800f98d8 lhu v0,0x0(v1)\n800f9904 jal 0x800288fc\n800f990c jal 0x80028650",
+                      "language": "text"
+                    },
+                    {
+                      "paragraph": "That pattern repeats for offsets at `0x0`, `0x4`, `0xC`, `0x10`, `0x14`,\nand `0x18`, with the loaded records consumed as rectangle/image arguments\nplus one additional payload call at `0x800CA9C0`."
+                    }
+                  ]
+                },
+                {
+                  "content": [
+                    {
+                      "paragraph": "`system_dat_header_words.json` shows the first eight dwords of the local\nfile are:",
+                      "code": "0x00000020\n0x00007028\n0x0000E830\n0x0000E854\n0x0001085C\n0x00012864\n0x0001A86C\n0x0001AA70",
+                      "language": "text"
+                    },
+                    {
+                      "paragraph": "Those are monotonic in-file offsets, not an executable header or a table of\ncode entry points."
+                    }
+                  ]
+                },
+                {
+                  "content": [
+                    {
+                      "paragraph": "The loader ends by freeing the buffer:",
+                      "code": "800f9a8c lw a0,0x1c(s0)\n800f9a90 jal 0x800ca9c0\n800f9a98 jal 0x80043c60\n800f9a9c _move a0,s0",
+                      "language": "text"
+                    },
+                    {
+                      "paragraph": "So the local static path loads `SYSTEM.DAT` as transient asset/config data,\nnot as a long-lived imported executable with a code dispatch base."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "interpretation": {
+          "heading": "Interpretation",
+          "content": [
+            {
+              "ulist": [
+                "The current local evidence does not support treating `SYSTEM.DAT` as a\nmissing executable overlay candidate for the `0x80` runtime-slot rewrite\nquestion.",
+                "`SYSTEM.DAT` is now locally anchored as a data blob whose header stores file\noffsets consumed by image/payload routines in `_loadSystemDat`.",
+                "That removes one of the weaker speculative branches from the remaining\ncontradiction and shifts the unresolved path toward:"
+              ]
+            }
+          ]
+        },
+        "conclusion": {
+          "heading": "Conclusion",
+          "content": [
+            {
+              "paragraph": "`SYSTEM.DAT` should no longer be treated as the primary unswept late static\ncode candidate in the `0x80` copy/patch campaign. The local binary evidence\nshows it being loaded, parsed by offsets, consumed as asset/payload data, and\nfreed, which narrows the remaining `0x80` uncertainty without needing to\ninvent a fake import-base note for this file."
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "3d51d3bf062d4ea20767b1203c52680006dce939bd740710071e5e2d74b7e801",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Opcode `0x80` `SYSTEM.DAT` Loader Check\n\n## Objective\n\nResolve whether `Game Data/BATTLE/SYSTEM.DAT` is a plausible late static code\noverlay in the remaining `0x80` copy/patch contradiction, or whether the local\nbinary evidence instead anchors it as a data payload loaded by\n`INITBTL.PRG`.\n\n## Inputs\n\n1. `decomp/evidence/inittbl_system_dat_loader_slice.json`\n2. `decomp/evidence/system_dat_header_words.json`\n3. `Game Data/BATTLE/SYSTEM.DAT`\n\n## Method\n\n- Dumped a local `INITBTL.PRG` instruction slice starting at `0x800F989C`,\n  the `_loadSystemDat` entry identified during the current battle bootstrap\n  pass.\n- Compared the loader's first eight `lw`-driven offsets against the first\n  eight little-endian dwords from the local `SYSTEM.DAT` file header.\n- Checked whether the recovered control flow looks like executable-overlay\n  setup or a plain data/image unpack path.\n\n## Findings\n\n1. `inittbl_system_dat_loader_slice.json` starts with:\n\n   ```text\n   800f98a0 lui a0,0x2\n   800f98a4 ori a0,a0,0xe000\n   800f98ac jal 0x80043e3c\n   800f98b4 li a0,0x56b\n   800f98b8 lui a1,0x2\n   800f98bc ori a1,a1,0xe000\n   800f98c4 jal 0x8004493c\n   ```\n\n   The function allocates `0x2E000` bytes, then loads file/LBA `0x56B` into\n   that buffer before any header walks begin.\n\n2. The same slice then repeatedly treats the loaded buffer as offset-indexed\n   structured data, for example:\n\n   ```text\n   800f98cc lw v0,0x0(s0)\n   800f98d4 addu v1,s0,v0\n   800f98d8 lhu v0,0x0(v1)\n   800f9904 jal 0x800288fc\n   800f990c jal 0x80028650\n   ```\n\n   That pattern repeats for offsets at `0x0`, `0x4`, `0xC`, `0x10`, `0x14`,\n   and `0x18`, with the loaded records consumed as rectangle/image arguments\n   plus one additional payload call at `0x800CA9C0`.\n\n3. `system_dat_header_words.json` shows the first eight dwords of the local\n   file are:\n\n   ```text\n   0x00000020\n   0x00007028\n   0x0000E830\n   0x0000E854\n   0x0001085C\n   0x00012864\n   0x0001A86C\n   0x0001AA70\n   ```\n\n   Those are monotonic in-file offsets, not an executable header or a table of\n   code entry points.\n\n4. The loader ends by freeing the buffer:\n\n   ```text\n   800f9a8c lw a0,0x1c(s0)\n   800f9a90 jal 0x800ca9c0\n   800f9a98 jal 0x80043c60\n   800f9a9c _move a0,s0\n   ```\n\n   So the local static path loads `SYSTEM.DAT` as transient asset/config data,\n   not as a long-lived imported executable with a code dispatch base.\n\n## Interpretation\n\n- The current local evidence does not support treating `SYSTEM.DAT` as a\n  missing executable overlay candidate for the `0x80` runtime-slot rewrite\n  question.\n- `SYSTEM.DAT` is now locally anchored as a data blob whose header stores file\n  offsets consumed by image/payload routines in `_loadSystemDat`.\n- That removes one of the weaker speculative branches from the remaining\n  contradiction and shifts the unresolved path toward:\n  - some other code-bearing battle-adjacent binary not yet swept, if one\n    exists\n  - or a runtime-only/indirect table mutation path\n\n## Conclusion\n\n`SYSTEM.DAT` should no longer be treated as the primary unswept late static\ncode candidate in the `0x80` copy/patch campaign. The local binary evidence\nshows it being loaded, parsed by offsets, consumed as asset/payload data, and\nfreed, which narrows the remaining `0x80` uncertainty without needing to\ninvent a fake import-base note for this file.\n",
+    "markdown_with_json_links": "# Opcode `0x80` `SYSTEM.DAT` Loader Check\n\n## Objective\n\nResolve whether `Game Data/BATTLE/SYSTEM.DAT` is a plausible late static code\noverlay in the remaining `0x80` copy/patch contradiction, or whether the local\nbinary evidence instead anchors it as a data payload loaded by\n`INITBTL.PRG`.\n\n## Inputs\n\n1. `decomp/evidence/inittbl_system_dat_loader_slice.json`\n2. `decomp/evidence/system_dat_header_words.json`\n3. `Game Data/BATTLE/SYSTEM.DAT`\n\n## Method\n\n- Dumped a local `INITBTL.PRG` instruction slice starting at `0x800F989C`,\n  the `_loadSystemDat` entry identified during the current battle bootstrap\n  pass.\n- Compared the loader's first eight `lw`-driven offsets against the first\n  eight little-endian dwords from the local `SYSTEM.DAT` file header.\n- Checked whether the recovered control flow looks like executable-overlay\n  setup or a plain data/image unpack path.\n\n## Findings\n\n1. `inittbl_system_dat_loader_slice.json` starts with:\n\n   ```text\n   800f98a0 lui a0,0x2\n   800f98a4 ori a0,a0,0xe000\n   800f98ac jal 0x80043e3c\n   800f98b4 li a0,0x56b\n   800f98b8 lui a1,0x2\n   800f98bc ori a1,a1,0xe000\n   800f98c4 jal 0x8004493c\n   ```\n\n   The function allocates `0x2E000` bytes, then loads file/LBA `0x56B` into\n   that buffer before any header walks begin.\n\n2. The same slice then repeatedly treats the loaded buffer as offset-indexed\n   structured data, for example:\n\n   ```text\n   800f98cc lw v0,0x0(s0)\n   800f98d4 addu v1,s0,v0\n   800f98d8 lhu v0,0x0(v1)\n   800f9904 jal 0x800288fc\n   800f990c jal 0x80028650\n   ```\n\n   That pattern repeats for offsets at `0x0`, `0x4`, `0xC`, `0x10`, `0x14`,\n   and `0x18`, with the loaded records consumed as rectangle/image arguments\n   plus one additional payload call at `0x800CA9C0`.\n\n3. `system_dat_header_words.json` shows the first eight dwords of the local\n   file are:\n\n   ```text\n   0x00000020\n   0x00007028\n   0x0000E830\n   0x0000E854\n   0x0001085C\n   0x00012864\n   0x0001A86C\n   0x0001AA70\n   ```\n\n   Those are monotonic in-file offsets, not an executable header or a table of\n   code entry points.\n\n4. The loader ends by freeing the buffer:\n\n   ```text\n   800f9a8c lw a0,0x1c(s0)\n   800f9a90 jal 0x800ca9c0\n   800f9a98 jal 0x80043c60\n   800f9a9c _move a0,s0\n   ```\n\n   So the local static path loads `SYSTEM.DAT` as transient asset/config data,\n   not as a long-lived imported executable with a code dispatch base.\n\n## Interpretation\n\n- The current local evidence does not support treating `SYSTEM.DAT` as a\n  missing executable overlay candidate for the `0x80` runtime-slot rewrite\n  question.\n- `SYSTEM.DAT` is now locally anchored as a data blob whose header stores file\n  offsets consumed by image/payload routines in `_loadSystemDat`.\n- That removes one of the weaker speculative branches from the remaining\n  contradiction and shifts the unresolved path toward:\n  - some other code-bearing battle-adjacent binary not yet swept, if one\n    exists\n  - or a runtime-only/indirect table mutation path\n\n## Conclusion\n\n`SYSTEM.DAT` should no longer be treated as the primary unswept late static\ncode candidate in the `0x80` copy/patch campaign. The local binary evidence\nshows it being loaded, parsed by offsets, consumed as asset/payload data, and\nfreed, which narrows the remaining `0x80` uncertainty without needing to\ninvent a fake import-base note for this file.\n"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_runtime_memcard_probe",
+    "title": "Opcode `0x80` Runtime Memcard Probe",
+    "summary": "Check whether the checked-in cold-boot fallback can reasonably assume a memcard-backed `Continue` or `Load` route before spending more time retuning menu timings.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_runtime_memcard_probe.md",
+    "artifacts": [
+      "decomp/evidence/opcode_0x80_runtime_memcard_probe.json",
+      "decomp/verification/probe_psx_memcards.py",
+      "memcard1.mcd",
+      "memcard2.mcd"
+    ],
+    "findings": [
+      "Both repo-local memcards probe as blank formatted cards rather than save-bearing cards.",
+      "Each card is `131072` bytes, contains `186` nonzero bytes, and stops showing nonzero data at `0x1FFF`.",
+      "No target-title ASCII evidence was found for a nearby Vagrant Story save.",
+      "The current memcard-backed `Continue` / `Load` fallback is therefore a poor default for this workspace."
+    ],
+    "body": {
+      "sections": {
+        "goal": {
+          "heading": "Goal",
+          "content": [
+            {
+              "paragraph": "Check whether the checked-in cold-boot fallback can reasonably assume a\nmemcard-backed `Continue` or `Load` route before spending more time retuning\nmenu timings."
+            }
+          ]
+        },
+        "method": {
+          "heading": "Method",
+          "content": [
+            {
+              "ulist": [
+                "Probed the repo-root `memcard1.mcd` and `memcard2.mcd` files with:\n`python decomp/verification/probe_psx_memcards.py memcard1.mcd memcard2.mcd --output decomp/evidence/opcode_0x80_runtime_memcard_probe.json`",
+                "Used a conservative heuristic:"
+              ]
+            }
+          ]
+        },
+        "result": {
+          "heading": "Result",
+          "content": [
+            {
+              "ulist": [
+                "`memcard1.mcd`: `131072` bytes, `186` nonzero bytes, highest nonzero offset\n`0x1FFF`, no target-title ASCII matches, heuristic verdict\n`looks_blank_formatted=true`",
+                "`memcard2.mcd`: `131072` bytes, `186` nonzero bytes, highest nonzero offset\n`0x1FFF`, no target-title ASCII matches, heuristic verdict\n`looks_blank_formatted=true`",
+                "The full machine-readable output is in:",
+                {
+                  "ulist": [
+                    "[`opcode_0x80_runtime_memcard_probe.json`](opcode_0x80_runtime_memcard_probe.json)"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "interpretation": {
+          "heading": "Interpretation",
+          "content": [
+            {
+              "paragraph": "The current repo-local memcards look like blank formatted cards, not cards with\na nearby Vagrant Story save. That makes the existing fallback route's\nmemcard-backed menu assumption a poor default: even if the button timings are\ncorrect, the route has no obvious save payload to resume from."
+            }
+          ]
+        },
+        "immediate-implication": {
+          "heading": "Immediate implication",
+          "content": [
+            {
+              "paragraph": "For the next runtime pass, prefer one of:",
+              "olit": [
+                "a real near-battle savestate via `-SaveStatePath` or `-UseNewestSaveState`",
+                "a populated memcard handoff artifact that proves the intended resume route",
+                "a replacement cold-boot plan that intentionally follows `New Game` until it\nearns a real save or checkpoint instead of depending on save-backed\n`Continue` or `Load`"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "c069531dd5f7bd88692e0fa4af8a244072c98be1872a01813d75f22b8db69f8d",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Opcode `0x80` Runtime Memcard Probe\n\n## Goal\n\nCheck whether the checked-in cold-boot fallback can reasonably assume a\nmemcard-backed `Continue` or `Load` route before spending more time retuning\nmenu timings.\n\n## Method\n\n- Probed the repo-root `memcard1.mcd` and `memcard2.mcd` files with:\n  `python decomp/verification/probe_psx_memcards.py memcard1.mcd memcard2.mcd --output decomp/evidence/opcode_0x80_runtime_memcard_probe.json`\n- Used a conservative heuristic:\n  - standard PS1 card size (`131072` bytes)\n  - very low nonzero-byte count\n  - no obvious `VAGRANT`, `STORY`, `SLUS`, `SCUS`, `SLPS`, or `SQUARE`\n    ASCII runs\n  - no nonzero bytes beyond the first `0x2000` bytes of directory/header area\n\n## Result\n\n- `memcard1.mcd`: `131072` bytes, `186` nonzero bytes, highest nonzero offset\n  `0x1FFF`, no target-title ASCII matches, heuristic verdict\n  `looks_blank_formatted=true`\n- `memcard2.mcd`: `131072` bytes, `186` nonzero bytes, highest nonzero offset\n  `0x1FFF`, no target-title ASCII matches, heuristic verdict\n  `looks_blank_formatted=true`\n\nThe full machine-readable output is in:\n\n- [`opcode_0x80_runtime_memcard_probe.json`](opcode_0x80_runtime_memcard_probe.json)\n\n## Interpretation\n\nThe current repo-local memcards look like blank formatted cards, not cards with\na nearby Vagrant Story save. That makes the existing fallback route's\nmemcard-backed menu assumption a poor default: even if the button timings are\ncorrect, the route has no obvious save payload to resume from.\n\n## Immediate implication\n\nFor the next runtime pass, prefer one of:\n\n1. a real near-battle savestate via `-SaveStatePath` or `-UseNewestSaveState`\n2. a populated memcard handoff artifact that proves the intended resume route\n3. a replacement cold-boot plan that intentionally follows `New Game` until it\n   earns a real save or checkpoint instead of depending on save-backed\n   `Continue` or `Load`\n",
+    "markdown_with_json_links": "# Opcode `0x80` Runtime Memcard Probe\n\n## Goal\n\nCheck whether the checked-in cold-boot fallback can reasonably assume a\nmemcard-backed `Continue` or `Load` route before spending more time retuning\nmenu timings.\n\n## Method\n\n- Probed the repo-root `memcard1.mcd` and `memcard2.mcd` files with:\n  `python decomp/verification/probe_psx_memcards.py memcard1.mcd memcard2.mcd --output decomp/evidence/opcode_0x80_runtime_memcard_probe.json`\n- Used a conservative heuristic:\n  - standard PS1 card size (`131072` bytes)\n  - very low nonzero-byte count\n  - no obvious `VAGRANT`, `STORY`, `SLUS`, `SCUS`, `SLPS`, or `SQUARE`\n    ASCII runs\n  - no nonzero bytes beyond the first `0x2000` bytes of directory/header area\n\n## Result\n\n- `memcard1.mcd`: `131072` bytes, `186` nonzero bytes, highest nonzero offset\n  `0x1FFF`, no target-title ASCII matches, heuristic verdict\n  `looks_blank_formatted=true`\n- `memcard2.mcd`: `131072` bytes, `186` nonzero bytes, highest nonzero offset\n  `0x1FFF`, no target-title ASCII matches, heuristic verdict\n  `looks_blank_formatted=true`\n\nThe full machine-readable output is in:\n\n- [`opcode_0x80_runtime_memcard_probe.json`](opcode_0x80_runtime_memcard_probe.json)\n\n## Interpretation\n\nThe current repo-local memcards look like blank formatted cards, not cards with\na nearby Vagrant Story save. That makes the existing fallback route's\nmemcard-backed menu assumption a poor default: even if the button timings are\ncorrect, the route has no obvious save payload to resume from.\n\n## Immediate implication\n\nFor the next runtime pass, prefer one of:\n\n1. a real near-battle savestate via `-SaveStatePath` or `-UseNewestSaveState`\n2. a populated memcard handoff artifact that proves the intended resume route\n3. a replacement cold-boot plan that intentionally follows `New Game` until it\n   earns a real save or checkpoint instead of depending on save-backed\n   `Continue` or `Load`\n"
+  }
+}

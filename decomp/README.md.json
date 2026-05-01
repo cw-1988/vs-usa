@@ -1,0 +1,85 @@
+{
+  "content": {
+    "document_type": "readme_navigation",
+    "readme_scope": "decomp",
+    "title": "Local Decomp Workspace",
+    "summary": "This folder is the tracked home for local decompilation support code and proof artifacts.",
+    "source_markdown_path": "decomp/README.md",
+    "body": {
+      "content": [
+        {
+          "paragraph": "This folder is the tracked home for local decompilation support code and proof\nartifacts."
+        },
+        {
+          "paragraph": "Use it for:",
+          "ulist": [
+            "scripted `Ghidra` helpers",
+            "verification and reconciliation scripts",
+            "exported machine-readable evidence"
+          ]
+        },
+        {
+          "ulist": [
+            "Keep campaign state out of this folder. The cross-session memory and handoff\nledger lives at [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body).",
+            "Keep large binary tools out of here.\nThose stay under ignored [`tools`](../tools)."
+          ]
+        }
+      ],
+      "sections": {
+        "layout": {
+          "heading": "Layout",
+          "content": [
+            {
+              "ulist": [
+                "[`ghidra`](ghidra): `Ghidra`-side scripts or notes",
+                "[`verification`](verification): local verification scripts",
+                "[`evidence`](evidence): exported JSON or proof packets",
+                "That means:",
+                {
+                  "ulist": [
+                    "[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body): campaign state,\npriorities, conflict summaries, and session handoff",
+                    "[`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body):\ngrouped catalog of durable exports, proof packets, and verification helpers",
+                    "[`decomp`](.): implementation helpers and durable evidence artifacts"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "working-rule": {
+          "heading": "Working Rule",
+          "content": [
+            {
+              "paragraph": "This folder should support the standards in:",
+              "ulist": [
+                "[`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body)",
+                "[`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json#/body)"
+              ]
+            }
+          ]
+        },
+        "watch-outs": {
+          "heading": "Watch-Outs",
+          "content": [
+            {
+              "paragraph": "Keep this area useful for the next pass, not just the current one:",
+              "ulist": [
+                "record the exact binary inputs and base addresses used for exports",
+                "prefer small text artifacts that can be diffed and reread later",
+                "if a result is conflicted, store both sides of the conflict instead of\nforcing a single winner too early",
+                "treat helper-decomp names as provenance, not as proof",
+                "if `_refs/rood-reverse` suggests an address or interpretation, create a\nlocal export or proof artifact here before promoting that claim"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "9d83abf5e7ba5a95a5ba049505c1958e01bfc11bf1293536c99e32fd0bf1eb99",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Local Decomp Workspace\n\nThis folder is the tracked home for local decompilation support code and proof\nartifacts.\n\nUse it for:\n\n- scripted `Ghidra` helpers\n- verification and reconciliation scripts\n- exported machine-readable evidence\n\nKeep campaign state out of this folder. The cross-session memory and handoff\nledger lives at [`../RE_CAMPAIGN_MEMORY.md`](../RE_CAMPAIGN_MEMORY.md).\n\nKeep large binary tools out of here.\nThose stay under ignored [`tools`](../tools).\n\n## Layout\n\n- [`ghidra`](ghidra): `Ghidra`-side scripts or notes\n- [`verification`](verification): local verification scripts\n- [`evidence`](evidence): exported JSON or proof packets\n\nThat means:\n\n- [`../RE_CAMPAIGN_MEMORY.md`](../RE_CAMPAIGN_MEMORY.md): campaign state,\n  priorities, conflict summaries, and session handoff\n- [`../docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](../docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md):\n  grouped catalog of durable exports, proof packets, and verification helpers\n- [`decomp`](.): implementation helpers and durable evidence artifacts\n\n## Working Rule\n\nThis folder should support the standards in:\n\n- [`../docs/workflows/DECOMPILATION_STRATEGY.md`](../docs/workflows/DECOMPILATION_STRATEGY.md)\n- [`../docs/workflows/CLI_DECOMPILATION_WORKFLOW.md`](../docs/workflows/CLI_DECOMPILATION_WORKFLOW.md)\n\n## Watch-Outs\n\nKeep this area useful for the next pass, not just the current one:\n\n- record the exact binary inputs and base addresses used for exports\n- prefer small text artifacts that can be diffed and reread later\n- if a result is conflicted, store both sides of the conflict instead of\n  forcing a single winner too early\n- treat helper-decomp names as provenance, not as proof\n- if `_refs/rood-reverse` suggests an address or interpretation, create a\n  local export or proof artifact here before promoting that claim\n",
+    "markdown_with_json_links": "# Local Decomp Workspace\n\nThis folder is the tracked home for local decompilation support code and proof\nartifacts.\n\nUse it for:\n\n- scripted `Ghidra` helpers\n- verification and reconciliation scripts\n- exported machine-readable evidence\n\nKeep campaign state out of this folder. The cross-session memory and handoff\nledger lives at [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body).\n\nKeep large binary tools out of here.\nThose stay under ignored [`tools`](../tools).\n\n## Layout\n\n- [`ghidra`](ghidra): `Ghidra`-side scripts or notes\n- [`verification`](verification): local verification scripts\n- [`evidence`](evidence): exported JSON or proof packets\n\nThat means:\n\n- [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body): campaign state,\n  priorities, conflict summaries, and session handoff\n- [`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body):\n  grouped catalog of durable exports, proof packets, and verification helpers\n- [`decomp`](.): implementation helpers and durable evidence artifacts\n\n## Working Rule\n\nThis folder should support the standards in:\n\n- [`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body)\n- [`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json#/body)\n\n## Watch-Outs\n\nKeep this area useful for the next pass, not just the current one:\n\n- record the exact binary inputs and base addresses used for exports\n- prefer small text artifacts that can be diffed and reread later\n- if a result is conflicted, store both sides of the conflict instead of\n  forcing a single winner too early\n- treat helper-decomp names as provenance, not as proof\n- if `_refs/rood-reverse` suggests an address or interpretation, create a\n  local export or proof artifact here before promoting that claim\n"
+  }
+}

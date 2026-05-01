@@ -1,0 +1,1292 @@
+{
+  "content": {
+    "document_type": "research_note",
+    "title": "Vagrant Story Script Opcode Conclusions",
+    "findings": [
+      "Source: <https://datacrystal.tcrf.net/wiki/Vagrant_Story/Script_Opcodes>",
+      "`Confirmed`: the handler body is readable and the behavior matches real script usage.",
+      "`Strong`: the handler target is clear and the likely subsystem is clear, but one part of the user-facing meaning still needs proof.",
+      "`Tentative`: the opcode has been narrowed down to a subsystem or helper path, but the final script-friendly name would still be guesswork.",
+      "named locally: `85 / 256`",
+      "still placeholder-named as `OpcodeXX`: `171 / 256`",
+      "most complete block: `0xE0-0xEF` with `14` named and only `0xE8` / `0xEE` still unresolved",
+      "completely unresolved block: `0xB0-0xBF`",
+      "`0xA3-0xBF`",
+      "`0xC5-0xCF`",
+      "`0xD5-0xDF`",
+      "`0xF7-0xFE`",
+      "`0x09`",
+      "`0x8A-0x8E`",
+      "`0xA7`",
+      "`0xAB-0xAF`",
+      "`0xB0`",
+      "`0xC6`",
+      "`0xCC-0xCF`",
+      "`0xD6`",
+      "`0xDC-0xDD`",
+      "`0xEE`",
+      "`0x01-0x0F`",
+      "`0x13-0x15`",
+      "`0x1B-0x1F`",
+      "`0x21`",
+      "`0x25`",
+      "`0x27`",
+      "`0x2A-0x2D`",
+      "`0x32`",
+      "`0x34-0x37`",
+      "`0x3C-0x3D`",
+      "`0x3F`",
+      "`0x41`",
+      "`0x43`",
+      "`0x45-0x48`",
+      "`0x4B-0x4F`",
+      "`0x51-0x53`",
+      "`0x55-0x57`",
+      "`0x59-0x63`",
+      "`0x66-0x67`",
+      "`0x6A-0x6C`",
+      "`0x6E-0x6F`",
+      "`0x71-0x73`",
+      "`0x77`",
+      "`0x7B`",
+      "`0x7D-0x7F`",
+      "`0x81-0x84`",
+      "`0x87`",
+      "`0x89-0x8F`",
+      "`0x93-0x98`",
+      "`0x9A-0x9C`",
+      "`0x9F-0xA0`",
+      "`0xA3-0xBF`",
+      "`0xC3`",
+      "`0xC5-0xCF`",
+      "`0xD2-0xD3`",
+      "`0xD5-0xDF`",
+      "`0xE8`",
+      "`0xEE`",
+      "`0xF1-0xF3`",
+      "`0xF7-0xFE`",
+      "`0x10 -> DialogShow`",
+      "`0x11 -> DialogText`",
+      "`0x12 -> DialogHide`",
+      "`0x16 -> SplashScreenChoose`",
+      "`0x17 -> SplashScreenLoad`",
+      "`0x18 -> SplashScreenShow`",
+      "`0x19 -> SplashScreenHide`",
+      "`0x1A -> SplashScreenFadeIn`",
+      "`0x10-0x12` already decode cleanly as dialog id, text id, and dialog box control fields in the script dumper, so the dialog-family naming is on solid local footing.",
+      "`0x16-0x1A` cluster as a separate overlay or splash-screen path rather than actor, room, or camera control, and their current verbs match the usual script ordering pattern of choose or load, then show, hide, or fade.",
+      "`0x13-0x15` remain unresolved, so this block is only partially mapped.",
+      "A direct handler-by-handler decomp citation for the splash-screen verbs, especially the exact difference between `Choose`, `Load`, and `Show`.",
+      "One proof pass that ties the fade opcode specifically to fade-in behavior and not a more generic overlay transition mode.",
+      "`0x20 -> ModelLoad`",
+      "`0x22 -> ModelAnimate`",
+      "`0x23 -> ModelSetAnimations`",
+      "`0x26 -> ModelPosition`",
+      "`0x28 -> ModelMoveTo`",
+      "`0x29 -> ModelMoveTo2`",
+      "`0x2E -> ModelScale`",
+      "`0x30 -> ModelLoadAnimationsEx`",
+      "`0x31 -> ModelTint`",
+      "`0x33 -> ModelRotate`",
+      "`0x38 -> ModelLookAt`",
+      "`0x39 -> ModelLookAtPosition`",
+      "`0x3A -> ModelLoadAnimations`",
+      "`0x3E -> ModelIlluminate`",
+      "`0x42 -> ModelControlViaScript`",
+      "`0x50 -> ModelControlViaBattleMode`",
+      "`0x70 -> ModelColor`",
+      "`0xC4 -> ModelAnimateObject`",
+      "The argument shapes already look like a coherent actor-model control family: actor ids, animation ids, position triples, rotation-like fields, look-at targets, and color or tint style parameters all show up where expected.",
+      "Some names in this group are already stronger than the rest. `ModelScale`, `ModelTint`, and `ModelLookAtPosition` have enough local evidence to be worth upstreaming even before every neighboring model opcode gets a full write-up.",
+      "The weaker names are the ones that still hide an important mode distinction behind generic wording, such as `ModelMoveTo` versus `ModelMoveTo2`, `ModelLoadAnimations` versus `ModelLoadAnimationsEx`, and the control wrappers around `0x42`, `0x50`, and `0xC4`.",
+      "Direct handler evidence for the alternate load, move, and animate variants so the local names can explain the difference instead of only naming the shared subsystem.",
+      "One field-level pass for `0x3E`, `0x42`, `0x50`, `0x70`, and `0xC4` to decide whether the current names are precise enough or still slightly too generic.",
+      "`0x68 -> LoadRoom`",
+      "`0x69 -> LoadScene`",
+      "`0x6D -> DisplayRoom`",
+      "`0x74 -> LoadRoomSection10`",
+      "`0x75 -> WaitForRoomSection10`",
+      "`0x76 -> FreeRoomSection10`",
+      "`0x68` already formats as a zone-room destination pair in the dumper, which makes a room-loader interpretation much stronger than a generic file load.",
+      "`0x6D` behaves like a display or activation step that appears after load or staging work rather than before it.",
+      "`0x74-0x76` form a clean async trio by both naming and script position: load, then wait, then free.",
+      "A direct proof of the exact distinction between `LoadRoom` and `LoadScene`.",
+      "One decomp-backed identification of what \"section 10\" actually contains so the section-10 names can eventually become more user-facing if warranted.",
+      "`0x80 -> Opcode80SharedStub`",
+      "`0x85 -> LoadSfxSlot`",
+      "`0x86 -> FreeSfxSlot`",
+      "`0x88 -> SetCurrentSfx`",
+      "`0x90 -> LoadMusicSlot`",
+      "`0x91 -> FreeMusic`",
+      "`0x92 -> MusicPlay`",
+      "`0x99 -> ClearMusicLoadSlot`",
+      "`0x9D -> LoadSoundFileById`",
+      "`0x9E -> ProcessSoundQueue`",
+      "This block still reads like a shared sound pipeline rather than unrelated opcodes: resource loads, slot selection, explicit frees, then queue or process steps.",
+      "`0x80` no longer survives as a direct-sound member of that group. The static dispatch table routes `0x80` to `func_800B66E4`, whose matched body is only `return 0;`, and the validated retail `MAP001` runtime pass now shows the live copied table still dispatching `0x80` to that same stub with no observed rewrite before the checked intro call.",
+      "The nearby helper `func_800BA2E0` still consumes the same 4-byte argument shape and still looks sound-facing, but local evidence now anchors it inside a separate `0x83+` `BATTLE.PRG` subdispatch table rather than treating it as a hidden replacement handler for `0x80`.",
+      "The widened `0x800B66E4` family audit now makes the structural reading less unique, not more: the same `INITBTL.PRG` table slot also covers named dialog, model, engine-mode, room, battle-end, and music-looking members such as `0x10`, `0x11`, `0x22`, `0x44`, `0x54`, `0x69`, `0x6D`, and `0x92`. That means table membership alone is not standalone user-facing proof for any member of the cluster, including `0x80`.",
+      "Real script usage still clusters `0x80` near audio-looking cutscene moments, but that is now context evidence only. It is no longer enough to override the verified handler-level fact that the opcode itself lands on the shared stub.",
+      "A new neighboring-context scan of the checked-in `decoded_scripts` corpus strengthens that cleanup path without reviving the old direct-sound label. Of the `127` files that still contain legacy-rendered `0x80` lines, `88` also co-host at least one explicit sound-family neighbor from `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or `0x9E`. Representative files such as `MAP001`, `MAP026`, and `MAP415` already arm SFX slots, music slots, or sound-file queues through those neighboring opcodes before later `0x80` bursts appear. That makes the old name unnecessary for many audio-looking scenes even before the final consumer path is fully traced.",
+      "A stricter first-burst prepared-state comparison now sharpens that result. `85` of those `127` files already stage at least one complete neighboring sound pair before the first `0x80` in the same file: `83` stage `0x85/0x88`, `44` stage `0x9D/0x9E`, and `20` stage `0x90/0x92`. When multiple complete pairs exist, the closest pair before the first `0x80` is the SFX-slot path in `62` files, the queue path in `13`, and the music-slot path in `10`. That turns the neighboring-family explanation from a loose co-hosting hint into a scene-ordering result: the default local replacement for the old `SoundEffects0` reading is usually the already-proven `0x85/0x88` prepared-state path, with `MAP026`-style queue re-arms and `MAP415`-style music-heavy scenes covering important exceptions.",
+      "A new residual-context pass now narrows the remaining holdouts more aggressively than the earlier \"42 unexplained files\" wording. All `42` residual files reach their first `0x80` with no sound-family opcode at all before it, and `38` of those files contain no `0x85-0x9E` sound-family opcode anywhere in the file. The dominant evidence is template reuse, not missing sound setup: `36` residual files share the exact duplicated opener `80 01 41 80 7F` then `80 01 42 80 7F`, most often after the same `DialogHide` -> `Opcode14` -> `SetHeadsUpDisplayMode(1)` lead-in and before the same `Opcode45` -> `ModelControlViaScript` follow-up. Another `3` residual files share the alternate duplicated `80 01 1D 80 7F` then `80 01 1E 80 7F` microcluster. That makes the residual set look more like repeated opener scaffolding than like strong positive sound evidence.",
+      "The residual pass also narrows the real exceptions. Only `2` residual files later grow a complete neighboring pair in the same file, and only `2` currently have same-title sibling variants in the same area that do stage complete pre-burst pairs: `022-Chamber of Fear (after the quake)` versus `017-Chamber of Fear`, and `408-The Gallows (Mino Zombie, new chest)` versus `026-The Gallows`. Those are now the clearest carry-over or alternate-state candidates, rather than the default explanation for the full residual set.",
+      "A newer template-context pass sharpens that structural reading even more. `39` of the `42` residual files now collapse into just two repeated double-`0x80` scaffolds: `36` use the paired `0x41/0x42` opener and `3` use the paired `0x1D/0x1E` burst. The dominant `0x41/0x42` family is especially non-audio-looking: `34` of its `36` files contain no sound-family opcode anywhere in the file, `26` reach the first burst through the same `DialogHide` -> `Opcode14` -> `SetHeadsUpDisplayMode(1)` lead-in, and `20` continue through the same `Opcode45` -> `ModelControlViaScript` -> `Opcode45` -> `Opcode43` -> `ModelControlViaScript` post-burst spine. The smaller `0x1D/0x1E` family likewise lands in repeated dialog or battle-mode control bundles, while the only true holdouts now are the three singleton or variant scenes `021`, `022`, and `025`. That pushes the residual story further away from hidden sound playback and further toward room-entry or cutscene template reuse that still carries an inert `0x80` burst.",
+      "`LoadSoundFileById` and `ProcessSoundQueue` are especially strong locally because real scripts commonly pair `9D xx` with a later `9E`.",
+      "`LoadSfxSlot`, `FreeSfxSlot`, `SetCurrentSfx`, `LoadMusicSlot`, and `ClearMusicLoadSlot` are all plausible and internally consistent names, but some still rest more on script ordering than on fully cited handler bodies. `Opcode80SharedStub` is intentionally a structural label, not a final user-facing semantic name.",
+      "The new neighboring-context packet shows that many representative `0x80` scenes already contain explicit `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or `0x9E` setup, but it still does not identify which downstream consumer turns that prepared state into the audible result for each scene.",
+      "The stricter first-burst scan leaves a concrete residual set: `42` currently decoded `0x80` files still reach their first `0x80` without any complete neighboring sound pair in the same file before it, but the new residual pass shows that most of those files are repeated opener templates rather than fresh audio-heavy holdouts. The newer template-context pass narrows that further: the repeated `0x41/0x42` and `0x1D/0x1E` bursts now look like stable room-entry or cutscene scaffolds, so what remains open is their provenance and the behavior of the few singleton or variant cases, not whether they are secretly the main direct sound path.",
+      "A consumer-path explanation for the minority cases that really do look like carry-over or later-rearm scenes, without leaning on the widened `0x800B66E4` stub family as if it were direct audio proof.",
+      "One cleaner write-up of how the music-slot and sound-file-id paths interact, so `LoadMusicSlot` and `MusicPlay` can be documented with the same confidence now used for `LoadSoundFileById`.",
+      "`0xA2 -> CameraZoomIn`",
+      "`0xC0 -> CameraDirection`",
+      "`0xC1 -> CameraSetAngle`",
+      "`0xC2 -> CameraLookAt`",
+      "`0xD0 -> CameraPosition`",
+      "`0xD1 -> SetCameraPosition`",
+      "`0xD4 -> CameraHeight`",
+      "`0xE0 -> CameraWait`",
+      "`0xEA -> CameraZoom`",
+      "`0xEB -> CameraNearClip`",
+      "`0xEC -> CameraFarClip`",
+      "The operand shapes and local formatting already separate this block from the screen-effect opcodes: position, look-at, direction, zoom, and clip-plane style fields dominate instead of color or oscillation parameters.",
+      "`CameraZoom`, `CameraNearClip`, and `CameraFarClip` are among the cleaner local names because their formatter fields already decode into useful scalar values rather than opaque raw bytes.",
+      "The weaker names are the ones where the noun is clear but the exact action is not yet locked down, such as whether `CameraSetAngle` and `SetCameraPosition` are immediate setters, mode selectors, or trigger bytes for previously staged camera state.",
+      "Direct consumer or handler proof for the single-byte control opcodes `0xA2`, `0xC1`, `0xD1`, and `0xE0`.",
+      "One tighter pass on `0xC0`, `0xC2`, `0xD0`, and `0xD4` that names their fields more specifically than today's conservative direction, look-at, position, and height labels.",
+      "`0xF0 -> Wait`",
+      "`0xF4 -> ScriptCallSlotActive`",
+      "`0xF5 -> ScriptCall`",
+      "`0xF6 -> ScriptReturn`",
+      "This block is already clearly control-flow related rather than content staging. The local names match how the decoder treats the operands and how the opcodes appear in call or return style script regions.",
+      "`Wait`, `ScriptCall`, and `ScriptReturn` are stronger than `ScriptCallSlotActive`, which still exposes the bookkeeping flavor of the implementation more than a settled player-facing verb.",
+      "A small helper-level proof write-up for the call-slot state checked or updated by `0xF4`.",
+      "One explicit note on the target encoding used by `0xF5`, mainly so the local call naming can cite something more concrete than script-structure patterning.",
+      "Data Crystal: unnamed (`800b77dc`)",
+      "Confirmed name: `ActorSfxPanVolumeControl`",
+      "Confidence: `Confirmed`",
+      "This opcode stores a little sound-control state on an actor.",
+      "That stored state is later read by the sound code that decides where a sound should come from and how loud it should be.",
+      "There is also a cleanup path that clears the same state again, which matches the idea of a temporary actor sound override rather than a one-shot trigger.",
+      "`mode 0`: clear actor SFX spatial override state",
+      "`mode 1`: set or pulse an override",
+      "`mode 2`: set the default/basis used by later `mode 1` updates",
+      "Data Crystal: unnamed (`800b8c54`)",
+      "Confirmed name: `SetJumpBackCounter`",
+      "Confidence: `Confirmed`",
+      "The matched opcode dispatch table in file_:../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c maps `0x49` directly to the small readable handler now renamed `vs_battle_script_setJumpBackCounter`.",
+      "That handler only does one thing: when the first script byte is not `0xFF`, it stores the second byte into a local counter-slot array at `D_800F4C10[arg0[1]]`.",
+      "The paired opcode `0x4A` later decrements that same slot and uses it to decide whether to jump backward, which makes `0x49` the explicit counter-setup half of the pair rather than a generic flag or mode write.",
+      "In decoded scripts, the only currently reachable counted form is `49 00 01`, which matches a one-iteration setup for the later `4A 00 ...` consumer. The repeated cathedral shake loops instead use the reserved `49 FF 00` scaffolding form before the unconditional `4A FF ...` back-jump.",
+      "`49 ss cc`: store initial loop/jump-back count `cc` into counter slot `ss`",
+      "`49 FF 00`: reserved unconditional form used alongside `4A FF ...`",
+      "Data Crystal: unnamed",
+      "Confirmed name: `JumpBackIfCounter`",
+      "Confidence: `Confirmed`",
+      "The matched opcode dispatch table maps `0x4A` directly to the readable handler file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c, now tightened to `vs_battle_script_jumpBackIfCounter` in the nested repo.",
+      "When the first script byte is `0xFF`, the handler immediately returns `&arg0[-vs_battle_getShort(arg0 + 2)]`, which is an unconditional backward jump by the encoded 16-bit offset.",
+      "Otherwise it pre-decrements `D_800F4C10[arg0[1]]` and only returns that same backward jump target while the decremented slot stays nonzero.",
+      "Real script usage matches both forms. `MAP131`, `MAP133`, and `MAP413` repeatedly use `49 FF 00` plus `4A FF ...` to loop camera-oscillation beats, while `MAP318` and `MAP321` use the slot `0` form `49 00 01` / `4A 00 8A 00` as the counted variant.",
+      "`4A FF ll hh`: unconditionally jump backward by `<h ll hh>` bytes",
+      "`4A ss ll hh`: decrement counter slot `ss`, then jump backward by `<h ll hh>` while the result stays nonzero",
+      "Data Crystal: unnamed (`800ba0e4`)",
+      "Confirmed name: `EnableRoomMechanismUpdates`",
+      "Confidence: `Confirmed`",
+      "This opcode flips the room mechanism update loop on or off.",
+      "In scripts it appears right where cutscenes take control away from normal room logic, then appears again when normal room behavior is handed back.",
+      "It sits right next to the room mechanism control opcode, so it is clearly part of the same subsystem.",
+      "The script byte is inverted by the handler, so `1` means disabled and `0` means enabled.",
+      "Data Crystal: unnamed (`800ba194`)",
+      "Confirmed name: `RoomMechanismControl`",
+      "Confidence: `Confirmed`",
+      "One sub-command tells the game to fire a room mechanism by id.",
+      "The other sub-command flips that mechanism between enabled and disabled.",
+      "The same code path is used by doors, locks, and other room objects, so this is not just a cutscene-only special case.",
+      "`79 00 xx`: trigger room mechanism `xx`",
+      "`79 01 xx`: toggle room mechanism `xx`",
+      "Data Crystal: unnamed",
+      "Confirmed name: `SetScreenEffectEnabled`",
+      "Confidence: `Confirmed`",
+      "The matched opcode dispatch table in file_:../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c maps `0xE1` directly to `func_800BB450`.",
+      "`func_800BB450` is a tiny wrapper that just calls `func_8007DD50(arg0[1])`.",
+      "`func_8007DD50` flips the effect runtime between active and shutdown states and allocates the backing effect object when needed.",
+      "In scripts, `E1 01` and `E1 00` consistently bracket the nearby effect setup and tween opcodes such as `E4`, `E5`, `E6`, `E7`, and `EF`.",
+      "`E1 00`: disable the current screen effect block",
+      "`E1 01`: enable the current screen effect block",
+      "Data Crystal: unnamed",
+      "Confirmed name: `CameraRollTween`",
+      "Confidence: `Confirmed`",
+      "The matched opcode dispatch table maps `0xE2` into the shared `vs_battle_script_setupAngleTween` handler in file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c.",
+      "The readable handler body switches on the opcode byte and routes `0xE2` into `D_800F4BA4->cameraAngleTween`.",
+      "The matched apply side later commits that tween through `func_8007AC94(D_800F4BA4->cameraAngleTween.currentValue)`.",
+      "`func_8007AC94` writes `_camera.t2.unk5C`, and the current file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h layout now exposes named `pitch` and `yaw` fields immediately before that target. The paired getter masks the stored value with `& 0xFFF`, which fits the remaining camera-angle slot much better than a generic scalar.",
+      "In `decoded_scripts`, all 291 sampled `E2` instances currently end with a trailing `00` byte, matching the handler only consuming angle, wrap/easing, and duration rather than a hidden selector or id field.",
+      "Script usage clusters around camera staging beats and repeated resets back to angle `0`, which matches a camera roll control instead of room or actor state.",
+      "`E2 aa bb we dd 00`: tween the camera roll angle to `<h aa bb>` with wrap/easing control `we` over `dd` ticks",
+      "Data Crystal: unnamed",
+      "Confirmed name: `ScreenEffectAngleTween`",
+      "Confidence: `Confirmed`",
+      "The matched opcode dispatch table maps `0xE3` into the shared `vs_battle_script_setupAngleTween` handler in file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c.",
+      "The readable handler body switches on the opcode byte and routes `0xE3` into `D_800F4BA4->screenEffectAngleTween`, not the camera tween slot used by `0xE2`.",
+      "The matched apply side later commits that tween through `func_8007DDAC(D_800F4BA4->screenEffectAngleTween.currentValue)`.",
+      "file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c shows `func_8007DDAC` as a dedicated persistent setter for the shared screen-effect angle scalar `D_800F1A2C`, and the ending-menu effect setup in file_:../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c resets that same setter alongside the shared screen-effect scale, color, and offset state.",
+      "A fresh local decode of `Game Data/MAP` currently finds 4 `E3` uses, all of them inside the same `E1`/`E4`/`E5`/`E6` effect staging cluster.",
+      "The strongest sample is `MAP102`, which sets `E3 30 00 10 00 00` before enabling the effect block, then immediately runs `E3 00 00 11 32 00` to tween that angle back to zero over 50 ticks. That behavior fits an effect angle control much better than a camera move or generic scalar.",
+      "All 4 currently decoded `E3` instances end with a trailing `00` byte, matching the shared setup helper only consuming angle, wrap/easing, and duration rather than a hidden selector field.",
+      "`E3 aa bb we dd 00`: tween the active screen-effect angle to `<h aa bb>` with wrap/easing control `we` over `dd` ticks",
+      "Data Crystal: unnamed",
+      "Confirmed name: `ScreenEffectScaleTween`",
+      "Confidence: `Confirmed`",
+      "The matched dispatch table maps `0xE4` into the shared screen-effect helper family, and the matched apply side in file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c sends the corresponding tween output through `func_8007DDB8`.",
+      "`func_8007DDB8` writes the two persistent screen-effect scale components in file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c, and the effect reset path restores those components to neutral `0x1000`, `0x1000`.",
+      "A direct non-script caller in file_:../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c uses the same setter with values like `0x1029` and `0x107A` before enabling the effect runtime, which matches a scale preset rather than ids or flags.",
+      "In decoded scripts, `E4 20 20` repeatedly lands on neutral `4096, 4096`, while nearby values like `1F`, `21`, and `23` make small in/out adjustments.",
+      "`E4 xx yy ee dd`: tween the active screen effect scale on two axes",
+      "Data Crystal: unnamed",
+      "Confirmed name: `ScreenEffectOffsetTween`",
+      "Confidence: `Confirmed`",
+      "The same matched apply path in file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c routes the `0xE6` tween state through `func_8007DDF8`.",
+      "`func_8007DDF8` stores the persistent screen-effect offset vector in file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c, and the effect reset path zeros that state.",
+      "Script operands are explicitly treated as signed bytes in the local decoder and show up in small ranges such as `-3`, `-1`, `0`, `1`, `2`, and `4`, which fits an offset control much better than ids, colors, or mode flags.",
+      "Real script sequences frequently push a small offset and then ease back to `0, 0`, for example in `MAP017`, `MAP026`, `MAP131`, and `MAP145`.",
+      "`E6 xx yy ee dd`: tween the active screen effect offset on two axes",
+      "Data Crystal: unnamed",
+      "Confirmed name: `RecenterCamera`",
+      "Confidence: `Confirmed`",
+      "The matched opcode dispatch table in file_:../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c maps `0xE9` directly to `func_800BB3BC`.",
+      "`func_800BB3BC` converts the first script byte into either a preserved-facing sentinel (`0xFF -> -1`) or an 8-way facing override through `((arg0[1] + 4) & 7)`, converts script `0` in the second byte into a preserved-distance sentinel, and passes both through `func_800BC1CC`.",
+      "`func_800BC1CC` rebuilds the target camera look-at and camera-position pair through `vs_battle_initialiseCameraFromSpherical`, copies those targets into the live camera state, and starts the camera tween helpers based on the transition distance.",
+      "The matched `vs_battle_initialiseCameraFromSpherical` body in file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c shows the optional override behavior clearly: `mode 1` forces distance `0x600`, `mode 2` forces distance `0x900`, and `-1` preserves the current spherical camera state.",
+      "Real script usage matches that behavior. Most instances are the handback form `E9 FF 00`, used when cutscenes or first-person beats return the camera to normal spherical control, while rarer setup forms such as `E9 03 01`, `E9 04 02`, and `E9 04 00` appear where scripts want a specific facing sector or distance preset before the recenter.",
+      "`E9 FF 00`: recenter the camera from the current spherical gameplay state",
+      "`E9 xx 00`: recenter the camera and override the 8-way facing sector first",
+      "`E9 xx 01`: recenter the camera with the short-distance (`0x600`) preset",
+      "`E9 xx 02`: recenter the camera with the long-distance (`0x900`) preset",
+      "Data Crystal: unnamed",
+      "Confirmed name: `CameraOscillationControl`",
+      "Confidence: `Confirmed`",
+      "Raw handler recovery in `func_800BDC9C` shows `0xEF` is not a plain one-shot setter. When the second script byte is zero, it immediately clears both local oscillation slots and returns.",
+      "When that second byte is nonzero, the same handler allocates or reuses one of two small slot records, storing a phase-rate byte, an amplitude byte, a control word, and a duration for the slot updater to consume.",
+      "The recovered slot updater in `func_800BE01C` feeds the first byte into the phase term of an `rsin` call and multiplies the second byte into the output amplitude, which is much stronger than the older generic `scalar0/scalar1` reading.",
+      "The matched consumer in `func_800BE180` reads the low control byte as routing and axis-multiplier bits, then rotates the resulting short vectors into camera-relative offsets that are added to both `cameraLookAt` and `cameraPos`.",
+      "Script usage matches the split behavior: long timed bursts like `MAP131`, `MAP132`, and `MAP136` set up oscillation, while repeated forms such as `EF 01 00 57 00 01` and `EF 50 00 47 00 01` appear at cleanup beats where a clear-all control makes better sense than a zero-amplitude init.",
+      "`EF rr 00 cc CC dd`: clear both active camera oscillation slots",
+      "`EF rr aa cc CC dd`: start or refresh a camera-relative oscillation with phase rate `rr`, amplitude `aa`, control word `0xCCcc`, and duration `dd`",
+      "The opcode label is now strong enough to confirm the camera oscillation subsystem and the control/setup split, but the exact player-facing meaning of each high-byte waveform mode is still worth future recovery work.",
+      "`0x2E -> ModelScale`",
+      "`0x49 -> SetJumpBackCounter`",
+      "`0x4A -> JumpBackIfCounter`",
+      "`0x31 -> ModelTint`",
+      "`0x39 -> ModelLookAtPosition`",
+      "`0x74 -> LoadRoomSection10`",
+      "`0x75 -> WaitForRoomSection10`",
+      "`0x76 -> FreeRoomSection10`",
+      "`0x7C -> SetFirstPersonView`",
+      "`0x85 -> LoadSfxSlot`",
+      "`0x86 -> FreeSfxSlot`",
+      "`0x88 -> SetCurrentSfx`",
+      "`0x90 -> LoadMusicSlot`",
+      "`0x91 -> FreeMusic`",
+      "`0x99 -> ClearMusicLoadSlot`",
+      "`0x9D -> LoadSoundFileById`",
+      "`0x9E -> ProcessSoundQueue`",
+      "`0xE2 -> CameraRollTween`",
+      "`0xE3 -> ScreenEffectAngleTween`",
+      "`0xE4 -> ScreenEffectScaleTween`",
+      "`0xE5 -> ScreenEffectColorTween`",
+      "`0xE6 -> ScreenEffectOffsetTween`",
+      "`0xE9 -> RecenterCamera`",
+      "`0xE7 -> SetScreenEffectMode`",
+      "`0xEB -> CameraNearClip`",
+      "`0xEC -> CameraFarClip`",
+      "`0xEF -> CameraOscillationControl`",
+      "`0xF4 -> ScriptCallSlotActive`",
+      "`0xF5 -> ScriptCall`",
+      "`0xF6 -> ScriptReturn`",
+      "This opcode directly tells the sound system which sound file id to load.",
+      "A different older opcode reaches the same loader indirectly through the current music slot, so there really are two load styles here.",
+      "In real scripts, `9D xx` is usually followed by `9E`, and the same `xx` often shows up later as the music-load slot id. That fits a direct “queue this sound file id” interpretation much better than a pitch control.",
+      "`0x9D -> LoadSoundFileById`",
+      "Confidence: `Confirmed` at helper level, `Strong` for conservative local tooling names, still not `Confirmed` for an upstream script-facing rename",
+      "`0x64` goes straight to `func_80091998(arg0[1])`.",
+      "That helper resolves a room geometry entry and clears flag `0x100`.",
+      "`0x65` goes straight to `func_800919D8(arg0[1])`.",
+      "That helper resolves the same kind of room geometry entry and sets flag `0x100`.",
+      "The same flag is also initialised from room section `12`, so this is clearly a room-geometry state bit rather than an actor, camera, or sound control.",
+      "The matched section-12 helper `func_8008E224` in file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c writes the same one-bit state and mirrors it into the linked geometry entry, which ties these opcodes to built-in room-object staging rather than an isolated debug flag.",
+      "Real script usage now gives a stronger script-facing pattern than the older raw flag names. `0x65` clusters heavily around room-display and cutscene staging beats, often just before `DisplayRoom`, camera setup, or first-person framing, while the same geometry ids are later restored with `0x64`.",
+      "In the current decoded room set, the same geometry ids are toggled by both opcodes in 39 files, including file_:../../decoded_scripts/1-Wine Cellar/009-Entrance to Darkness.txt, file_:../../decoded_scripts/1-Wine Cellar/013-Smokebarrel Stair.txt, and file_:../../decoded_scripts/10-The Keep/124-The Warrior's Rest.txt.",
+      "A broad script scan currently finds `0x65` within six lines of `DisplayRoom` 611 times, versus 47 for `0x64`, which fits a temporary suppression/setup role better than a permanent state write.",
+      "`0x64 -> RestoreRoomGeometry`",
+      "`0x65 -> SuppressRoomGeometry`",
+      "The exact render or collision consumer behind geometry flag `0x100` still needs one more decomp pass.",
+      "That means a harder claim like `ShowRoomGeometry`/`HideRoomGeometry` could still be slightly too specific.",
+      "`Restore`/`Suppress` captures the proven script pattern without pretending the remaining implementation details are fully locked down.",
+      "`0x7A`",
+      "`0xED`",
+      "Confidence: `Strong`",
+      "The matched opcode dispatch table routes `0x7A` directly to the readable handler body now named file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c.",
+      "When the script byte is nonzero, that handler latches a local \"suspended\" state and, if `func_8008E470()` passes, grabs the current ambient sound id through `func_800913BC(-1)` and clears playback by swapping in `-1`.",
+      "When the script byte returns to zero, the same handler restores the saved ambient sound id through `func_800913BC(savedId)` and clears the latched suspended state.",
+      "The sound helper in file_:../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c confirms `func_800913BC` is the persistent ambient-id swap path.",
+      "Real script usage still matches the user-facing idea: decoded rooms such as `MAP138`, `MAP062`, `MAP001`, and `MAP006` use `7A 01` near cutscene takeover beats and `7A 00` when normal room behavior is restored.",
+      "`SetRoomAmbientSoundSuspended`",
+      "`7A 01`: suspend the current room ambient sound, saving the previous id when this room uses the persistent ambient-id path",
+      "`7A 00`: restore that saved ambient sound id when the same path is active",
+      "The save/restore behavior proven so far is scoped to the persistent ambient-id path behind `func_800913BC`.",
+      "The room audio code also has a separate AKAO-backed `section14` path, and the opcode handler gates its swap/restore work through `func_8008E470()`.",
+      "That means the shared user-facing effect is strongly suggested, but the current proof does not yet justify a broad unconditional confirmed rename.",
+      "Confidence: `Strong`",
+      "This opcode, not `0xEF`, is the direct path that feeds `vs_screff2_setParamPair(param0, param1)` in `SCREFF2.PRG`.",
+      "The first script byte is promoted with `<< 6` before entering the SCREFF2 setter, which proves it is a 12-bit fixed-point parameter rather than a plain flag or id byte.",
+      "A fresh full decode of `Game Data/MAP` finds 10 currently reachable script uses across 4 rooms. Every one of those rooms resets with `ED 40 00 00 00`, i.e. `0x40 << 6 = 4096`, while the other observed first-parameter values stay nearby at `3712`, `4672`, `4928`, `5056`, and `5120`.",
+      "The second script byte is treated as a signed byte, and the last two bytes behave like easing and duration.",
+      "That makes it a two-parameter effect tween rather than general logic flow.",
+      "`ScreenEffectParamPairTween`",
+      "`param0Fixed12=<byte << 6>` with `4096` as the currently proven neutral/reset value",
+      "`param1Signed=<s8>`",
+      "The two destination fields in `SCREFF2` are still unnamed, so the exact player-visible feature behind the pair has not been nailed down yet.",
+      "The first field is narrow enough to treat as a fixed-point parameter with a stable neutral/reset form, but the current evidence still does not prove the exact visual meaning of either destination field."
+    ],
+    "source_markdown_path": "docs/campaign/ROOD_REVERSE_OPCODE_CONCLUSIONS.md",
+    "summary": "This note collects high-confidence opcode conclusions that appear to improve on the current public table at Data Crystal:",
+    "body": {
+      "sections": {
+        "vagrant-story-script-opcode-conclusions": {
+          "heading": "Vagrant Story Script Opcode Conclusions",
+          "content": [
+            {
+              "paragraph": "This note collects high-confidence opcode conclusions that appear to improve on the\ncurrent public table at Data Crystal:",
+              "ulist": [
+                "Source: <https://datacrystal.tcrf.net/wiki/Vagrant_Story/Script_Opcodes>"
+              ]
+            },
+            {
+              "ulist": [
+                "The goal is to keep this contribution set conservative: only names with a clear\ncode-path or script-usage proof are listed as confirmed. Anything still fuzzy\nshould stay tentative in upstream comments and PR text.",
+                "Use [`docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json`](docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json#/body) as the quick\nlookup for the current local opcode table, parameter layouts, and unresolved\nslots. This note is the longer evidence and confidence trail for the names that\nmatter enough to justify written conclusions."
+              ]
+            }
+          ],
+          "sections": {
+            "confidence-guide": {
+              "heading": "Confidence guide",
+              "content": [
+                {
+                  "paragraph": "Use this quick rubric when judging an opcode name:",
+                  "ulist": [
+                    "`Confirmed`: the handler body is readable and the behavior matches real script\nusage.",
+                    "`Strong`: the handler target is clear and the likely subsystem is clear, but\none part of the user-facing meaning still needs proof.",
+                    "`Tentative`: the opcode has been narrowed down to a subsystem or helper path,\nbut the final script-friendly name would still be guesswork."
+                  ]
+                },
+                {
+                  "paragraph": "For this note, `rood-reverse` is the better source for opcode work than Data\nCrystal when a handler is actually decompiled. Data Crystal is still useful as a\nlegacy address table, but its names should be treated as historical notes until\nthe code body agrees."
+                }
+              ]
+            },
+            "current-coverage-snapshot": {
+              "heading": "Current coverage snapshot",
+              "content": [
+                {
+                  "paragraph": "The current local decoder table in\n[`../../dump_mpd_script.py`](../../dump_mpd_script.py) now covers all `256` opcode slots,\nbut only part of that table is meaningfully named:",
+                  "ulist": [
+                    "named locally: `85 / 256`",
+                    "still placeholder-named as `OpcodeXX`: `171 / 256`",
+                    "most complete block: `0xE0-0xEF` with `14` named and only `0xE8` / `0xEE`\nstill unresolved",
+                    "completely unresolved block: `0xB0-0xBF`",
+                    "The heaviest remaining unknown regions are:",
+                    {
+                      "ulist": [
+                        "`0xA3-0xBF`",
+                        "`0xC5-0xCF`",
+                        "`0xD5-0xDF`",
+                        "`0xF7-0xFE`"
+                      ]
+                    },
+                    "There are also `22` placeholder entries whose current local size is still\n`0x00`, so they remain unsafe targets for any confident rename or decoder\ncleanup pass:",
+                    {
+                      "ulist": [
+                        "`0x09`",
+                        "`0x8A-0x8E`",
+                        "`0xA7`",
+                        "`0xAB-0xAF`",
+                        "`0xB0`",
+                        "`0xC6`",
+                        "`0xCC-0xCF`",
+                        "`0xD6`",
+                        "`0xDC-0xDD`",
+                        "`0xEE`"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "still-missing-from-the-current-local-opcode-list": {
+              "heading": "Still missing from the current local opcode list",
+              "content": [
+                {
+                  "paragraph": "Here, \"missing\" means the local decoder still exposes only a placeholder name\nsuch as `Opcode41`, not merely that this note lacks a long write-up."
+                },
+                {
+                  "ulist": [
+                    "`0x01-0x0F`",
+                    "`0x13-0x15`",
+                    "`0x1B-0x1F`",
+                    "`0x21`",
+                    "`0x25`",
+                    "`0x27`",
+                    "`0x2A-0x2D`",
+                    "`0x32`",
+                    "`0x34-0x37`",
+                    "`0x3C-0x3D`",
+                    "`0x3F`",
+                    "`0x41`",
+                    "`0x43`",
+                    "`0x45-0x48`",
+                    "`0x4B-0x4F`",
+                    "`0x51-0x53`",
+                    "`0x55-0x57`",
+                    "`0x59-0x63`",
+                    "`0x66-0x67`",
+                    "`0x6A-0x6C`",
+                    "`0x6E-0x6F`",
+                    "`0x71-0x73`",
+                    "`0x77`",
+                    "`0x7B`",
+                    "`0x7D-0x7F`",
+                    "`0x81-0x84`",
+                    "`0x87`",
+                    "`0x89-0x8F`",
+                    "`0x93-0x98`",
+                    "`0x9A-0x9C`",
+                    "`0x9F-0xA0`",
+                    "`0xA3-0xBF`",
+                    "`0xC3`",
+                    "`0xC5-0xCF`",
+                    "`0xD2-0xD3`",
+                    "`0xD5-0xDF`",
+                    "`0xE8`",
+                    "`0xEE`",
+                    "`0xF1-0xF3`",
+                    "`0xF7-0xFE`"
+                  ]
+                }
+              ]
+            },
+            "documented-local-names-still-awaiting-per-opcode-proof-write-ups": {
+              "heading": "Documented local names still awaiting per-opcode proof write-ups",
+              "content": [
+                {
+                  "paragraph": "These names are already usable in the local decoder. What was missing here was\nnot the names themselves, but a short record of why they are currently\nreasonable and what would still be needed before each one should be treated as\nfully `Confirmed` in the same sense as the stronger entries below."
+                }
+              ],
+              "sections": {
+                "dialog-and-splash-screen-control": {
+                  "heading": "Dialog and splash-screen control",
+                  "content": [
+                    {
+                      "paragraph": "Current local names:",
+                      "ulist": [
+                        "`0x10 -> DialogShow`",
+                        "`0x11 -> DialogText`",
+                        "`0x12 -> DialogHide`",
+                        "`0x16 -> SplashScreenChoose`",
+                        "`0x17 -> SplashScreenLoad`",
+                        "`0x18 -> SplashScreenShow`",
+                        "`0x19 -> SplashScreenHide`",
+                        "`0x1A -> SplashScreenFadeIn`",
+                        "Current narrow:",
+                        {
+                          "ulist": [
+                            "`0x10-0x12` already decode cleanly as dialog id, text id, and dialog box\ncontrol fields in the script dumper, so the dialog-family naming is on solid\nlocal footing.",
+                            "`0x16-0x1A` cluster as a separate overlay or splash-screen path rather than\nactor, room, or camera control, and their current verbs match the usual\nscript ordering pattern of choose or load, then show, hide, or fade.",
+                            "`0x13-0x15` remain unresolved, so this block is only partially mapped."
+                          ]
+                        },
+                        "What is still missing for `Confirmed`:",
+                        {
+                          "ulist": [
+                            "A direct handler-by-handler decomp citation for the splash-screen verbs,\nespecially the exact difference between `Choose`, `Load`, and `Show`.",
+                            "One proof pass that ties the fade opcode specifically to fade-in behavior and\nnot a more generic overlay transition mode."
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "core-model-staging": {
+                  "heading": "Core model staging",
+                  "content": [
+                    {
+                      "paragraph": "Current local names:",
+                      "ulist": [
+                        "`0x20 -> ModelLoad`",
+                        "`0x22 -> ModelAnimate`",
+                        "`0x23 -> ModelSetAnimations`",
+                        "`0x26 -> ModelPosition`",
+                        "`0x28 -> ModelMoveTo`",
+                        "`0x29 -> ModelMoveTo2`",
+                        "`0x2E -> ModelScale`",
+                        "`0x30 -> ModelLoadAnimationsEx`",
+                        "`0x31 -> ModelTint`",
+                        "`0x33 -> ModelRotate`",
+                        "`0x38 -> ModelLookAt`",
+                        "`0x39 -> ModelLookAtPosition`",
+                        "`0x3A -> ModelLoadAnimations`",
+                        "`0x3E -> ModelIlluminate`",
+                        "`0x42 -> ModelControlViaScript`",
+                        "`0x50 -> ModelControlViaBattleMode`",
+                        "`0x70 -> ModelColor`",
+                        "`0xC4 -> ModelAnimateObject`",
+                        "Current narrow:",
+                        {
+                          "ulist": [
+                            "The argument shapes already look like a coherent actor-model control family:\nactor ids, animation ids, position triples, rotation-like fields, look-at\ntargets, and color or tint style parameters all show up where expected.",
+                            "Some names in this group are already stronger than the rest. `ModelScale`,\n`ModelTint`, and `ModelLookAtPosition` have enough local evidence to be worth\nupstreaming even before every neighboring model opcode gets a full write-up.",
+                            "The weaker names are the ones that still hide an important mode distinction\nbehind generic wording, such as `ModelMoveTo` versus `ModelMoveTo2`,\n`ModelLoadAnimations` versus `ModelLoadAnimationsEx`, and the control wrappers\naround `0x42`, `0x50`, and `0xC4`."
+                          ]
+                        },
+                        "What is still missing for `Confirmed`:",
+                        {
+                          "ulist": [
+                            "Direct handler evidence for the alternate load, move, and animate variants so\nthe local names can explain the difference instead of only naming the shared\nsubsystem.",
+                            "One field-level pass for `0x3E`, `0x42`, `0x50`, `0x70`, and `0xC4` to decide\nwhether the current names are precise enough or still slightly too generic."
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "room-loading-and-scene-display-flow": {
+                  "heading": "Room loading and scene-display flow",
+                  "content": [
+                    {
+                      "paragraph": "Current local names:",
+                      "ulist": [
+                        "`0x68 -> LoadRoom`",
+                        "`0x69 -> LoadScene`",
+                        "`0x6D -> DisplayRoom`",
+                        "`0x74 -> LoadRoomSection10`",
+                        "`0x75 -> WaitForRoomSection10`",
+                        "`0x76 -> FreeRoomSection10`",
+                        "Current narrow:",
+                        {
+                          "ulist": [
+                            "`0x68` already formats as a zone-room destination pair in the dumper, which\nmakes a room-loader interpretation much stronger than a generic file load.",
+                            "`0x6D` behaves like a display or activation step that appears after load or\nstaging work rather than before it.",
+                            "`0x74-0x76` form a clean async trio by both naming and script position: load,\nthen wait, then free."
+                          ]
+                        },
+                        "What is still missing for `Confirmed`:",
+                        {
+                          "ulist": [
+                            "A direct proof of the exact distinction between `LoadRoom` and `LoadScene`.",
+                            "One decomp-backed identification of what \"section 10\" actually contains so\nthe section-10 names can eventually become more user-facing if warranted."
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "core-audio-flow": {
+                  "heading": "Core audio flow",
+                  "content": [
+                    {
+                      "paragraph": "Current local names:",
+                      "ulist": [
+                        "`0x80 -> Opcode80SharedStub`",
+                        "`0x85 -> LoadSfxSlot`",
+                        "`0x86 -> FreeSfxSlot`",
+                        "`0x88 -> SetCurrentSfx`",
+                        "`0x90 -> LoadMusicSlot`",
+                        "`0x91 -> FreeMusic`",
+                        "`0x92 -> MusicPlay`",
+                        "`0x99 -> ClearMusicLoadSlot`",
+                        "`0x9D -> LoadSoundFileById`",
+                        "`0x9E -> ProcessSoundQueue`",
+                        "Current narrow:",
+                        {
+                          "ulist": [
+                            "This block still reads like a shared sound pipeline rather than unrelated\nopcodes: resource loads, slot selection, explicit frees, then queue or\nprocess steps.",
+                            "`0x80` no longer survives as a direct-sound member of that group.\nThe static dispatch table routes `0x80` to `func_800B66E4`, whose matched\nbody is only `return 0;`, and the validated retail `MAP001` runtime pass now\nshows the live copied table still dispatching `0x80` to that same stub with\nno observed rewrite before the checked intro call.",
+                            "The nearby helper `func_800BA2E0` still consumes the same 4-byte argument\nshape and still looks sound-facing, but local evidence now anchors it inside\na separate `0x83+` `BATTLE.PRG` subdispatch table rather than treating it as\na hidden replacement handler for `0x80`.",
+                            "The widened `0x800B66E4` family audit now makes the structural reading less\nunique, not more: the same `INITBTL.PRG` table slot also covers named\ndialog, model, engine-mode, room, battle-end, and music-looking members such\nas `0x10`, `0x11`, `0x22`, `0x44`, `0x54`, `0x69`, `0x6D`, and `0x92`.\nThat means table membership alone is not standalone user-facing proof for\nany member of the cluster, including `0x80`.",
+                            "Real script usage still clusters `0x80` near audio-looking cutscene moments,\nbut that is now context evidence only. It is no longer enough to override\nthe verified handler-level fact that the opcode itself lands on the shared\nstub.",
+                            "A new neighboring-context scan of the checked-in `decoded_scripts` corpus\nstrengthens that cleanup path without reviving the old direct-sound label.\nOf the `127` files that still contain legacy-rendered `0x80` lines,\n`88` also co-host at least one explicit sound-family neighbor from\n`0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or `0x9E`.\nRepresentative files such as `MAP001`, `MAP026`, and `MAP415` already arm\nSFX slots, music slots, or sound-file queues through those neighboring\nopcodes before later `0x80` bursts appear.\nThat makes the old name unnecessary for many audio-looking scenes even\nbefore the final consumer path is fully traced.",
+                            "A stricter first-burst prepared-state comparison now sharpens that result.\n`85` of those `127` files already stage at least one complete neighboring\nsound pair before the first `0x80` in the same file:\n`83` stage `0x85/0x88`, `44` stage `0x9D/0x9E`, and `20` stage\n`0x90/0x92`.\nWhen multiple complete pairs exist, the closest pair before the first\n`0x80` is the SFX-slot path in `62` files, the queue path in `13`, and the\nmusic-slot path in `10`.\nThat turns the neighboring-family explanation from a loose co-hosting hint\ninto a scene-ordering result: the default local replacement for the old\n`SoundEffects0` reading is usually the already-proven `0x85/0x88`\nprepared-state path, with `MAP026`-style queue re-arms and `MAP415`-style\nmusic-heavy scenes covering important exceptions.",
+                            "A new residual-context pass now narrows the remaining holdouts more\naggressively than the earlier \"42 unexplained files\" wording.\nAll `42` residual files reach their first `0x80` with no sound-family opcode\nat all before it, and `38` of those files contain no `0x85-0x9E`\nsound-family opcode anywhere in the file.\nThe dominant evidence is template reuse, not missing sound setup:\n`36` residual files share the exact duplicated opener\n`80 01 41 80 7F` then `80 01 42 80 7F`, most often after the same\n`DialogHide` -> `Opcode14` -> `SetHeadsUpDisplayMode(1)` lead-in and before\nthe same `Opcode45` -> `ModelControlViaScript` follow-up.\nAnother `3` residual files share the alternate duplicated\n`80 01 1D 80 7F` then `80 01 1E 80 7F` microcluster.\nThat makes the residual set look more like repeated opener scaffolding than\nlike strong positive sound evidence.",
+                            "The residual pass also narrows the real exceptions.\nOnly `2` residual files later grow a complete neighboring pair in the same\nfile, and only `2` currently have same-title sibling variants in the same\narea that do stage complete pre-burst pairs:\n`022-Chamber of Fear (after the quake)` versus `017-Chamber of Fear`, and\n`408-The Gallows (Mino Zombie, new chest)` versus `026-The Gallows`.\nThose are now the clearest carry-over or alternate-state candidates, rather\nthan the default explanation for the full residual set.",
+                            "A newer template-context pass sharpens that structural reading even more.\n`39` of the `42` residual files now collapse into just two repeated\ndouble-`0x80` scaffolds:\n`36` use the paired `0x41/0x42` opener and `3` use the paired\n`0x1D/0x1E` burst.\nThe dominant `0x41/0x42` family is especially non-audio-looking:\n`34` of its `36` files contain no sound-family opcode anywhere in the file,\n`26` reach the first burst through the same\n`DialogHide` -> `Opcode14` -> `SetHeadsUpDisplayMode(1)` lead-in, and\n`20` continue through the same\n`Opcode45` -> `ModelControlViaScript` -> `Opcode45` -> `Opcode43` ->\n`ModelControlViaScript` post-burst spine.\nThe smaller `0x1D/0x1E` family likewise lands in repeated dialog or\nbattle-mode control bundles, while the only true holdouts now are the three\nsingleton or variant scenes `021`, `022`, and `025`.\nThat pushes the residual story further away from hidden sound playback and\nfurther toward room-entry or cutscene template reuse that still carries an\ninert `0x80` burst.",
+                            "`LoadSoundFileById` and `ProcessSoundQueue` are especially strong locally\nbecause real scripts commonly pair `9D xx` with a later `9E`.",
+                            "`LoadSfxSlot`, `FreeSfxSlot`, `SetCurrentSfx`, `LoadMusicSlot`, and\n`ClearMusicLoadSlot` are all plausible and internally consistent names, but\nsome still rest more on script ordering than on fully cited handler bodies.\n`Opcode80SharedStub` is intentionally a structural label, not a final\nuser-facing semantic name."
+                          ]
+                        },
+                        "What is still missing for `Confirmed`:",
+                        {
+                          "ulist": [
+                            "The new neighboring-context packet shows that many representative `0x80`\nscenes already contain explicit `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or\n`0x9E` setup, but it still does not identify which downstream consumer turns\nthat prepared state into the audible result for each scene.",
+                            "The stricter first-burst scan leaves a concrete residual set:\n`42` currently decoded `0x80` files still reach their first `0x80` without\nany complete neighboring sound pair in the same file before it, but the new\nresidual pass shows that most of those files are repeated opener templates\nrather than fresh audio-heavy holdouts.\nThe newer template-context pass narrows that further:\nthe repeated `0x41/0x42` and `0x1D/0x1E` bursts now look like stable\nroom-entry or cutscene scaffolds, so what remains open is their provenance\nand the behavior of the few singleton or variant cases, not whether they are\nsecretly the main direct sound path.",
+                            "A consumer-path explanation for the minority cases that really do look like\ncarry-over or later-rearm scenes, without leaning on the widened\n`0x800B66E4` stub family as if it were direct audio proof.",
+                            "One cleaner write-up of how the music-slot and sound-file-id paths interact,\nso `LoadMusicSlot` and `MusicPlay` can be documented with the same confidence\nnow used for `LoadSoundFileById`."
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "core-camera-flow-outside-the-effect-heavy-e-range": {
+                  "heading": "Core camera flow outside the effect-heavy `E` range",
+                  "content": [
+                    {
+                      "paragraph": "Current local names:",
+                      "ulist": [
+                        "`0xA2 -> CameraZoomIn`",
+                        "`0xC0 -> CameraDirection`",
+                        "`0xC1 -> CameraSetAngle`",
+                        "`0xC2 -> CameraLookAt`",
+                        "`0xD0 -> CameraPosition`",
+                        "`0xD1 -> SetCameraPosition`",
+                        "`0xD4 -> CameraHeight`",
+                        "`0xE0 -> CameraWait`",
+                        "`0xEA -> CameraZoom`",
+                        "`0xEB -> CameraNearClip`",
+                        "`0xEC -> CameraFarClip`",
+                        "Current narrow:",
+                        {
+                          "ulist": [
+                            "The operand shapes and local formatting already separate this block from the\nscreen-effect opcodes: position, look-at, direction, zoom, and clip-plane\nstyle fields dominate instead of color or oscillation parameters.",
+                            "`CameraZoom`, `CameraNearClip`, and `CameraFarClip` are among the cleaner\nlocal names because their formatter fields already decode into useful scalar\nvalues rather than opaque raw bytes.",
+                            "The weaker names are the ones where the noun is clear but the exact action is\nnot yet locked down, such as whether `CameraSetAngle` and `SetCameraPosition`\nare immediate setters, mode selectors, or trigger bytes for previously staged\ncamera state."
+                          ]
+                        },
+                        "What is still missing for `Confirmed`:",
+                        {
+                          "ulist": [
+                            "Direct consumer or handler proof for the single-byte control opcodes\n`0xA2`, `0xC1`, `0xD1`, and `0xE0`.",
+                            "One tighter pass on `0xC0`, `0xC2`, `0xD0`, and `0xD4` that names their\nfields more specifically than today's conservative direction, look-at,\nposition, and height labels."
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "script-flow-helpers": {
+                  "heading": "Script flow helpers",
+                  "content": [
+                    {
+                      "paragraph": "Current local names:",
+                      "ulist": [
+                        "`0xF0 -> Wait`",
+                        "`0xF4 -> ScriptCallSlotActive`",
+                        "`0xF5 -> ScriptCall`",
+                        "`0xF6 -> ScriptReturn`",
+                        "Current narrow:",
+                        {
+                          "ulist": [
+                            "This block is already clearly control-flow related rather than content\nstaging. The local names match how the decoder treats the operands and how\nthe opcodes appear in call or return style script regions.",
+                            "`Wait`, `ScriptCall`, and `ScriptReturn` are stronger than\n`ScriptCallSlotActive`, which still exposes the bookkeeping flavor of the\nimplementation more than a settled player-facing verb."
+                          ]
+                        },
+                        "What is still missing for `Confirmed`:",
+                        {
+                          "ulist": [
+                            "A small helper-level proof write-up for the call-slot state checked or\nupdated by `0xF4`.",
+                            "One explicit note on the target encoding used by `0xF5`, mainly so the local\ncall naming can cite something more concrete than script-structure patterning."
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            "confirmed-improvements": {
+              "heading": "Confirmed improvements",
+              "sections": {
+                "opcode-0x24": {
+                  "heading": "Opcode `0x24`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Data Crystal: unnamed (`800b77dc`)",
+                        "Confirmed name: `ActorSfxPanVolumeControl`",
+                        "Confidence: `Confirmed`",
+                        "Why:",
+                        {
+                          "ulist": [
+                            "This opcode stores a little sound-control state on an actor.",
+                            "That stored state is later read by the sound code that decides where a sound\nshould come from and how loud it should be.",
+                            "There is also a cleanup path that clears the same state again, which matches\nthe idea of a temporary actor sound override rather than a one-shot trigger."
+                          ]
+                        },
+                        "Current best script-level interpretation:",
+                        {
+                          "ulist": [
+                            "`mode 0`: clear actor SFX spatial override state",
+                            "`mode 1`: set or pulse an override",
+                            "`mode 2`: set the default/basis used by later `mode 1` updates"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "paragraph": "The exact field names for the three control bytes may still deserve refinement,\nbut the subsystem identity is high-confidence."
+                    }
+                  ]
+                },
+                "opcode-0x49": {
+                  "heading": "Opcode `0x49`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Data Crystal: unnamed (`800b8c54`)",
+                        "Confirmed name: `SetJumpBackCounter`",
+                        "Confidence: `Confirmed`",
+                        "Why:",
+                        {
+                          "ulist": [
+                            "The matched opcode dispatch table in\n[`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)\nmaps `0x49` directly to the small readable handler now renamed\n`vs_battle_script_setJumpBackCounter`.",
+                            "That handler only does one thing: when the first script byte is not `0xFF`,\nit stores the second byte into a local counter-slot array at\n`D_800F4C10[arg0[1]]`.",
+                            "The paired opcode `0x4A` later decrements that same slot and uses it to\ndecide whether to jump backward, which makes `0x49` the explicit counter-setup\nhalf of the pair rather than a generic flag or mode write.",
+                            "In decoded scripts, the only currently reachable counted form is\n`49 00 01`, which matches a one-iteration setup for the later `4A 00 ...`\nconsumer. The repeated cathedral shake loops instead use the reserved\n`49 FF 00` scaffolding form before the unconditional `4A FF ...` back-jump."
+                          ]
+                        },
+                        "Current best script-level interpretation:",
+                        {
+                          "ulist": [
+                            "`49 ss cc`: store initial loop/jump-back count `cc` into counter slot `ss`",
+                            "`49 FF 00`: reserved unconditional form used alongside `4A FF ...`"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "opcode-0x4a": {
+                  "heading": "Opcode `0x4A`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Data Crystal: unnamed",
+                        "Confirmed name: `JumpBackIfCounter`",
+                        "Confidence: `Confirmed`",
+                        "Why:",
+                        {
+                          "ulist": [
+                            "The matched opcode dispatch table maps `0x4A` directly to the readable\nhandler\n[`vs_battle_script_jumpBackIf`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c),\nnow tightened to `vs_battle_script_jumpBackIfCounter` in the nested repo.",
+                            "When the first script byte is `0xFF`, the handler immediately returns\n`&arg0[-vs_battle_getShort(arg0 + 2)]`, which is an unconditional backward\njump by the encoded 16-bit offset.",
+                            "Otherwise it pre-decrements `D_800F4C10[arg0[1]]` and only returns that same\nbackward jump target while the decremented slot stays nonzero.",
+                            "Real script usage matches both forms. `MAP131`, `MAP133`, and `MAP413`\nrepeatedly use `49 FF 00` plus `4A FF ...` to loop camera-oscillation beats,\nwhile `MAP318` and `MAP321` use the slot `0` form `49 00 01` / `4A 00 8A 00`\nas the counted variant."
+                          ]
+                        },
+                        "Current best script-level interpretation:",
+                        {
+                          "ulist": [
+                            "`4A FF ll hh`: unconditionally jump backward by `<h ll hh>` bytes",
+                            "`4A ss ll hh`: decrement counter slot `ss`, then jump backward by\n`<h ll hh>` while the result stays nonzero"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "opcode-0x78": {
+                  "heading": "Opcode `0x78`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Data Crystal: unnamed (`800ba0e4`)",
+                        "Confirmed name: `EnableRoomMechanismUpdates`",
+                        "Confidence: `Confirmed`",
+                        "Why:",
+                        {
+                          "ulist": [
+                            "This opcode flips the room mechanism update loop on or off.",
+                            "In scripts it appears right where cutscenes take control away from normal room\nlogic, then appears again when normal room behavior is handed back.",
+                            "It sits right next to the room mechanism control opcode, so it is clearly part\nof the same subsystem."
+                          ]
+                        },
+                        "Important detail:",
+                        {
+                          "ulist": [
+                            "The script byte is inverted by the handler, so `1` means disabled and `0`\nmeans enabled."
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "opcode-0x79": {
+                  "heading": "Opcode `0x79`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Data Crystal: unnamed (`800ba194`)",
+                        "Confirmed name: `RoomMechanismControl`",
+                        "Confidence: `Confirmed`",
+                        "Why:",
+                        {
+                          "ulist": [
+                            "One sub-command tells the game to fire a room mechanism by id.",
+                            "The other sub-command flips that mechanism between enabled and disabled.",
+                            "The same code path is used by doors, locks, and other room objects, so this\nis not just a cutscene-only special case."
+                          ]
+                        },
+                        "Current best script-level interpretation:",
+                        {
+                          "ulist": [
+                            "`79 00 xx`: trigger room mechanism `xx`",
+                            "`79 01 xx`: toggle room mechanism `xx`"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "opcode-0xe1": {
+                  "heading": "Opcode `0xE1`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Data Crystal: unnamed",
+                        "Confirmed name: `SetScreenEffectEnabled`",
+                        "Confidence: `Confirmed`",
+                        "Why:",
+                        {
+                          "ulist": [
+                            "The matched opcode dispatch table in\n[`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)\nmaps `0xE1` directly to `func_800BB450`.",
+                            "`func_800BB450` is a tiny wrapper that just calls `func_8007DD50(arg0[1])`.",
+                            "`func_8007DD50` flips the effect runtime between active and shutdown states\nand allocates the backing effect object when needed.",
+                            "In scripts, `E1 01` and `E1 00` consistently bracket the nearby effect setup\nand tween opcodes such as `E4`, `E5`, `E6`, `E7`, and `EF`."
+                          ]
+                        },
+                        "Current best script-level interpretation:",
+                        {
+                          "ulist": [
+                            "`E1 00`: disable the current screen effect block",
+                            "`E1 01`: enable the current screen effect block"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "opcode-0xe2": {
+                  "heading": "Opcode `0xE2`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Data Crystal: unnamed",
+                        "Confirmed name: `CameraRollTween`",
+                        "Confidence: `Confirmed`",
+                        "Why:",
+                        {
+                          "ulist": [
+                            "The matched opcode dispatch table maps `0xE2` into the shared\n`vs_battle_script_setupAngleTween` handler in\n[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).",
+                            "The readable handler body switches on the opcode byte and routes `0xE2` into\n`D_800F4BA4->cameraAngleTween`.",
+                            "The matched apply side later commits that tween through\n`func_8007AC94(D_800F4BA4->cameraAngleTween.currentValue)`.",
+                            "`func_8007AC94` writes `_camera.t2.unk5C`, and the current\n[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)\nlayout now exposes named `pitch` and `yaw` fields immediately before that\ntarget. The paired getter masks the stored value with `& 0xFFF`, which fits\nthe remaining camera-angle slot much better than a generic scalar.",
+                            "In `decoded_scripts`, all 291 sampled `E2` instances currently end with a\ntrailing `00` byte, matching the handler only consuming angle, wrap/easing,\nand duration rather than a hidden selector or id field.",
+                            "Script usage clusters around camera staging beats and repeated resets back to\nangle `0`, which matches a camera roll control instead of room or actor\nstate."
+                          ]
+                        },
+                        "Current best script-level interpretation:",
+                        {
+                          "ulist": [
+                            "`E2 aa bb we dd 00`: tween the camera roll angle to `<h aa bb>` with\nwrap/easing control `we` over `dd` ticks"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "opcode-0xe3": {
+                  "heading": "Opcode `0xE3`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Data Crystal: unnamed",
+                        "Confirmed name: `ScreenEffectAngleTween`",
+                        "Confidence: `Confirmed`",
+                        "Why:",
+                        {
+                          "ulist": [
+                            "The matched opcode dispatch table maps `0xE3` into the shared\n`vs_battle_script_setupAngleTween` handler in\n[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).",
+                            "The readable handler body switches on the opcode byte and routes `0xE3` into\n`D_800F4BA4->screenEffectAngleTween`, not the camera tween slot used by\n`0xE2`.",
+                            "The matched apply side later commits that tween through\n`func_8007DDAC(D_800F4BA4->screenEffectAngleTween.currentValue)`.",
+                            "[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\nshows `func_8007DDAC` as a dedicated persistent setter for the shared\nscreen-effect angle scalar `D_800F1A2C`, and the ending-menu effect setup in\n[`../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c`](../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c)\nresets that same setter alongside the shared screen-effect scale, color, and\noffset state.",
+                            "A fresh local decode of `Game Data/MAP` currently finds 4 `E3` uses, all of\nthem inside the same `E1`/`E4`/`E5`/`E6` effect staging cluster.",
+                            "The strongest sample is `MAP102`, which sets `E3 30 00 10 00 00` before\nenabling the effect block, then immediately runs `E3 00 00 11 32 00` to\ntween that angle back to zero over 50 ticks. That behavior fits an effect\nangle control much better than a camera move or generic scalar.",
+                            "All 4 currently decoded `E3` instances end with a trailing `00` byte,\nmatching the shared setup helper only consuming angle, wrap/easing, and\nduration rather than a hidden selector field."
+                          ]
+                        },
+                        "Current best script-level interpretation:",
+                        {
+                          "ulist": [
+                            "`E3 aa bb we dd 00`: tween the active screen-effect angle to `<h aa bb>` with\nwrap/easing control `we` over `dd` ticks"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "opcode-0xe4": {
+                  "heading": "Opcode `0xE4`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Data Crystal: unnamed",
+                        "Confirmed name: `ScreenEffectScaleTween`",
+                        "Confidence: `Confirmed`",
+                        "Why:",
+                        {
+                          "ulist": [
+                            "The matched dispatch table maps `0xE4` into the shared screen-effect helper\nfamily, and the matched apply side in\n[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)\nsends the corresponding tween output through `func_8007DDB8`.",
+                            "`func_8007DDB8` writes the two persistent screen-effect scale components in\n[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c),\nand the effect reset path restores those components to neutral `0x1000`,\n`0x1000`.",
+                            "A direct non-script caller in\n[`../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c`](../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c)\nuses the same setter with values like `0x1029` and `0x107A` before enabling\nthe effect runtime, which matches a scale preset rather than ids or flags.",
+                            "In decoded scripts, `E4 20 20` repeatedly lands on neutral `4096, 4096`,\nwhile nearby values like `1F`, `21`, and `23` make small in/out adjustments."
+                          ]
+                        },
+                        "Current best script-level interpretation:",
+                        {
+                          "ulist": [
+                            "`E4 xx yy ee dd`: tween the active screen effect scale on two axes"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "opcode-0xe6": {
+                  "heading": "Opcode `0xE6`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Data Crystal: unnamed",
+                        "Confirmed name: `ScreenEffectOffsetTween`",
+                        "Confidence: `Confirmed`",
+                        "Why:",
+                        {
+                          "ulist": [
+                            "The same matched apply path in\n[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)\nroutes the `0xE6` tween state through `func_8007DDF8`.",
+                            "`func_8007DDF8` stores the persistent screen-effect offset vector in\n[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c),\nand the effect reset path zeros that state.",
+                            "Script operands are explicitly treated as signed bytes in the local decoder\nand show up in small ranges such as `-3`, `-1`, `0`, `1`, `2`, and `4`,\nwhich fits an offset control much better than ids, colors, or mode flags.",
+                            "Real script sequences frequently push a small offset and then ease back to\n`0, 0`, for example in `MAP017`, `MAP026`, `MAP131`, and `MAP145`."
+                          ]
+                        },
+                        "Current best script-level interpretation:",
+                        {
+                          "ulist": [
+                            "`E6 xx yy ee dd`: tween the active screen effect offset on two axes"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "opcode-0xe9": {
+                  "heading": "Opcode `0xE9`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Data Crystal: unnamed",
+                        "Confirmed name: `RecenterCamera`",
+                        "Confidence: `Confirmed`",
+                        "Why:",
+                        {
+                          "ulist": [
+                            "The matched opcode dispatch table in\n[`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)\nmaps `0xE9` directly to `func_800BB3BC`.",
+                            "`func_800BB3BC` converts the first script byte into either a preserved-facing\nsentinel (`0xFF -> -1`) or an 8-way facing override through `((arg0[1] + 4)\n& 7)`, converts script `0` in the second byte into a preserved-distance\nsentinel, and passes both through `func_800BC1CC`.",
+                            "`func_800BC1CC` rebuilds the target camera look-at and camera-position pair\nthrough `vs_battle_initialiseCameraFromSpherical`, copies those targets into\nthe live camera state, and starts the camera tween helpers based on the\ntransition distance.",
+                            "The matched `vs_battle_initialiseCameraFromSpherical` body in\n[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\nshows the optional override behavior clearly: `mode 1` forces distance\n`0x600`, `mode 2` forces distance `0x900`, and `-1` preserves the current\nspherical camera state.",
+                            "Real script usage matches that behavior. Most instances are the handback form\n`E9 FF 00`, used when cutscenes or first-person beats return the camera to\nnormal spherical control, while rarer setup forms such as `E9 03 01`,\n`E9 04 02`, and `E9 04 00` appear where scripts want a specific facing sector\nor distance preset before the recenter."
+                          ]
+                        },
+                        "Current best script-level interpretation:",
+                        {
+                          "ulist": [
+                            "`E9 FF 00`: recenter the camera from the current spherical gameplay state",
+                            "`E9 xx 00`: recenter the camera and override the 8-way facing sector first",
+                            "`E9 xx 01`: recenter the camera with the short-distance (`0x600`) preset",
+                            "`E9 xx 02`: recenter the camera with the long-distance (`0x900`) preset"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "opcode-0xef": {
+                  "heading": "Opcode `0xEF`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Data Crystal: unnamed",
+                        "Confirmed name: `CameraOscillationControl`",
+                        "Confidence: `Confirmed`",
+                        "Why:",
+                        {
+                          "ulist": [
+                            "Raw handler recovery in `func_800BDC9C` shows `0xEF` is not a plain one-shot\nsetter. When the second script byte is zero, it immediately clears both local\noscillation slots and returns.",
+                            "When that second byte is nonzero, the same handler allocates or reuses one of\ntwo small slot records, storing a phase-rate byte, an amplitude byte, a\ncontrol word, and a duration for the slot updater to consume.",
+                            "The recovered slot updater in `func_800BE01C` feeds the first byte into the\nphase term of an `rsin` call and multiplies the second byte into the output\namplitude, which is much stronger than the older generic `scalar0/scalar1`\nreading.",
+                            "The matched consumer in `func_800BE180` reads the low control byte as routing\nand axis-multiplier bits, then rotates the resulting short vectors into\ncamera-relative offsets that are added to both `cameraLookAt` and\n`cameraPos`.",
+                            "Script usage matches the split behavior: long timed bursts like `MAP131`,\n`MAP132`, and `MAP136` set up oscillation, while repeated forms such as\n`EF 01 00 57 00 01` and `EF 50 00 47 00 01` appear at cleanup beats where a\nclear-all control makes better sense than a zero-amplitude init."
+                          ]
+                        },
+                        "Current best script-level interpretation:",
+                        {
+                          "ulist": [
+                            "`EF rr 00 cc CC dd`: clear both active camera oscillation slots",
+                            "`EF rr aa cc CC dd`: start or refresh a camera-relative oscillation with\nphase rate `rr`, amplitude `aa`, control word `0xCCcc`, and duration `dd`"
+                          ]
+                        },
+                        "Important detail:",
+                        {
+                          "ulist": [
+                            "The opcode label is now strong enough to confirm the camera oscillation\nsubsystem and the control/setup split, but the exact player-facing meaning of\neach high-byte waveform mode is still worth future recovery work."
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            "other-confirmed-names-worth-upstreaming": {
+              "heading": "Other confirmed names worth upstreaming",
+              "content": [
+                {
+                  "paragraph": "These were also validated locally and are stronger than the older public table:",
+                  "ulist": [
+                    "`0x2E -> ModelScale`",
+                    "`0x49 -> SetJumpBackCounter`",
+                    "`0x4A -> JumpBackIfCounter`",
+                    "`0x31 -> ModelTint`",
+                    "`0x39 -> ModelLookAtPosition`",
+                    "`0x74 -> LoadRoomSection10`",
+                    "`0x75 -> WaitForRoomSection10`",
+                    "`0x76 -> FreeRoomSection10`",
+                    "`0x7C -> SetFirstPersonView`",
+                    "`0x85 -> LoadSfxSlot`",
+                    "`0x86 -> FreeSfxSlot`",
+                    "`0x88 -> SetCurrentSfx`",
+                    "`0x90 -> LoadMusicSlot`",
+                    "`0x91 -> FreeMusic`",
+                    "`0x99 -> ClearMusicLoadSlot`",
+                    "`0x9D -> LoadSoundFileById`",
+                    "`0x9E -> ProcessSoundQueue`",
+                    "`0xE2 -> CameraRollTween`",
+                    "`0xE3 -> ScreenEffectAngleTween`",
+                    "`0xE4 -> ScreenEffectScaleTween`",
+                    "`0xE5 -> ScreenEffectColorTween`",
+                    "`0xE6 -> ScreenEffectOffsetTween`",
+                    "`0xE9 -> RecenterCamera`",
+                    "`0xE7 -> SetScreenEffectMode`",
+                    "`0xEB -> CameraNearClip`",
+                    "`0xEC -> CameraFarClip`",
+                    "`0xEF -> CameraOscillationControl`",
+                    "`0xF4 -> ScriptCallSlotActive`",
+                    "`0xF5 -> ScriptCall`",
+                    "`0xF6 -> ScriptReturn`"
+                  ]
+                }
+              ],
+              "sections": {
+                "note-on-opcode-0x9d": {
+                  "heading": "Note on opcode `0x9D`",
+                  "content": [
+                    {
+                      "paragraph": "The `2` suffix is not justified anymore."
+                    },
+                    {
+                      "paragraph": "Why:",
+                      "ulist": [
+                        "This opcode directly tells the sound system which sound file id to load.",
+                        "A different older opcode reaches the same loader indirectly through the\ncurrent music slot, so there really are two load styles here.",
+                        "In real scripts, `9D xx` is usually followed by `9E`, and the same `xx` often\nshows up later as the music-load slot id. That fits a direct “queue this sound\nfile id” interpretation much better than a pitch control.",
+                        "Current best local rename:",
+                        {
+                          "ulist": [
+                            "`0x9D -> LoadSoundFileById`"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "paragraph": "That keeps the important distinction from the older helper-backed sound-file\nloader while making it explicit that the script operand is the file id."
+                    }
+                  ]
+                }
+              }
+            },
+            "confirmed-helper-level-behavior": {
+              "heading": "Confirmed helper-level behavior",
+              "content": [
+                {
+                  "paragraph": "These are worth tightening locally even if the final script-friendly name should\nstay a little conservative."
+                }
+              ],
+              "sections": {
+                "opcodes-0x64-and-0x65": {
+                  "heading": "Opcodes `0x64` and `0x65`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Confidence: `Confirmed` at helper level, `Strong` for conservative local\ntooling names, still not `Confirmed` for an upstream script-facing rename",
+                        "Current narrow:",
+                        {
+                          "ulist": [
+                            "`0x64` goes straight to `func_80091998(arg0[1])`.",
+                            "That helper resolves a room geometry entry and clears flag `0x100`.",
+                            "`0x65` goes straight to `func_800919D8(arg0[1])`.",
+                            "That helper resolves the same kind of room geometry entry and sets flag\n`0x100`.",
+                            "The same flag is also initialised from room section `12`, so this is clearly a\nroom-geometry state bit rather than an actor, camera, or sound control.",
+                            "The matched section-12 helper `func_8008E224` in\n[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\nwrites the same one-bit state and mirrors it into the linked geometry entry,\nwhich ties these opcodes to built-in room-object staging rather than an\nisolated debug flag.",
+                            "Real script usage now gives a stronger script-facing pattern than the older\nraw flag names. `0x65` clusters heavily around room-display and cutscene\nstaging beats, often just before `DisplayRoom`, camera setup, or first-person\nframing, while the same geometry ids are later restored with `0x64`.",
+                            "In the current decoded room set, the same geometry ids are toggled by both\nopcodes in 39 files, including\n[`../../decoded_scripts/1-Wine Cellar/009-Entrance to Darkness.txt`](../../decoded_scripts/1-Wine%20Cellar/009-Entrance%20to%20Darkness.txt),\n[`../../decoded_scripts/1-Wine Cellar/013-Smokebarrel Stair.txt`](../../decoded_scripts/1-Wine%20Cellar/013-Smokebarrel%20Stair.txt),\nand\n[`../../decoded_scripts/10-The Keep/124-The Warrior's Rest.txt`](../../decoded_scripts/10-The%20Keep/124-The%20Warrior's%20Rest.txt).",
+                            "A broad script scan currently finds `0x65` within six lines of\n`DisplayRoom` 611 times, versus 47 for `0x64`, which fits a temporary\nsuppression/setup role better than a permanent state write."
+                          ]
+                        },
+                        "Best safe local names for tooling:",
+                        {
+                          "ulist": [
+                            "`0x64 -> RestoreRoomGeometry`",
+                            "`0x65 -> SuppressRoomGeometry`"
+                          ]
+                        },
+                        "Why this wording stays conservative:",
+                        {
+                          "ulist": [
+                            "The exact render or collision consumer behind geometry flag `0x100` still\nneeds one more decomp pass.",
+                            "That means a harder claim like `ShowRoomGeometry`/`HideRoomGeometry` could\nstill be slightly too specific.",
+                            "`Restore`/`Suppress` captures the proven script pattern without pretending the\nremaining implementation details are fully locked down."
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            "still-tentative": {
+              "heading": "Still tentative",
+              "content": [
+                {
+                  "paragraph": "These are narrowed down, but should not be hard-renamed upstream without one\nmore proof pass:",
+                  "ulist": [
+                    "`0x7A`",
+                    "`0xED`"
+                  ]
+                }
+              ],
+              "sections": {
+                "opcode-0x7a": {
+                  "heading": "Opcode `0x7A`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Confidence: `Strong`",
+                        "Current narrow:",
+                        {
+                          "ulist": [
+                            "The matched opcode dispatch table routes `0x7A` directly to the readable\nhandler body now named\n[`vs_battle_script_setRoomAmbientSoundSuspended`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).",
+                            "When the script byte is nonzero, that handler latches a local \"suspended\"\nstate and, if `func_8008E470()` passes, grabs the current ambient sound id\nthrough `func_800913BC(-1)` and clears playback by swapping in `-1`.",
+                            "When the script byte returns to zero, the same handler restores the saved\nambient sound id through `func_800913BC(savedId)` and clears the latched\nsuspended state.",
+                            "The sound helper in\n[`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c)\nconfirms `func_800913BC` is the persistent ambient-id swap path.",
+                            "Real script usage still matches the user-facing idea: decoded rooms such as\n`MAP138`, `MAP062`, `MAP001`, and `MAP006` use `7A 01` near cutscene\ntakeover beats and `7A 00` when normal room behavior is restored."
+                          ]
+                        },
+                        "Best safe local tooling name:",
+                        {
+                          "ulist": [
+                            "`SetRoomAmbientSoundSuspended`"
+                          ]
+                        },
+                        "Current best script-level interpretation:",
+                        {
+                          "ulist": [
+                            "`7A 01`: suspend the current room ambient sound, saving the previous id when\nthis room uses the persistent ambient-id path",
+                            "`7A 00`: restore that saved ambient sound id when the same path is active"
+                          ]
+                        },
+                        "Why still not confirmed:",
+                        {
+                          "ulist": [
+                            "The save/restore behavior proven so far is scoped to the persistent\nambient-id path behind `func_800913BC`.",
+                            "The room audio code also has a separate AKAO-backed `section14` path, and the\nopcode handler gates its swap/restore work through `func_8008E470()`.",
+                            "That means the shared user-facing effect is strongly suggested, but the\ncurrent proof does not yet justify a broad unconditional confirmed rename."
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "opcode-0xed": {
+                  "heading": "Opcode `0xED`",
+                  "content": [
+                    {
+                      "ulist": [
+                        "Confidence: `Strong`",
+                        "Current narrow:",
+                        {
+                          "ulist": [
+                            "This opcode, not `0xEF`, is the direct path that feeds\n`vs_screff2_setParamPair(param0, param1)` in `SCREFF2.PRG`.",
+                            "The first script byte is promoted with `<< 6` before entering the SCREFF2\nsetter, which proves it is a 12-bit fixed-point parameter rather than a\nplain flag or id byte.",
+                            "A fresh full decode of `Game Data/MAP` finds 10 currently reachable script\nuses across 4 rooms. Every one of those rooms resets with `ED 40 00 00 00`,\ni.e. `0x40 << 6 = 4096`, while the other observed first-parameter values\nstay nearby at `3712`, `4672`, `4928`, `5056`, and `5120`.",
+                            "The second script byte is treated as a signed byte, and the last two bytes\nbehave like easing and duration.",
+                            "That makes it a two-parameter effect tween rather than general logic flow."
+                          ]
+                        },
+                        "Best safe local tooling name:",
+                        {
+                          "ulist": [
+                            "`ScreenEffectParamPairTween`"
+                          ]
+                        },
+                        "Best safe local tooling rendering:",
+                        {
+                          "ulist": [
+                            "`param0Fixed12=<byte << 6>` with `4096` as the currently proven neutral/reset\nvalue",
+                            "`param1Signed=<s8>`"
+                          ]
+                        },
+                        "Why still tentative:",
+                        {
+                          "ulist": [
+                            "The two destination fields in `SCREFF2` are still unnamed, so the exact\nplayer-visible feature behind the pair has not been nailed down yet.",
+                            "The first field is narrow enough to treat as a fixed-point parameter with a\nstable neutral/reset form, but the current evidence still does not prove the\nexact visual meaning of either destination field."
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            "suggested-upstream-patch-shape": {
+              "heading": "Suggested upstream patch shape",
+              "content": [
+                {
+                  "paragraph": "Keep the contribution in small pieces:",
+                  "olit": [
+                    "Add comments around the matched handlers in `4A0A8.c` and `146C.c`.",
+                    "Rename script-decoder mnemonics in local tooling and include evidence in PR\ntext.",
+                    "Keep speculative opcodes out of the first PR."
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "0dc28632ce4af406e22da8f632d61d83a6276ad43dd8d86e7ce06479476c96b3",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "## Vagrant Story Script Opcode Conclusions\n\nThis note collects high-confidence opcode conclusions that appear to improve on the\ncurrent public table at Data Crystal:\n\n- Source: <https://datacrystal.tcrf.net/wiki/Vagrant_Story/Script_Opcodes>\n\nThe goal is to keep this contribution set conservative: only names with a clear\ncode-path or script-usage proof are listed as confirmed. Anything still fuzzy\nshould stay tentative in upstream comments and PR text.\n\nUse [`OPCODE_BEHAVIOR_REFERENCE.md`](OPCODE_BEHAVIOR_REFERENCE.md) as the quick\nlookup for the current local opcode table, parameter layouts, and unresolved\nslots. This note is the longer evidence and confidence trail for the names that\nmatter enough to justify written conclusions.\n\n### Confidence guide\n\nUse this quick rubric when judging an opcode name:\n\n- `Confirmed`: the handler body is readable and the behavior matches real script\n  usage.\n- `Strong`: the handler target is clear and the likely subsystem is clear, but\n  one part of the user-facing meaning still needs proof.\n- `Tentative`: the opcode has been narrowed down to a subsystem or helper path,\n  but the final script-friendly name would still be guesswork.\n\nFor this note, `rood-reverse` is the better source for opcode work than Data\nCrystal when a handler is actually decompiled. Data Crystal is still useful as a\nlegacy address table, but its names should be treated as historical notes until\nthe code body agrees.\n\n### Current coverage snapshot\n\nThe current local decoder table in\n[`../../dump_mpd_script.py`](../../dump_mpd_script.py) now covers all `256` opcode slots,\nbut only part of that table is meaningfully named:\n\n- named locally: `85 / 256`\n- still placeholder-named as `OpcodeXX`: `171 / 256`\n- most complete block: `0xE0-0xEF` with `14` named and only `0xE8` / `0xEE`\n  still unresolved\n- completely unresolved block: `0xB0-0xBF`\n\nThe heaviest remaining unknown regions are:\n\n- `0xA3-0xBF`\n- `0xC5-0xCF`\n- `0xD5-0xDF`\n- `0xF7-0xFE`\n\nThere are also `22` placeholder entries whose current local size is still\n`0x00`, so they remain unsafe targets for any confident rename or decoder\ncleanup pass:\n\n- `0x09`\n- `0x8A-0x8E`\n- `0xA7`\n- `0xAB-0xAF`\n- `0xB0`\n- `0xC6`\n- `0xCC-0xCF`\n- `0xD6`\n- `0xDC-0xDD`\n- `0xEE`\n\n### Still missing from the current local opcode list\n\nHere, \"missing\" means the local decoder still exposes only a placeholder name\nsuch as `Opcode41`, not merely that this note lacks a long write-up.\n\n- `0x01-0x0F`\n- `0x13-0x15`\n- `0x1B-0x1F`\n- `0x21`\n- `0x25`\n- `0x27`\n- `0x2A-0x2D`\n- `0x32`\n- `0x34-0x37`\n- `0x3C-0x3D`\n- `0x3F`\n- `0x41`\n- `0x43`\n- `0x45-0x48`\n- `0x4B-0x4F`\n- `0x51-0x53`\n- `0x55-0x57`\n- `0x59-0x63`\n- `0x66-0x67`\n- `0x6A-0x6C`\n- `0x6E-0x6F`\n- `0x71-0x73`\n- `0x77`\n- `0x7B`\n- `0x7D-0x7F`\n- `0x81-0x84`\n- `0x87`\n- `0x89-0x8F`\n- `0x93-0x98`\n- `0x9A-0x9C`\n- `0x9F-0xA0`\n- `0xA3-0xBF`\n- `0xC3`\n- `0xC5-0xCF`\n- `0xD2-0xD3`\n- `0xD5-0xDF`\n- `0xE8`\n- `0xEE`\n- `0xF1-0xF3`\n- `0xF7-0xFE`\n\n### Documented local names still awaiting per-opcode proof write-ups\n\nThese names are already usable in the local decoder. What was missing here was\nnot the names themselves, but a short record of why they are currently\nreasonable and what would still be needed before each one should be treated as\nfully `Confirmed` in the same sense as the stronger entries below.\n\n#### Dialog and splash-screen control\n\nCurrent local names:\n\n- `0x10 -> DialogShow`\n- `0x11 -> DialogText`\n- `0x12 -> DialogHide`\n- `0x16 -> SplashScreenChoose`\n- `0x17 -> SplashScreenLoad`\n- `0x18 -> SplashScreenShow`\n- `0x19 -> SplashScreenHide`\n- `0x1A -> SplashScreenFadeIn`\n\nCurrent narrow:\n\n- `0x10-0x12` already decode cleanly as dialog id, text id, and dialog box\n  control fields in the script dumper, so the dialog-family naming is on solid\n  local footing.\n- `0x16-0x1A` cluster as a separate overlay or splash-screen path rather than\n  actor, room, or camera control, and their current verbs match the usual\n  script ordering pattern of choose or load, then show, hide, or fade.\n- `0x13-0x15` remain unresolved, so this block is only partially mapped.\n\nWhat is still missing for `Confirmed`:\n\n- A direct handler-by-handler decomp citation for the splash-screen verbs,\n  especially the exact difference between `Choose`, `Load`, and `Show`.\n- One proof pass that ties the fade opcode specifically to fade-in behavior and\n  not a more generic overlay transition mode.\n\n#### Core model staging\n\nCurrent local names:\n\n- `0x20 -> ModelLoad`\n- `0x22 -> ModelAnimate`\n- `0x23 -> ModelSetAnimations`\n- `0x26 -> ModelPosition`\n- `0x28 -> ModelMoveTo`\n- `0x29 -> ModelMoveTo2`\n- `0x2E -> ModelScale`\n- `0x30 -> ModelLoadAnimationsEx`\n- `0x31 -> ModelTint`\n- `0x33 -> ModelRotate`\n- `0x38 -> ModelLookAt`\n- `0x39 -> ModelLookAtPosition`\n- `0x3A -> ModelLoadAnimations`\n- `0x3E -> ModelIlluminate`\n- `0x42 -> ModelControlViaScript`\n- `0x50 -> ModelControlViaBattleMode`\n- `0x70 -> ModelColor`\n- `0xC4 -> ModelAnimateObject`\n\nCurrent narrow:\n\n- The argument shapes already look like a coherent actor-model control family:\n  actor ids, animation ids, position triples, rotation-like fields, look-at\n  targets, and color or tint style parameters all show up where expected.\n- Some names in this group are already stronger than the rest. `ModelScale`,\n  `ModelTint`, and `ModelLookAtPosition` have enough local evidence to be worth\n  upstreaming even before every neighboring model opcode gets a full write-up.\n- The weaker names are the ones that still hide an important mode distinction\n  behind generic wording, such as `ModelMoveTo` versus `ModelMoveTo2`,\n  `ModelLoadAnimations` versus `ModelLoadAnimationsEx`, and the control wrappers\n  around `0x42`, `0x50`, and `0xC4`.\n\nWhat is still missing for `Confirmed`:\n\n- Direct handler evidence for the alternate load, move, and animate variants so\n  the local names can explain the difference instead of only naming the shared\n  subsystem.\n- One field-level pass for `0x3E`, `0x42`, `0x50`, `0x70`, and `0xC4` to decide\n  whether the current names are precise enough or still slightly too generic.\n\n#### Room loading and scene-display flow\n\nCurrent local names:\n\n- `0x68 -> LoadRoom`\n- `0x69 -> LoadScene`\n- `0x6D -> DisplayRoom`\n- `0x74 -> LoadRoomSection10`\n- `0x75 -> WaitForRoomSection10`\n- `0x76 -> FreeRoomSection10`\n\nCurrent narrow:\n\n- `0x68` already formats as a zone-room destination pair in the dumper, which\n  makes a room-loader interpretation much stronger than a generic file load.\n- `0x6D` behaves like a display or activation step that appears after load or\n  staging work rather than before it.\n- `0x74-0x76` form a clean async trio by both naming and script position: load,\n  then wait, then free.\n\nWhat is still missing for `Confirmed`:\n\n- A direct proof of the exact distinction between `LoadRoom` and `LoadScene`.\n- One decomp-backed identification of what \"section 10\" actually contains so\n  the section-10 names can eventually become more user-facing if warranted.\n\n#### Core audio flow\n\nCurrent local names:\n\n- `0x80 -> Opcode80SharedStub`\n- `0x85 -> LoadSfxSlot`\n- `0x86 -> FreeSfxSlot`\n- `0x88 -> SetCurrentSfx`\n- `0x90 -> LoadMusicSlot`\n- `0x91 -> FreeMusic`\n- `0x92 -> MusicPlay`\n- `0x99 -> ClearMusicLoadSlot`\n- `0x9D -> LoadSoundFileById`\n- `0x9E -> ProcessSoundQueue`\n\nCurrent narrow:\n\n- This block still reads like a shared sound pipeline rather than unrelated\n  opcodes: resource loads, slot selection, explicit frees, then queue or\n  process steps.\n- `0x80` no longer survives as a direct-sound member of that group.\n  The static dispatch table routes `0x80` to `func_800B66E4`, whose matched\n  body is only `return 0;`, and the validated retail `MAP001` runtime pass now\n  shows the live copied table still dispatching `0x80` to that same stub with\n  no observed rewrite before the checked intro call.\n- The nearby helper `func_800BA2E0` still consumes the same 4-byte argument\n  shape and still looks sound-facing, but local evidence now anchors it inside\n  a separate `0x83+` `BATTLE.PRG` subdispatch table rather than treating it as\n  a hidden replacement handler for `0x80`.\n- The widened `0x800B66E4` family audit now makes the structural reading less\n  unique, not more: the same `INITBTL.PRG` table slot also covers named\n  dialog, model, engine-mode, room, battle-end, and music-looking members such\n  as `0x10`, `0x11`, `0x22`, `0x44`, `0x54`, `0x69`, `0x6D`, and `0x92`.\n  That means table membership alone is not standalone user-facing proof for\n  any member of the cluster, including `0x80`.\n- Real script usage still clusters `0x80` near audio-looking cutscene moments,\n  but that is now context evidence only. It is no longer enough to override\n  the verified handler-level fact that the opcode itself lands on the shared\n  stub.\n- A new neighboring-context scan of the checked-in `decoded_scripts` corpus\n  strengthens that cleanup path without reviving the old direct-sound label.\n  Of the `127` files that still contain legacy-rendered `0x80` lines,\n  `88` also co-host at least one explicit sound-family neighbor from\n  `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or `0x9E`.\n  Representative files such as `MAP001`, `MAP026`, and `MAP415` already arm\n  SFX slots, music slots, or sound-file queues through those neighboring\n  opcodes before later `0x80` bursts appear.\n  That makes the old name unnecessary for many audio-looking scenes even\n  before the final consumer path is fully traced.\n- A stricter first-burst prepared-state comparison now sharpens that result.\n  `85` of those `127` files already stage at least one complete neighboring\n  sound pair before the first `0x80` in the same file:\n  `83` stage `0x85/0x88`, `44` stage `0x9D/0x9E`, and `20` stage\n  `0x90/0x92`.\n  When multiple complete pairs exist, the closest pair before the first\n  `0x80` is the SFX-slot path in `62` files, the queue path in `13`, and the\n  music-slot path in `10`.\n  That turns the neighboring-family explanation from a loose co-hosting hint\n  into a scene-ordering result: the default local replacement for the old\n  `SoundEffects0` reading is usually the already-proven `0x85/0x88`\n  prepared-state path, with `MAP026`-style queue re-arms and `MAP415`-style\n  music-heavy scenes covering important exceptions.\n- A new residual-context pass now narrows the remaining holdouts more\n  aggressively than the earlier \"42 unexplained files\" wording.\n  All `42` residual files reach their first `0x80` with no sound-family opcode\n  at all before it, and `38` of those files contain no `0x85-0x9E`\n  sound-family opcode anywhere in the file.\n  The dominant evidence is template reuse, not missing sound setup:\n  `36` residual files share the exact duplicated opener\n  `80 01 41 80 7F` then `80 01 42 80 7F`, most often after the same\n  `DialogHide` -> `Opcode14` -> `SetHeadsUpDisplayMode(1)` lead-in and before\n  the same `Opcode45` -> `ModelControlViaScript` follow-up.\n  Another `3` residual files share the alternate duplicated\n  `80 01 1D 80 7F` then `80 01 1E 80 7F` microcluster.\n  That makes the residual set look more like repeated opener scaffolding than\n  like strong positive sound evidence.\n- The residual pass also narrows the real exceptions.\n  Only `2` residual files later grow a complete neighboring pair in the same\n  file, and only `2` currently have same-title sibling variants in the same\n  area that do stage complete pre-burst pairs:\n  `022-Chamber of Fear (after the quake)` versus `017-Chamber of Fear`, and\n  `408-The Gallows (Mino Zombie, new chest)` versus `026-The Gallows`.\n  Those are now the clearest carry-over or alternate-state candidates, rather\n  than the default explanation for the full residual set.\n- A newer template-context pass sharpens that structural reading even more.\n  `39` of the `42` residual files now collapse into just two repeated\n  double-`0x80` scaffolds:\n  `36` use the paired `0x41/0x42` opener and `3` use the paired\n  `0x1D/0x1E` burst.\n  The dominant `0x41/0x42` family is especially non-audio-looking:\n  `34` of its `36` files contain no sound-family opcode anywhere in the file,\n  `26` reach the first burst through the same\n  `DialogHide` -> `Opcode14` -> `SetHeadsUpDisplayMode(1)` lead-in, and\n  `20` continue through the same\n  `Opcode45` -> `ModelControlViaScript` -> `Opcode45` -> `Opcode43` ->\n  `ModelControlViaScript` post-burst spine.\n  The smaller `0x1D/0x1E` family likewise lands in repeated dialog or\n  battle-mode control bundles, while the only true holdouts now are the three\n  singleton or variant scenes `021`, `022`, and `025`.\n  That pushes the residual story further away from hidden sound playback and\n  further toward room-entry or cutscene template reuse that still carries an\n  inert `0x80` burst.\n- `LoadSoundFileById` and `ProcessSoundQueue` are especially strong locally\n  because real scripts commonly pair `9D xx` with a later `9E`.\n- `LoadSfxSlot`, `FreeSfxSlot`, `SetCurrentSfx`, `LoadMusicSlot`, and\n  `ClearMusicLoadSlot` are all plausible and internally consistent names, but\n  some still rest more on script ordering than on fully cited handler bodies.\n  `Opcode80SharedStub` is intentionally a structural label, not a final\n  user-facing semantic name.\n\nWhat is still missing for `Confirmed`:\n\n- The new neighboring-context packet shows that many representative `0x80`\n  scenes already contain explicit `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or\n  `0x9E` setup, but it still does not identify which downstream consumer turns\n  that prepared state into the audible result for each scene.\n- The stricter first-burst scan leaves a concrete residual set:\n  `42` currently decoded `0x80` files still reach their first `0x80` without\n  any complete neighboring sound pair in the same file before it, but the new\n  residual pass shows that most of those files are repeated opener templates\n  rather than fresh audio-heavy holdouts.\n  The newer template-context pass narrows that further:\n  the repeated `0x41/0x42` and `0x1D/0x1E` bursts now look like stable\n  room-entry or cutscene scaffolds, so what remains open is their provenance\n  and the behavior of the few singleton or variant cases, not whether they are\n  secretly the main direct sound path.\n- A consumer-path explanation for the minority cases that really do look like\n  carry-over or later-rearm scenes, without leaning on the widened\n  `0x800B66E4` stub family as if it were direct audio proof.\n- One cleaner write-up of how the music-slot and sound-file-id paths interact,\n  so `LoadMusicSlot` and `MusicPlay` can be documented with the same confidence\n  now used for `LoadSoundFileById`.\n\n#### Core camera flow outside the effect-heavy `E` range\n\nCurrent local names:\n\n- `0xA2 -> CameraZoomIn`\n- `0xC0 -> CameraDirection`\n- `0xC1 -> CameraSetAngle`\n- `0xC2 -> CameraLookAt`\n- `0xD0 -> CameraPosition`\n- `0xD1 -> SetCameraPosition`\n- `0xD4 -> CameraHeight`\n- `0xE0 -> CameraWait`\n- `0xEA -> CameraZoom`\n- `0xEB -> CameraNearClip`\n- `0xEC -> CameraFarClip`\n\nCurrent narrow:\n\n- The operand shapes and local formatting already separate this block from the\n  screen-effect opcodes: position, look-at, direction, zoom, and clip-plane\n  style fields dominate instead of color or oscillation parameters.\n- `CameraZoom`, `CameraNearClip`, and `CameraFarClip` are among the cleaner\n  local names because their formatter fields already decode into useful scalar\n  values rather than opaque raw bytes.\n- The weaker names are the ones where the noun is clear but the exact action is\n  not yet locked down, such as whether `CameraSetAngle` and `SetCameraPosition`\n  are immediate setters, mode selectors, or trigger bytes for previously staged\n  camera state.\n\nWhat is still missing for `Confirmed`:\n\n- Direct consumer or handler proof for the single-byte control opcodes\n  `0xA2`, `0xC1`, `0xD1`, and `0xE0`.\n- One tighter pass on `0xC0`, `0xC2`, `0xD0`, and `0xD4` that names their\n  fields more specifically than today's conservative direction, look-at,\n  position, and height labels.\n\n#### Script flow helpers\n\nCurrent local names:\n\n- `0xF0 -> Wait`\n- `0xF4 -> ScriptCallSlotActive`\n- `0xF5 -> ScriptCall`\n- `0xF6 -> ScriptReturn`\n\nCurrent narrow:\n\n- This block is already clearly control-flow related rather than content\n  staging. The local names match how the decoder treats the operands and how\n  the opcodes appear in call or return style script regions.\n- `Wait`, `ScriptCall`, and `ScriptReturn` are stronger than\n  `ScriptCallSlotActive`, which still exposes the bookkeeping flavor of the\n  implementation more than a settled player-facing verb.\n\nWhat is still missing for `Confirmed`:\n\n- A small helper-level proof write-up for the call-slot state checked or\n  updated by `0xF4`.\n- One explicit note on the target encoding used by `0xF5`, mainly so the local\n  call naming can cite something more concrete than script-structure patterning.\n\n### Confirmed improvements\n\n#### Opcode `0x24`\n\n- Data Crystal: unnamed (`800b77dc`)\n- Confirmed name: `ActorSfxPanVolumeControl`\n- Confidence: `Confirmed`\n\nWhy:\n\n- This opcode stores a little sound-control state on an actor.\n- That stored state is later read by the sound code that decides where a sound\n  should come from and how loud it should be.\n- There is also a cleanup path that clears the same state again, which matches\n  the idea of a temporary actor sound override rather than a one-shot trigger.\n\nCurrent best script-level interpretation:\n\n- `mode 0`: clear actor SFX spatial override state\n- `mode 1`: set or pulse an override\n- `mode 2`: set the default/basis used by later `mode 1` updates\n\nThe exact field names for the three control bytes may still deserve refinement,\nbut the subsystem identity is high-confidence.\n\n#### Opcode `0x49`\n\n- Data Crystal: unnamed (`800b8c54`)\n- Confirmed name: `SetJumpBackCounter`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The matched opcode dispatch table in\n  [`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)\n  maps `0x49` directly to the small readable handler now renamed\n  `vs_battle_script_setJumpBackCounter`.\n- That handler only does one thing: when the first script byte is not `0xFF`,\n  it stores the second byte into a local counter-slot array at\n  `D_800F4C10[arg0[1]]`.\n- The paired opcode `0x4A` later decrements that same slot and uses it to\n  decide whether to jump backward, which makes `0x49` the explicit counter-setup\n  half of the pair rather than a generic flag or mode write.\n- In decoded scripts, the only currently reachable counted form is\n  `49 00 01`, which matches a one-iteration setup for the later `4A 00 ...`\n  consumer. The repeated cathedral shake loops instead use the reserved\n  `49 FF 00` scaffolding form before the unconditional `4A FF ...` back-jump.\n\nCurrent best script-level interpretation:\n\n- `49 ss cc`: store initial loop/jump-back count `cc` into counter slot `ss`\n- `49 FF 00`: reserved unconditional form used alongside `4A FF ...`\n\n#### Opcode `0x4A`\n\n- Data Crystal: unnamed\n- Confirmed name: `JumpBackIfCounter`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The matched opcode dispatch table maps `0x4A` directly to the readable\n  handler\n  [`vs_battle_script_jumpBackIf`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c),\n  now tightened to `vs_battle_script_jumpBackIfCounter` in the nested repo.\n- When the first script byte is `0xFF`, the handler immediately returns\n  `&arg0[-vs_battle_getShort(arg0 + 2)]`, which is an unconditional backward\n  jump by the encoded 16-bit offset.\n- Otherwise it pre-decrements `D_800F4C10[arg0[1]]` and only returns that same\n  backward jump target while the decremented slot stays nonzero.\n- Real script usage matches both forms. `MAP131`, `MAP133`, and `MAP413`\n  repeatedly use `49 FF 00` plus `4A FF ...` to loop camera-oscillation beats,\n  while `MAP318` and `MAP321` use the slot `0` form `49 00 01` / `4A 00 8A 00`\n  as the counted variant.\n\nCurrent best script-level interpretation:\n\n- `4A FF ll hh`: unconditionally jump backward by `<h ll hh>` bytes\n- `4A ss ll hh`: decrement counter slot `ss`, then jump backward by\n  `<h ll hh>` while the result stays nonzero\n\n#### Opcode `0x78`\n\n- Data Crystal: unnamed (`800ba0e4`)\n- Confirmed name: `EnableRoomMechanismUpdates`\n- Confidence: `Confirmed`\n\nWhy:\n\n- This opcode flips the room mechanism update loop on or off.\n- In scripts it appears right where cutscenes take control away from normal room\n  logic, then appears again when normal room behavior is handed back.\n- It sits right next to the room mechanism control opcode, so it is clearly part\n  of the same subsystem.\n\nImportant detail:\n\n- The script byte is inverted by the handler, so `1` means disabled and `0`\n  means enabled.\n\n#### Opcode `0x79`\n\n- Data Crystal: unnamed (`800ba194`)\n- Confirmed name: `RoomMechanismControl`\n- Confidence: `Confirmed`\n\nWhy:\n\n- One sub-command tells the game to fire a room mechanism by id.\n- The other sub-command flips that mechanism between enabled and disabled.\n- The same code path is used by doors, locks, and other room objects, so this\n  is not just a cutscene-only special case.\n\nCurrent best script-level interpretation:\n\n- `79 00 xx`: trigger room mechanism `xx`\n- `79 01 xx`: toggle room mechanism `xx`\n\n#### Opcode `0xE1`\n\n- Data Crystal: unnamed\n- Confirmed name: `SetScreenEffectEnabled`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The matched opcode dispatch table in\n  [`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)\n  maps `0xE1` directly to `func_800BB450`.\n- `func_800BB450` is a tiny wrapper that just calls `func_8007DD50(arg0[1])`.\n- `func_8007DD50` flips the effect runtime between active and shutdown states\n  and allocates the backing effect object when needed.\n- In scripts, `E1 01` and `E1 00` consistently bracket the nearby effect setup\n  and tween opcodes such as `E4`, `E5`, `E6`, `E7`, and `EF`.\n\nCurrent best script-level interpretation:\n\n- `E1 00`: disable the current screen effect block\n- `E1 01`: enable the current screen effect block\n\n#### Opcode `0xE2`\n\n- Data Crystal: unnamed\n- Confirmed name: `CameraRollTween`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The matched opcode dispatch table maps `0xE2` into the shared\n  `vs_battle_script_setupAngleTween` handler in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).\n- The readable handler body switches on the opcode byte and routes `0xE2` into\n  `D_800F4BA4->cameraAngleTween`.\n- The matched apply side later commits that tween through\n  `func_8007AC94(D_800F4BA4->cameraAngleTween.currentValue)`.\n- `func_8007AC94` writes `_camera.t2.unk5C`, and the current\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)\n  layout now exposes named `pitch` and `yaw` fields immediately before that\n  target. The paired getter masks the stored value with `& 0xFFF`, which fits\n  the remaining camera-angle slot much better than a generic scalar.\n- In `decoded_scripts`, all 291 sampled `E2` instances currently end with a\n  trailing `00` byte, matching the handler only consuming angle, wrap/easing,\n  and duration rather than a hidden selector or id field.\n- Script usage clusters around camera staging beats and repeated resets back to\n  angle `0`, which matches a camera roll control instead of room or actor\n  state.\n\nCurrent best script-level interpretation:\n\n- `E2 aa bb we dd 00`: tween the camera roll angle to `<h aa bb>` with\n  wrap/easing control `we` over `dd` ticks\n\n#### Opcode `0xE3`\n\n- Data Crystal: unnamed\n- Confirmed name: `ScreenEffectAngleTween`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The matched opcode dispatch table maps `0xE3` into the shared\n  `vs_battle_script_setupAngleTween` handler in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).\n- The readable handler body switches on the opcode byte and routes `0xE3` into\n  `D_800F4BA4->screenEffectAngleTween`, not the camera tween slot used by\n  `0xE2`.\n- The matched apply side later commits that tween through\n  `func_8007DDAC(D_800F4BA4->screenEffectAngleTween.currentValue)`.\n- [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\n  shows `func_8007DDAC` as a dedicated persistent setter for the shared\n  screen-effect angle scalar `D_800F1A2C`, and the ending-menu effect setup in\n  [`../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c`](../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c)\n  resets that same setter alongside the shared screen-effect scale, color, and\n  offset state.\n- A fresh local decode of `Game Data/MAP` currently finds 4 `E3` uses, all of\n  them inside the same `E1`/`E4`/`E5`/`E6` effect staging cluster.\n- The strongest sample is `MAP102`, which sets `E3 30 00 10 00 00` before\n  enabling the effect block, then immediately runs `E3 00 00 11 32 00` to\n  tween that angle back to zero over 50 ticks. That behavior fits an effect\n  angle control much better than a camera move or generic scalar.\n- All 4 currently decoded `E3` instances end with a trailing `00` byte,\n  matching the shared setup helper only consuming angle, wrap/easing, and\n  duration rather than a hidden selector field.\n\nCurrent best script-level interpretation:\n\n- `E3 aa bb we dd 00`: tween the active screen-effect angle to `<h aa bb>` with\n  wrap/easing control `we` over `dd` ticks\n\n#### Opcode `0xE4`\n\n- Data Crystal: unnamed\n- Confirmed name: `ScreenEffectScaleTween`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The matched dispatch table maps `0xE4` into the shared screen-effect helper\n  family, and the matched apply side in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)\n  sends the corresponding tween output through `func_8007DDB8`.\n- `func_8007DDB8` writes the two persistent screen-effect scale components in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c),\n  and the effect reset path restores those components to neutral `0x1000`,\n  `0x1000`.\n- A direct non-script caller in\n  [`../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c`](../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c)\n  uses the same setter with values like `0x1029` and `0x107A` before enabling\n  the effect runtime, which matches a scale preset rather than ids or flags.\n- In decoded scripts, `E4 20 20` repeatedly lands on neutral `4096, 4096`,\n  while nearby values like `1F`, `21`, and `23` make small in/out adjustments.\n\nCurrent best script-level interpretation:\n\n- `E4 xx yy ee dd`: tween the active screen effect scale on two axes\n\n#### Opcode `0xE6`\n\n- Data Crystal: unnamed\n- Confirmed name: `ScreenEffectOffsetTween`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The same matched apply path in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)\n  routes the `0xE6` tween state through `func_8007DDF8`.\n- `func_8007DDF8` stores the persistent screen-effect offset vector in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c),\n  and the effect reset path zeros that state.\n- Script operands are explicitly treated as signed bytes in the local decoder\n  and show up in small ranges such as `-3`, `-1`, `0`, `1`, `2`, and `4`,\n  which fits an offset control much better than ids, colors, or mode flags.\n- Real script sequences frequently push a small offset and then ease back to\n  `0, 0`, for example in `MAP017`, `MAP026`, `MAP131`, and `MAP145`.\n\nCurrent best script-level interpretation:\n\n- `E6 xx yy ee dd`: tween the active screen effect offset on two axes\n\n#### Opcode `0xE9`\n\n- Data Crystal: unnamed\n- Confirmed name: `RecenterCamera`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The matched opcode dispatch table in\n  [`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)\n  maps `0xE9` directly to `func_800BB3BC`.\n- `func_800BB3BC` converts the first script byte into either a preserved-facing\n  sentinel (`0xFF -> -1`) or an 8-way facing override through `((arg0[1] + 4)\n  & 7)`, converts script `0` in the second byte into a preserved-distance\n  sentinel, and passes both through `func_800BC1CC`.\n- `func_800BC1CC` rebuilds the target camera look-at and camera-position pair\n  through `vs_battle_initialiseCameraFromSpherical`, copies those targets into\n  the live camera state, and starts the camera tween helpers based on the\n  transition distance.\n- The matched `vs_battle_initialiseCameraFromSpherical` body in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\n  shows the optional override behavior clearly: `mode 1` forces distance\n  `0x600`, `mode 2` forces distance `0x900`, and `-1` preserves the current\n  spherical camera state.\n- Real script usage matches that behavior. Most instances are the handback form\n  `E9 FF 00`, used when cutscenes or first-person beats return the camera to\n  normal spherical control, while rarer setup forms such as `E9 03 01`,\n  `E9 04 02`, and `E9 04 00` appear where scripts want a specific facing sector\n  or distance preset before the recenter.\n\nCurrent best script-level interpretation:\n\n- `E9 FF 00`: recenter the camera from the current spherical gameplay state\n- `E9 xx 00`: recenter the camera and override the 8-way facing sector first\n- `E9 xx 01`: recenter the camera with the short-distance (`0x600`) preset\n- `E9 xx 02`: recenter the camera with the long-distance (`0x900`) preset\n\n#### Opcode `0xEF`\n\n- Data Crystal: unnamed\n- Confirmed name: `CameraOscillationControl`\n- Confidence: `Confirmed`\n\nWhy:\n\n- Raw handler recovery in `func_800BDC9C` shows `0xEF` is not a plain one-shot\n  setter. When the second script byte is zero, it immediately clears both local\n  oscillation slots and returns.\n- When that second byte is nonzero, the same handler allocates or reuses one of\n  two small slot records, storing a phase-rate byte, an amplitude byte, a\n  control word, and a duration for the slot updater to consume.\n- The recovered slot updater in `func_800BE01C` feeds the first byte into the\n  phase term of an `rsin` call and multiplies the second byte into the output\n  amplitude, which is much stronger than the older generic `scalar0/scalar1`\n  reading.\n- The matched consumer in `func_800BE180` reads the low control byte as routing\n  and axis-multiplier bits, then rotates the resulting short vectors into\n  camera-relative offsets that are added to both `cameraLookAt` and\n  `cameraPos`.\n- Script usage matches the split behavior: long timed bursts like `MAP131`,\n  `MAP132`, and `MAP136` set up oscillation, while repeated forms such as\n  `EF 01 00 57 00 01` and `EF 50 00 47 00 01` appear at cleanup beats where a\n  clear-all control makes better sense than a zero-amplitude init.\n\nCurrent best script-level interpretation:\n\n- `EF rr 00 cc CC dd`: clear both active camera oscillation slots\n- `EF rr aa cc CC dd`: start or refresh a camera-relative oscillation with\n  phase rate `rr`, amplitude `aa`, control word `0xCCcc`, and duration `dd`\n\nImportant detail:\n\n- The opcode label is now strong enough to confirm the camera oscillation\n  subsystem and the control/setup split, but the exact player-facing meaning of\n  each high-byte waveform mode is still worth future recovery work.\n\n### Other confirmed names worth upstreaming\n\nThese were also validated locally and are stronger than the older public table:\n\n- `0x2E -> ModelScale`\n- `0x49 -> SetJumpBackCounter`\n- `0x4A -> JumpBackIfCounter`\n- `0x31 -> ModelTint`\n- `0x39 -> ModelLookAtPosition`\n- `0x74 -> LoadRoomSection10`\n- `0x75 -> WaitForRoomSection10`\n- `0x76 -> FreeRoomSection10`\n- `0x7C -> SetFirstPersonView`\n- `0x85 -> LoadSfxSlot`\n- `0x86 -> FreeSfxSlot`\n- `0x88 -> SetCurrentSfx`\n- `0x90 -> LoadMusicSlot`\n- `0x91 -> FreeMusic`\n- `0x99 -> ClearMusicLoadSlot`\n- `0x9D -> LoadSoundFileById`\n- `0x9E -> ProcessSoundQueue`\n- `0xE2 -> CameraRollTween`\n- `0xE3 -> ScreenEffectAngleTween`\n- `0xE4 -> ScreenEffectScaleTween`\n- `0xE5 -> ScreenEffectColorTween`\n- `0xE6 -> ScreenEffectOffsetTween`\n- `0xE9 -> RecenterCamera`\n- `0xE7 -> SetScreenEffectMode`\n- `0xEB -> CameraNearClip`\n- `0xEC -> CameraFarClip`\n- `0xEF -> CameraOscillationControl`\n- `0xF4 -> ScriptCallSlotActive`\n- `0xF5 -> ScriptCall`\n- `0xF6 -> ScriptReturn`\n\n#### Note on opcode `0x9D`\n\nThe `2` suffix is not justified anymore.\n\nWhy:\n\n- This opcode directly tells the sound system which sound file id to load.\n- A different older opcode reaches the same loader indirectly through the\n  current music slot, so there really are two load styles here.\n- In real scripts, `9D xx` is usually followed by `9E`, and the same `xx` often\n  shows up later as the music-load slot id. That fits a direct “queue this sound\n  file id” interpretation much better than a pitch control.\n\nCurrent best local rename:\n\n- `0x9D -> LoadSoundFileById`\n\nThat keeps the important distinction from the older helper-backed sound-file\nloader while making it explicit that the script operand is the file id.\n\n### Confirmed helper-level behavior\n\nThese are worth tightening locally even if the final script-friendly name should\nstay a little conservative.\n\n#### Opcodes `0x64` and `0x65`\n\n- Confidence: `Confirmed` at helper level, `Strong` for conservative local\n  tooling names, still not `Confirmed` for an upstream script-facing rename\n\nCurrent narrow:\n\n- `0x64` goes straight to `func_80091998(arg0[1])`.\n- That helper resolves a room geometry entry and clears flag `0x100`.\n- `0x65` goes straight to `func_800919D8(arg0[1])`.\n- That helper resolves the same kind of room geometry entry and sets flag\n  `0x100`.\n- The same flag is also initialised from room section `12`, so this is clearly a\n  room-geometry state bit rather than an actor, camera, or sound control.\n- The matched section-12 helper `func_8008E224` in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\n  writes the same one-bit state and mirrors it into the linked geometry entry,\n  which ties these opcodes to built-in room-object staging rather than an\n  isolated debug flag.\n- Real script usage now gives a stronger script-facing pattern than the older\n  raw flag names. `0x65` clusters heavily around room-display and cutscene\n  staging beats, often just before `DisplayRoom`, camera setup, or first-person\n  framing, while the same geometry ids are later restored with `0x64`.\n- In the current decoded room set, the same geometry ids are toggled by both\n  opcodes in 39 files, including\n  [`../../decoded_scripts/1-Wine Cellar/009-Entrance to Darkness.txt`](../../decoded_scripts/1-Wine%20Cellar/009-Entrance%20to%20Darkness.txt),\n  [`../../decoded_scripts/1-Wine Cellar/013-Smokebarrel Stair.txt`](../../decoded_scripts/1-Wine%20Cellar/013-Smokebarrel%20Stair.txt),\n  and\n  [`../../decoded_scripts/10-The Keep/124-The Warrior's Rest.txt`](../../decoded_scripts/10-The%20Keep/124-The%20Warrior's%20Rest.txt).\n- A broad script scan currently finds `0x65` within six lines of\n  `DisplayRoom` 611 times, versus 47 for `0x64`, which fits a temporary\n  suppression/setup role better than a permanent state write.\n\nBest safe local names for tooling:\n\n- `0x64 -> RestoreRoomGeometry`\n- `0x65 -> SuppressRoomGeometry`\n\nWhy this wording stays conservative:\n\n- The exact render or collision consumer behind geometry flag `0x100` still\n  needs one more decomp pass.\n- That means a harder claim like `ShowRoomGeometry`/`HideRoomGeometry` could\n  still be slightly too specific.\n- `Restore`/`Suppress` captures the proven script pattern without pretending the\n  remaining implementation details are fully locked down.\n\n### Still tentative\n\nThese are narrowed down, but should not be hard-renamed upstream without one\nmore proof pass:\n\n- `0x7A`\n- `0xED`\n\n#### Opcode `0x7A`\n\n- Confidence: `Strong`\n\nCurrent narrow:\n\n- The matched opcode dispatch table routes `0x7A` directly to the readable\n  handler body now named\n  [`vs_battle_script_setRoomAmbientSoundSuspended`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).\n- When the script byte is nonzero, that handler latches a local \"suspended\"\n  state and, if `func_8008E470()` passes, grabs the current ambient sound id\n  through `func_800913BC(-1)` and clears playback by swapping in `-1`.\n- When the script byte returns to zero, the same handler restores the saved\n  ambient sound id through `func_800913BC(savedId)` and clears the latched\n  suspended state.\n- The sound helper in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c)\n  confirms `func_800913BC` is the persistent ambient-id swap path.\n- Real script usage still matches the user-facing idea: decoded rooms such as\n  `MAP138`, `MAP062`, `MAP001`, and `MAP006` use `7A 01` near cutscene\n  takeover beats and `7A 00` when normal room behavior is restored.\n\nBest safe local tooling name:\n\n- `SetRoomAmbientSoundSuspended`\n\nCurrent best script-level interpretation:\n\n- `7A 01`: suspend the current room ambient sound, saving the previous id when\n  this room uses the persistent ambient-id path\n- `7A 00`: restore that saved ambient sound id when the same path is active\n\nWhy still not confirmed:\n\n- The save/restore behavior proven so far is scoped to the persistent\n  ambient-id path behind `func_800913BC`.\n- The room audio code also has a separate AKAO-backed `section14` path, and the\n  opcode handler gates its swap/restore work through `func_8008E470()`.\n- That means the shared user-facing effect is strongly suggested, but the\n  current proof does not yet justify a broad unconditional confirmed rename.\n\n#### Opcode `0xED`\n\n- Confidence: `Strong`\n\nCurrent narrow:\n\n- This opcode, not `0xEF`, is the direct path that feeds\n  `vs_screff2_setParamPair(param0, param1)` in `SCREFF2.PRG`.\n- The first script byte is promoted with `<< 6` before entering the SCREFF2\n  setter, which proves it is a 12-bit fixed-point parameter rather than a\n  plain flag or id byte.\n- A fresh full decode of `Game Data/MAP` finds 10 currently reachable script\n  uses across 4 rooms. Every one of those rooms resets with `ED 40 00 00 00`,\n  i.e. `0x40 << 6 = 4096`, while the other observed first-parameter values\n  stay nearby at `3712`, `4672`, `4928`, `5056`, and `5120`.\n- The second script byte is treated as a signed byte, and the last two bytes\n  behave like easing and duration.\n- That makes it a two-parameter effect tween rather than general logic flow.\n\nBest safe local tooling name:\n\n- `ScreenEffectParamPairTween`\n\nBest safe local tooling rendering:\n\n- `param0Fixed12=<byte << 6>` with `4096` as the currently proven neutral/reset\n  value\n- `param1Signed=<s8>`\n\nWhy still tentative:\n\n- The two destination fields in `SCREFF2` are still unnamed, so the exact\n  player-visible feature behind the pair has not been nailed down yet.\n- The first field is narrow enough to treat as a fixed-point parameter with a\n  stable neutral/reset form, but the current evidence still does not prove the\n  exact visual meaning of either destination field.\n\n### Suggested upstream patch shape\n\nKeep the contribution in small pieces:\n\n1. Add comments around the matched handlers in `4A0A8.c` and `146C.c`.\n2. Rename script-decoder mnemonics in local tooling and include evidence in PR\n   text.\n3. Keep speculative opcodes out of the first PR.\n",
+    "markdown_with_json_links": "## Vagrant Story Script Opcode Conclusions\n\nThis note collects high-confidence opcode conclusions that appear to improve on the\ncurrent public table at Data Crystal:\n\n- Source: <https://datacrystal.tcrf.net/wiki/Vagrant_Story/Script_Opcodes>\n\nThe goal is to keep this contribution set conservative: only names with a clear\ncode-path or script-usage proof are listed as confirmed. Anything still fuzzy\nshould stay tentative in upstream comments and PR text.\n\nUse [`docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json`](docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json#/body) as the quick\nlookup for the current local opcode table, parameter layouts, and unresolved\nslots. This note is the longer evidence and confidence trail for the names that\nmatter enough to justify written conclusions.\n\n### Confidence guide\n\nUse this quick rubric when judging an opcode name:\n\n- `Confirmed`: the handler body is readable and the behavior matches real script\n  usage.\n- `Strong`: the handler target is clear and the likely subsystem is clear, but\n  one part of the user-facing meaning still needs proof.\n- `Tentative`: the opcode has been narrowed down to a subsystem or helper path,\n  but the final script-friendly name would still be guesswork.\n\nFor this note, `rood-reverse` is the better source for opcode work than Data\nCrystal when a handler is actually decompiled. Data Crystal is still useful as a\nlegacy address table, but its names should be treated as historical notes until\nthe code body agrees.\n\n### Current coverage snapshot\n\nThe current local decoder table in\n[`../../dump_mpd_script.py`](../../dump_mpd_script.py) now covers all `256` opcode slots,\nbut only part of that table is meaningfully named:\n\n- named locally: `85 / 256`\n- still placeholder-named as `OpcodeXX`: `171 / 256`\n- most complete block: `0xE0-0xEF` with `14` named and only `0xE8` / `0xEE`\n  still unresolved\n- completely unresolved block: `0xB0-0xBF`\n\nThe heaviest remaining unknown regions are:\n\n- `0xA3-0xBF`\n- `0xC5-0xCF`\n- `0xD5-0xDF`\n- `0xF7-0xFE`\n\nThere are also `22` placeholder entries whose current local size is still\n`0x00`, so they remain unsafe targets for any confident rename or decoder\ncleanup pass:\n\n- `0x09`\n- `0x8A-0x8E`\n- `0xA7`\n- `0xAB-0xAF`\n- `0xB0`\n- `0xC6`\n- `0xCC-0xCF`\n- `0xD6`\n- `0xDC-0xDD`\n- `0xEE`\n\n### Still missing from the current local opcode list\n\nHere, \"missing\" means the local decoder still exposes only a placeholder name\nsuch as `Opcode41`, not merely that this note lacks a long write-up.\n\n- `0x01-0x0F`\n- `0x13-0x15`\n- `0x1B-0x1F`\n- `0x21`\n- `0x25`\n- `0x27`\n- `0x2A-0x2D`\n- `0x32`\n- `0x34-0x37`\n- `0x3C-0x3D`\n- `0x3F`\n- `0x41`\n- `0x43`\n- `0x45-0x48`\n- `0x4B-0x4F`\n- `0x51-0x53`\n- `0x55-0x57`\n- `0x59-0x63`\n- `0x66-0x67`\n- `0x6A-0x6C`\n- `0x6E-0x6F`\n- `0x71-0x73`\n- `0x77`\n- `0x7B`\n- `0x7D-0x7F`\n- `0x81-0x84`\n- `0x87`\n- `0x89-0x8F`\n- `0x93-0x98`\n- `0x9A-0x9C`\n- `0x9F-0xA0`\n- `0xA3-0xBF`\n- `0xC3`\n- `0xC5-0xCF`\n- `0xD2-0xD3`\n- `0xD5-0xDF`\n- `0xE8`\n- `0xEE`\n- `0xF1-0xF3`\n- `0xF7-0xFE`\n\n### Documented local names still awaiting per-opcode proof write-ups\n\nThese names are already usable in the local decoder. What was missing here was\nnot the names themselves, but a short record of why they are currently\nreasonable and what would still be needed before each one should be treated as\nfully `Confirmed` in the same sense as the stronger entries below.\n\n#### Dialog and splash-screen control\n\nCurrent local names:\n\n- `0x10 -> DialogShow`\n- `0x11 -> DialogText`\n- `0x12 -> DialogHide`\n- `0x16 -> SplashScreenChoose`\n- `0x17 -> SplashScreenLoad`\n- `0x18 -> SplashScreenShow`\n- `0x19 -> SplashScreenHide`\n- `0x1A -> SplashScreenFadeIn`\n\nCurrent narrow:\n\n- `0x10-0x12` already decode cleanly as dialog id, text id, and dialog box\n  control fields in the script dumper, so the dialog-family naming is on solid\n  local footing.\n- `0x16-0x1A` cluster as a separate overlay or splash-screen path rather than\n  actor, room, or camera control, and their current verbs match the usual\n  script ordering pattern of choose or load, then show, hide, or fade.\n- `0x13-0x15` remain unresolved, so this block is only partially mapped.\n\nWhat is still missing for `Confirmed`:\n\n- A direct handler-by-handler decomp citation for the splash-screen verbs,\n  especially the exact difference between `Choose`, `Load`, and `Show`.\n- One proof pass that ties the fade opcode specifically to fade-in behavior and\n  not a more generic overlay transition mode.\n\n#### Core model staging\n\nCurrent local names:\n\n- `0x20 -> ModelLoad`\n- `0x22 -> ModelAnimate`\n- `0x23 -> ModelSetAnimations`\n- `0x26 -> ModelPosition`\n- `0x28 -> ModelMoveTo`\n- `0x29 -> ModelMoveTo2`\n- `0x2E -> ModelScale`\n- `0x30 -> ModelLoadAnimationsEx`\n- `0x31 -> ModelTint`\n- `0x33 -> ModelRotate`\n- `0x38 -> ModelLookAt`\n- `0x39 -> ModelLookAtPosition`\n- `0x3A -> ModelLoadAnimations`\n- `0x3E -> ModelIlluminate`\n- `0x42 -> ModelControlViaScript`\n- `0x50 -> ModelControlViaBattleMode`\n- `0x70 -> ModelColor`\n- `0xC4 -> ModelAnimateObject`\n\nCurrent narrow:\n\n- The argument shapes already look like a coherent actor-model control family:\n  actor ids, animation ids, position triples, rotation-like fields, look-at\n  targets, and color or tint style parameters all show up where expected.\n- Some names in this group are already stronger than the rest. `ModelScale`,\n  `ModelTint`, and `ModelLookAtPosition` have enough local evidence to be worth\n  upstreaming even before every neighboring model opcode gets a full write-up.\n- The weaker names are the ones that still hide an important mode distinction\n  behind generic wording, such as `ModelMoveTo` versus `ModelMoveTo2`,\n  `ModelLoadAnimations` versus `ModelLoadAnimationsEx`, and the control wrappers\n  around `0x42`, `0x50`, and `0xC4`.\n\nWhat is still missing for `Confirmed`:\n\n- Direct handler evidence for the alternate load, move, and animate variants so\n  the local names can explain the difference instead of only naming the shared\n  subsystem.\n- One field-level pass for `0x3E`, `0x42`, `0x50`, `0x70`, and `0xC4` to decide\n  whether the current names are precise enough or still slightly too generic.\n\n#### Room loading and scene-display flow\n\nCurrent local names:\n\n- `0x68 -> LoadRoom`\n- `0x69 -> LoadScene`\n- `0x6D -> DisplayRoom`\n- `0x74 -> LoadRoomSection10`\n- `0x75 -> WaitForRoomSection10`\n- `0x76 -> FreeRoomSection10`\n\nCurrent narrow:\n\n- `0x68` already formats as a zone-room destination pair in the dumper, which\n  makes a room-loader interpretation much stronger than a generic file load.\n- `0x6D` behaves like a display or activation step that appears after load or\n  staging work rather than before it.\n- `0x74-0x76` form a clean async trio by both naming and script position: load,\n  then wait, then free.\n\nWhat is still missing for `Confirmed`:\n\n- A direct proof of the exact distinction between `LoadRoom` and `LoadScene`.\n- One decomp-backed identification of what \"section 10\" actually contains so\n  the section-10 names can eventually become more user-facing if warranted.\n\n#### Core audio flow\n\nCurrent local names:\n\n- `0x80 -> Opcode80SharedStub`\n- `0x85 -> LoadSfxSlot`\n- `0x86 -> FreeSfxSlot`\n- `0x88 -> SetCurrentSfx`\n- `0x90 -> LoadMusicSlot`\n- `0x91 -> FreeMusic`\n- `0x92 -> MusicPlay`\n- `0x99 -> ClearMusicLoadSlot`\n- `0x9D -> LoadSoundFileById`\n- `0x9E -> ProcessSoundQueue`\n\nCurrent narrow:\n\n- This block still reads like a shared sound pipeline rather than unrelated\n  opcodes: resource loads, slot selection, explicit frees, then queue or\n  process steps.\n- `0x80` no longer survives as a direct-sound member of that group.\n  The static dispatch table routes `0x80` to `func_800B66E4`, whose matched\n  body is only `return 0;`, and the validated retail `MAP001` runtime pass now\n  shows the live copied table still dispatching `0x80` to that same stub with\n  no observed rewrite before the checked intro call.\n- The nearby helper `func_800BA2E0` still consumes the same 4-byte argument\n  shape and still looks sound-facing, but local evidence now anchors it inside\n  a separate `0x83+` `BATTLE.PRG` subdispatch table rather than treating it as\n  a hidden replacement handler for `0x80`.\n- The widened `0x800B66E4` family audit now makes the structural reading less\n  unique, not more: the same `INITBTL.PRG` table slot also covers named\n  dialog, model, engine-mode, room, battle-end, and music-looking members such\n  as `0x10`, `0x11`, `0x22`, `0x44`, `0x54`, `0x69`, `0x6D`, and `0x92`.\n  That means table membership alone is not standalone user-facing proof for\n  any member of the cluster, including `0x80`.\n- Real script usage still clusters `0x80` near audio-looking cutscene moments,\n  but that is now context evidence only. It is no longer enough to override\n  the verified handler-level fact that the opcode itself lands on the shared\n  stub.\n- A new neighboring-context scan of the checked-in `decoded_scripts` corpus\n  strengthens that cleanup path without reviving the old direct-sound label.\n  Of the `127` files that still contain legacy-rendered `0x80` lines,\n  `88` also co-host at least one explicit sound-family neighbor from\n  `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or `0x9E`.\n  Representative files such as `MAP001`, `MAP026`, and `MAP415` already arm\n  SFX slots, music slots, or sound-file queues through those neighboring\n  opcodes before later `0x80` bursts appear.\n  That makes the old name unnecessary for many audio-looking scenes even\n  before the final consumer path is fully traced.\n- A stricter first-burst prepared-state comparison now sharpens that result.\n  `85` of those `127` files already stage at least one complete neighboring\n  sound pair before the first `0x80` in the same file:\n  `83` stage `0x85/0x88`, `44` stage `0x9D/0x9E`, and `20` stage\n  `0x90/0x92`.\n  When multiple complete pairs exist, the closest pair before the first\n  `0x80` is the SFX-slot path in `62` files, the queue path in `13`, and the\n  music-slot path in `10`.\n  That turns the neighboring-family explanation from a loose co-hosting hint\n  into a scene-ordering result: the default local replacement for the old\n  `SoundEffects0` reading is usually the already-proven `0x85/0x88`\n  prepared-state path, with `MAP026`-style queue re-arms and `MAP415`-style\n  music-heavy scenes covering important exceptions.\n- A new residual-context pass now narrows the remaining holdouts more\n  aggressively than the earlier \"42 unexplained files\" wording.\n  All `42` residual files reach their first `0x80` with no sound-family opcode\n  at all before it, and `38` of those files contain no `0x85-0x9E`\n  sound-family opcode anywhere in the file.\n  The dominant evidence is template reuse, not missing sound setup:\n  `36` residual files share the exact duplicated opener\n  `80 01 41 80 7F` then `80 01 42 80 7F`, most often after the same\n  `DialogHide` -> `Opcode14` -> `SetHeadsUpDisplayMode(1)` lead-in and before\n  the same `Opcode45` -> `ModelControlViaScript` follow-up.\n  Another `3` residual files share the alternate duplicated\n  `80 01 1D 80 7F` then `80 01 1E 80 7F` microcluster.\n  That makes the residual set look more like repeated opener scaffolding than\n  like strong positive sound evidence.\n- The residual pass also narrows the real exceptions.\n  Only `2` residual files later grow a complete neighboring pair in the same\n  file, and only `2` currently have same-title sibling variants in the same\n  area that do stage complete pre-burst pairs:\n  `022-Chamber of Fear (after the quake)` versus `017-Chamber of Fear`, and\n  `408-The Gallows (Mino Zombie, new chest)` versus `026-The Gallows`.\n  Those are now the clearest carry-over or alternate-state candidates, rather\n  than the default explanation for the full residual set.\n- A newer template-context pass sharpens that structural reading even more.\n  `39` of the `42` residual files now collapse into just two repeated\n  double-`0x80` scaffolds:\n  `36` use the paired `0x41/0x42` opener and `3` use the paired\n  `0x1D/0x1E` burst.\n  The dominant `0x41/0x42` family is especially non-audio-looking:\n  `34` of its `36` files contain no sound-family opcode anywhere in the file,\n  `26` reach the first burst through the same\n  `DialogHide` -> `Opcode14` -> `SetHeadsUpDisplayMode(1)` lead-in, and\n  `20` continue through the same\n  `Opcode45` -> `ModelControlViaScript` -> `Opcode45` -> `Opcode43` ->\n  `ModelControlViaScript` post-burst spine.\n  The smaller `0x1D/0x1E` family likewise lands in repeated dialog or\n  battle-mode control bundles, while the only true holdouts now are the three\n  singleton or variant scenes `021`, `022`, and `025`.\n  That pushes the residual story further away from hidden sound playback and\n  further toward room-entry or cutscene template reuse that still carries an\n  inert `0x80` burst.\n- `LoadSoundFileById` and `ProcessSoundQueue` are especially strong locally\n  because real scripts commonly pair `9D xx` with a later `9E`.\n- `LoadSfxSlot`, `FreeSfxSlot`, `SetCurrentSfx`, `LoadMusicSlot`, and\n  `ClearMusicLoadSlot` are all plausible and internally consistent names, but\n  some still rest more on script ordering than on fully cited handler bodies.\n  `Opcode80SharedStub` is intentionally a structural label, not a final\n  user-facing semantic name.\n\nWhat is still missing for `Confirmed`:\n\n- The new neighboring-context packet shows that many representative `0x80`\n  scenes already contain explicit `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or\n  `0x9E` setup, but it still does not identify which downstream consumer turns\n  that prepared state into the audible result for each scene.\n- The stricter first-burst scan leaves a concrete residual set:\n  `42` currently decoded `0x80` files still reach their first `0x80` without\n  any complete neighboring sound pair in the same file before it, but the new\n  residual pass shows that most of those files are repeated opener templates\n  rather than fresh audio-heavy holdouts.\n  The newer template-context pass narrows that further:\n  the repeated `0x41/0x42` and `0x1D/0x1E` bursts now look like stable\n  room-entry or cutscene scaffolds, so what remains open is their provenance\n  and the behavior of the few singleton or variant cases, not whether they are\n  secretly the main direct sound path.\n- A consumer-path explanation for the minority cases that really do look like\n  carry-over or later-rearm scenes, without leaning on the widened\n  `0x800B66E4` stub family as if it were direct audio proof.\n- One cleaner write-up of how the music-slot and sound-file-id paths interact,\n  so `LoadMusicSlot` and `MusicPlay` can be documented with the same confidence\n  now used for `LoadSoundFileById`.\n\n#### Core camera flow outside the effect-heavy `E` range\n\nCurrent local names:\n\n- `0xA2 -> CameraZoomIn`\n- `0xC0 -> CameraDirection`\n- `0xC1 -> CameraSetAngle`\n- `0xC2 -> CameraLookAt`\n- `0xD0 -> CameraPosition`\n- `0xD1 -> SetCameraPosition`\n- `0xD4 -> CameraHeight`\n- `0xE0 -> CameraWait`\n- `0xEA -> CameraZoom`\n- `0xEB -> CameraNearClip`\n- `0xEC -> CameraFarClip`\n\nCurrent narrow:\n\n- The operand shapes and local formatting already separate this block from the\n  screen-effect opcodes: position, look-at, direction, zoom, and clip-plane\n  style fields dominate instead of color or oscillation parameters.\n- `CameraZoom`, `CameraNearClip`, and `CameraFarClip` are among the cleaner\n  local names because their formatter fields already decode into useful scalar\n  values rather than opaque raw bytes.\n- The weaker names are the ones where the noun is clear but the exact action is\n  not yet locked down, such as whether `CameraSetAngle` and `SetCameraPosition`\n  are immediate setters, mode selectors, or trigger bytes for previously staged\n  camera state.\n\nWhat is still missing for `Confirmed`:\n\n- Direct consumer or handler proof for the single-byte control opcodes\n  `0xA2`, `0xC1`, `0xD1`, and `0xE0`.\n- One tighter pass on `0xC0`, `0xC2`, `0xD0`, and `0xD4` that names their\n  fields more specifically than today's conservative direction, look-at,\n  position, and height labels.\n\n#### Script flow helpers\n\nCurrent local names:\n\n- `0xF0 -> Wait`\n- `0xF4 -> ScriptCallSlotActive`\n- `0xF5 -> ScriptCall`\n- `0xF6 -> ScriptReturn`\n\nCurrent narrow:\n\n- This block is already clearly control-flow related rather than content\n  staging. The local names match how the decoder treats the operands and how\n  the opcodes appear in call or return style script regions.\n- `Wait`, `ScriptCall`, and `ScriptReturn` are stronger than\n  `ScriptCallSlotActive`, which still exposes the bookkeeping flavor of the\n  implementation more than a settled player-facing verb.\n\nWhat is still missing for `Confirmed`:\n\n- A small helper-level proof write-up for the call-slot state checked or\n  updated by `0xF4`.\n- One explicit note on the target encoding used by `0xF5`, mainly so the local\n  call naming can cite something more concrete than script-structure patterning.\n\n### Confirmed improvements\n\n#### Opcode `0x24`\n\n- Data Crystal: unnamed (`800b77dc`)\n- Confirmed name: `ActorSfxPanVolumeControl`\n- Confidence: `Confirmed`\n\nWhy:\n\n- This opcode stores a little sound-control state on an actor.\n- That stored state is later read by the sound code that decides where a sound\n  should come from and how loud it should be.\n- There is also a cleanup path that clears the same state again, which matches\n  the idea of a temporary actor sound override rather than a one-shot trigger.\n\nCurrent best script-level interpretation:\n\n- `mode 0`: clear actor SFX spatial override state\n- `mode 1`: set or pulse an override\n- `mode 2`: set the default/basis used by later `mode 1` updates\n\nThe exact field names for the three control bytes may still deserve refinement,\nbut the subsystem identity is high-confidence.\n\n#### Opcode `0x49`\n\n- Data Crystal: unnamed (`800b8c54`)\n- Confirmed name: `SetJumpBackCounter`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The matched opcode dispatch table in\n  [`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)\n  maps `0x49` directly to the small readable handler now renamed\n  `vs_battle_script_setJumpBackCounter`.\n- That handler only does one thing: when the first script byte is not `0xFF`,\n  it stores the second byte into a local counter-slot array at\n  `D_800F4C10[arg0[1]]`.\n- The paired opcode `0x4A` later decrements that same slot and uses it to\n  decide whether to jump backward, which makes `0x49` the explicit counter-setup\n  half of the pair rather than a generic flag or mode write.\n- In decoded scripts, the only currently reachable counted form is\n  `49 00 01`, which matches a one-iteration setup for the later `4A 00 ...`\n  consumer. The repeated cathedral shake loops instead use the reserved\n  `49 FF 00` scaffolding form before the unconditional `4A FF ...` back-jump.\n\nCurrent best script-level interpretation:\n\n- `49 ss cc`: store initial loop/jump-back count `cc` into counter slot `ss`\n- `49 FF 00`: reserved unconditional form used alongside `4A FF ...`\n\n#### Opcode `0x4A`\n\n- Data Crystal: unnamed\n- Confirmed name: `JumpBackIfCounter`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The matched opcode dispatch table maps `0x4A` directly to the readable\n  handler\n  [`vs_battle_script_jumpBackIf`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c),\n  now tightened to `vs_battle_script_jumpBackIfCounter` in the nested repo.\n- When the first script byte is `0xFF`, the handler immediately returns\n  `&arg0[-vs_battle_getShort(arg0 + 2)]`, which is an unconditional backward\n  jump by the encoded 16-bit offset.\n- Otherwise it pre-decrements `D_800F4C10[arg0[1]]` and only returns that same\n  backward jump target while the decremented slot stays nonzero.\n- Real script usage matches both forms. `MAP131`, `MAP133`, and `MAP413`\n  repeatedly use `49 FF 00` plus `4A FF ...` to loop camera-oscillation beats,\n  while `MAP318` and `MAP321` use the slot `0` form `49 00 01` / `4A 00 8A 00`\n  as the counted variant.\n\nCurrent best script-level interpretation:\n\n- `4A FF ll hh`: unconditionally jump backward by `<h ll hh>` bytes\n- `4A ss ll hh`: decrement counter slot `ss`, then jump backward by\n  `<h ll hh>` while the result stays nonzero\n\n#### Opcode `0x78`\n\n- Data Crystal: unnamed (`800ba0e4`)\n- Confirmed name: `EnableRoomMechanismUpdates`\n- Confidence: `Confirmed`\n\nWhy:\n\n- This opcode flips the room mechanism update loop on or off.\n- In scripts it appears right where cutscenes take control away from normal room\n  logic, then appears again when normal room behavior is handed back.\n- It sits right next to the room mechanism control opcode, so it is clearly part\n  of the same subsystem.\n\nImportant detail:\n\n- The script byte is inverted by the handler, so `1` means disabled and `0`\n  means enabled.\n\n#### Opcode `0x79`\n\n- Data Crystal: unnamed (`800ba194`)\n- Confirmed name: `RoomMechanismControl`\n- Confidence: `Confirmed`\n\nWhy:\n\n- One sub-command tells the game to fire a room mechanism by id.\n- The other sub-command flips that mechanism between enabled and disabled.\n- The same code path is used by doors, locks, and other room objects, so this\n  is not just a cutscene-only special case.\n\nCurrent best script-level interpretation:\n\n- `79 00 xx`: trigger room mechanism `xx`\n- `79 01 xx`: toggle room mechanism `xx`\n\n#### Opcode `0xE1`\n\n- Data Crystal: unnamed\n- Confirmed name: `SetScreenEffectEnabled`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The matched opcode dispatch table in\n  [`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)\n  maps `0xE1` directly to `func_800BB450`.\n- `func_800BB450` is a tiny wrapper that just calls `func_8007DD50(arg0[1])`.\n- `func_8007DD50` flips the effect runtime between active and shutdown states\n  and allocates the backing effect object when needed.\n- In scripts, `E1 01` and `E1 00` consistently bracket the nearby effect setup\n  and tween opcodes such as `E4`, `E5`, `E6`, `E7`, and `EF`.\n\nCurrent best script-level interpretation:\n\n- `E1 00`: disable the current screen effect block\n- `E1 01`: enable the current screen effect block\n\n#### Opcode `0xE2`\n\n- Data Crystal: unnamed\n- Confirmed name: `CameraRollTween`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The matched opcode dispatch table maps `0xE2` into the shared\n  `vs_battle_script_setupAngleTween` handler in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).\n- The readable handler body switches on the opcode byte and routes `0xE2` into\n  `D_800F4BA4->cameraAngleTween`.\n- The matched apply side later commits that tween through\n  `func_8007AC94(D_800F4BA4->cameraAngleTween.currentValue)`.\n- `func_8007AC94` writes `_camera.t2.unk5C`, and the current\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)\n  layout now exposes named `pitch` and `yaw` fields immediately before that\n  target. The paired getter masks the stored value with `& 0xFFF`, which fits\n  the remaining camera-angle slot much better than a generic scalar.\n- In `decoded_scripts`, all 291 sampled `E2` instances currently end with a\n  trailing `00` byte, matching the handler only consuming angle, wrap/easing,\n  and duration rather than a hidden selector or id field.\n- Script usage clusters around camera staging beats and repeated resets back to\n  angle `0`, which matches a camera roll control instead of room or actor\n  state.\n\nCurrent best script-level interpretation:\n\n- `E2 aa bb we dd 00`: tween the camera roll angle to `<h aa bb>` with\n  wrap/easing control `we` over `dd` ticks\n\n#### Opcode `0xE3`\n\n- Data Crystal: unnamed\n- Confirmed name: `ScreenEffectAngleTween`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The matched opcode dispatch table maps `0xE3` into the shared\n  `vs_battle_script_setupAngleTween` handler in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).\n- The readable handler body switches on the opcode byte and routes `0xE3` into\n  `D_800F4BA4->screenEffectAngleTween`, not the camera tween slot used by\n  `0xE2`.\n- The matched apply side later commits that tween through\n  `func_8007DDAC(D_800F4BA4->screenEffectAngleTween.currentValue)`.\n- [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\n  shows `func_8007DDAC` as a dedicated persistent setter for the shared\n  screen-effect angle scalar `D_800F1A2C`, and the ending-menu effect setup in\n  [`../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c`](../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c)\n  resets that same setter alongside the shared screen-effect scale, color, and\n  offset state.\n- A fresh local decode of `Game Data/MAP` currently finds 4 `E3` uses, all of\n  them inside the same `E1`/`E4`/`E5`/`E6` effect staging cluster.\n- The strongest sample is `MAP102`, which sets `E3 30 00 10 00 00` before\n  enabling the effect block, then immediately runs `E3 00 00 11 32 00` to\n  tween that angle back to zero over 50 ticks. That behavior fits an effect\n  angle control much better than a camera move or generic scalar.\n- All 4 currently decoded `E3` instances end with a trailing `00` byte,\n  matching the shared setup helper only consuming angle, wrap/easing, and\n  duration rather than a hidden selector field.\n\nCurrent best script-level interpretation:\n\n- `E3 aa bb we dd 00`: tween the active screen-effect angle to `<h aa bb>` with\n  wrap/easing control `we` over `dd` ticks\n\n#### Opcode `0xE4`\n\n- Data Crystal: unnamed\n- Confirmed name: `ScreenEffectScaleTween`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The matched dispatch table maps `0xE4` into the shared screen-effect helper\n  family, and the matched apply side in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)\n  sends the corresponding tween output through `func_8007DDB8`.\n- `func_8007DDB8` writes the two persistent screen-effect scale components in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c),\n  and the effect reset path restores those components to neutral `0x1000`,\n  `0x1000`.\n- A direct non-script caller in\n  [`../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c`](../../_refs/rood-reverse/src/MENU/MENUF.PRG/3B8.c)\n  uses the same setter with values like `0x1029` and `0x107A` before enabling\n  the effect runtime, which matches a scale preset rather than ids or flags.\n- In decoded scripts, `E4 20 20` repeatedly lands on neutral `4096, 4096`,\n  while nearby values like `1F`, `21`, and `23` make small in/out adjustments.\n\nCurrent best script-level interpretation:\n\n- `E4 xx yy ee dd`: tween the active screen effect scale on two axes\n\n#### Opcode `0xE6`\n\n- Data Crystal: unnamed\n- Confirmed name: `ScreenEffectOffsetTween`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The same matched apply path in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c)\n  routes the `0xE6` tween state through `func_8007DDF8`.\n- `func_8007DDF8` stores the persistent screen-effect offset vector in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c),\n  and the effect reset path zeros that state.\n- Script operands are explicitly treated as signed bytes in the local decoder\n  and show up in small ranges such as `-3`, `-1`, `0`, `1`, `2`, and `4`,\n  which fits an offset control much better than ids, colors, or mode flags.\n- Real script sequences frequently push a small offset and then ease back to\n  `0, 0`, for example in `MAP017`, `MAP026`, `MAP131`, and `MAP145`.\n\nCurrent best script-level interpretation:\n\n- `E6 xx yy ee dd`: tween the active screen effect offset on two axes\n\n#### Opcode `0xE9`\n\n- Data Crystal: unnamed\n- Confirmed name: `RecenterCamera`\n- Confidence: `Confirmed`\n\nWhy:\n\n- The matched opcode dispatch table in\n  [`../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c`](../../_refs/rood-reverse/src/BATTLE/INITBTL.PRG/12AC.c)\n  maps `0xE9` directly to `func_800BB3BC`.\n- `func_800BB3BC` converts the first script byte into either a preserved-facing\n  sentinel (`0xFF -> -1`) or an 8-way facing override through `((arg0[1] + 4)\n  & 7)`, converts script `0` in the second byte into a preserved-distance\n  sentinel, and passes both through `func_800BC1CC`.\n- `func_800BC1CC` rebuilds the target camera look-at and camera-position pair\n  through `vs_battle_initialiseCameraFromSpherical`, copies those targets into\n  the live camera state, and starts the camera tween helpers based on the\n  transition distance.\n- The matched `vs_battle_initialiseCameraFromSpherical` body in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\n  shows the optional override behavior clearly: `mode 1` forces distance\n  `0x600`, `mode 2` forces distance `0x900`, and `-1` preserves the current\n  spherical camera state.\n- Real script usage matches that behavior. Most instances are the handback form\n  `E9 FF 00`, used when cutscenes or first-person beats return the camera to\n  normal spherical control, while rarer setup forms such as `E9 03 01`,\n  `E9 04 02`, and `E9 04 00` appear where scripts want a specific facing sector\n  or distance preset before the recenter.\n\nCurrent best script-level interpretation:\n\n- `E9 FF 00`: recenter the camera from the current spherical gameplay state\n- `E9 xx 00`: recenter the camera and override the 8-way facing sector first\n- `E9 xx 01`: recenter the camera with the short-distance (`0x600`) preset\n- `E9 xx 02`: recenter the camera with the long-distance (`0x900`) preset\n\n#### Opcode `0xEF`\n\n- Data Crystal: unnamed\n- Confirmed name: `CameraOscillationControl`\n- Confidence: `Confirmed`\n\nWhy:\n\n- Raw handler recovery in `func_800BDC9C` shows `0xEF` is not a plain one-shot\n  setter. When the second script byte is zero, it immediately clears both local\n  oscillation slots and returns.\n- When that second byte is nonzero, the same handler allocates or reuses one of\n  two small slot records, storing a phase-rate byte, an amplitude byte, a\n  control word, and a duration for the slot updater to consume.\n- The recovered slot updater in `func_800BE01C` feeds the first byte into the\n  phase term of an `rsin` call and multiplies the second byte into the output\n  amplitude, which is much stronger than the older generic `scalar0/scalar1`\n  reading.\n- The matched consumer in `func_800BE180` reads the low control byte as routing\n  and axis-multiplier bits, then rotates the resulting short vectors into\n  camera-relative offsets that are added to both `cameraLookAt` and\n  `cameraPos`.\n- Script usage matches the split behavior: long timed bursts like `MAP131`,\n  `MAP132`, and `MAP136` set up oscillation, while repeated forms such as\n  `EF 01 00 57 00 01` and `EF 50 00 47 00 01` appear at cleanup beats where a\n  clear-all control makes better sense than a zero-amplitude init.\n\nCurrent best script-level interpretation:\n\n- `EF rr 00 cc CC dd`: clear both active camera oscillation slots\n- `EF rr aa cc CC dd`: start or refresh a camera-relative oscillation with\n  phase rate `rr`, amplitude `aa`, control word `0xCCcc`, and duration `dd`\n\nImportant detail:\n\n- The opcode label is now strong enough to confirm the camera oscillation\n  subsystem and the control/setup split, but the exact player-facing meaning of\n  each high-byte waveform mode is still worth future recovery work.\n\n### Other confirmed names worth upstreaming\n\nThese were also validated locally and are stronger than the older public table:\n\n- `0x2E -> ModelScale`\n- `0x49 -> SetJumpBackCounter`\n- `0x4A -> JumpBackIfCounter`\n- `0x31 -> ModelTint`\n- `0x39 -> ModelLookAtPosition`\n- `0x74 -> LoadRoomSection10`\n- `0x75 -> WaitForRoomSection10`\n- `0x76 -> FreeRoomSection10`\n- `0x7C -> SetFirstPersonView`\n- `0x85 -> LoadSfxSlot`\n- `0x86 -> FreeSfxSlot`\n- `0x88 -> SetCurrentSfx`\n- `0x90 -> LoadMusicSlot`\n- `0x91 -> FreeMusic`\n- `0x99 -> ClearMusicLoadSlot`\n- `0x9D -> LoadSoundFileById`\n- `0x9E -> ProcessSoundQueue`\n- `0xE2 -> CameraRollTween`\n- `0xE3 -> ScreenEffectAngleTween`\n- `0xE4 -> ScreenEffectScaleTween`\n- `0xE5 -> ScreenEffectColorTween`\n- `0xE6 -> ScreenEffectOffsetTween`\n- `0xE9 -> RecenterCamera`\n- `0xE7 -> SetScreenEffectMode`\n- `0xEB -> CameraNearClip`\n- `0xEC -> CameraFarClip`\n- `0xEF -> CameraOscillationControl`\n- `0xF4 -> ScriptCallSlotActive`\n- `0xF5 -> ScriptCall`\n- `0xF6 -> ScriptReturn`\n\n#### Note on opcode `0x9D`\n\nThe `2` suffix is not justified anymore.\n\nWhy:\n\n- This opcode directly tells the sound system which sound file id to load.\n- A different older opcode reaches the same loader indirectly through the\n  current music slot, so there really are two load styles here.\n- In real scripts, `9D xx` is usually followed by `9E`, and the same `xx` often\n  shows up later as the music-load slot id. That fits a direct “queue this sound\n  file id” interpretation much better than a pitch control.\n\nCurrent best local rename:\n\n- `0x9D -> LoadSoundFileById`\n\nThat keeps the important distinction from the older helper-backed sound-file\nloader while making it explicit that the script operand is the file id.\n\n### Confirmed helper-level behavior\n\nThese are worth tightening locally even if the final script-friendly name should\nstay a little conservative.\n\n#### Opcodes `0x64` and `0x65`\n\n- Confidence: `Confirmed` at helper level, `Strong` for conservative local\n  tooling names, still not `Confirmed` for an upstream script-facing rename\n\nCurrent narrow:\n\n- `0x64` goes straight to `func_80091998(arg0[1])`.\n- That helper resolves a room geometry entry and clears flag `0x100`.\n- `0x65` goes straight to `func_800919D8(arg0[1])`.\n- That helper resolves the same kind of room geometry entry and sets flag\n  `0x100`.\n- The same flag is also initialised from room section `12`, so this is clearly a\n  room-geometry state bit rather than an actor, camera, or sound control.\n- The matched section-12 helper `func_8008E224` in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\n  writes the same one-bit state and mirrors it into the linked geometry entry,\n  which ties these opcodes to built-in room-object staging rather than an\n  isolated debug flag.\n- Real script usage now gives a stronger script-facing pattern than the older\n  raw flag names. `0x65` clusters heavily around room-display and cutscene\n  staging beats, often just before `DisplayRoom`, camera setup, or first-person\n  framing, while the same geometry ids are later restored with `0x64`.\n- In the current decoded room set, the same geometry ids are toggled by both\n  opcodes in 39 files, including\n  [`../../decoded_scripts/1-Wine Cellar/009-Entrance to Darkness.txt`](../../decoded_scripts/1-Wine%20Cellar/009-Entrance%20to%20Darkness.txt),\n  [`../../decoded_scripts/1-Wine Cellar/013-Smokebarrel Stair.txt`](../../decoded_scripts/1-Wine%20Cellar/013-Smokebarrel%20Stair.txt),\n  and\n  [`../../decoded_scripts/10-The Keep/124-The Warrior's Rest.txt`](../../decoded_scripts/10-The%20Keep/124-The%20Warrior's%20Rest.txt).\n- A broad script scan currently finds `0x65` within six lines of\n  `DisplayRoom` 611 times, versus 47 for `0x64`, which fits a temporary\n  suppression/setup role better than a permanent state write.\n\nBest safe local names for tooling:\n\n- `0x64 -> RestoreRoomGeometry`\n- `0x65 -> SuppressRoomGeometry`\n\nWhy this wording stays conservative:\n\n- The exact render or collision consumer behind geometry flag `0x100` still\n  needs one more decomp pass.\n- That means a harder claim like `ShowRoomGeometry`/`HideRoomGeometry` could\n  still be slightly too specific.\n- `Restore`/`Suppress` captures the proven script pattern without pretending the\n  remaining implementation details are fully locked down.\n\n### Still tentative\n\nThese are narrowed down, but should not be hard-renamed upstream without one\nmore proof pass:\n\n- `0x7A`\n- `0xED`\n\n#### Opcode `0x7A`\n\n- Confidence: `Strong`\n\nCurrent narrow:\n\n- The matched opcode dispatch table routes `0x7A` directly to the readable\n  handler body now named\n  [`vs_battle_script_setRoomAmbientSoundSuspended`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/4A0A8.c).\n- When the script byte is nonzero, that handler latches a local \"suspended\"\n  state and, if `func_8008E470()` passes, grabs the current ambient sound id\n  through `func_800913BC(-1)` and clears playback by swapping in `-1`.\n- When the script byte returns to zero, the same handler restores the saved\n  ambient sound id through `func_800913BC(savedId)` and clears the latched\n  suspended state.\n- The sound helper in\n  [`../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c`](../../_refs/rood-reverse/src/BATTLE/BATTLE.PRG/2842C.c)\n  confirms `func_800913BC` is the persistent ambient-id swap path.\n- Real script usage still matches the user-facing idea: decoded rooms such as\n  `MAP138`, `MAP062`, `MAP001`, and `MAP006` use `7A 01` near cutscene\n  takeover beats and `7A 00` when normal room behavior is restored.\n\nBest safe local tooling name:\n\n- `SetRoomAmbientSoundSuspended`\n\nCurrent best script-level interpretation:\n\n- `7A 01`: suspend the current room ambient sound, saving the previous id when\n  this room uses the persistent ambient-id path\n- `7A 00`: restore that saved ambient sound id when the same path is active\n\nWhy still not confirmed:\n\n- The save/restore behavior proven so far is scoped to the persistent\n  ambient-id path behind `func_800913BC`.\n- The room audio code also has a separate AKAO-backed `section14` path, and the\n  opcode handler gates its swap/restore work through `func_8008E470()`.\n- That means the shared user-facing effect is strongly suggested, but the\n  current proof does not yet justify a broad unconditional confirmed rename.\n\n#### Opcode `0xED`\n\n- Confidence: `Strong`\n\nCurrent narrow:\n\n- This opcode, not `0xEF`, is the direct path that feeds\n  `vs_screff2_setParamPair(param0, param1)` in `SCREFF2.PRG`.\n- The first script byte is promoted with `<< 6` before entering the SCREFF2\n  setter, which proves it is a 12-bit fixed-point parameter rather than a\n  plain flag or id byte.\n- A fresh full decode of `Game Data/MAP` finds 10 currently reachable script\n  uses across 4 rooms. Every one of those rooms resets with `ED 40 00 00 00`,\n  i.e. `0x40 << 6 = 4096`, while the other observed first-parameter values\n  stay nearby at `3712`, `4672`, `4928`, `5056`, and `5120`.\n- The second script byte is treated as a signed byte, and the last two bytes\n  behave like easing and duration.\n- That makes it a two-parameter effect tween rather than general logic flow.\n\nBest safe local tooling name:\n\n- `ScreenEffectParamPairTween`\n\nBest safe local tooling rendering:\n\n- `param0Fixed12=<byte << 6>` with `4096` as the currently proven neutral/reset\n  value\n- `param1Signed=<s8>`\n\nWhy still tentative:\n\n- The two destination fields in `SCREFF2` are still unnamed, so the exact\n  player-visible feature behind the pair has not been nailed down yet.\n- The first field is narrow enough to treat as a fixed-point parameter with a\n  stable neutral/reset form, but the current evidence still does not prove the\n  exact visual meaning of either destination field.\n\n### Suggested upstream patch shape\n\nKeep the contribution in small pieces:\n\n1. Add comments around the matched handlers in `4A0A8.c` and `146C.c`.\n2. Rename script-decoder mnemonics in local tooling and include evidence in PR\n   text.\n3. Keep speculative opcodes out of the first PR.\n"
+  }
+}

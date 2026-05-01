@@ -1,0 +1,184 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_neighbor_sound_context",
+    "title": "Opcode `0x80` Neighboring Sound Context",
+    "summary": "Retire the historical `SoundEffects0` label for positive script-context reasons by showing that many `0x80` scenes already co-host stronger neighboring sound-family setup opcodes.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_neighbor_sound_context.md",
+    "artifacts": [
+      "decoded_scripts/24-Unmapped/001-Unknown Room.txt",
+      "decoded_scripts/1-Wine Cellar/026-The Gallows.txt",
+      "decoded_scripts/23-Great Cathedral/415-The Dark tempts Ashley.txt"
+    ],
+    "findings": [
+      "Most `0x80` scenes co-host explicit neighboring sound-family setup opcodes.",
+      "Representative audio-looking scenes can already be explained through SFX-slot, queue, or music preparation without treating `0x80` as a direct sound trigger.",
+      "The old `SoundEffects0` label is now weaker than the structural `Opcode80SharedStub` name."
+    ],
+    "body": {
+      "sections": {
+        "goal": {
+          "heading": "Goal",
+          "content": [
+            {
+              "paragraph": "Retire the historical `SoundEffects0` reading for positive script-context\nreasons, not only because the verified runtime-table dispatch lands on the\nshared return-zero stub at `0x800B66E4`."
+            }
+          ]
+        },
+        "scope-note": {
+          "heading": "Scope note",
+          "content": [
+            {
+              "paragraph": "The checked-in `decoded_scripts` corpus still prints legacy `SoundEffects0(...)`\ntext for `0x80` because many of those exports predate the local decoder rename\nto `Opcode80SharedStub`.\nThis packet treats those rendered lines as historical script locations, not as\nfresh naming proof."
+            }
+          ]
+        },
+        "corpus-scan": {
+          "heading": "Corpus scan",
+          "content": [
+            {
+              "paragraph": "A direct scan of the `decoded_scripts` corpus finds `127` files containing at\nleast one `0x80` line.\nAmong those same files:",
+              "ulist": [
+                "`88 / 127` co-host at least one explicit nearby sound-family opcode from\n`0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or `0x9E`",
+                "`85 / 127` contain both the `0x85` `LoadSfxSlot` and `0x88` `SetCurrentSfx`\npair",
+                "`65 / 127` contain `0x90` or `0x92`",
+                "`51 / 127` contain the `0x9D` `LoadSoundFileById` plus `0x9E`\n`ProcessSoundQueue` pair",
+                "`49 / 127` contain all three categories together:\n`0x85/0x88`, `0x90/0x92`, and `0x9D/0x9E`"
+              ]
+            },
+            {
+              "paragraph": "That is not direct consumer proof, but it does make the old \"the sound must\ncome from `0x80` itself\" reading less necessary.\nMany audio-looking `0x80` scenes already live inside scripts that explicitly\nprepare SFX slots, music slots, or sound-file queues through other opcodes."
+            }
+          ]
+        },
+        "representative-scenes": {
+          "heading": "Representative scenes",
+          "sections": {
+            "map001-intro-explicit-sfx-setup-before-the-first-0x80-burst": {
+              "heading": "`MAP001` intro: explicit SFX setup before the first `0x80` burst",
+              "content": [
+                {
+                  "paragraph": "[`decoded_scripts/24-Unmapped/001-Unknown Room.txt`](../../decoded_scripts/24-Unmapped/001-Unknown%20Room.txt)\nopens with `0x92` music playback at `0010`.\nThat same script then enters a nested helper block that performs:",
+                  "ulist": [
+                    "`00A2: 85 02 01` -> `LoadSfxSlot(2, 1)`",
+                    "`00A7: 88 01` -> `SetCurrentSfx(1)`",
+                    "Only after that prepared-state setup does the intro reach its first `0x80`\ncluster:",
+                    {
+                      "ulist": [
+                        "`0155: 80 03 37 80 7F`",
+                        "`0170: 80 03 39 80 7F`",
+                        "`0177: 80 03 3A 80 7F`"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "The same room later repeats more `0x80` bursts around camera, model, and\ncutscene timing beats, but the explicit SFX-selection work already happened\nearlier in the same script."
+                }
+              ]
+            },
+            "map026-gallows-queue-music-slot-and-sfx-slot-setup-all-exist-without": {
+              "heading": "`MAP026` Gallows: queue, music-slot, and SFX-slot setup all exist without",
+              "content": [
+                {
+                  "ulist": [
+                    "needing `0x80` as the direct sound trigger",
+                    "[`decoded_scripts/1-Wine Cellar/026-The Gallows.txt`](../../decoded_scripts/1-Wine%20Cellar/026-The%20Gallows.txt)\nshows the strongest local script-side replacement story.",
+                    "Early in the script it performs a complete sound-file and music bring-up:",
+                    {
+                      "ulist": [
+                        "`0056: 9D 20` -> `LoadSoundFileById(32)`",
+                        "`0058: 9E` -> `ProcessSoundQueue()`",
+                        "`0059: 90 20 01` -> `LoadMusicSlot(32, 1)`",
+                        "`0062: 92 01 7F 00` -> `MusicPlay(...)`"
+                      ]
+                    },
+                    "The same file later does explicit SFX-slot preparation:",
+                    {
+                      "ulist": [
+                        "`008C: 85 10 01` -> `LoadSfxSlot(16, 1)`",
+                        "`0091: 88 01` -> `SetCurrentSfx(1)`"
+                      ]
+                    },
+                    "Only after those steps do the script's repeated legacy-rendered `0x80` beats\nstart appearing:",
+                    {
+                      "ulist": [
+                        "`00EB: 80 03 07 80 7F`",
+                        "`0106: 80 01 16 80 7F`",
+                        "`010B: 80 01 17 80 7F`",
+                        "`0153: 80 03 08 80 7F`",
+                        "`01C0: 80 03 08 80 7F`",
+                        "`0227: 80 03 09 80 7F`"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "The file then re-arms the direct file-queue path again at `028A-028E` through\nanother `9D` plus `9E` pair before later `0x80` beats at `02D5`, `036D`, and\n`043B`.\nThat script no longer needs a direct `0x80` sound meaning to explain why the\nscene sounds active."
+                }
+              ]
+            },
+            "map415-the-dark-tempts-ashley-explicit-queue-plus-music-setup-happens": {
+              "heading": "`MAP415` The Dark tempts Ashley: explicit queue-plus-music setup happens",
+              "content": [
+                {
+                  "paragraph": "up front, then `0x80` rides inside camera/effect beats"
+                },
+                {
+                  "paragraph": "[`decoded_scripts/23-Great Cathedral/415-The Dark tempts Ashley.txt`](../../decoded_scripts/23-Great%20Cathedral/415-The%20Dark%20tempts%20Ashley.txt)\nstarts with a tight audio setup cluster:",
+                  "ulist": [
+                    "`0019: 9D AF` -> `LoadSoundFileById(175)`",
+                    "`001B: 9E` -> `ProcessSoundQueue()`",
+                    "`001C: 90 AF 01` -> `LoadMusicSlot(175, 1)`",
+                    "`0021: 92 01 7F 00` -> `MusicPlay(...)`"
+                  ]
+                },
+                {
+                  "ulist": [
+                    "The first legacy-rendered `0x80` beat does not appear until `00A7`.\nLater repeats at `017F`, `0221`, `02B3`, `0343`, `03D3`, `0483`, `0533`,\n`05FB`, and `062B` all sit inside camera-roll, room-display, model-load, or\nscreen-effect staging rather than inside a fresh handler-level sound proof\npath for `0x80`.",
+                    "This same file also performs another explicit music-slot write at\n`04A1: 90 B0 02` before more later `0x80` beats.\nAgain, the audio-looking scene already has stronger neighboring sound-family\nopcodes available than the shared stub itself."
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "safe-takeaway": {
+          "heading": "Safe takeaway",
+          "content": [
+            {
+              "ulist": [
+                "The best local explanation for many audio-looking `0x80` scenes is now\ncontextual: scripts often co-host explicit SFX-slot, music-slot, or\nsound-file-queue setup opcodes that can prepare audible state before later\n`0x80` beats.",
+                "That does not prove which one of those neighboring families is the final\nconsumer for each scene.",
+                "It does mean the old direct label `SoundEffects0` is no longer the least-bad\nexplanation for representative script usage.",
+                "`Opcode80SharedStub` remains the safest local name because the verified\nruntime-table dispatch is still structural, not semantic."
+              ]
+            }
+          ]
+        },
+        "remaining-gap": {
+          "heading": "Remaining gap",
+          "content": [
+            {
+              "paragraph": "This packet narrows the semantic problem from \"why do sound scenes use a stub?\"\nto \"which already-proven neighboring sound path best explains each prepared\nscene?\"\nThe next proof step should trace the consumer relationship between:",
+              "ulist": [
+                "`0x9D` plus `0x9E` sound-file queueing",
+                "`0x90` plus `0x92` music-slot playback",
+                "`0x85` plus `0x88` SFX-slot selection"
+              ]
+            },
+            {
+              "paragraph": "Until that tie-breaker is closed, `0x80` should stay on the structural label\n`Opcode80SharedStub`."
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "e8ac5234c49529079714a69634312067094a375b30833ff739ccdf146bd35eeb",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Opcode `0x80` Neighboring Sound Context\n\n## Goal\n\nRetire the historical `SoundEffects0` reading for positive script-context\nreasons, not only because the verified runtime-table dispatch lands on the\nshared return-zero stub at `0x800B66E4`.\n\n## Scope note\n\nThe checked-in `decoded_scripts` corpus still prints legacy `SoundEffects0(...)`\ntext for `0x80` because many of those exports predate the local decoder rename\nto `Opcode80SharedStub`.\nThis packet treats those rendered lines as historical script locations, not as\nfresh naming proof.\n\n## Corpus scan\n\nA direct scan of the `decoded_scripts` corpus finds `127` files containing at\nleast one `0x80` line.\nAmong those same files:\n\n- `88 / 127` co-host at least one explicit nearby sound-family opcode from\n  `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or `0x9E`\n- `85 / 127` contain both the `0x85` `LoadSfxSlot` and `0x88` `SetCurrentSfx`\n  pair\n- `65 / 127` contain `0x90` or `0x92`\n- `51 / 127` contain the `0x9D` `LoadSoundFileById` plus `0x9E`\n  `ProcessSoundQueue` pair\n- `49 / 127` contain all three categories together:\n  `0x85/0x88`, `0x90/0x92`, and `0x9D/0x9E`\n\nThat is not direct consumer proof, but it does make the old \"the sound must\ncome from `0x80` itself\" reading less necessary.\nMany audio-looking `0x80` scenes already live inside scripts that explicitly\nprepare SFX slots, music slots, or sound-file queues through other opcodes.\n\n## Representative scenes\n\n### `MAP001` intro: explicit SFX setup before the first `0x80` burst\n\n[`decoded_scripts/24-Unmapped/001-Unknown Room.txt`](../../decoded_scripts/24-Unmapped/001-Unknown%20Room.txt)\nopens with `0x92` music playback at `0010`.\nThat same script then enters a nested helper block that performs:\n\n- `00A2: 85 02 01` -> `LoadSfxSlot(2, 1)`\n- `00A7: 88 01` -> `SetCurrentSfx(1)`\n\nOnly after that prepared-state setup does the intro reach its first `0x80`\ncluster:\n\n- `0155: 80 03 37 80 7F`\n- `0170: 80 03 39 80 7F`\n- `0177: 80 03 3A 80 7F`\n\nThe same room later repeats more `0x80` bursts around camera, model, and\ncutscene timing beats, but the explicit SFX-selection work already happened\nearlier in the same script.\n\n### `MAP026` Gallows: queue, music-slot, and SFX-slot setup all exist without\nneeding `0x80` as the direct sound trigger\n\n[`decoded_scripts/1-Wine Cellar/026-The Gallows.txt`](../../decoded_scripts/1-Wine%20Cellar/026-The%20Gallows.txt)\nshows the strongest local script-side replacement story.\n\nEarly in the script it performs a complete sound-file and music bring-up:\n\n- `0056: 9D 20` -> `LoadSoundFileById(32)`\n- `0058: 9E` -> `ProcessSoundQueue()`\n- `0059: 90 20 01` -> `LoadMusicSlot(32, 1)`\n- `0062: 92 01 7F 00` -> `MusicPlay(...)`\n\nThe same file later does explicit SFX-slot preparation:\n\n- `008C: 85 10 01` -> `LoadSfxSlot(16, 1)`\n- `0091: 88 01` -> `SetCurrentSfx(1)`\n\nOnly after those steps do the script's repeated legacy-rendered `0x80` beats\nstart appearing:\n\n- `00EB: 80 03 07 80 7F`\n- `0106: 80 01 16 80 7F`\n- `010B: 80 01 17 80 7F`\n- `0153: 80 03 08 80 7F`\n- `01C0: 80 03 08 80 7F`\n- `0227: 80 03 09 80 7F`\n\nThe file then re-arms the direct file-queue path again at `028A-028E` through\nanother `9D` plus `9E` pair before later `0x80` beats at `02D5`, `036D`, and\n`043B`.\nThat script no longer needs a direct `0x80` sound meaning to explain why the\nscene sounds active.\n\n### `MAP415` The Dark tempts Ashley: explicit queue-plus-music setup happens\nup front, then `0x80` rides inside camera/effect beats\n\n[`decoded_scripts/23-Great Cathedral/415-The Dark tempts Ashley.txt`](../../decoded_scripts/23-Great%20Cathedral/415-The%20Dark%20tempts%20Ashley.txt)\nstarts with a tight audio setup cluster:\n\n- `0019: 9D AF` -> `LoadSoundFileById(175)`\n- `001B: 9E` -> `ProcessSoundQueue()`\n- `001C: 90 AF 01` -> `LoadMusicSlot(175, 1)`\n- `0021: 92 01 7F 00` -> `MusicPlay(...)`\n\nThe first legacy-rendered `0x80` beat does not appear until `00A7`.\nLater repeats at `017F`, `0221`, `02B3`, `0343`, `03D3`, `0483`, `0533`,\n`05FB`, and `062B` all sit inside camera-roll, room-display, model-load, or\nscreen-effect staging rather than inside a fresh handler-level sound proof\npath for `0x80`.\n\nThis same file also performs another explicit music-slot write at\n`04A1: 90 B0 02` before more later `0x80` beats.\nAgain, the audio-looking scene already has stronger neighboring sound-family\nopcodes available than the shared stub itself.\n\n## Safe takeaway\n\n- The best local explanation for many audio-looking `0x80` scenes is now\n  contextual: scripts often co-host explicit SFX-slot, music-slot, or\n  sound-file-queue setup opcodes that can prepare audible state before later\n  `0x80` beats.\n- That does not prove which one of those neighboring families is the final\n  consumer for each scene.\n- It does mean the old direct label `SoundEffects0` is no longer the least-bad\n  explanation for representative script usage.\n- `Opcode80SharedStub` remains the safest local name because the verified\n  runtime-table dispatch is still structural, not semantic.\n\n## Remaining gap\n\nThis packet narrows the semantic problem from \"why do sound scenes use a stub?\"\nto \"which already-proven neighboring sound path best explains each prepared\nscene?\"\nThe next proof step should trace the consumer relationship between:\n\n- `0x9D` plus `0x9E` sound-file queueing\n- `0x90` plus `0x92` music-slot playback\n- `0x85` plus `0x88` SFX-slot selection\n\nUntil that tie-breaker is closed, `0x80` should stay on the structural label\n`Opcode80SharedStub`.\n",
+    "markdown_with_json_links": "# Opcode `0x80` Neighboring Sound Context\n\n## Goal\n\nRetire the historical `SoundEffects0` reading for positive script-context\nreasons, not only because the verified runtime-table dispatch lands on the\nshared return-zero stub at `0x800B66E4`.\n\n## Scope note\n\nThe checked-in `decoded_scripts` corpus still prints legacy `SoundEffects0(...)`\ntext for `0x80` because many of those exports predate the local decoder rename\nto `Opcode80SharedStub`.\nThis packet treats those rendered lines as historical script locations, not as\nfresh naming proof.\n\n## Corpus scan\n\nA direct scan of the `decoded_scripts` corpus finds `127` files containing at\nleast one `0x80` line.\nAmong those same files:\n\n- `88 / 127` co-host at least one explicit nearby sound-family opcode from\n  `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or `0x9E`\n- `85 / 127` contain both the `0x85` `LoadSfxSlot` and `0x88` `SetCurrentSfx`\n  pair\n- `65 / 127` contain `0x90` or `0x92`\n- `51 / 127` contain the `0x9D` `LoadSoundFileById` plus `0x9E`\n  `ProcessSoundQueue` pair\n- `49 / 127` contain all three categories together:\n  `0x85/0x88`, `0x90/0x92`, and `0x9D/0x9E`\n\nThat is not direct consumer proof, but it does make the old \"the sound must\ncome from `0x80` itself\" reading less necessary.\nMany audio-looking `0x80` scenes already live inside scripts that explicitly\nprepare SFX slots, music slots, or sound-file queues through other opcodes.\n\n## Representative scenes\n\n### `MAP001` intro: explicit SFX setup before the first `0x80` burst\n\n[`decoded_scripts/24-Unmapped/001-Unknown Room.txt`](../../decoded_scripts/24-Unmapped/001-Unknown%20Room.txt)\nopens with `0x92` music playback at `0010`.\nThat same script then enters a nested helper block that performs:\n\n- `00A2: 85 02 01` -> `LoadSfxSlot(2, 1)`\n- `00A7: 88 01` -> `SetCurrentSfx(1)`\n\nOnly after that prepared-state setup does the intro reach its first `0x80`\ncluster:\n\n- `0155: 80 03 37 80 7F`\n- `0170: 80 03 39 80 7F`\n- `0177: 80 03 3A 80 7F`\n\nThe same room later repeats more `0x80` bursts around camera, model, and\ncutscene timing beats, but the explicit SFX-selection work already happened\nearlier in the same script.\n\n### `MAP026` Gallows: queue, music-slot, and SFX-slot setup all exist without\nneeding `0x80` as the direct sound trigger\n\n[`decoded_scripts/1-Wine Cellar/026-The Gallows.txt`](../../decoded_scripts/1-Wine%20Cellar/026-The%20Gallows.txt)\nshows the strongest local script-side replacement story.\n\nEarly in the script it performs a complete sound-file and music bring-up:\n\n- `0056: 9D 20` -> `LoadSoundFileById(32)`\n- `0058: 9E` -> `ProcessSoundQueue()`\n- `0059: 90 20 01` -> `LoadMusicSlot(32, 1)`\n- `0062: 92 01 7F 00` -> `MusicPlay(...)`\n\nThe same file later does explicit SFX-slot preparation:\n\n- `008C: 85 10 01` -> `LoadSfxSlot(16, 1)`\n- `0091: 88 01` -> `SetCurrentSfx(1)`\n\nOnly after those steps do the script's repeated legacy-rendered `0x80` beats\nstart appearing:\n\n- `00EB: 80 03 07 80 7F`\n- `0106: 80 01 16 80 7F`\n- `010B: 80 01 17 80 7F`\n- `0153: 80 03 08 80 7F`\n- `01C0: 80 03 08 80 7F`\n- `0227: 80 03 09 80 7F`\n\nThe file then re-arms the direct file-queue path again at `028A-028E` through\nanother `9D` plus `9E` pair before later `0x80` beats at `02D5`, `036D`, and\n`043B`.\nThat script no longer needs a direct `0x80` sound meaning to explain why the\nscene sounds active.\n\n### `MAP415` The Dark tempts Ashley: explicit queue-plus-music setup happens\nup front, then `0x80` rides inside camera/effect beats\n\n[`decoded_scripts/23-Great Cathedral/415-The Dark tempts Ashley.txt`](../../decoded_scripts/23-Great%20Cathedral/415-The%20Dark%20tempts%20Ashley.txt)\nstarts with a tight audio setup cluster:\n\n- `0019: 9D AF` -> `LoadSoundFileById(175)`\n- `001B: 9E` -> `ProcessSoundQueue()`\n- `001C: 90 AF 01` -> `LoadMusicSlot(175, 1)`\n- `0021: 92 01 7F 00` -> `MusicPlay(...)`\n\nThe first legacy-rendered `0x80` beat does not appear until `00A7`.\nLater repeats at `017F`, `0221`, `02B3`, `0343`, `03D3`, `0483`, `0533`,\n`05FB`, and `062B` all sit inside camera-roll, room-display, model-load, or\nscreen-effect staging rather than inside a fresh handler-level sound proof\npath for `0x80`.\n\nThis same file also performs another explicit music-slot write at\n`04A1: 90 B0 02` before more later `0x80` beats.\nAgain, the audio-looking scene already has stronger neighboring sound-family\nopcodes available than the shared stub itself.\n\n## Safe takeaway\n\n- The best local explanation for many audio-looking `0x80` scenes is now\n  contextual: scripts often co-host explicit SFX-slot, music-slot, or\n  sound-file-queue setup opcodes that can prepare audible state before later\n  `0x80` beats.\n- That does not prove which one of those neighboring families is the final\n  consumer for each scene.\n- It does mean the old direct label `SoundEffects0` is no longer the least-bad\n  explanation for representative script usage.\n- `Opcode80SharedStub` remains the safest local name because the verified\n  runtime-table dispatch is still structural, not semantic.\n\n## Remaining gap\n\nThis packet narrows the semantic problem from \"why do sound scenes use a stub?\"\nto \"which already-proven neighboring sound path best explains each prepared\nscene?\"\nThe next proof step should trace the consumer relationship between:\n\n- `0x9D` plus `0x9E` sound-file queueing\n- `0x90` plus `0x92` music-slot playback\n- `0x85` plus `0x88` SFX-slot selection\n\nUntil that tie-breaker is closed, `0x80` should stay on the structural label\n`Opcode80SharedStub`.\n"
+  }
+}

@@ -1,0 +1,358 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_runtime_capture_plan",
+    "title": "Opcode `0x80` Runtime Capture Plan",
+    "summary": "Break the remaining `0x80` contradiction with a runtime pass that checks whether the copied opcode table changes after init and which handler `0x80-0x82` actually dispatch through live.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_runtime_capture_plan.md",
+    "artifacts": [
+      "decomp/evidence/inittbl_opcode_table.json",
+      "decomp/evidence/opcode_0x80_runtime_observation.json",
+      "decomp/evidence/opcode_0x80_runtime_input_plan.json",
+      "decomp/evidence/opcode_0x80_runtime_memcard_probe.md.json",
+      "decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json",
+      "decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md.json",
+      "decomp/evidence/opcode_0x80_runtime_frames",
+      "decomp/evidence/opcode_0x80_runtime_memcard_probe.json",
+      "decomp/evidence/opcode_0x80_runtime_after_init.bin",
+      "decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin",
+      "decomp/evidence/opcode_0x80_runtime_automation_summary.json",
+      "decomp/evidence/opcode_0x80_runtime_expected_table.bin",
+      "decomp/evidence/opcode_0x80_runtime_snapshot_compare.json",
+      "decomp/evidence/opcode_0x80_runtime_observation_template.json",
+      "decomp/verification/pcsx_redux_opcode_0x80_capture.lua",
+      "decomp/verification/run_opcode_0x80_runtime_capture.ps1",
+      "decomp/verification/record_runtime_observation.py",
+      "decomp/verification/finalize_runtime_observation.py",
+      "decomp/verification/compare_opcode_table_snapshots.py",
+      "decoded_scripts/24-Unmapped/001-Unknown Room.txt",
+      "RE_CAMPAIGN_MEMORY.md.json"
+    ],
+    "findings": [
+      "The key runtime anchors are the copied table slot at `0x800F4C28`, the recovered reader chain `0x8007A36C -> 0x800BF850 -> 0x800BFBB8`, and the current static `0x80-0x82` target `0x800B66E4`.",
+      "The default path is now scripted `PCSX-Redux` CLI capture through the checked-in Lua and PowerShell wrapper helpers.",
+      "The validated `MAP001` listener-control rerun already resolves the live runtime table at `0x801119F0`, reaches the recovered reader family, and records direct retail `0x80 -> 0x800B66E4` dispatch samples with no post-init table-write hits.",
+      "The checked-in `Load` fallback is now a dead branch for this workspace because the repo-local memcards probe as blank formatted cards.",
+      "The preserved bat-control negative route is the stronger fallback checkpoint because it reaches player control, room transition, combat state, and the opening bat attack while still producing no reader, caller, or grandcaller hits.",
+      "If automation is blocked, the manual fallback still needs the same snapshot exports, compare flow, and breakpoint evidence to close the contradiction cleanly."
+    ],
+    "body": {
+      "sections": {
+        "goal": {
+          "heading": "Goal",
+          "content": [
+            {
+              "paragraph": "Break the remaining `0x80` contradiction with one runtime pass:",
+              "ulist": [
+                "prove whether the copied `0x400`-byte opcode table at `0x800F4C28` stays\nidentical to the `INITBTL.PRG` export after init",
+                "confirm which handler address actually executes if `0x80`, `0x81`, or `0x82`\nare ever dispatched live"
+              ]
+            },
+            {
+              "paragraph": "Static evidence has already narrowed the question to runtime. This note is the\nsmallest capture plan that should settle it."
+            }
+          ]
+        },
+        "known-anchors": {
+          "heading": "Known anchors",
+          "content": [
+            {
+              "ulist": [
+                "Runtime table slot: `0x800F4C28`",
+                "Runtime table size: `0x400` bytes (`256 * 4`)",
+                "Baseline export: `decomp/evidence/inittbl_opcode_table.json`",
+                "Live runtime table reader: `FUN_800BFBB8`",
+                "Reader address: `0x800BFBB8`",
+                "Reader caller: `FUN_800BF850`",
+                "Reader caller address: `0x800BF850`",
+                "Recovered upstream caller site: `0x8007A36C`",
+                "Related pointer family under the caller: `0x800F4C38`",
+                "Current static `0x80-0x82` target: `0x800B66E4`",
+                "Nearby competing sound-family candidate: `0x800BA2E0`",
+                "Visible neighboring sound-family handlers: `0x800BA35C`, `0x800BA39C`,\n`0x800BA3E4`, `0x800BA404`, `0x800BA444`, `0x800BA470`, `0x800BA494`"
+              ]
+            }
+          ]
+        },
+        "what-to-capture": {
+          "heading": "What to capture",
+          "content": [
+            {
+              "olit": [
+                "One raw dump of the table immediately after the init-time copy has happened.",
+                "One raw dump as late as practical before any candidate `0x80-0x82`\ndispatch.",
+                "Any later dump if a memory write breakpoint or read breakpoint suggests the\ntable changed after the second capture.",
+                "The actual dispatch target address if execution reaches `0x800B66E4`,\n`0x800BA2E0`, or another rewritten slot for `0x80-0x82`.",
+                "If `0x800BFBB8` stays silent, whether execution at least reaches\n`0x800BF850` or the upstream site at `0x8007A36C` before the attempted\ntrigger window ends."
+              ]
+            }
+          ]
+        },
+        "default-runtime-path": {
+          "heading": "Default runtime path",
+          "content": [
+            {
+              "paragraph": "The default runtime path for this contradiction is now automated\n`PCSX-Redux` CLI capture, not manual debugger driving."
+            },
+            {
+              "paragraph": "Use:",
+              "ulist": [
+                "`decomp/verification/pcsx_redux_opcode_0x80_capture.lua`",
+                "`decomp/verification/run_opcode_0x80_runtime_capture.ps1`"
+              ]
+            },
+            {
+              "paragraph": "The wrapper launches a scriptable `PCSX-Redux` build with startup Lua, plants\nthe known breakpoints, dumps the copied table directly from emulator memory,\nand records the resulting snapshot paths plus a compact automation summary back\ninto `decomp/evidence/opcode_0x80_runtime_observation.json`. When no\nnear-battle savestate exists yet, the same wrapper can now translate a\nchecked-in JSON pad-input plan into a Lua replay schedule instead of leaving\nthe cold-boot fallback entirely manual."
+            },
+            {
+              "paragraph": "The current capture flow also probes the newly recovered upstream reader chain:",
+              "ulist": [
+                "`0x800BF850` (`reader caller`)",
+                "`0x8007A36C` (`reader grandcaller`)"
+              ]
+            },
+            {
+              "paragraph": "Those probes matter because the preserved bat-control negative route is now\nstrictly stronger than the older \"no `0x800BFBB8` hit\" claim: the widened\nrerun still produced no reader hit, no caller hit, and no grandcaller hit.\nThat means early gameplay plus the first bat exchange do not even enter the\nrecovered reader family yet."
+            },
+            {
+              "paragraph": "The wrapper now also auto-raises the runtime timeout when an input plan would\notherwise outlast the base `1800`-frame default. That matters for the\nchecked-in cold-boot scaffold because the latest retunes are longer than the\nfirst six-step starter plan and rely on visual checkpoints to prove progress.\nThe latest `MAP001` listener-control rerun moved this packet past the old\n\"maybe the automation or trigger chain is broken\" stage:",
+              "ulist": [
+                "the Lua capture now treats `0x800F4C28` as a pointer slot and resolves the\nlive runtime table at `0x801119F0`",
+                "the stripped `New Game` intro route reaches the recovered reader family on\nretail runtime (`0x8007A36C` x`955`, `0x800BF850` x`955`, `0x800BFBB8`\nx`1049`)",
+                "decoded-script handler probes based on\n`decoded_scripts/24-Unmapped/001-Unknown Room.txt` now fire across dozens of\n`MAP001` opcode families",
+                "the dispatch log records direct retail intro samples for\n`0x80 -> 0x800B66E4` while the copied table still shows no post-init write\nhits"
+              ]
+            },
+            {
+              "paragraph": "That means the next runtime pass should stop spending time on basic trigger\nvalidation and instead instrument what happens after shared stub `0x800B66E4`\nis selected for `0x80`."
+            },
+            {
+              "paragraph": "Official `PCSX-Redux` docs that back this path:",
+              "ulist": [
+                "CLI launch surface used by the wrapper:\n<https://pcsx-redux.consoledev.net/cli_flags/>",
+                "Lua runtime control, pads, and savestate APIs used or available to the\ncapture script:\n<https://pcsx-redux.consoledev.net/Lua/redux-basics/>",
+                "Lua execution and write breakpoints used by the capture script:\n<https://pcsx-redux.consoledev.net/Lua/breakpoints/>",
+                "Lua events available for boot/savestate-aware scripting:\n<https://pcsx-redux.consoledev.net/Lua/events/>",
+                "Lua memory and register access used for raw table dumps and PC filtering:\n<https://pcsx-redux.consoledev.net/Lua/memory-and-registers/>",
+                "MIPS-side callback surface available if the runtime path later needs\ninstrumented code or `pcsx_execSlot()`-style handshakes:\n<https://pcsx-redux.consoledev.net/mips_api/>"
+              ]
+            },
+            {
+              "paragraph": "Recommended usage shape:",
+              "code": "pwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"<path-to-disc-image>\"",
+              "language": "powershell"
+            },
+            {
+              "paragraph": "For route-only smoke tests where breakpoint accuracy is not needed, the wrapper\nnow also supports a fast dynarec path:",
+              "code": "pwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -CpuCore dynarec `\n  -DisableDebugger",
+              "language": "powershell"
+            },
+            {
+              "paragraph": "Keep the real contradiction-proof passes on `interpreter` plus debugger. The\nofficial docs note that Lua breakpoints require the debugger and the\ninterpreter path, so the real speedup for semantic work is still a near-target\nsavestate rather than repeated full cold boots."
+            },
+            {
+              "paragraph": "When a nearer launch state exists, prefer resuming from that state instead of\nrepeating a cold boot. The wrapper now supports both explicit savestate paths\nand \"pick the newest nearby state\" flow:",
+              "code": "pwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -SaveStatePath \"decomp/evidence/opcode_0x80_near_battle.p2s.gz\"\n\npwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -UseNewestSaveState",
+              "language": "powershell"
+            },
+            {
+              "paragraph": "When no savestate is available yet, tune the checked-in starter plan and use\nthe same wrapper to replay a conservative title/menu sequence through the\ndocumented `PCSX.SIO0.slots[*].pads[*]` override API:",
+              "code": "pwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -UseDefaultInputPlan",
+              "language": "powershell"
+            },
+            {
+              "paragraph": "The default scaffold lives at:",
+              "ulist": [
+                "`decomp/evidence/opcode_0x80_runtime_input_plan.json`",
+                "`decomp/evidence/opcode_0x80_runtime_memcard_probe.md.json`"
+              ]
+            },
+            {
+              "paragraph": "That JSON is intentionally a starter plan, not proof. Keep it checked in,\ntune the frame waits as real runs reveal the actual menu timing, and prefer a\nnear-battle savestate again as soon as one exists. If no save-bearing card is\navailable, the next cold-boot branch should be `New Game` far enough to earn a\nreal save or checkpoint, not more retries of the blank-card `Load` path."
+            },
+            {
+              "paragraph": "The current preserved regression/control pair lives at:",
+              "ulist": [
+                "`decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`",
+                "`decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md.json`"
+              ]
+            },
+            {
+              "paragraph": "Treat that pair as the stronger fallback checkpoint, not as positive opcode\nproof. It now documents a route that reaches player control, changes rooms,\nopens combat state, and lands the opening bat attack while still producing no\nreader/caller/grandcaller hits and no snapshots."
+            },
+            {
+              "paragraph": "Current cold-boot status:",
+              "ulist": [
+                "the wrapper now emits per-step screen-capture artifacts under\n`decomp/evidence/opcode_0x80_runtime_frames/`, and the latest captures are\ninformative enough to show the route reaching the title logo, the title\nmenu, and the `Load / Memory Card slot 1` screen",
+                "corrected PSX-style menu mapping matters here: this build uses `O` confirm /\n`X` cancel, and the checked-in input plan now reflects that",
+                "the repo-local `memcard1.mcd` and `memcard2.mcd` probe as blank formatted\ncards in `decomp/evidence/opcode_0x80_runtime_memcard_probe.json`",
+                "that means the current `Load` route is now a confirmed dead branch for this\nworkspace, not a promising gameplay-entry path",
+                "the checked-in fallback now does exactly that: after reaching the title menu\nit confirms the default `New Game` branch, waits roughly ten seconds, then\nsends two delayed `START` skips as control-handoff probes",
+                "that retuned rerun extended the wrapper timeout to `4380` frames but still\nrecorded no `0x800BFBB8` reader hit, no table-write hit, and no snapshots",
+                "the preserved bat-control negative route now goes farther and still stays\nsilent on `0x800BFBB8`, `0x800BF850`, and `0x8007A36C`",
+                "the automation summary JSON now preserves per-step input-plan\nstart/completion notes with frame numbers, so a silent rerun can be checked\nfor route drift before spending time on screenshots or fresh timing churn",
+                "the next fallback edit should therefore widen from the `0x8007A36C ->\n0x800BF850 -> 0x800BFBB8` chain or add a savestate-bearing handoff artifact,\nnot restore the blank-card `Load` route or rely on more blind early-gameplay\ntiming tweaks",
+                "Savestate-specific behavior:",
+                {
+                  "ulist": [
+                    "`-SaveStatePath` accepts either a raw savestate payload or a\ngzip-compressed `PCSX-Redux` UI savestate.",
+                    "`-UseNewestSaveState` searches `decomp/evidence`, `.codex_tmp`, and repo\nroot plus the portable save directory next to `pcsx-redux.exe` for the\nnewest `*.p2s`, `*.p2s.gz`, `*.savestate`, `*.savestate.gz`, `*.state`, or\n`*.state.gz` file.",
+                    "gzip-compressed savestates are staged into `.codex_tmp/pcsx-redux/` before\nlaunch so Lua can feed an uncompressed file to `PCSX.loadSaveState(file)`.",
+                    "the Lua capture script now records the savestate-load event and captures the\nearliest `after_init` fallback snapshot from the restored runtime state if a\nreader hit has not happened yet.",
+                    "`-UseDefaultInputPlan` loads the checked-in\n`decomp/evidence/opcode_0x80_runtime_input_plan.json` scaffold.",
+                    "`-InputPlanPath` accepts a custom JSON plan with sequential button steps, so\npad/menu automation can still run through the wrapper when the fallback path\nneeds different timing or a different menu route."
+                  ]
+                },
+                "Expected outputs:",
+                {
+                  "ulist": [
+                    "`decomp/evidence/opcode_0x80_runtime_after_init.bin`",
+                    "`decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin`",
+                    "`decomp/evidence/opcode_0x80_runtime_automation_summary.json`",
+                    "optional replay metadata for `decomp/evidence/opcode_0x80_runtime_input_plan.json`\ninside the automation summary and observation packet notes",
+                    "optional replay metadata for `decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`\ninside the automation summary and observation packet notes",
+                    "refreshed `decomp/evidence/opcode_0x80_runtime_observation.json`",
+                    "refreshed compare/support artifacts through the existing finalize flow"
+                  ]
+                },
+                "Operational assumptions:",
+                {
+                  "ulist": [
+                    "use a scriptable `PCSX-Redux` CLI-capable build",
+                    "run with the interpreter core plus debugger support",
+                    "keep the output files under `decomp/evidence`",
+                    "let the wrapper and recorder/finalizer own the observation packet updates",
+                    "if a savestate is used, keep the original `.p2s` or `.gz` file as the\ndurable handoff artifact; the staged raw payload under `.codex_tmp` is only\na temporary loader aid"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "manual-fallback-checklist": {
+          "heading": "Manual fallback checklist",
+          "content": [
+            {
+              "paragraph": "If the automated CLI path is blocked for a specific run, fall back to the\nmanual debugger procedure below."
+            },
+            {
+              "olit": [
+                "Enable the debugger features needed for execution and memory breakpoints.",
+                "Open the memory editor at `0x800F4C28`.",
+                "Create a memory write breakpoint that covers `0x800F4C28` through\n`0x800F5027`.",
+                "Create a memory read breakpoint on the same range if you want an earlier\nstop when the runtime reader first consumes the copied table.",
+                "Add execution breakpoints at:",
+                "When the init copy has completed, export `0x400` bytes from the memory\neditor to a raw file such as:",
+                "When the late runtime state is reached, export the same `0x400` bytes again,\nfor example:",
+                "If the table changes later, export another raw file at the mutation point.",
+                "Record the breakpoint hits and dump paths in\n`decomp/evidence/opcode_0x80_runtime_observation.json`."
+              ]
+            },
+            {
+              "paragraph": "Use the recorder helper instead of hand-editing the JSON during the runtime\npass. Examples:",
+              "code": "python decomp/verification/record_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  set-snapshot `\n  --label after_init `\n  --path decomp/evidence/opcode_0x80_runtime_after_init.bin `\n  --finalize `\n  --allow-missing-snapshots\n\npython decomp/verification/record_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  add-breakpoint-hit `\n  --kind exec `\n  --address 0x800BFBB8 `\n  --pc 0x800BFBB8 `\n  --note \"reader reached before candidate dispatch\" `\n  --finalize `\n  --allow-missing-snapshots\n\npython decomp/verification/record_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  add-dispatch `\n  --opcode 0x80 `\n  --handler-address 0x800B66E4 `\n  --source-breakpoint 0x800B66E4 `\n  --note \"dispatch stayed on the copied stub target\" `\n  --finalize `\n  --allow-missing-snapshots",
+              "language": "powershell"
+            }
+          ]
+        },
+        "checked-in-scaffold": {
+          "heading": "Checked-in scaffold",
+          "content": [
+            {
+              "paragraph": "This repo now keeps a partially finalized observation scaffold at:",
+              "ulist": [
+                "`decomp/evidence/opcode_0x80_runtime_observation.json`"
+              ]
+            },
+            {
+              "paragraph": "It already records the planned breakpoints, expected dump paths, and the\ncurrent \"missing snapshot\" state, so the next runtime pass can update that\nfile directly instead of starting from a blank template."
+            },
+            {
+              "paragraph": "The same JSON also names the helper scripts:",
+              "ulist": [
+                "`record_helper`: `decomp/verification/record_runtime_observation.py`",
+                "`finalize_helper`: `decomp/verification/finalize_runtime_observation.py`",
+                "`expected_bin_path`: `decomp/evidence/opcode_0x80_runtime_expected_table.bin`"
+              ]
+            },
+            {
+              "paragraph": "The finalize helper now also reconstructs the binary-derived baseline pointer\ntable into that `expected_bin_path` artifact and records its size/hash in the\ncompare report, so the runtime pass has a checked-in byte-for-byte baseline to\ndiff against in addition to the JSON export."
+            },
+            {
+              "paragraph": "If the scaffold ever needs to be regenerated from the untouched template, use:",
+              "code": "python decomp/verification/finalize_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation_template.json `\n  --allow-missing-snapshots `\n  --output-observation decomp/evidence/opcode_0x80_runtime_observation.json",
+              "language": "powershell"
+            }
+          ]
+        },
+        "compare-the-dumps": {
+          "heading": "Compare the dumps",
+          "content": [
+            {
+              "paragraph": "Use the runtime snapshot helper to reconstruct the binary baseline and compare\nthe RAM captures:",
+              "code": "python decomp/verification/compare_opcode_table_snapshots.py `\n  decomp/evidence/inittbl_opcode_table.json `\n  decomp/evidence/opcode_0x80_runtime_after_init.bin `\n  decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin `\n  --label after_init `\n  --label pre_dispatch `\n  --focus-opcode 0x80 `\n  --focus-opcode 0x81 `\n  --focus-opcode 0x82 `\n  --write-expected-bin decomp/evidence/opcode_runtime_expected_table.bin `\n  --output decomp/evidence/opcode_0x80_runtime_snapshot_compare.json",
+              "language": "powershell"
+            },
+            {
+              "paragraph": "Then finalize the observation packet so the compare report, support note,\nreconstructed baseline blob, and updated JSON all agree:",
+              "code": "python decomp/verification/finalize_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  --in-place",
+              "language": "powershell"
+            },
+            {
+              "paragraph": "If one snapshot is still missing and you only want a partial handoff artifact,\nadd `--allow-missing-snapshots`."
+            },
+            {
+              "paragraph": "If the compare report shows changed handlers for the focus opcodes, import\nthose rows back into the checked-in observation packet so the mutation section\nis explicit instead of living only inside the compare JSON:",
+              "code": "python decomp/verification/record_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  import-compare `\n  --replace-derived `\n  --finalize",
+              "language": "powershell"
+            },
+            {
+              "paragraph": "Add `--include-non-focus` if the runtime pass needs every changed opcode row,\nnot just the changed `0x80-0x82` focus entries."
+            }
+          ]
+        },
+        "exit-conditions": {
+          "heading": "Exit conditions",
+          "content": [
+            {
+              "paragraph": "The contradiction is statically resolved enough to treat runtime as decisive if\none of these happens:",
+              "ulist": [
+                "both dumps match the baseline export exactly, especially `0x80-0x82`",
+                "a later dump shows changed handlers for `0x80-0x82`",
+                "execution reaches a handler that proves the table was rewritten or bypassed"
+              ]
+            }
+          ]
+        },
+        "result-handling": {
+          "heading": "Result handling",
+          "content": [
+            {
+              "paragraph": "If the table never changes and dispatch still lands on `0x800B66E4`, the next\npass can safely retire the old `SoundEffects0` label in downstream decoder and\nnote text, while keeping the structural `Opcode80SharedStub` wording until a\nlater shared-stub family audit proves something stronger."
+            },
+            {
+              "paragraph": "If the table changes or dispatch reaches a different handler, store:",
+              "ulist": [
+                "the raw dump(s)",
+                "the comparison report",
+                "the filled observation template",
+                "the generated runtime support note",
+                "imported `table_mutations` rows in the checked-in observation packet when\nthe compare report changes the focus opcodes",
+                "one short runtime support note summarizing the decisive hit"
+              ]
+            },
+            {
+              "paragraph": "Then update `RE_CAMPAIGN_MEMORY.md.json` before ending the pass."
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "fe14155a894b518d48d56f9bc04810c9115de1f40c0d43ecc5e0654cba4a317e",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:45:30Z",
+    "raw_markdown": "# Opcode `0x80` Runtime Capture Plan\n\n## Goal\n\nBreak the remaining `0x80` contradiction with one runtime pass:\n\n- prove whether the copied `0x400`-byte opcode table at `0x800F4C28` stays\n  identical to the `INITBTL.PRG` export after init\n- confirm which handler address actually executes if `0x80`, `0x81`, or `0x82`\n  are ever dispatched live\n\nStatic evidence has already narrowed the question to runtime. This note is the\nsmallest capture plan that should settle it.\n\n## Known anchors\n\n- Runtime table slot: `0x800F4C28`\n- Runtime table size: `0x400` bytes (`256 * 4`)\n- Baseline export: `decomp/evidence/inittbl_opcode_table.json`\n- Live runtime table reader: `FUN_800BFBB8`\n- Reader address: `0x800BFBB8`\n- Reader caller: `FUN_800BF850`\n- Reader caller address: `0x800BF850`\n- Recovered upstream caller site: `0x8007A36C`\n- Related pointer family under the caller: `0x800F4C38`\n- Current static `0x80-0x82` target: `0x800B66E4`\n- Nearby competing sound-family candidate: `0x800BA2E0`\n- Visible neighboring sound-family handlers: `0x800BA35C`, `0x800BA39C`,\n  `0x800BA3E4`, `0x800BA404`, `0x800BA444`, `0x800BA470`, `0x800BA494`\n\n## What to capture\n\n1. One raw dump of the table immediately after the init-time copy has happened.\n2. One raw dump as late as practical before any candidate `0x80-0x82`\n   dispatch.\n3. Any later dump if a memory write breakpoint or read breakpoint suggests the\n   table changed after the second capture.\n4. The actual dispatch target address if execution reaches `0x800B66E4`,\n   `0x800BA2E0`, or another rewritten slot for `0x80-0x82`.\n5. If `0x800BFBB8` stays silent, whether execution at least reaches\n   `0x800BF850` or the upstream site at `0x8007A36C` before the attempted\n   trigger window ends.\n\n## Default runtime path\n\nThe default runtime path for this contradiction is now automated\n`PCSX-Redux` CLI capture, not manual debugger driving.\n\nUse:\n\n- `decomp/verification/pcsx_redux_opcode_0x80_capture.lua`\n- `decomp/verification/run_opcode_0x80_runtime_capture.ps1`\n\nThe wrapper launches a scriptable `PCSX-Redux` build with startup Lua, plants\nthe known breakpoints, dumps the copied table directly from emulator memory,\nand records the resulting snapshot paths plus a compact automation summary back\ninto `decomp/evidence/opcode_0x80_runtime_observation.json`. When no\nnear-battle savestate exists yet, the same wrapper can now translate a\nchecked-in JSON pad-input plan into a Lua replay schedule instead of leaving\nthe cold-boot fallback entirely manual.\n\nThe current capture flow also probes the newly recovered upstream reader chain:\n\n- `0x800BF850` (`reader caller`)\n- `0x8007A36C` (`reader grandcaller`)\n\nThose probes matter because the preserved bat-control negative route is now\nstrictly stronger than the older \"no `0x800BFBB8` hit\" claim: the widened\nrerun still produced no reader hit, no caller hit, and no grandcaller hit.\nThat means early gameplay plus the first bat exchange do not even enter the\nrecovered reader family yet.\n\nThe wrapper now also auto-raises the runtime timeout when an input plan would\notherwise outlast the base `1800`-frame default. That matters for the\nchecked-in cold-boot scaffold because the latest retunes are longer than the\nfirst six-step starter plan and rely on visual checkpoints to prove progress.\nThe latest `MAP001` listener-control rerun moved this packet past the old\n\"maybe the automation or trigger chain is broken\" stage:\n\n- the Lua capture now treats `0x800F4C28` as a pointer slot and resolves the\n  live runtime table at `0x801119F0`\n- the stripped `New Game` intro route reaches the recovered reader family on\n  retail runtime (`0x8007A36C` x`955`, `0x800BF850` x`955`, `0x800BFBB8`\n  x`1049`)\n- decoded-script handler probes based on\n  `decoded_scripts/24-Unmapped/001-Unknown Room.txt` now fire across dozens of\n  `MAP001` opcode families\n- the dispatch log records direct retail intro samples for\n  `0x80 -> 0x800B66E4` while the copied table still shows no post-init write\n  hits\n\nThat means the next runtime pass should stop spending time on basic trigger\nvalidation and instead instrument what happens after shared stub `0x800B66E4`\nis selected for `0x80`.\n\nOfficial `PCSX-Redux` docs that back this path:\n\n- CLI launch surface used by the wrapper:\n  <https://pcsx-redux.consoledev.net/cli_flags/>\n- Lua runtime control, pads, and savestate APIs used or available to the\n  capture script:\n  <https://pcsx-redux.consoledev.net/Lua/redux-basics/>\n- Lua execution and write breakpoints used by the capture script:\n  <https://pcsx-redux.consoledev.net/Lua/breakpoints/>\n- Lua events available for boot/savestate-aware scripting:\n  <https://pcsx-redux.consoledev.net/Lua/events/>\n- Lua memory and register access used for raw table dumps and PC filtering:\n  <https://pcsx-redux.consoledev.net/Lua/memory-and-registers/>\n- MIPS-side callback surface available if the runtime path later needs\n  instrumented code or `pcsx_execSlot()`-style handshakes:\n  <https://pcsx-redux.consoledev.net/mips_api/>\n\nRecommended usage shape:\n\n```powershell\npwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"<path-to-disc-image>\"\n```\n\nFor route-only smoke tests where breakpoint accuracy is not needed, the wrapper\nnow also supports a fast dynarec path:\n\n```powershell\npwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -CpuCore dynarec `\n  -DisableDebugger\n```\n\nKeep the real contradiction-proof passes on `interpreter` plus debugger. The\nofficial docs note that Lua breakpoints require the debugger and the\ninterpreter path, so the real speedup for semantic work is still a near-target\nsavestate rather than repeated full cold boots.\n\nWhen a nearer launch state exists, prefer resuming from that state instead of\nrepeating a cold boot. The wrapper now supports both explicit savestate paths\nand \"pick the newest nearby state\" flow:\n\n```powershell\npwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -SaveStatePath \"decomp/evidence/opcode_0x80_near_battle.p2s.gz\"\n\npwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -UseNewestSaveState\n```\n\nWhen no savestate is available yet, tune the checked-in starter plan and use\nthe same wrapper to replay a conservative title/menu sequence through the\ndocumented `PCSX.SIO0.slots[*].pads[*]` override API:\n\n```powershell\npwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -UseDefaultInputPlan\n```\n\nThe default scaffold lives at:\n\n- `decomp/evidence/opcode_0x80_runtime_input_plan.json`\n- `decomp/evidence/opcode_0x80_runtime_memcard_probe.md`\n\nThat JSON is intentionally a starter plan, not proof. Keep it checked in,\ntune the frame waits as real runs reveal the actual menu timing, and prefer a\nnear-battle savestate again as soon as one exists. If no save-bearing card is\navailable, the next cold-boot branch should be `New Game` far enough to earn a\nreal save or checkpoint, not more retries of the blank-card `Load` path.\n\nThe current preserved regression/control pair lives at:\n\n- `decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`\n- `decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md`\n\nTreat that pair as the stronger fallback checkpoint, not as positive opcode\nproof. It now documents a route that reaches player control, changes rooms,\nopens combat state, and lands the opening bat attack while still producing no\nreader/caller/grandcaller hits and no snapshots.\n\nCurrent cold-boot status:\n\n- the wrapper now emits per-step screen-capture artifacts under\n  `decomp/evidence/opcode_0x80_runtime_frames/`, and the latest captures are\n  informative enough to show the route reaching the title logo, the title\n  menu, and the `Load / Memory Card slot 1` screen\n- corrected PSX-style menu mapping matters here: this build uses `O` confirm /\n  `X` cancel, and the checked-in input plan now reflects that\n- the repo-local `memcard1.mcd` and `memcard2.mcd` probe as blank formatted\n  cards in `decomp/evidence/opcode_0x80_runtime_memcard_probe.json`\n- that means the current `Load` route is now a confirmed dead branch for this\n  workspace, not a promising gameplay-entry path\n- the checked-in fallback now does exactly that: after reaching the title menu\n  it confirms the default `New Game` branch, waits roughly ten seconds, then\n  sends two delayed `START` skips as control-handoff probes\n- that retuned rerun extended the wrapper timeout to `4380` frames but still\n  recorded no `0x800BFBB8` reader hit, no table-write hit, and no snapshots\n- the preserved bat-control negative route now goes farther and still stays\n  silent on `0x800BFBB8`, `0x800BF850`, and `0x8007A36C`\n- the automation summary JSON now preserves per-step input-plan\n  start/completion notes with frame numbers, so a silent rerun can be checked\n  for route drift before spending time on screenshots or fresh timing churn\n- the next fallback edit should therefore widen from the `0x8007A36C ->\n  0x800BF850 -> 0x800BFBB8` chain or add a savestate-bearing handoff artifact,\n  not restore the blank-card `Load` route or rely on more blind early-gameplay\n  timing tweaks\n\nSavestate-specific behavior:\n\n- `-SaveStatePath` accepts either a raw savestate payload or a\n  gzip-compressed `PCSX-Redux` UI savestate.\n- `-UseNewestSaveState` searches `decomp/evidence`, `.codex_tmp`, and repo\n  root plus the portable save directory next to `pcsx-redux.exe` for the\n  newest `*.p2s`, `*.p2s.gz`, `*.savestate`, `*.savestate.gz`, `*.state`, or\n  `*.state.gz` file.\n- gzip-compressed savestates are staged into `.codex_tmp/pcsx-redux/` before\n  launch so Lua can feed an uncompressed file to `PCSX.loadSaveState(file)`.\n- the Lua capture script now records the savestate-load event and captures the\n  earliest `after_init` fallback snapshot from the restored runtime state if a\n  reader hit has not happened yet.\n- `-UseDefaultInputPlan` loads the checked-in\n  `decomp/evidence/opcode_0x80_runtime_input_plan.json` scaffold.\n- `-InputPlanPath` accepts a custom JSON plan with sequential button steps, so\n  pad/menu automation can still run through the wrapper when the fallback path\n  needs different timing or a different menu route.\n\nExpected outputs:\n\n- `decomp/evidence/opcode_0x80_runtime_after_init.bin`\n- `decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin`\n- `decomp/evidence/opcode_0x80_runtime_automation_summary.json`\n- optional replay metadata for `decomp/evidence/opcode_0x80_runtime_input_plan.json`\n  inside the automation summary and observation packet notes\n- optional replay metadata for `decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`\n  inside the automation summary and observation packet notes\n- refreshed `decomp/evidence/opcode_0x80_runtime_observation.json`\n- refreshed compare/support artifacts through the existing finalize flow\n\nOperational assumptions:\n\n- use a scriptable `PCSX-Redux` CLI-capable build\n- run with the interpreter core plus debugger support\n- keep the output files under `decomp/evidence`\n- let the wrapper and recorder/finalizer own the observation packet updates\n- if a savestate is used, keep the original `.p2s` or `.gz` file as the\n  durable handoff artifact; the staged raw payload under `.codex_tmp` is only\n  a temporary loader aid\n\n## Manual fallback checklist\n\nIf the automated CLI path is blocked for a specific run, fall back to the\nmanual debugger procedure below.\n\n1. Enable the debugger features needed for execution and memory breakpoints.\n2. Open the memory editor at `0x800F4C28`.\n3. Create a memory write breakpoint that covers `0x800F4C28` through\n   `0x800F5027`.\n4. Create a memory read breakpoint on the same range if you want an earlier\n   stop when the runtime reader first consumes the copied table.\n5. Add execution breakpoints at:\n   - `0x800BFBB8`\n   - `0x800BF850`\n   - `0x8007A36C`\n   - `0x800B66E4`\n   - `0x800BA2E0`\n6. When the init copy has completed, export `0x400` bytes from the memory\n   editor to a raw file such as:\n   - `decomp/evidence/opcode_0x80_runtime_after_init.bin`\n7. When the late runtime state is reached, export the same `0x400` bytes again,\n   for example:\n   - `decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin`\n8. If the table changes later, export another raw file at the mutation point.\n9. Record the breakpoint hits and dump paths in\n   `decomp/evidence/opcode_0x80_runtime_observation.json`.\n\nUse the recorder helper instead of hand-editing the JSON during the runtime\npass. Examples:\n\n```powershell\npython decomp/verification/record_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  set-snapshot `\n  --label after_init `\n  --path decomp/evidence/opcode_0x80_runtime_after_init.bin `\n  --finalize `\n  --allow-missing-snapshots\n\npython decomp/verification/record_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  add-breakpoint-hit `\n  --kind exec `\n  --address 0x800BFBB8 `\n  --pc 0x800BFBB8 `\n  --note \"reader reached before candidate dispatch\" `\n  --finalize `\n  --allow-missing-snapshots\n\npython decomp/verification/record_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  add-dispatch `\n  --opcode 0x80 `\n  --handler-address 0x800B66E4 `\n  --source-breakpoint 0x800B66E4 `\n  --note \"dispatch stayed on the copied stub target\" `\n  --finalize `\n  --allow-missing-snapshots\n```\n\n## Checked-in scaffold\n\nThis repo now keeps a partially finalized observation scaffold at:\n\n- `decomp/evidence/opcode_0x80_runtime_observation.json`\n\nIt already records the planned breakpoints, expected dump paths, and the\ncurrent \"missing snapshot\" state, so the next runtime pass can update that\nfile directly instead of starting from a blank template.\n\nThe same JSON also names the helper scripts:\n\n- `record_helper`: `decomp/verification/record_runtime_observation.py`\n- `finalize_helper`: `decomp/verification/finalize_runtime_observation.py`\n- `expected_bin_path`: `decomp/evidence/opcode_0x80_runtime_expected_table.bin`\n\nThe finalize helper now also reconstructs the binary-derived baseline pointer\ntable into that `expected_bin_path` artifact and records its size/hash in the\ncompare report, so the runtime pass has a checked-in byte-for-byte baseline to\ndiff against in addition to the JSON export.\n\nIf the scaffold ever needs to be regenerated from the untouched template, use:\n\n```powershell\npython decomp/verification/finalize_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation_template.json `\n  --allow-missing-snapshots `\n  --output-observation decomp/evidence/opcode_0x80_runtime_observation.json\n```\n\n## Compare the dumps\n\nUse the runtime snapshot helper to reconstruct the binary baseline and compare\nthe RAM captures:\n\n```powershell\npython decomp/verification/compare_opcode_table_snapshots.py `\n  decomp/evidence/inittbl_opcode_table.json `\n  decomp/evidence/opcode_0x80_runtime_after_init.bin `\n  decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin `\n  --label after_init `\n  --label pre_dispatch `\n  --focus-opcode 0x80 `\n  --focus-opcode 0x81 `\n  --focus-opcode 0x82 `\n  --write-expected-bin decomp/evidence/opcode_runtime_expected_table.bin `\n  --output decomp/evidence/opcode_0x80_runtime_snapshot_compare.json\n```\n\nThen finalize the observation packet so the compare report, support note,\nreconstructed baseline blob, and updated JSON all agree:\n\n```powershell\npython decomp/verification/finalize_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  --in-place\n```\n\nIf one snapshot is still missing and you only want a partial handoff artifact,\nadd `--allow-missing-snapshots`.\n\nIf the compare report shows changed handlers for the focus opcodes, import\nthose rows back into the checked-in observation packet so the mutation section\nis explicit instead of living only inside the compare JSON:\n\n```powershell\npython decomp/verification/record_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  import-compare `\n  --replace-derived `\n  --finalize\n```\n\nAdd `--include-non-focus` if the runtime pass needs every changed opcode row,\nnot just the changed `0x80-0x82` focus entries.\n\n## Exit conditions\n\nThe contradiction is statically resolved enough to treat runtime as decisive if\none of these happens:\n\n- both dumps match the baseline export exactly, especially `0x80-0x82`\n- a later dump shows changed handlers for `0x80-0x82`\n- execution reaches a handler that proves the table was rewritten or bypassed\n\n## Result handling\n\nIf the table never changes and dispatch still lands on `0x800B66E4`, the next\npass can safely retire the old `SoundEffects0` label in downstream decoder and\nnote text, while keeping the structural `Opcode80SharedStub` wording until a\nlater shared-stub family audit proves something stronger.\n\nIf the table changes or dispatch reaches a different handler, store:\n\n- the raw dump(s)\n- the comparison report\n- the filled observation template\n- the generated runtime support note\n- imported `table_mutations` rows in the checked-in observation packet when\n  the compare report changes the focus opcodes\n- one short runtime support note summarizing the decisive hit\n\nThen update `RE_CAMPAIGN_MEMORY.md` before ending the pass.\n",
+    "markdown_with_json_links": "# Opcode `0x80` Runtime Capture Plan\n\n## Goal\n\nBreak the remaining `0x80` contradiction with one runtime pass:\n\n- prove whether the copied `0x400`-byte opcode table at `0x800F4C28` stays\n  identical to the `INITBTL.PRG` export after init\n- confirm which handler address actually executes if `0x80`, `0x81`, or `0x82`\n  are ever dispatched live\n\nStatic evidence has already narrowed the question to runtime. This note is the\nsmallest capture plan that should settle it.\n\n## Known anchors\n\n- Runtime table slot: `0x800F4C28`\n- Runtime table size: `0x400` bytes (`256 * 4`)\n- Baseline export: `decomp/evidence/inittbl_opcode_table.json`\n- Live runtime table reader: `FUN_800BFBB8`\n- Reader address: `0x800BFBB8`\n- Reader caller: `FUN_800BF850`\n- Reader caller address: `0x800BF850`\n- Recovered upstream caller site: `0x8007A36C`\n- Related pointer family under the caller: `0x800F4C38`\n- Current static `0x80-0x82` target: `0x800B66E4`\n- Nearby competing sound-family candidate: `0x800BA2E0`\n- Visible neighboring sound-family handlers: `0x800BA35C`, `0x800BA39C`,\n  `0x800BA3E4`, `0x800BA404`, `0x800BA444`, `0x800BA470`, `0x800BA494`\n\n## What to capture\n\n1. One raw dump of the table immediately after the init-time copy has happened.\n2. One raw dump as late as practical before any candidate `0x80-0x82`\n   dispatch.\n3. Any later dump if a memory write breakpoint or read breakpoint suggests the\n   table changed after the second capture.\n4. The actual dispatch target address if execution reaches `0x800B66E4`,\n   `0x800BA2E0`, or another rewritten slot for `0x80-0x82`.\n5. If `0x800BFBB8` stays silent, whether execution at least reaches\n   `0x800BF850` or the upstream site at `0x8007A36C` before the attempted\n   trigger window ends.\n\n## Default runtime path\n\nThe default runtime path for this contradiction is now automated\n`PCSX-Redux` CLI capture, not manual debugger driving.\n\nUse:\n\n- `decomp/verification/pcsx_redux_opcode_0x80_capture.lua`\n- `decomp/verification/run_opcode_0x80_runtime_capture.ps1`\n\nThe wrapper launches a scriptable `PCSX-Redux` build with startup Lua, plants\nthe known breakpoints, dumps the copied table directly from emulator memory,\nand records the resulting snapshot paths plus a compact automation summary back\ninto `decomp/evidence/opcode_0x80_runtime_observation.json`. When no\nnear-battle savestate exists yet, the same wrapper can now translate a\nchecked-in JSON pad-input plan into a Lua replay schedule instead of leaving\nthe cold-boot fallback entirely manual.\n\nThe current capture flow also probes the newly recovered upstream reader chain:\n\n- `0x800BF850` (`reader caller`)\n- `0x8007A36C` (`reader grandcaller`)\n\nThose probes matter because the preserved bat-control negative route is now\nstrictly stronger than the older \"no `0x800BFBB8` hit\" claim: the widened\nrerun still produced no reader hit, no caller hit, and no grandcaller hit.\nThat means early gameplay plus the first bat exchange do not even enter the\nrecovered reader family yet.\n\nThe wrapper now also auto-raises the runtime timeout when an input plan would\notherwise outlast the base `1800`-frame default. That matters for the\nchecked-in cold-boot scaffold because the latest retunes are longer than the\nfirst six-step starter plan and rely on visual checkpoints to prove progress.\nThe latest `MAP001` listener-control rerun moved this packet past the old\n\"maybe the automation or trigger chain is broken\" stage:\n\n- the Lua capture now treats `0x800F4C28` as a pointer slot and resolves the\n  live runtime table at `0x801119F0`\n- the stripped `New Game` intro route reaches the recovered reader family on\n  retail runtime (`0x8007A36C` x`955`, `0x800BF850` x`955`, `0x800BFBB8`\n  x`1049`)\n- decoded-script handler probes based on\n  `decoded_scripts/24-Unmapped/001-Unknown Room.txt` now fire across dozens of\n  `MAP001` opcode families\n- the dispatch log records direct retail intro samples for\n  `0x80 -> 0x800B66E4` while the copied table still shows no post-init write\n  hits\n\nThat means the next runtime pass should stop spending time on basic trigger\nvalidation and instead instrument what happens after shared stub `0x800B66E4`\nis selected for `0x80`.\n\nOfficial `PCSX-Redux` docs that back this path:\n\n- CLI launch surface used by the wrapper:\n  <https://pcsx-redux.consoledev.net/cli_flags/>\n- Lua runtime control, pads, and savestate APIs used or available to the\n  capture script:\n  <https://pcsx-redux.consoledev.net/Lua/redux-basics/>\n- Lua execution and write breakpoints used by the capture script:\n  <https://pcsx-redux.consoledev.net/Lua/breakpoints/>\n- Lua events available for boot/savestate-aware scripting:\n  <https://pcsx-redux.consoledev.net/Lua/events/>\n- Lua memory and register access used for raw table dumps and PC filtering:\n  <https://pcsx-redux.consoledev.net/Lua/memory-and-registers/>\n- MIPS-side callback surface available if the runtime path later needs\n  instrumented code or `pcsx_execSlot()`-style handshakes:\n  <https://pcsx-redux.consoledev.net/mips_api/>\n\nRecommended usage shape:\n\n```powershell\npwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"<path-to-disc-image>\"\n```\n\nFor route-only smoke tests where breakpoint accuracy is not needed, the wrapper\nnow also supports a fast dynarec path:\n\n```powershell\npwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -CpuCore dynarec `\n  -DisableDebugger\n```\n\nKeep the real contradiction-proof passes on `interpreter` plus debugger. The\nofficial docs note that Lua breakpoints require the debugger and the\ninterpreter path, so the real speedup for semantic work is still a near-target\nsavestate rather than repeated full cold boots.\n\nWhen a nearer launch state exists, prefer resuming from that state instead of\nrepeating a cold boot. The wrapper now supports both explicit savestate paths\nand \"pick the newest nearby state\" flow:\n\n```powershell\npwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -SaveStatePath \"decomp/evidence/opcode_0x80_near_battle.p2s.gz\"\n\npwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -UseNewestSaveState\n```\n\nWhen no savestate is available yet, tune the checked-in starter plan and use\nthe same wrapper to replay a conservative title/menu sequence through the\ndocumented `PCSX.SIO0.slots[*].pads[*]` override API:\n\n```powershell\npwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -UseDefaultInputPlan\n```\n\nThe default scaffold lives at:\n\n- `decomp/evidence/opcode_0x80_runtime_input_plan.json`\n- `decomp/evidence/opcode_0x80_runtime_memcard_probe.md.json`\n\nThat JSON is intentionally a starter plan, not proof. Keep it checked in,\ntune the frame waits as real runs reveal the actual menu timing, and prefer a\nnear-battle savestate again as soon as one exists. If no save-bearing card is\navailable, the next cold-boot branch should be `New Game` far enough to earn a\nreal save or checkpoint, not more retries of the blank-card `Load` path.\n\nThe current preserved regression/control pair lives at:\n\n- `decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`\n- `decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md.json`\n\nTreat that pair as the stronger fallback checkpoint, not as positive opcode\nproof. It now documents a route that reaches player control, changes rooms,\nopens combat state, and lands the opening bat attack while still producing no\nreader/caller/grandcaller hits and no snapshots.\n\nCurrent cold-boot status:\n\n- the wrapper now emits per-step screen-capture artifacts under\n  `decomp/evidence/opcode_0x80_runtime_frames/`, and the latest captures are\n  informative enough to show the route reaching the title logo, the title\n  menu, and the `Load / Memory Card slot 1` screen\n- corrected PSX-style menu mapping matters here: this build uses `O` confirm /\n  `X` cancel, and the checked-in input plan now reflects that\n- the repo-local `memcard1.mcd` and `memcard2.mcd` probe as blank formatted\n  cards in `decomp/evidence/opcode_0x80_runtime_memcard_probe.json`\n- that means the current `Load` route is now a confirmed dead branch for this\n  workspace, not a promising gameplay-entry path\n- the checked-in fallback now does exactly that: after reaching the title menu\n  it confirms the default `New Game` branch, waits roughly ten seconds, then\n  sends two delayed `START` skips as control-handoff probes\n- that retuned rerun extended the wrapper timeout to `4380` frames but still\n  recorded no `0x800BFBB8` reader hit, no table-write hit, and no snapshots\n- the preserved bat-control negative route now goes farther and still stays\n  silent on `0x800BFBB8`, `0x800BF850`, and `0x8007A36C`\n- the automation summary JSON now preserves per-step input-plan\n  start/completion notes with frame numbers, so a silent rerun can be checked\n  for route drift before spending time on screenshots or fresh timing churn\n- the next fallback edit should therefore widen from the `0x8007A36C ->\n  0x800BF850 -> 0x800BFBB8` chain or add a savestate-bearing handoff artifact,\n  not restore the blank-card `Load` route or rely on more blind early-gameplay\n  timing tweaks\n\nSavestate-specific behavior:\n\n- `-SaveStatePath` accepts either a raw savestate payload or a\n  gzip-compressed `PCSX-Redux` UI savestate.\n- `-UseNewestSaveState` searches `decomp/evidence`, `.codex_tmp`, and repo\n  root plus the portable save directory next to `pcsx-redux.exe` for the\n  newest `*.p2s`, `*.p2s.gz`, `*.savestate`, `*.savestate.gz`, `*.state`, or\n  `*.state.gz` file.\n- gzip-compressed savestates are staged into `.codex_tmp/pcsx-redux/` before\n  launch so Lua can feed an uncompressed file to `PCSX.loadSaveState(file)`.\n- the Lua capture script now records the savestate-load event and captures the\n  earliest `after_init` fallback snapshot from the restored runtime state if a\n  reader hit has not happened yet.\n- `-UseDefaultInputPlan` loads the checked-in\n  `decomp/evidence/opcode_0x80_runtime_input_plan.json` scaffold.\n- `-InputPlanPath` accepts a custom JSON plan with sequential button steps, so\n  pad/menu automation can still run through the wrapper when the fallback path\n  needs different timing or a different menu route.\n\nExpected outputs:\n\n- `decomp/evidence/opcode_0x80_runtime_after_init.bin`\n- `decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin`\n- `decomp/evidence/opcode_0x80_runtime_automation_summary.json`\n- optional replay metadata for `decomp/evidence/opcode_0x80_runtime_input_plan.json`\n  inside the automation summary and observation packet notes\n- optional replay metadata for `decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`\n  inside the automation summary and observation packet notes\n- refreshed `decomp/evidence/opcode_0x80_runtime_observation.json`\n- refreshed compare/support artifacts through the existing finalize flow\n\nOperational assumptions:\n\n- use a scriptable `PCSX-Redux` CLI-capable build\n- run with the interpreter core plus debugger support\n- keep the output files under `decomp/evidence`\n- let the wrapper and recorder/finalizer own the observation packet updates\n- if a savestate is used, keep the original `.p2s` or `.gz` file as the\n  durable handoff artifact; the staged raw payload under `.codex_tmp` is only\n  a temporary loader aid\n\n## Manual fallback checklist\n\nIf the automated CLI path is blocked for a specific run, fall back to the\nmanual debugger procedure below.\n\n1. Enable the debugger features needed for execution and memory breakpoints.\n2. Open the memory editor at `0x800F4C28`.\n3. Create a memory write breakpoint that covers `0x800F4C28` through\n   `0x800F5027`.\n4. Create a memory read breakpoint on the same range if you want an earlier\n   stop when the runtime reader first consumes the copied table.\n5. Add execution breakpoints at:\n   - `0x800BFBB8`\n   - `0x800BF850`\n   - `0x8007A36C`\n   - `0x800B66E4`\n   - `0x800BA2E0`\n6. When the init copy has completed, export `0x400` bytes from the memory\n   editor to a raw file such as:\n   - `decomp/evidence/opcode_0x80_runtime_after_init.bin`\n7. When the late runtime state is reached, export the same `0x400` bytes again,\n   for example:\n   - `decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin`\n8. If the table changes later, export another raw file at the mutation point.\n9. Record the breakpoint hits and dump paths in\n   `decomp/evidence/opcode_0x80_runtime_observation.json`.\n\nUse the recorder helper instead of hand-editing the JSON during the runtime\npass. Examples:\n\n```powershell\npython decomp/verification/record_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  set-snapshot `\n  --label after_init `\n  --path decomp/evidence/opcode_0x80_runtime_after_init.bin `\n  --finalize `\n  --allow-missing-snapshots\n\npython decomp/verification/record_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  add-breakpoint-hit `\n  --kind exec `\n  --address 0x800BFBB8 `\n  --pc 0x800BFBB8 `\n  --note \"reader reached before candidate dispatch\" `\n  --finalize `\n  --allow-missing-snapshots\n\npython decomp/verification/record_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  add-dispatch `\n  --opcode 0x80 `\n  --handler-address 0x800B66E4 `\n  --source-breakpoint 0x800B66E4 `\n  --note \"dispatch stayed on the copied stub target\" `\n  --finalize `\n  --allow-missing-snapshots\n```\n\n## Checked-in scaffold\n\nThis repo now keeps a partially finalized observation scaffold at:\n\n- `decomp/evidence/opcode_0x80_runtime_observation.json`\n\nIt already records the planned breakpoints, expected dump paths, and the\ncurrent \"missing snapshot\" state, so the next runtime pass can update that\nfile directly instead of starting from a blank template.\n\nThe same JSON also names the helper scripts:\n\n- `record_helper`: `decomp/verification/record_runtime_observation.py`\n- `finalize_helper`: `decomp/verification/finalize_runtime_observation.py`\n- `expected_bin_path`: `decomp/evidence/opcode_0x80_runtime_expected_table.bin`\n\nThe finalize helper now also reconstructs the binary-derived baseline pointer\ntable into that `expected_bin_path` artifact and records its size/hash in the\ncompare report, so the runtime pass has a checked-in byte-for-byte baseline to\ndiff against in addition to the JSON export.\n\nIf the scaffold ever needs to be regenerated from the untouched template, use:\n\n```powershell\npython decomp/verification/finalize_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation_template.json `\n  --allow-missing-snapshots `\n  --output-observation decomp/evidence/opcode_0x80_runtime_observation.json\n```\n\n## Compare the dumps\n\nUse the runtime snapshot helper to reconstruct the binary baseline and compare\nthe RAM captures:\n\n```powershell\npython decomp/verification/compare_opcode_table_snapshots.py `\n  decomp/evidence/inittbl_opcode_table.json `\n  decomp/evidence/opcode_0x80_runtime_after_init.bin `\n  decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin `\n  --label after_init `\n  --label pre_dispatch `\n  --focus-opcode 0x80 `\n  --focus-opcode 0x81 `\n  --focus-opcode 0x82 `\n  --write-expected-bin decomp/evidence/opcode_runtime_expected_table.bin `\n  --output decomp/evidence/opcode_0x80_runtime_snapshot_compare.json\n```\n\nThen finalize the observation packet so the compare report, support note,\nreconstructed baseline blob, and updated JSON all agree:\n\n```powershell\npython decomp/verification/finalize_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  --in-place\n```\n\nIf one snapshot is still missing and you only want a partial handoff artifact,\nadd `--allow-missing-snapshots`.\n\nIf the compare report shows changed handlers for the focus opcodes, import\nthose rows back into the checked-in observation packet so the mutation section\nis explicit instead of living only inside the compare JSON:\n\n```powershell\npython decomp/verification/record_runtime_observation.py `\n  decomp/evidence/opcode_0x80_runtime_observation.json `\n  import-compare `\n  --replace-derived `\n  --finalize\n```\n\nAdd `--include-non-focus` if the runtime pass needs every changed opcode row,\nnot just the changed `0x80-0x82` focus entries.\n\n## Exit conditions\n\nThe contradiction is statically resolved enough to treat runtime as decisive if\none of these happens:\n\n- both dumps match the baseline export exactly, especially `0x80-0x82`\n- a later dump shows changed handlers for `0x80-0x82`\n- execution reaches a handler that proves the table was rewritten or bypassed\n\n## Result handling\n\nIf the table never changes and dispatch still lands on `0x800B66E4`, the next\npass can safely retire the old `SoundEffects0` label in downstream decoder and\nnote text, while keeping the structural `Opcode80SharedStub` wording until a\nlater shared-stub family audit proves something stronger.\n\nIf the table changes or dispatch reaches a different handler, store:\n\n- the raw dump(s)\n- the comparison report\n- the filled observation template\n- the generated runtime support note\n- imported `table_mutations` rows in the checked-in observation packet when\n  the compare report changes the focus opcodes\n- one short runtime support note summarizing the decisive hit\n\nThen update `RE_CAMPAIGN_MEMORY.md.json` before ending the pass.\n"
+  }
+}

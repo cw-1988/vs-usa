@@ -1,0 +1,571 @@
+{
+  "content": {
+    "document_type": "workflow_guide",
+    "title": "CLI-First Decompilation Workflow",
+    "phases": [
+      {
+        "phase": "CLI-First Decompilation Workflow",
+        "steps": [],
+        "checklist": [
+          "do routine recovery, verification, and contradiction scans with CLI tools",
+          "use `Ghidra` headless or scripted output as the main static-analysis engine",
+          "treat `PCSX-Redux` CLI automation as the runtime conflict-breaker, not the default first step",
+          "choose the target from `Priority Targets` or `Session Handoff`",
+          "register every new export, coverage output, proof packet, or contradiction in the ledger before ending the pass",
+          "keep conflict-state tracking in the ledger instead of scattering it across ad-hoc notes"
+        ]
+      },
+      {
+        "phase": "Principle",
+        "steps": [
+          "decoded script usage",
+          "binary-derived tables and function facts exported from `Ghidra`",
+          "local verification scripts",
+          "helper decomp comparison",
+          "automated `PCSX-Redux` CLI capture only if the first four still disagree"
+        ],
+        "checklist": []
+      },
+      {
+        "phase": "Local Tracked Workspace",
+        "steps": [],
+        "checklist": [
+          "file_:../../decomp/ghidra: scripts and notes for headless or scripted `Ghidra` work",
+          "file_:../../decomp/verification: Python verification scripts that compare local notes, exported tables, and helper sources",
+          "file_:../../decomp/evidence: structured proof packets and exported machine-readable facts",
+          "file_:RE_CAMPAIGN_MEMORY.md.json: campaign state, priorities, conflict summaries, artifact links, and handoff memory",
+          "file_:docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json: grouped export catalog, proof packets, and reusable verification helpers",
+          "file_:../../decomp: implementation helpers, exported evidence, and reconciliation outputs"
+        ]
+      },
+      {
+        "phase": "0. Anchor the pass in the ledger",
+        "steps": [],
+        "checklist": [
+          "which target or handoff step this pass is serving",
+          "which pass from `Pass Plan` is active",
+          "which artifact you are about to produce"
+        ]
+      },
+      {
+        "phase": "1. Start from real script usage",
+        "steps": [],
+        "checklist": [
+          "file_:../../dump_mpd_script.py",
+          "file_:../../decoded_scripts",
+          "how many real rooms use the opcode?",
+          "what repeated argument shapes appear?",
+          "does the opcode cluster with camera, sound, room-load, or effect commands?",
+          "do different rooms show the same reset or neutral pattern?"
+        ]
+      },
+      {
+        "phase": "2. Export binary facts from `Ghidra`",
+        "steps": [],
+        "checklist": [
+          "dispatch table entries",
+          "function start and end addresses",
+          "xrefs for key globals and helpers",
+          "gaps between adjacent named functions",
+          "nearby orphan candidates around disputed handler ranges",
+          "Raw PS1 overlay imports are not self-describing. If the file is not a `PS-X EXE`, set the `BinaryLoader` base address explicitly from the relevant `splat.yaml` instead of trusting the default import mapping.",
+          "Keep the import base, table address, and file identity together in the same wrapper or proof packet. Many false contradictions are really address-mapping mistakes.",
+          "Prefer headless-safe `GhidraScript` Java helpers for repeatable CLI passes. `PyGhidra`-style Python helpers may not be available under `analyzeHeadless`.",
+          "If you already know the address you want to inspect, a `-noanalysis` instruction dump is often enough and much faster than a full auto-analysis pass."
+        ]
+      },
+      {
+        "phase": "3. Reconcile locally",
+        "steps": [],
+        "checklist": [
+          "binary-derived exports from `Ghidra`",
+          "local decoder tables",
+          "local notes",
+          "helper decomp material",
+          "local names that no longer fit the binary mapping",
+          "helper-decomp contradictions",
+          "stub-table entries with nearby meaningful orphan handlers",
+          "notes that overclaim current evidence"
+        ]
+      },
+      {
+        "phase": "4. Escalate only if needed",
+        "steps": [],
+        "checklist": [
+          "confirming the handler that actually executes",
+          "checking whether a copied dispatch table is patched in RAM",
+          "proving a disputed side effect",
+          "deciding between two static candidates that both still look plausible",
+          "file_:../../decomp/verification/run_opcode_0x80_runtime_capture.ps1"
+        ]
+      },
+      {
+        "phase": "When Runtime Is Not Needed",
+        "steps": [],
+        "checklist": [
+          "a raw dispatch table export",
+          "clear function-boundary recovery",
+          "a reliable consumer path in static analysis",
+          "a local contradiction scan that already resolves cleanly"
+        ]
+      },
+      {
+        "phase": "First CLI Targets",
+        "steps": [
+          "`export_opcode_table`",
+          "`audit_function_coverage`",
+          "`opcode_reconcile`"
+        ],
+        "checklist": []
+      },
+      {
+        "phase": "Opcode table export",
+        "steps": [],
+        "checklist": [
+          "`overlay`",
+          "`table_name`",
+          "`table_address`",
+          "`entries` - `opcode` - `handler_address` - `handler_name`"
+        ]
+      },
+      {
+        "phase": "Function coverage export",
+        "steps": [],
+        "checklist": [
+          "`overlay`",
+          "`functions` - `start` - `end` - `name` - `source`",
+          "`gaps`",
+          "`orphan_candidates`"
+        ]
+      },
+      {
+        "phase": "Opcode proof packet",
+        "steps": [],
+        "checklist": [
+          "`opcode`",
+          "`binary_handler`",
+          "`helper_handler`",
+          "`local_name`",
+          "`script_examples`",
+          "`consumer_notes`",
+          "`status`",
+          "`open_conflicts`"
+        ]
+      },
+      {
+        "phase": "Conflict States",
+        "steps": [],
+        "checklist": [
+          "`confirmed`: binary and script evidence agree, and runtime is either unnecessary or already aligned",
+          "`tentative`: the working name is still useful, but the proof packet does not settle it",
+          "`conflicted`: strong static evidence disagrees and should be recorded before any runtime escalation"
+        ]
+      },
+      {
+        "phase": "Escalation Rule",
+        "steps": [
+          "the loader/base-address mapping has been checked",
+          "the relevant binary table or code slice has been exported",
+          "local reconciliation still leaves a real contradiction",
+          "the contradiction matters to the final claim"
+        ],
+        "checklist": []
+      },
+      {
+        "phase": "Practical Rule",
+        "steps": [],
+        "checklist": [
+          "script-pattern review",
+          "`Ghidra` table export",
+          "local reconciliation"
+        ]
+      }
+    ],
+    "commands": [
+      {
+        "language": "text",
+        "code": "decomp/evidence/battle_opcode_table.json"
+      }
+    ],
+    "source_markdown_path": "docs/workflows/CLI_DECOMPILATION_WORKFLOW.md",
+    "summary": "This note describes how to do most local decompilation work from the command line.",
+    "body": {
+      "content": [
+        {
+          "ulist": [
+            "This note describes how to do most local decompilation work from the command\nline.",
+            "Use this together with\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body) and\n[`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body).",
+            "If a pass might escalate to runtime capture, also start with\n[`decomp/verification/README.md.json`](decomp/verification/README.md.json#/body),\nwhich links the official `PCSX-Redux` docs at\n<https://pcsx-redux.consoledev.net/> plus the CLI and Lua references used by\nthis workflow.",
+            "The goal is simple:",
+            {
+              "ulist": [
+                "do routine recovery, verification, and contradiction scans with CLI tools",
+                "use `Ghidra` headless or scripted output as the main static-analysis engine",
+                "treat `PCSX-Redux` CLI automation as the runtime conflict-breaker, not the\ndefault first step"
+              ]
+            },
+            "`RE_CAMPAIGN_MEMORY.md.json` is the campaign-state authority for these passes:",
+            {
+              "ulist": [
+                "choose the target from `Priority Targets` or `Session Handoff`",
+                "register every new export, coverage output, proof packet, or contradiction in\nthe ledger before ending the pass",
+                "keep conflict-state tracking in the ledger instead of scattering it across\nad-hoc notes"
+              ]
+            }
+          ]
+        }
+      ],
+      "sections": {
+        "principle": {
+          "heading": "Principle",
+          "content": [
+            {
+              "paragraph": "Prefer this evidence order for day-to-day work:",
+              "olit": [
+                "decoded script usage",
+                "binary-derived tables and function facts exported from `Ghidra`",
+                "local verification scripts",
+                "helper decomp comparison",
+                "automated `PCSX-Redux` CLI capture only if the first four still disagree"
+              ]
+            },
+            {
+              "paragraph": "Helper comparison means lead generation and sanity checking, not final\nauthority. When a helper-repo clue matters, turn it into a local export,\ninstruction dump, xref artifact, or runtime capture before treating it as\nevidence."
+            }
+          ]
+        },
+        "local-tracked-workspace": {
+          "heading": "Local Tracked Workspace",
+          "content": [
+            {
+              "paragraph": "Use the tracked [`../../decomp`](../../decomp) folder for local decompilation support code."
+            },
+            {
+              "paragraph": "Recommended responsibilities:",
+              "ulist": [
+                "[`../../decomp/ghidra`](../../decomp/ghidra): scripts and notes for headless or scripted\n`Ghidra` work",
+                "[`../../decomp/verification`](../../decomp/verification): Python verification scripts\nthat compare local notes, exported tables, and helper sources",
+                "[`../../decomp/evidence`](../../decomp/evidence): structured proof packets and exported\nmachine-readable facts",
+                "Keep the split intentional:",
+                {
+                  "ulist": [
+                    "[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body): campaign state, priorities,\nconflict summaries, artifact links, and handoff memory",
+                    "[`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body):\ngrouped export catalog, proof packets, and reusable verification helpers",
+                    "[`../../decomp`](../../decomp): implementation helpers, exported evidence, and\nreconciliation outputs"
+                  ]
+                }
+              ]
+            },
+            {
+              "paragraph": "Do not put large binary tool installs here. Keep those under ignored `tools/`."
+            }
+          ]
+        },
+        "default-cli-pipeline": {
+          "heading": "Default CLI Pipeline",
+          "sections": {
+            "anchor-the-pass-in-the-ledger": {
+              "heading": "0. Anchor the pass in the ledger",
+              "content": [
+                {
+                  "paragraph": "Before exporting anything, read [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body)\nand decide:",
+                  "ulist": [
+                    "which target or handoff step this pass is serving",
+                    "which pass from `Pass Plan` is active",
+                    "which artifact you are about to produce"
+                  ]
+                },
+                {
+                  "paragraph": "If the planned work is not visible in the ledger, add or update the relevant\ntarget before the pass drifts."
+                }
+              ]
+            },
+            "start-from-real-script-usage": {
+              "heading": "1. Start from real script usage",
+              "content": [
+                {
+                  "paragraph": "Use the local decoder and generated output first:",
+                  "ulist": [
+                    "[`../../dump_mpd_script.py`](../../dump_mpd_script.py)",
+                    "[`../../decoded_scripts`](../../decoded_scripts)",
+                    "Questions to answer before touching runtime:",
+                    {
+                      "ulist": [
+                        "how many real rooms use the opcode?",
+                        "what repeated argument shapes appear?",
+                        "does the opcode cluster with camera, sound, room-load, or effect commands?",
+                        "do different rooms show the same reset or neutral pattern?"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "export-binary-facts-from-ghidra": {
+              "heading": "2. Export binary facts from `Ghidra`",
+              "content": [
+                {
+                  "paragraph": "Use `analyzeHeadless` or scripted `Ghidra` runs to export facts such as:",
+                  "ulist": [
+                    "dispatch table entries",
+                    "function start and end addresses",
+                    "xrefs for key globals and helpers",
+                    "gaps between adjacent named functions",
+                    "nearby orphan candidates around disputed handler ranges"
+                  ]
+                },
+                {
+                  "paragraph": "These exports should be treated as the main static-analysis truth layer."
+                },
+                {
+                  "paragraph": "Important watch-outs:",
+                  "ulist": [
+                    "Raw PS1 overlay imports are not self-describing. If the file is not a\n`PS-X EXE`, set the `BinaryLoader` base address explicitly from the relevant\n`splat.yaml` instead of trusting the default import mapping.",
+                    "Keep the import base, table address, and file identity together in the same\nwrapper or proof packet. Many false contradictions are really address-mapping\nmistakes.",
+                    "Prefer headless-safe `GhidraScript` Java helpers for repeatable CLI passes.\n`PyGhidra`-style Python helpers may not be available under\n`analyzeHeadless`.",
+                    "If you already know the address you want to inspect, a `-noanalysis`\ninstruction dump is often enough and much faster than a full auto-analysis\npass."
+                  ]
+                }
+              ]
+            },
+            "reconcile-locally": {
+              "heading": "3. Reconcile locally",
+              "content": [
+                {
+                  "paragraph": "Run local verification scripts against:",
+                  "ulist": [
+                    "binary-derived exports from `Ghidra`",
+                    "local decoder tables",
+                    "local notes",
+                    "helper decomp material"
+                  ]
+                },
+                {
+                  "paragraph": "But the output artifact should still anchor itself in local reproducible data.\nDo not let a contradiction note or proof packet rest mainly on helper C when a\nlocal `Ghidra` export can be produced."
+                },
+                {
+                  "paragraph": "This is where we should catch:",
+                  "ulist": [
+                    "local names that no longer fit the binary mapping",
+                    "helper-decomp contradictions",
+                    "stub-table entries with nearby meaningful orphan handlers",
+                    "notes that overclaim current evidence"
+                  ]
+                }
+              ]
+            },
+            "escalate-only-if-needed": {
+              "heading": "4. Escalate only if needed",
+              "content": [
+                {
+                  "paragraph": "If static evidence still conflicts after the reconciliation pass, then use the\nscripted `PCSX-Redux` runtime path for:",
+                  "ulist": [
+                    "confirming the handler that actually executes",
+                    "checking whether a copied dispatch table is patched in RAM",
+                    "proving a disputed side effect",
+                    "deciding between two static candidates that both still look plausible",
+                    "For the active `0x80` contradiction, the default runtime wrapper is:",
+                    {
+                      "ulist": [
+                        "[`../../decomp/verification/run_opcode_0x80_runtime_capture.ps1`](../../decomp/verification/run_opcode_0x80_runtime_capture.ps1)"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "Use manual emulator interaction only if the scripted capture path cannot reach\nthe required state yet."
+                }
+              ]
+            }
+          }
+        },
+        "when-runtime-is-not-needed": {
+          "heading": "When Runtime Is Not Needed",
+          "content": [
+            {
+              "paragraph": "Do not jump to runtime first if the question can be answered by:",
+              "ulist": [
+                "a raw dispatch table export",
+                "clear function-boundary recovery",
+                "a reliable consumer path in static analysis",
+                "a local contradiction scan that already resolves cleanly"
+              ]
+            },
+            {
+              "paragraph": "Runtime should usually be the last major step, not the first."
+            }
+          ]
+        },
+        "first-cli-targets": {
+          "heading": "First CLI Targets",
+          "content": [
+            {
+              "paragraph": "The first high-value tracked scripts should be:",
+              "olit": [
+                "`export_opcode_table`",
+                "`audit_function_coverage`",
+                "`opcode_reconcile`"
+              ]
+            },
+            {
+              "paragraph": "Those three tools cover most of the static truth layer needed for script opcode\nwork."
+            }
+          ]
+        },
+        "suggested-cli-artifacts": {
+          "heading": "Suggested CLI Artifacts",
+          "sections": {
+            "opcode-table-export": {
+              "heading": "Opcode table export",
+              "content": [
+                {
+                  "paragraph": "Store as JSON under [`../../decomp/evidence`](../../decomp/evidence), for example:",
+                  "code": "decomp/evidence/battle_opcode_table.json",
+                  "language": "text"
+                },
+                {
+                  "paragraph": "Suggested fields:",
+                  "ulist": [
+                    "`overlay`",
+                    "`table_name`",
+                    "`table_address`",
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`entries`"
+                        },
+                        {
+                          "ulist": [
+                            "`opcode`",
+                            "`handler_address`",
+                            "`handler_name`"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "Register the finished export under `Table Exports` in\n[`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body)."
+                }
+              ]
+            },
+            "function-coverage-export": {
+              "heading": "Function coverage export",
+              "content": [
+                {
+                  "paragraph": "Suggested fields:",
+                  "ulist": [
+                    "`overlay`",
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`functions`"
+                        },
+                        {
+                          "ulist": [
+                            "`start`",
+                            "`end`",
+                            "`name`",
+                            "`source`"
+                          ]
+                        }
+                      ]
+                    },
+                    "`gaps`",
+                    "`orphan_candidates`"
+                  ]
+                },
+                {
+                  "paragraph": "Register the finished export under `Reconciliation Reports` or a\ncoverage-oriented entry in\n[`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body)."
+                }
+              ]
+            },
+            "opcode-proof-packet": {
+              "heading": "Opcode proof packet",
+              "content": [
+                {
+                  "paragraph": "Suggested fields:",
+                  "ulist": [
+                    "`opcode`",
+                    "`binary_handler`",
+                    "`helper_handler`",
+                    "`local_name`",
+                    "`script_examples`",
+                    "`consumer_notes`",
+                    "`status`",
+                    "`open_conflicts`"
+                  ]
+                },
+                {
+                  "paragraph": "Register the proof packet under `Proof Packets` in\n[`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body),\nthen update the matching target row and any relevant conflict entry in\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body)."
+                }
+              ]
+            }
+          }
+        },
+        "conflict-states": {
+          "heading": "Conflict States",
+          "content": [
+            {
+              "paragraph": "Not every pass should end in a rename."
+            },
+            {
+              "paragraph": "Use these outcomes deliberately:",
+              "ulist": [
+                "`confirmed`: binary and script evidence agree, and runtime is either\nunnecessary or already aligned",
+                "`tentative`: the working name is still useful, but the proof packet does not\nsettle it",
+                "`conflicted`: strong static evidence disagrees and should be recorded before\nany runtime escalation"
+              ]
+            },
+            {
+              "ulist": [
+                "If a binary table says one thing and a nearby orphan helper says another, do\nnot collapse that into a fake clean answer. Preserve both in the proof packet\nand summarize the contradiction in `RE_CAMPAIGN_MEMORY.md.json`.",
+                "If the nearby helper comes from `_refs/rood-reverse`, cite it as a competing\nlead, then convert the important part into local binary-facing evidence before\npromoting or downgrading a name."
+              ]
+            }
+          ]
+        },
+        "escalation-rule": {
+          "heading": "Escalation Rule",
+          "content": [
+            {
+              "paragraph": "Escalate to automated `PCSX-Redux` CLI capture only after all of these are\ntrue:",
+              "olit": [
+                "the loader/base-address mapping has been checked",
+                "the relevant binary table or code slice has been exported",
+                "local reconciliation still leaves a real contradiction",
+                "the contradiction matters to the final claim"
+              ]
+            }
+          ]
+        },
+        "practical-rule": {
+          "heading": "Practical Rule",
+          "content": [
+            {
+              "paragraph": "If a disputed opcode cannot survive:",
+              "ulist": [
+                "script-pattern review",
+                "`Ghidra` table export",
+                "local reconciliation"
+              ]
+            },
+            {
+              "ulist": [
+                "then stop and use scripted `PCSX-Redux` capture to break the tie.",
+                "If it does survive those three, runtime can often wait."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "777376285d3bc9d23c45832cde9b9390f0c8ce3927885dbec46c49f92478edf6",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:44:23Z",
+    "raw_markdown": "# CLI-First Decompilation Workflow\n\nThis note describes how to do most local decompilation work from the command\nline.\n\nUse this together with\n[`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md) and\n[`DECOMPILATION_STRATEGY.md`](DECOMPILATION_STRATEGY.md).\n\nIf a pass might escalate to runtime capture, also start with\n[`../../decomp/verification/README.md`](../../decomp/verification/README.md),\nwhich links the official `PCSX-Redux` docs at\n<https://pcsx-redux.consoledev.net/> plus the CLI and Lua references used by\nthis workflow.\n\nThe goal is simple:\n\n- do routine recovery, verification, and contradiction scans with CLI tools\n- use `Ghidra` headless or scripted output as the main static-analysis engine\n- treat `PCSX-Redux` CLI automation as the runtime conflict-breaker, not the\n  default first step\n\n`RE_CAMPAIGN_MEMORY.md` is the campaign-state authority for these passes:\n\n- choose the target from `Priority Targets` or `Session Handoff`\n- register every new export, coverage output, proof packet, or contradiction in\n  the ledger before ending the pass\n- keep conflict-state tracking in the ledger instead of scattering it across\n  ad-hoc notes\n\n## Principle\n\nPrefer this evidence order for day-to-day work:\n\n1. decoded script usage\n2. binary-derived tables and function facts exported from `Ghidra`\n3. local verification scripts\n4. helper decomp comparison\n5. automated `PCSX-Redux` CLI capture only if the first four still disagree\n\nHelper comparison means lead generation and sanity checking, not final\nauthority. When a helper-repo clue matters, turn it into a local export,\ninstruction dump, xref artifact, or runtime capture before treating it as\nevidence.\n\n## Local Tracked Workspace\n\nUse the tracked [`../../decomp`](../../decomp) folder for local decompilation support code.\n\nRecommended responsibilities:\n\n- [`../../decomp/ghidra`](../../decomp/ghidra): scripts and notes for headless or scripted\n  `Ghidra` work\n- [`../../decomp/verification`](../../decomp/verification): Python verification scripts\n  that compare local notes, exported tables, and helper sources\n- [`../../decomp/evidence`](../../decomp/evidence): structured proof packets and exported\n  machine-readable facts\n\nKeep the split intentional:\n\n- [`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md): campaign state, priorities,\n  conflict summaries, artifact links, and handoff memory\n- [`../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md):\n  grouped export catalog, proof packets, and reusable verification helpers\n- [`../../decomp`](../../decomp): implementation helpers, exported evidence, and\n  reconciliation outputs\n\nDo not put large binary tool installs here. Keep those under ignored `tools/`.\n\n## Default CLI Pipeline\n\n### 0. Anchor the pass in the ledger\n\nBefore exporting anything, read [`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md)\nand decide:\n\n- which target or handoff step this pass is serving\n- which pass from `Pass Plan` is active\n- which artifact you are about to produce\n\nIf the planned work is not visible in the ledger, add or update the relevant\ntarget before the pass drifts.\n\n### 1. Start from real script usage\n\nUse the local decoder and generated output first:\n\n- [`../../dump_mpd_script.py`](../../dump_mpd_script.py)\n- [`../../decoded_scripts`](../../decoded_scripts)\n\nQuestions to answer before touching runtime:\n\n- how many real rooms use the opcode?\n- what repeated argument shapes appear?\n- does the opcode cluster with camera, sound, room-load, or effect commands?\n- do different rooms show the same reset or neutral pattern?\n\n### 2. Export binary facts from `Ghidra`\n\nUse `analyzeHeadless` or scripted `Ghidra` runs to export facts such as:\n\n- dispatch table entries\n- function start and end addresses\n- xrefs for key globals and helpers\n- gaps between adjacent named functions\n- nearby orphan candidates around disputed handler ranges\n\nThese exports should be treated as the main static-analysis truth layer.\n\nImportant watch-outs:\n\n- Raw PS1 overlay imports are not self-describing. If the file is not a\n  `PS-X EXE`, set the `BinaryLoader` base address explicitly from the relevant\n  `splat.yaml` instead of trusting the default import mapping.\n- Keep the import base, table address, and file identity together in the same\n  wrapper or proof packet. Many false contradictions are really address-mapping\n  mistakes.\n- Prefer headless-safe `GhidraScript` Java helpers for repeatable CLI passes.\n  `PyGhidra`-style Python helpers may not be available under\n  `analyzeHeadless`.\n- If you already know the address you want to inspect, a `-noanalysis`\n  instruction dump is often enough and much faster than a full auto-analysis\n  pass.\n\n### 3. Reconcile locally\n\nRun local verification scripts against:\n\n- binary-derived exports from `Ghidra`\n- local decoder tables\n- local notes\n- helper decomp material\n\nBut the output artifact should still anchor itself in local reproducible data.\nDo not let a contradiction note or proof packet rest mainly on helper C when a\nlocal `Ghidra` export can be produced.\n\nThis is where we should catch:\n\n- local names that no longer fit the binary mapping\n- helper-decomp contradictions\n- stub-table entries with nearby meaningful orphan handlers\n- notes that overclaim current evidence\n\n### 4. Escalate only if needed\n\nIf static evidence still conflicts after the reconciliation pass, then use the\nscripted `PCSX-Redux` runtime path for:\n\n- confirming the handler that actually executes\n- checking whether a copied dispatch table is patched in RAM\n- proving a disputed side effect\n- deciding between two static candidates that both still look plausible\n\nFor the active `0x80` contradiction, the default runtime wrapper is:\n\n- [`../../decomp/verification/run_opcode_0x80_runtime_capture.ps1`](../../decomp/verification/run_opcode_0x80_runtime_capture.ps1)\n\nUse manual emulator interaction only if the scripted capture path cannot reach\nthe required state yet.\n\n## When Runtime Is Not Needed\n\nDo not jump to runtime first if the question can be answered by:\n\n- a raw dispatch table export\n- clear function-boundary recovery\n- a reliable consumer path in static analysis\n- a local contradiction scan that already resolves cleanly\n\nRuntime should usually be the last major step, not the first.\n\n## First CLI Targets\n\nThe first high-value tracked scripts should be:\n\n1. `export_opcode_table`\n2. `audit_function_coverage`\n3. `opcode_reconcile`\n\nThose three tools cover most of the static truth layer needed for script opcode\nwork.\n\n## Suggested CLI Artifacts\n\n### Opcode table export\n\nStore as JSON under [`../../decomp/evidence`](../../decomp/evidence), for example:\n\n```text\ndecomp/evidence/battle_opcode_table.json\n```\n\nSuggested fields:\n\n- `overlay`\n- `table_name`\n- `table_address`\n- `entries`\n  - `opcode`\n  - `handler_address`\n  - `handler_name`\n\nRegister the finished export under `Table Exports` in\n[`../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md).\n\n### Function coverage export\n\nSuggested fields:\n\n- `overlay`\n- `functions`\n  - `start`\n  - `end`\n  - `name`\n  - `source`\n- `gaps`\n- `orphan_candidates`\n\nRegister the finished export under `Reconciliation Reports` or a\ncoverage-oriented entry in\n[`../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md).\n\n### Opcode proof packet\n\nSuggested fields:\n\n- `opcode`\n- `binary_handler`\n- `helper_handler`\n- `local_name`\n- `script_examples`\n- `consumer_notes`\n- `status`\n- `open_conflicts`\n\nRegister the proof packet under `Proof Packets` in\n[`../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](../campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md),\nthen update the matching target row and any relevant conflict entry in\n[`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md).\n\n## Conflict States\n\nNot every pass should end in a rename.\n\nUse these outcomes deliberately:\n\n- `confirmed`: binary and script evidence agree, and runtime is either\n  unnecessary or already aligned\n- `tentative`: the working name is still useful, but the proof packet does not\n  settle it\n- `conflicted`: strong static evidence disagrees and should be recorded before\n  any runtime escalation\n\nIf a binary table says one thing and a nearby orphan helper says another, do\nnot collapse that into a fake clean answer. Preserve both in the proof packet\nand summarize the contradiction in `RE_CAMPAIGN_MEMORY.md`.\n\nIf the nearby helper comes from `_refs/rood-reverse`, cite it as a competing\nlead, then convert the important part into local binary-facing evidence before\npromoting or downgrading a name.\n\n## Escalation Rule\n\nEscalate to automated `PCSX-Redux` CLI capture only after all of these are\ntrue:\n\n1. the loader/base-address mapping has been checked\n2. the relevant binary table or code slice has been exported\n3. local reconciliation still leaves a real contradiction\n4. the contradiction matters to the final claim\n\n## Practical Rule\n\nIf a disputed opcode cannot survive:\n\n- script-pattern review\n- `Ghidra` table export\n- local reconciliation\n\nthen stop and use scripted `PCSX-Redux` capture to break the tie.\n\nIf it does survive those three, runtime can often wait.\n",
+    "markdown_with_json_links": "# CLI-First Decompilation Workflow\n\nThis note describes how to do most local decompilation work from the command\nline.\n\nUse this together with\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body) and\n[`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body).\n\nIf a pass might escalate to runtime capture, also start with\n[`decomp/verification/README.md.json`](decomp/verification/README.md.json#/body),\nwhich links the official `PCSX-Redux` docs at\n<https://pcsx-redux.consoledev.net/> plus the CLI and Lua references used by\nthis workflow.\n\nThe goal is simple:\n\n- do routine recovery, verification, and contradiction scans with CLI tools\n- use `Ghidra` headless or scripted output as the main static-analysis engine\n- treat `PCSX-Redux` CLI automation as the runtime conflict-breaker, not the\n  default first step\n\n`RE_CAMPAIGN_MEMORY.md.json` is the campaign-state authority for these passes:\n\n- choose the target from `Priority Targets` or `Session Handoff`\n- register every new export, coverage output, proof packet, or contradiction in\n  the ledger before ending the pass\n- keep conflict-state tracking in the ledger instead of scattering it across\n  ad-hoc notes\n\n## Principle\n\nPrefer this evidence order for day-to-day work:\n\n1. decoded script usage\n2. binary-derived tables and function facts exported from `Ghidra`\n3. local verification scripts\n4. helper decomp comparison\n5. automated `PCSX-Redux` CLI capture only if the first four still disagree\n\nHelper comparison means lead generation and sanity checking, not final\nauthority. When a helper-repo clue matters, turn it into a local export,\ninstruction dump, xref artifact, or runtime capture before treating it as\nevidence.\n\n## Local Tracked Workspace\n\nUse the tracked [`../../decomp`](../../decomp) folder for local decompilation support code.\n\nRecommended responsibilities:\n\n- [`../../decomp/ghidra`](../../decomp/ghidra): scripts and notes for headless or scripted\n  `Ghidra` work\n- [`../../decomp/verification`](../../decomp/verification): Python verification scripts\n  that compare local notes, exported tables, and helper sources\n- [`../../decomp/evidence`](../../decomp/evidence): structured proof packets and exported\n  machine-readable facts\n\nKeep the split intentional:\n\n- [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body): campaign state, priorities,\n  conflict summaries, artifact links, and handoff memory\n- [`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body):\n  grouped export catalog, proof packets, and reusable verification helpers\n- [`../../decomp`](../../decomp): implementation helpers, exported evidence, and\n  reconciliation outputs\n\nDo not put large binary tool installs here. Keep those under ignored `tools/`.\n\n## Default CLI Pipeline\n\n### 0. Anchor the pass in the ledger\n\nBefore exporting anything, read [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body)\nand decide:\n\n- which target or handoff step this pass is serving\n- which pass from `Pass Plan` is active\n- which artifact you are about to produce\n\nIf the planned work is not visible in the ledger, add or update the relevant\ntarget before the pass drifts.\n\n### 1. Start from real script usage\n\nUse the local decoder and generated output first:\n\n- [`../../dump_mpd_script.py`](../../dump_mpd_script.py)\n- [`../../decoded_scripts`](../../decoded_scripts)\n\nQuestions to answer before touching runtime:\n\n- how many real rooms use the opcode?\n- what repeated argument shapes appear?\n- does the opcode cluster with camera, sound, room-load, or effect commands?\n- do different rooms show the same reset or neutral pattern?\n\n### 2. Export binary facts from `Ghidra`\n\nUse `analyzeHeadless` or scripted `Ghidra` runs to export facts such as:\n\n- dispatch table entries\n- function start and end addresses\n- xrefs for key globals and helpers\n- gaps between adjacent named functions\n- nearby orphan candidates around disputed handler ranges\n\nThese exports should be treated as the main static-analysis truth layer.\n\nImportant watch-outs:\n\n- Raw PS1 overlay imports are not self-describing. If the file is not a\n  `PS-X EXE`, set the `BinaryLoader` base address explicitly from the relevant\n  `splat.yaml` instead of trusting the default import mapping.\n- Keep the import base, table address, and file identity together in the same\n  wrapper or proof packet. Many false contradictions are really address-mapping\n  mistakes.\n- Prefer headless-safe `GhidraScript` Java helpers for repeatable CLI passes.\n  `PyGhidra`-style Python helpers may not be available under\n  `analyzeHeadless`.\n- If you already know the address you want to inspect, a `-noanalysis`\n  instruction dump is often enough and much faster than a full auto-analysis\n  pass.\n\n### 3. Reconcile locally\n\nRun local verification scripts against:\n\n- binary-derived exports from `Ghidra`\n- local decoder tables\n- local notes\n- helper decomp material\n\nBut the output artifact should still anchor itself in local reproducible data.\nDo not let a contradiction note or proof packet rest mainly on helper C when a\nlocal `Ghidra` export can be produced.\n\nThis is where we should catch:\n\n- local names that no longer fit the binary mapping\n- helper-decomp contradictions\n- stub-table entries with nearby meaningful orphan handlers\n- notes that overclaim current evidence\n\n### 4. Escalate only if needed\n\nIf static evidence still conflicts after the reconciliation pass, then use the\nscripted `PCSX-Redux` runtime path for:\n\n- confirming the handler that actually executes\n- checking whether a copied dispatch table is patched in RAM\n- proving a disputed side effect\n- deciding between two static candidates that both still look plausible\n\nFor the active `0x80` contradiction, the default runtime wrapper is:\n\n- [`../../decomp/verification/run_opcode_0x80_runtime_capture.ps1`](../../decomp/verification/run_opcode_0x80_runtime_capture.ps1)\n\nUse manual emulator interaction only if the scripted capture path cannot reach\nthe required state yet.\n\n## When Runtime Is Not Needed\n\nDo not jump to runtime first if the question can be answered by:\n\n- a raw dispatch table export\n- clear function-boundary recovery\n- a reliable consumer path in static analysis\n- a local contradiction scan that already resolves cleanly\n\nRuntime should usually be the last major step, not the first.\n\n## First CLI Targets\n\nThe first high-value tracked scripts should be:\n\n1. `export_opcode_table`\n2. `audit_function_coverage`\n3. `opcode_reconcile`\n\nThose three tools cover most of the static truth layer needed for script opcode\nwork.\n\n## Suggested CLI Artifacts\n\n### Opcode table export\n\nStore as JSON under [`../../decomp/evidence`](../../decomp/evidence), for example:\n\n```text\ndecomp/evidence/battle_opcode_table.json\n```\n\nSuggested fields:\n\n- `overlay`\n- `table_name`\n- `table_address`\n- `entries`\n  - `opcode`\n  - `handler_address`\n  - `handler_name`\n\nRegister the finished export under `Table Exports` in\n[`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body).\n\n### Function coverage export\n\nSuggested fields:\n\n- `overlay`\n- `functions`\n  - `start`\n  - `end`\n  - `name`\n  - `source`\n- `gaps`\n- `orphan_candidates`\n\nRegister the finished export under `Reconciliation Reports` or a\ncoverage-oriented entry in\n[`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body).\n\n### Opcode proof packet\n\nSuggested fields:\n\n- `opcode`\n- `binary_handler`\n- `helper_handler`\n- `local_name`\n- `script_examples`\n- `consumer_notes`\n- `status`\n- `open_conflicts`\n\nRegister the proof packet under `Proof Packets` in\n[`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body),\nthen update the matching target row and any relevant conflict entry in\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body).\n\n## Conflict States\n\nNot every pass should end in a rename.\n\nUse these outcomes deliberately:\n\n- `confirmed`: binary and script evidence agree, and runtime is either\n  unnecessary or already aligned\n- `tentative`: the working name is still useful, but the proof packet does not\n  settle it\n- `conflicted`: strong static evidence disagrees and should be recorded before\n  any runtime escalation\n\nIf a binary table says one thing and a nearby orphan helper says another, do\nnot collapse that into a fake clean answer. Preserve both in the proof packet\nand summarize the contradiction in `RE_CAMPAIGN_MEMORY.md.json`.\n\nIf the nearby helper comes from `_refs/rood-reverse`, cite it as a competing\nlead, then convert the important part into local binary-facing evidence before\npromoting or downgrading a name.\n\n## Escalation Rule\n\nEscalate to automated `PCSX-Redux` CLI capture only after all of these are\ntrue:\n\n1. the loader/base-address mapping has been checked\n2. the relevant binary table or code slice has been exported\n3. local reconciliation still leaves a real contradiction\n4. the contradiction matters to the final claim\n\n## Practical Rule\n\nIf a disputed opcode cannot survive:\n\n- script-pattern review\n- `Ghidra` table export\n- local reconciliation\n\nthen stop and use scripted `PCSX-Redux` capture to break the tie.\n\nIf it does survive those three, runtime can often wait.\n"
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_runtime_dispatch_static",
+    "title": "Opcode `0x80` Runtime-Dispatch Static Notes",
+    "summary": "Recover the live `BATTLE.PRG` consumer of the copied runtime opcode table at `0x800F4C28` before escalating to runtime tracing.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_runtime_dispatch_static.md",
+    "artifacts": [
+      "decomp/evidence/inittbl_0x80_copy_slice.json",
+      "decomp/evidence/battle_runtime_opcode_table_xrefs.json"
+    ],
+    "findings": [
+      "A direct local `BATTLE.PRG` consumer of the copied runtime opcode table is now recovered.",
+      "The recovered `FUN_800BFBB8` path reads `0x800F4C28`, indexes by opcode, loads the slot handler, and dispatches via `jalr`.",
+      "That closes the old \"maybe there is only a bypass path\" branch.",
+      "The remaining unresolved static question is whether the copied table is ever rewritten later."
+    ],
+    "body": {
+      "sections": {
+        "goal": {
+          "heading": "Goal",
+          "content": [
+            {
+              "paragraph": "Recover the live `BATTLE.PRG` consumer of the copied runtime opcode table at\n`0x800F4C28` before escalating to runtime tracing."
+            }
+          ]
+        },
+        "local-binary-evidence": {
+          "heading": "Local binary evidence",
+          "content": [
+            {
+              "olit": [
+                "`decomp/evidence/inittbl_0x80_copy_slice.json` already showed the init-time\ncopy path storing a freshly allocated `0x400` byte buffer into\n`0x800F4C28` and copying the exported `INITBTL.PRG` table into it.",
+                "`decomp/evidence/battle_runtime_opcode_table_xrefs.json` now recovers a\ndirect local `BATTLE.PRG` read xref from `0x800BFCFC`.",
+                "The xref window shows this dispatch shape:"
+              ]
+            },
+            {
+              "code": "800bfcf8 lbu v0,0x0(s0)\n800bfcfc lw v1,0x4c28(v1)\n800bfd00 sll v0,v0,0x2\n800bfd04 addu v0,v0,v1\n800bfd08 lw v0,0x0(v0)\n800bfd10 jalr v0",
+              "language": "text"
+            },
+            {
+              "olit": [
+                "That sequence proves a live consumer path in `FUN_800BFBB8`:"
+              ]
+            }
+          ]
+        },
+        "what-this-resolves": {
+          "heading": "What this resolves",
+          "content": [
+            {
+              "ulist": [
+                "The copied table at `0x800F4C28` is not only an initialization artifact.",
+                "Local static evidence now shows a direct `BATTLE.PRG` consumer that dispatches\nthrough the runtime table instead of bypassing it for `0x80-0x84`.",
+                "The older \"maybe some hidden sound-side helper is called directly instead\"\ncontradiction is narrowed again: the active consumer reads the runtime table\nslot first."
+              ]
+            }
+          ]
+        },
+        "what-remains-unresolved": {
+          "heading": "What remains unresolved",
+          "content": [
+            {
+              "ulist": [
+                "This pass did not recover a later static writer that rewrites `0x800F4C28`\nafter the init-time copy.",
+                "The current evidence therefore still stops short of proving that the copied\n`0x800B66E4` entry for `0x80` is never patched later."
+              ]
+            }
+          ]
+        },
+        "current-conclusion": {
+          "heading": "Current conclusion",
+          "content": [
+            {
+              "ulist": [
+                "Local static evidence now covers the full path from exported `INITBTL.PRG`\ntable to copied runtime buffer to live `BATTLE.PRG` dispatch consumer.",
+                "The remaining static question for `0x80` is no longer \"is there a consumer?\"\nor \"is there a bypass path?\" but only \"is there a later writer that mutates\n`0x800F4C28` before this consumer executes `0x80`?\""
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "982ee8d19da12fbac8f87d44b002ea2d07578678119002f40193de4e82937fc2",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Opcode `0x80` Runtime-Dispatch Static Notes\n\n## Goal\n\nRecover the live `BATTLE.PRG` consumer of the copied runtime opcode table at\n`0x800F4C28` before escalating to runtime tracing.\n\n## Local binary evidence\n\n1. `decomp/evidence/inittbl_0x80_copy_slice.json` already showed the init-time\n   copy path storing a freshly allocated `0x400` byte buffer into\n   `0x800F4C28` and copying the exported `INITBTL.PRG` table into it.\n2. `decomp/evidence/battle_runtime_opcode_table_xrefs.json` now recovers a\n   direct local `BATTLE.PRG` read xref from `0x800BFCFC`.\n3. The xref window shows this dispatch shape:\n\n```text\n800bfcf8 lbu v0,0x0(s0)\n800bfcfc lw v1,0x4c28(v1)\n800bfd00 sll v0,v0,0x2\n800bfd04 addu v0,v0,v1\n800bfd08 lw v0,0x0(v0)\n800bfd10 jalr v0\n```\n\n4. That sequence proves a live consumer path in `FUN_800BFBB8`:\n   - read the opcode byte from the current script cursor\n   - load the runtime table base from `0x800F4C28`\n   - index by `opcode * 4`\n   - fetch the handler pointer from the copied table\n   - dispatch through that pointer with `jalr`\n\n## What this resolves\n\n- The copied table at `0x800F4C28` is not only an initialization artifact.\n- Local static evidence now shows a direct `BATTLE.PRG` consumer that dispatches\n  through the runtime table instead of bypassing it for `0x80-0x84`.\n- The older \"maybe some hidden sound-side helper is called directly instead\"\n  contradiction is narrowed again: the active consumer reads the runtime table\n  slot first.\n\n## What remains unresolved\n\n- This pass did not recover a later static writer that rewrites `0x800F4C28`\n  after the init-time copy.\n- The current evidence therefore still stops short of proving that the copied\n  `0x800B66E4` entry for `0x80` is never patched later.\n\n## Current conclusion\n\n- Local static evidence now covers the full path from exported `INITBTL.PRG`\n  table to copied runtime buffer to live `BATTLE.PRG` dispatch consumer.\n- The remaining static question for `0x80` is no longer \"is there a consumer?\"\n  or \"is there a bypass path?\" but only \"is there a later writer that mutates\n  `0x800F4C28` before this consumer executes `0x80`?\"\n",
+    "markdown_with_json_links": "# Opcode `0x80` Runtime-Dispatch Static Notes\n\n## Goal\n\nRecover the live `BATTLE.PRG` consumer of the copied runtime opcode table at\n`0x800F4C28` before escalating to runtime tracing.\n\n## Local binary evidence\n\n1. `decomp/evidence/inittbl_0x80_copy_slice.json` already showed the init-time\n   copy path storing a freshly allocated `0x400` byte buffer into\n   `0x800F4C28` and copying the exported `INITBTL.PRG` table into it.\n2. `decomp/evidence/battle_runtime_opcode_table_xrefs.json` now recovers a\n   direct local `BATTLE.PRG` read xref from `0x800BFCFC`.\n3. The xref window shows this dispatch shape:\n\n```text\n800bfcf8 lbu v0,0x0(s0)\n800bfcfc lw v1,0x4c28(v1)\n800bfd00 sll v0,v0,0x2\n800bfd04 addu v0,v0,v1\n800bfd08 lw v0,0x0(v0)\n800bfd10 jalr v0\n```\n\n4. That sequence proves a live consumer path in `FUN_800BFBB8`:\n   - read the opcode byte from the current script cursor\n   - load the runtime table base from `0x800F4C28`\n   - index by `opcode * 4`\n   - fetch the handler pointer from the copied table\n   - dispatch through that pointer with `jalr`\n\n## What this resolves\n\n- The copied table at `0x800F4C28` is not only an initialization artifact.\n- Local static evidence now shows a direct `BATTLE.PRG` consumer that dispatches\n  through the runtime table instead of bypassing it for `0x80-0x84`.\n- The older \"maybe some hidden sound-side helper is called directly instead\"\n  contradiction is narrowed again: the active consumer reads the runtime table\n  slot first.\n\n## What remains unresolved\n\n- This pass did not recover a later static writer that rewrites `0x800F4C28`\n  after the init-time copy.\n- The current evidence therefore still stops short of proving that the copied\n  `0x800B66E4` entry for `0x80` is never patched later.\n\n## Current conclusion\n\n- Local static evidence now covers the full path from exported `INITBTL.PRG`\n  table to copied runtime buffer to live `BATTLE.PRG` dispatch consumer.\n- The remaining static question for `0x80` is no longer \"is there a consumer?\"\n  or \"is there a bypass path?\" but only \"is there a later writer that mutates\n  `0x800F4C28` before this consumer executes `0x80`?\"\n"
+  }
+}

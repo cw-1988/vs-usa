@@ -1,0 +1,49 @@
+{
+  "content": {
+    "document_type": "readme_navigation",
+    "readme_scope": "docs",
+    "title": "Docs",
+    "summary": "This folder keeps the repo-level notes out of the root while preserving a clear front door for active work.",
+    "source_markdown_path": "docs/README.md",
+    "body": {
+      "content": [
+        {
+          "paragraph": "This folder keeps the repo-level notes out of the root while preserving a\nclear front door for active work."
+        }
+      ],
+      "sections": {
+        "layout": {
+          "heading": "Layout",
+          "content": [
+            {
+              "ulist": [
+                "[`campaign`](campaign): campaign plans, opcode conclusion notes, and the\nmilestone archive that supports [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body)",
+                "[`workflows`](workflows): session instructions, strategy notes, and\ntool-specific workflows",
+                "[`research`](research): broader analysis notes that are useful context but\nare not the active campaign ledger"
+              ]
+            }
+          ]
+        },
+        "start-here": {
+          "heading": "Start Here",
+          "content": [
+            {
+              "ulist": [
+                "Active opcode/decomp state:\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body)",
+                "Artifact catalog:\n[`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body)",
+                "Workflow and standards:\n[`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body),\n[`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json#/body),\n[`docs/workflows/AI_RE_PASS_WORKFLOW.md.json`](docs/workflows/AI_RE_PASS_WORKFLOW.md.json#/body)",
+                "Archived campaign history:\n[`docs/campaign/RE_CAMPAIGN_HISTORY.md.json`](docs/campaign/RE_CAMPAIGN_HISTORY.md.json#/body)"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "a35bd24ed108c3c1507ed8a95adaee01d9553ebacbb2ac5f977be33388e445ae",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Docs\n\nThis folder keeps the repo-level notes out of the root while preserving a\nclear front door for active work.\n\n## Layout\n\n- [`campaign`](campaign): campaign plans, opcode conclusion notes, and the\n  milestone archive that supports [`../RE_CAMPAIGN_MEMORY.md`](../RE_CAMPAIGN_MEMORY.md)\n- [`workflows`](workflows): session instructions, strategy notes, and\n  tool-specific workflows\n- [`research`](research): broader analysis notes that are useful context but\n  are not the active campaign ledger\n\n## Start Here\n\n- Active opcode/decomp state:\n  [`../RE_CAMPAIGN_MEMORY.md`](../RE_CAMPAIGN_MEMORY.md)\n- Artifact catalog:\n  [`campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md`](campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md)\n- Workflow and standards:\n  [`workflows/DECOMPILATION_STRATEGY.md`](workflows/DECOMPILATION_STRATEGY.md),\n  [`workflows/CLI_DECOMPILATION_WORKFLOW.md`](workflows/CLI_DECOMPILATION_WORKFLOW.md),\n  [`workflows/AI_RE_PASS_WORKFLOW.md`](workflows/AI_RE_PASS_WORKFLOW.md)\n- Archived campaign history:\n  [`campaign/RE_CAMPAIGN_HISTORY.md`](campaign/RE_CAMPAIGN_HISTORY.md)\n",
+    "markdown_with_json_links": "# Docs\n\nThis folder keeps the repo-level notes out of the root while preserving a\nclear front door for active work.\n\n## Layout\n\n- [`campaign`](campaign): campaign plans, opcode conclusion notes, and the\n  milestone archive that supports [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body)\n- [`workflows`](workflows): session instructions, strategy notes, and\n  tool-specific workflows\n- [`research`](research): broader analysis notes that are useful context but\n  are not the active campaign ledger\n\n## Start Here\n\n- Active opcode/decomp state:\n  [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body)\n- Artifact catalog:\n  [`docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json`](docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md.json#/body)\n- Workflow and standards:\n  [`docs/workflows/DECOMPILATION_STRATEGY.md.json`](docs/workflows/DECOMPILATION_STRATEGY.md.json#/body),\n  [`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`](docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json#/body),\n  [`docs/workflows/AI_RE_PASS_WORKFLOW.md.json`](docs/workflows/AI_RE_PASS_WORKFLOW.md.json#/body)\n- Archived campaign history:\n  [`docs/campaign/RE_CAMPAIGN_HISTORY.md.json`](docs/campaign/RE_CAMPAIGN_HISTORY.md.json#/body)\n"
+  }
+}

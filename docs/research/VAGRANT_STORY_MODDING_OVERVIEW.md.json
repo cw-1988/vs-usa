@@ -1,0 +1,823 @@
+{
+  "content": {
+    "document_type": "research_note",
+    "title": "Vagrant Story USA Modding Overview",
+    "findings": [
+      "direct observations from the local disc files",
+      "practical reverse-engineering notes",
+      "a few community references that help confirm the file roles",
+      "`BATTLE/`",
+      "`BG/`",
+      "`EFFECT/`",
+      "`ENDING/`",
+      "`EVENT/`",
+      "`GIM/`",
+      "`MAP/`",
+      "`MENU/`",
+      "`MOV/`",
+      "`MUSIC/`",
+      "`OBJ/`",
+      "`SE/`",
+      "`SMALL/`",
+      "`SOUND/`",
+      "`TITLE/`",
+      "`DBGFNT.TIM`",
+      "`SLUS_010.40`",
+      "`SYSTEM.CNF`",
+      "`SLUS_010.40`",
+      "`BATTLE/BATTLE.PRG`",
+      "`MAP/*.MPD`",
+      "`MAP/*.ZND`",
+      "`MAP/*.ZUD`",
+      "`OBJ/*.SHP`",
+      "`OBJ/*.SEQ`",
+      "`OBJ/*.WEP`",
+      "`EVENT/*.EVT`",
+      "`MAP`: 512 `MPD` files",
+      "`MAP`: 256 `ZND` files",
+      "`MAP`: 455 `ZUD` files",
+      "`EVENT`: 512 `EVT` files",
+      "`OBJ`: 202 `SHP` files",
+      "`OBJ`: 700 `SEQ` files",
+      "`OBJ`: 127 `WEP` files",
+      "file header begins with `PS-X EXE`",
+      "it is the main boot executable",
+      "persistent core code and libraries",
+      "the zone LBA table for `ZND` files",
+      "global tables needed to locate major content",
+      "if files move or expand, this EXE may need table updates",
+      "script opcode handlers live here",
+      "behavior changes beyond data swaps may require reversing this PRG",
+      "headers look like section pointer tables",
+      "files vary in size widely",
+      "some tiny entries look like stubs or empty slots",
+      "room geometry",
+      "collision",
+      "door data",
+      "enemies",
+      "treasure",
+      "script section",
+      "`ZONE001.ZND` starts with a structured header and pointer-like values",
+      "some later `ZONE` files are tiny, almost empty placeholders",
+      "references to `MPD` rooms",
+      "references to `ZUD` unit bundles",
+      "textures used by the rooms in that zone",
+      "rooms are grouped into zones",
+      "to place custom rooms or enemy packages, `ZND` is part of the routing layer",
+      "`Z001U00.ZUD` contains the `H01` model signature seen in `OBJ/*.SHP`",
+      "one character `SHP`",
+      "optional weapon `WEP`",
+      "optional shield `WEP`",
+      "common `SEQ`",
+      "battle `SEQ`",
+      "this is a strong target for making or swapping enemy and NPC packages",
+      "`OBJ/00.SHP` begins with `H01`",
+      "structure looks model-like rather than script-like",
+      "custom characters will likely involve editing or replacing `SHP`",
+      "custom motions or remapped action sets likely depend on `SEQ`",
+      "used standalone and also inside `ZUD` bundles",
+      "there are 512 of them",
+      "all are exactly 6144 bytes",
+      "they are not identical",
+      "`EVENT/0100.EVT` appears to be completely blank",
+      "headers and body bytes look opcode-like rather than plain text",
+      "I did not confirm a strong public format page for `EVT`",
+      "they are clearly important, but less well nailed down here than `MPD`",
+      "`EVT` is likely a fixed-size event or cutscene container, table, or helper script resource",
+      "script length",
+      "pointers to dialog text and other sub-blocks",
+      "script opcodes",
+      "encoded dialog text",
+      "`0x10` `DialogShow`",
+      "`0x11` `DialogText`",
+      "`0x12` `DialogHide`",
+      "`0x20` `ModelLoad`",
+      "`0x22` `ModelAnimate`",
+      "`0x26` `ModelPosition`",
+      "`0x28` `ModelMoveTo`",
+      "`0x38` `ModelLookAt`",
+      "`0x3A` `ModelLoadAnimations`",
+      "`0x44` `SetEngineMode`",
+      "`0x54` `BattleOver`",
+      "`0x58` `SetHeadsUpDisplayMode`",
+      "`0x68` `LoadRoom`",
+      "`0x69` `LoadScene`",
+      "`0x6D` `DisplayRoom`",
+      "`0x90` `MusicLoad`",
+      "`0x92` `MusicPlay`",
+      "`0xA2` `CameraZoomIn`",
+      "`0xC0` `CameraDirection`",
+      "`0xC1` `CameraSetAngle`",
+      "`0xC2` `CameraLookAt`",
+      "`0xD0` `CameraPosition`",
+      "`0xD1` `SetCameraPosition`",
+      "`0xD4` `CameraHeight`",
+      "`0xE0` `CameraWait`",
+      "`0xEA` `CameraZoom`",
+      "`0xEC` `CameraZoomScalar`",
+      "`0xF0` `Wait`",
+      "`0xFF` `return`",
+      "cutscenes are very likely authored by sequencing opcodes for models, camera, audio, room changes, and dialog",
+      "story work means editing `MPD` script bytecode and text, not just swapping textures",
+      "`MENU/MAINMENU.PRG` visibly contains English UI strings like damage types and menu labels",
+      "`MENU/ITEMNAME.BIN`",
+      "`MENU/ITEMHELP.BIN`",
+      "`SMALL/MON.BIN`",
+      "dialog and item text extraction will need a table-driven decoder",
+      "`EVENT/0100.EVT` is all zeroes",
+      "`MAP/MAP511.MPD` is a tiny stub-like map file",
+      "`MAP/ZONE071.ZND` is only 68 bytes and mostly empty",
+      "creating fully brand-new dynamic content is harder",
+      "repurposing unused or stub slots is likely the most practical path",
+      "a story scene probably starts in an `MPD`",
+      "that `MPD` script loads models, animations, camera actions, and dialog",
+      "the models themselves may come through `ZUD` bundles or indexed object resources",
+      "replace an existing room with custom geometry",
+      "alter room scripts in an existing `MPD`",
+      "swap enemy or NPC packages through `ZUD`",
+      "change dialog text once the text table is decoded",
+      "reuse an empty `EVT`, `MPD`, or `ZND` slot",
+      "make a custom multi-room area by reassigning zone and room relationships",
+      "import/export models and animations through community tooling",
+      "rebuild disc images while preserving or updating LBA tables correctly",
+      "expand beyond the engine's expected slot counts",
+      "add truly new systems without reversing engine code",
+      "freely move files around without patching all table references",
+      "`SLUS_010.40`",
+      "`BATTLE/BATTLE.PRG`",
+      "`MAP/MAP000.MPD`",
+      "`MAP/MAP511.MPD`",
+      "`MAP/ZONE001.ZND`",
+      "`MAP/ZONE071.ZND`",
+      "`MAP/Z001U00.ZUD`",
+      "`OBJ/00.SHP`",
+      "`EVENT/0000.EVT`",
+      "`EVENT/0100.EVT`",
+      "`MENU/ITEMNAME.BIN`",
+      "`SMALL/MON.BIN`",
+      "https://github.com/korobetski/blender-vagrant-story",
+      "`WEP` import/export",
+      "`SHP` import",
+      "`SEQ` import",
+      "`ZUD` import",
+      "`MPD` import",
+      "Data Crystal file format hub: https://datacrystal.tcrf.net/wiki/Vagrant_Story/File_formats",
+      "Data Crystal `MPD` format: https://datacrystal.tcrf.net/wiki/Vagrant_Story/MPD_files",
+      "Data Crystal `ZND` format: https://datacrystal.tcrf.net/wiki/Vagrant_Story/ZND_files",
+      "Data Crystal `ZUD` format: https://datacrystal.tcrf.net/wiki/Vagrant_Story/ZUD_files",
+      "Data Crystal script opcodes: https://datacrystal.tcrf.net/wiki/Vagrant_Story/Script_Opcodes",
+      "Data Crystal level data overview: https://datacrystal.tcrf.net/wiki/Vagrant_Story/Level_data",
+      "Data Crystal executables notes: https://datacrystal.tcrf.net/wiki/Vagrant_Story/Executables",
+      "Data Crystal US LBA list: https://datacrystal.tcrf.net/wiki/Vagrant_Story/SLUS_LBA_List",
+      "Blender addon repo: https://github.com/korobetski/blender-vagrant-story",
+      "start with `MAP/*.MPD`",
+      "focus on the `ScriptSection`",
+      "decode its opcodes and text table",
+      "treat `EVENT/*.EVT` as important but secondary until its format is better understood",
+      "rooms live in `MPD`",
+      "zone grouping and textures live in `ZND`",
+      "enemy/NPC packages live in `ZUD`",
+      "base models and animations live in `OBJ` as `SHP`, `SEQ`, and `WEP`",
+      "parses an `MPD` header",
+      "extracts the `ScriptSection`",
+      "prints opcode bytes in readable form",
+      "finds the dialog text pointer table",
+      "decodes strings using the Vagrant Story text table"
+    ],
+    "source_markdown_path": "docs/research/VAGRANT_STORY_MODDING_OVERVIEW.md",
+    "summary": "This file is a working reference for the extracted USA disc contents in this folder.",
+    "body": {
+      "content": [
+        {
+          "paragraph": "This file is a working reference for the extracted USA disc contents in this folder."
+        },
+        {
+          "paragraph": "It combines:",
+          "ulist": [
+            "direct observations from the local disc files",
+            "practical reverse-engineering notes",
+            "a few community references that help confirm the file roles"
+          ]
+        }
+      ],
+      "sections": {
+        "disc-layout": {
+          "heading": "Disc Layout",
+          "content": [
+            {
+              "paragraph": "The root of the extracted disc looks like this:",
+              "ulist": [
+                "`BATTLE/`",
+                "`BG/`",
+                "`EFFECT/`",
+                "`ENDING/`",
+                "`EVENT/`",
+                "`GIM/`",
+                "`MAP/`",
+                "`MENU/`",
+                "`MOV/`",
+                "`MUSIC/`",
+                "`OBJ/`",
+                "`SE/`",
+                "`SMALL/`",
+                "`SOUND/`",
+                "`TITLE/`",
+                "`DBGFNT.TIM`",
+                "`SLUS_010.40`",
+                "`SYSTEM.CNF`"
+              ]
+            },
+            {
+              "paragraph": "There are 5161 files total in this extraction."
+            }
+          ]
+        },
+        "high-level-modding-map": {
+          "heading": "High-Level Modding Map",
+          "content": [
+            {
+              "paragraph": "If the goal is to make new maps, characters, events, or story scenes, the most important locations are:",
+              "ulist": [
+                "`SLUS_010.40`",
+                "`BATTLE/BATTLE.PRG`",
+                "`MAP/*.MPD`",
+                "`MAP/*.ZND`",
+                "`MAP/*.ZUD`",
+                "`OBJ/*.SHP`",
+                "`OBJ/*.SEQ`",
+                "`OBJ/*.WEP`",
+                "`EVENT/*.EVT`"
+              ]
+            },
+            {
+              "paragraph": "The game appears to be heavily slot-based rather than fully dynamic."
+            },
+            {
+              "paragraph": "Important counts from the extracted files:",
+              "ulist": [
+                "`MAP`: 512 `MPD` files",
+                "`MAP`: 256 `ZND` files",
+                "`MAP`: 455 `ZUD` files",
+                "`EVENT`: 512 `EVT` files",
+                "`OBJ`: 202 `SHP` files",
+                "`OBJ`: 700 `SEQ` files",
+                "`OBJ`: 127 `WEP` files"
+              ]
+            },
+            {
+              "paragraph": "That strongly suggests the engine expects many resources by fixed index."
+            }
+          ]
+        },
+        "what-each-major-format-seems-to-do": {
+          "heading": "What Each Major Format Seems To Do",
+          "sections": {
+            "slus_01040": {
+              "heading": "`SLUS_010.40`",
+              "content": [
+                {
+                  "paragraph": "This is the root PS-X executable."
+                },
+                {
+                  "paragraph": "Local observation:",
+                  "ulist": [
+                    "file header begins with `PS-X EXE`",
+                    "it is the main boot executable",
+                    "Community notes indicate it contains:",
+                    {
+                      "ulist": [
+                        "persistent core code and libraries",
+                        "the zone LBA table for `ZND` files",
+                        "global tables needed to locate major content"
+                      ]
+                    },
+                    "Implication for modding:",
+                    {
+                      "ulist": [
+                        "if files move or expand, this EXE may need table updates"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "battlebattleprg": {
+              "heading": "`BATTLE/BATTLE.PRG`",
+              "content": [
+                {
+                  "ulist": [
+                    "This appears to be the main gameplay engine overlay.",
+                    "Community documentation identifies `BATTLE.PRG` as the main engine executable used during runtime.",
+                    "Implication for modding:",
+                    {
+                      "ulist": [
+                        "script opcode handlers live here",
+                        "behavior changes beyond data swaps may require reversing this PRG"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "mapmpd": {
+              "heading": "`MAP/*.MPD`",
+              "content": [
+                {
+                  "paragraph": "These are single-room map data files."
+                },
+                {
+                  "paragraph": "Local observation:",
+                  "ulist": [
+                    "headers look like section pointer tables",
+                    "files vary in size widely",
+                    "some tiny entries look like stubs or empty slots",
+                    "Community documentation says `MPD` stores:",
+                    {
+                      "ulist": [
+                        "room geometry",
+                        "collision",
+                        "door data",
+                        "enemies",
+                        "treasure",
+                        "script section"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "This is the confirmed core file for room-specific event scripting."
+                }
+              ]
+            },
+            "mapznd": {
+              "heading": "`MAP/*.ZND`",
+              "content": [
+                {
+                  "paragraph": "These are zone-level files."
+                },
+                {
+                  "paragraph": "Local observation:",
+                  "ulist": [
+                    "`ZONE001.ZND` starts with a structured header and pointer-like values",
+                    "some later `ZONE` files are tiny, almost empty placeholders",
+                    "Community documentation says `ZND` stores:",
+                    {
+                      "ulist": [
+                        "references to `MPD` rooms",
+                        "references to `ZUD` unit bundles",
+                        "textures used by the rooms in that zone"
+                      ]
+                    },
+                    "Implication for modding:",
+                    {
+                      "ulist": [
+                        "rooms are grouped into zones",
+                        "to place custom rooms or enemy packages, `ZND` is part of the routing layer"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "mapzud": {
+              "heading": "`MAP/*.ZUD`",
+              "content": [
+                {
+                  "paragraph": "These are zone unit data bundles."
+                },
+                {
+                  "paragraph": "Local observation:",
+                  "ulist": [
+                    "`Z001U00.ZUD` contains the `H01` model signature seen in `OBJ/*.SHP`",
+                    "Community documentation says `ZUD` packages:",
+                    {
+                      "ulist": [
+                        "one character `SHP`",
+                        "optional weapon `WEP`",
+                        "optional shield `WEP`",
+                        "common `SEQ`",
+                        "battle `SEQ`"
+                      ]
+                    },
+                    "Implication for modding:",
+                    {
+                      "ulist": [
+                        "this is a strong target for making or swapping enemy and NPC packages"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "objshp": {
+              "heading": "`OBJ/*.SHP`",
+              "content": [
+                {
+                  "paragraph": "These appear to be base character model files."
+                },
+                {
+                  "paragraph": "Local observation:",
+                  "ulist": [
+                    "`OBJ/00.SHP` begins with `H01`",
+                    "structure looks model-like rather than script-like",
+                    "Implication for modding:",
+                    {
+                      "ulist": [
+                        "custom characters will likely involve editing or replacing `SHP`"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "objseq": {
+              "heading": "`OBJ/*.SEQ`",
+              "content": [
+                {
+                  "paragraph": "These appear to be animation sequence files."
+                },
+                {
+                  "paragraph": "Implication for modding:",
+                  "ulist": [
+                    "custom motions or remapped action sets likely depend on `SEQ`"
+                  ]
+                }
+              ]
+            },
+            "objwep": {
+              "heading": "`OBJ/*.WEP`",
+              "content": [
+                {
+                  "paragraph": "These are weapon or shield model files."
+                },
+                {
+                  "paragraph": "Implication for modding:",
+                  "ulist": [
+                    "used standalone and also inside `ZUD` bundles"
+                  ]
+                }
+              ]
+            },
+            "eventevt": {
+              "heading": "`EVENT/*.EVT`",
+              "content": [
+                {
+                  "paragraph": "These are event-related binary files."
+                },
+                {
+                  "paragraph": "Local observation:",
+                  "ulist": [
+                    "there are 512 of them",
+                    "all are exactly 6144 bytes",
+                    "they are not identical",
+                    "`EVENT/0100.EVT` appears to be completely blank",
+                    "headers and body bytes look opcode-like rather than plain text",
+                    "Important caution:",
+                    {
+                      "ulist": [
+                        "I did not confirm a strong public format page for `EVT`",
+                        "they are clearly important, but less well nailed down here than `MPD`"
+                      ]
+                    },
+                    "Working hypothesis:",
+                    {
+                      "ulist": [
+                        "`EVT` is likely a fixed-size event or cutscene container, table, or helper script resource"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "how-scripting-appears-to-work": {
+          "heading": "How Scripting Appears To Work",
+          "content": [
+            {
+              "ulist": [
+                "The best-confirmed room scripting path is inside the `ScriptSection` of each `MPD` file.",
+                "This is not plaintext scripting. It appears to be bytecode interpreted by the game engine.",
+                "Community documentation for `MPD` script layout says the script section contains:",
+                {
+                  "ulist": [
+                    "script length",
+                    "pointers to dialog text and other sub-blocks",
+                    "script opcodes",
+                    "encoded dialog text"
+                  ]
+                }
+              ]
+            },
+            {
+              "paragraph": "That matches the local binary patterns much better than a text-based script format would."
+            }
+          ]
+        },
+        "confirmed-script-opcode-direction": {
+          "heading": "Confirmed Script Opcode Direction",
+          "content": [
+            {
+              "paragraph": "Community reverse-engineering notes identify the `MPD` script opcode system and place its handler tables in the US version of `BATTLE.PRG`."
+            },
+            {
+              "paragraph": "Documented useful opcodes include:",
+              "ulist": [
+                "`0x10` `DialogShow`",
+                "`0x11` `DialogText`",
+                "`0x12` `DialogHide`",
+                "`0x20` `ModelLoad`",
+                "`0x22` `ModelAnimate`",
+                "`0x26` `ModelPosition`",
+                "`0x28` `ModelMoveTo`",
+                "`0x38` `ModelLookAt`",
+                "`0x3A` `ModelLoadAnimations`",
+                "`0x44` `SetEngineMode`",
+                "`0x54` `BattleOver`",
+                "`0x58` `SetHeadsUpDisplayMode`",
+                "`0x68` `LoadRoom`",
+                "`0x69` `LoadScene`",
+                "`0x6D` `DisplayRoom`",
+                "`0x90` `MusicLoad`",
+                "`0x92` `MusicPlay`",
+                "`0xA2` `CameraZoomIn`",
+                "`0xC0` `CameraDirection`",
+                "`0xC1` `CameraSetAngle`",
+                "`0xC2` `CameraLookAt`",
+                "`0xD0` `CameraPosition`",
+                "`0xD1` `SetCameraPosition`",
+                "`0xD4` `CameraHeight`",
+                "`0xE0` `CameraWait`",
+                "`0xEA` `CameraZoom`",
+                "`0xEC` `CameraZoomScalar`",
+                "`0xF0` `Wait`",
+                "`0xFF` `return`",
+                "Practical takeaway:",
+                {
+                  "ulist": [
+                    "cutscenes are very likely authored by sequencing opcodes for models, camera, audio, room changes, and dialog",
+                    "story work means editing `MPD` script bytecode and text, not just swapping textures"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "text-encoding-notes": {
+          "heading": "Text Encoding Notes",
+          "content": [
+            {
+              "paragraph": "Some text in overlays is plain enough to spot directly."
+            },
+            {
+              "paragraph": "Example:",
+              "ulist": [
+                "`MENU/MAINMENU.PRG` visibly contains English UI strings like damage types and menu labels"
+              ]
+            },
+            {
+              "paragraph": "Other text resources use a custom encoding."
+            },
+            {
+              "paragraph": "Examples:",
+              "ulist": [
+                "`MENU/ITEMNAME.BIN`",
+                "`MENU/ITEMHELP.BIN`",
+                "`SMALL/MON.BIN`"
+              ]
+            },
+            {
+              "paragraph": "Community table notes indicate Vagrant Story uses a custom text table with terminators and control bytes rather than ASCII."
+            },
+            {
+              "paragraph": "Practical takeaway:",
+              "ulist": [
+                "dialog and item text extraction will need a table-driven decoder"
+              ]
+            }
+          ]
+        },
+        "what-looks-promising-for-expansion": {
+          "heading": "What Looks Promising For Expansion",
+          "content": [
+            {
+              "paragraph": "Several files look like obvious empty or stub slots."
+            },
+            {
+              "paragraph": "Examples seen locally:",
+              "ulist": [
+                "`EVENT/0100.EVT` is all zeroes",
+                "`MAP/MAP511.MPD` is a tiny stub-like map file",
+                "`MAP/ZONE071.ZND` is only 68 bytes and mostly empty"
+              ]
+            },
+            {
+              "paragraph": "Community US LBA listings also show multiple tiny `ZONE` entries later in the index range."
+            },
+            {
+              "paragraph": "Practical takeaway:",
+              "ulist": [
+                "creating fully brand-new dynamic content is harder",
+                "repurposing unused or stub slots is likely the most practical path"
+              ]
+            }
+          ]
+        },
+        "likely-content-relationships": {
+          "heading": "Likely Content Relationships",
+          "content": [
+            {
+              "paragraph": "The most useful mental model right now is:",
+              "olit": [
+                "`SLUS_010.40` points to `ZND` zones",
+                "each `ZND` points to one or more `MPD` room files and zero or more `ZUD` bundles",
+                "each `MPD` contains room geometry plus room-local script data",
+                "each `ZUD` packages a character model and its gear/animations",
+                "`BATTLE.PRG` provides the code that interprets script opcodes",
+                "That means:",
+                {
+                  "ulist": [
+                    "a story scene probably starts in an `MPD`",
+                    "that `MPD` script loads models, animations, camera actions, and dialog",
+                    "the models themselves may come through `ZUD` bundles or indexed object resources"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "what-is-realistic-to-attempt": {
+          "heading": "What Is Realistic To Attempt",
+          "sections": {
+            "most-realistic-first-projects": {
+              "heading": "Most realistic first projects",
+              "content": [
+                {
+                  "ulist": [
+                    "replace an existing room with custom geometry",
+                    "alter room scripts in an existing `MPD`",
+                    "swap enemy or NPC packages through `ZUD`",
+                    "change dialog text once the text table is decoded",
+                    "reuse an empty `EVT`, `MPD`, or `ZND` slot"
+                  ]
+                }
+              ]
+            },
+            "harder-but-still-plausible": {
+              "heading": "Harder but still plausible",
+              "content": [
+                {
+                  "ulist": [
+                    "make a custom multi-room area by reassigning zone and room relationships",
+                    "import/export models and animations through community tooling",
+                    "rebuild disc images while preserving or updating LBA tables correctly"
+                  ]
+                }
+              ]
+            },
+            "much-harder": {
+              "heading": "Much harder",
+              "content": [
+                {
+                  "ulist": [
+                    "expand beyond the engine's expected slot counts",
+                    "add truly new systems without reversing engine code",
+                    "freely move files around without patching all table references"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "suggested-modding-workflow": {
+          "heading": "Suggested Modding Workflow",
+          "content": [
+            {
+              "paragraph": "If starting from scratch, a practical path would be:",
+              "olit": [
+                "choose one existing room to study",
+                "identify its `ZND -> MPD -> ZUD` relationship",
+                "dump the `MPD` script section into readable opcodes",
+                "decode that room's dialog block with the Vagrant Story text table",
+                "confirm how the scene loads models, camera, and room transitions",
+                "repurpose one empty or low-value slot for experiments",
+                "only after that, handle disc rebuild and LBA correction"
+              ]
+            }
+          ]
+        },
+        "good-local-targets-to-inspect-next": {
+          "heading": "Good Local Targets To Inspect Next",
+          "content": [
+            {
+              "ulist": [
+                "`SLUS_010.40`",
+                "`BATTLE/BATTLE.PRG`",
+                "`MAP/MAP000.MPD`",
+                "`MAP/MAP511.MPD`",
+                "`MAP/ZONE001.ZND`",
+                "`MAP/ZONE071.ZND`",
+                "`MAP/Z001U00.ZUD`",
+                "`OBJ/00.SHP`",
+                "`EVENT/0000.EVT`",
+                "`EVENT/0100.EVT`",
+                "`MENU/ITEMNAME.BIN`",
+                "`SMALL/MON.BIN`"
+              ]
+            }
+          ]
+        },
+        "tooling-notes": {
+          "heading": "Tooling Notes",
+          "content": [
+            {
+              "paragraph": "One promising public toolchain is the Blender addon here:",
+              "ulist": [
+                "https://github.com/korobetski/blender-vagrant-story",
+                "Its README says it supports or is working toward:",
+                {
+                  "ulist": [
+                    "`WEP` import/export",
+                    "`SHP` import",
+                    "`SEQ` import",
+                    "`ZUD` import",
+                    "`MPD` import"
+                  ]
+                }
+              ]
+            },
+            {
+              "paragraph": "This is especially useful if the goal is map and character editing rather than pure hex work."
+            }
+          ]
+        },
+        "external-references": {
+          "heading": "External References",
+          "content": [
+            {
+              "paragraph": "These were used to confirm format roles and engine behavior:",
+              "ulist": [
+                "Data Crystal file format hub: https://datacrystal.tcrf.net/wiki/Vagrant_Story/File_formats",
+                "Data Crystal `MPD` format: https://datacrystal.tcrf.net/wiki/Vagrant_Story/MPD_files",
+                "Data Crystal `ZND` format: https://datacrystal.tcrf.net/wiki/Vagrant_Story/ZND_files",
+                "Data Crystal `ZUD` format: https://datacrystal.tcrf.net/wiki/Vagrant_Story/ZUD_files",
+                "Data Crystal script opcodes: https://datacrystal.tcrf.net/wiki/Vagrant_Story/Script_Opcodes",
+                "Data Crystal level data overview: https://datacrystal.tcrf.net/wiki/Vagrant_Story/Level_data",
+                "Data Crystal executables notes: https://datacrystal.tcrf.net/wiki/Vagrant_Story/Executables",
+                "Data Crystal US LBA list: https://datacrystal.tcrf.net/wiki/Vagrant_Story/SLUS_LBA_List",
+                "Blender addon repo: https://github.com/korobetski/blender-vagrant-story"
+              ]
+            }
+          ]
+        },
+        "current-best-summary": {
+          "heading": "Current Best Summary",
+          "content": [
+            {
+              "paragraph": "If the main question is \"where do I edit scripting for new story and scenes?\", the best answer right now is:",
+              "ulist": [
+                "start with `MAP/*.MPD`",
+                "focus on the `ScriptSection`",
+                "decode its opcodes and text table",
+                "treat `EVENT/*.EVT` as important but secondary until its format is better understood",
+                "If the main question is \"where do I edit maps and characters?\", then:",
+                {
+                  "ulist": [
+                    "rooms live in `MPD`",
+                    "zone grouping and textures live in `ZND`",
+                    "enemy/NPC packages live in `ZUD`",
+                    "base models and animations live in `OBJ` as `SHP`, `SEQ`, and `WEP`"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "best-next-step": {
+          "heading": "Best Next Step",
+          "content": [
+            {
+              "paragraph": "The most useful next automation would be a small dumper that:",
+              "ulist": [
+                "parses an `MPD` header",
+                "extracts the `ScriptSection`",
+                "prints opcode bytes in readable form",
+                "finds the dialog text pointer table",
+                "decodes strings using the Vagrant Story text table"
+              ]
+            },
+            {
+              "paragraph": "That would turn the current high-level map into something directly editable."
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "e7e03e6fbf26ab3fccbac66498e4e58dd2e876f96831e5ff2683d09ad3d5027d",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Vagrant Story USA Modding Overview\n\nThis file is a working reference for the extracted USA disc contents in this folder.\n\nIt combines:\n\n- direct observations from the local disc files\n- practical reverse-engineering notes\n- a few community references that help confirm the file roles\n\n## Disc Layout\n\nThe root of the extracted disc looks like this:\n\n- `BATTLE/`\n- `BG/`\n- `EFFECT/`\n- `ENDING/`\n- `EVENT/`\n- `GIM/`\n- `MAP/`\n- `MENU/`\n- `MOV/`\n- `MUSIC/`\n- `OBJ/`\n- `SE/`\n- `SMALL/`\n- `SOUND/`\n- `TITLE/`\n- `DBGFNT.TIM`\n- `SLUS_010.40`\n- `SYSTEM.CNF`\n\nThere are 5161 files total in this extraction.\n\n## High-Level Modding Map\n\nIf the goal is to make new maps, characters, events, or story scenes, the most important locations are:\n\n- `SLUS_010.40`\n- `BATTLE/BATTLE.PRG`\n- `MAP/*.MPD`\n- `MAP/*.ZND`\n- `MAP/*.ZUD`\n- `OBJ/*.SHP`\n- `OBJ/*.SEQ`\n- `OBJ/*.WEP`\n- `EVENT/*.EVT`\n\nThe game appears to be heavily slot-based rather than fully dynamic.\n\nImportant counts from the extracted files:\n\n- `MAP`: 512 `MPD` files\n- `MAP`: 256 `ZND` files\n- `MAP`: 455 `ZUD` files\n- `EVENT`: 512 `EVT` files\n- `OBJ`: 202 `SHP` files\n- `OBJ`: 700 `SEQ` files\n- `OBJ`: 127 `WEP` files\n\nThat strongly suggests the engine expects many resources by fixed index.\n\n## What Each Major Format Seems To Do\n\n### `SLUS_010.40`\n\nThis is the root PS-X executable.\n\nLocal observation:\n\n- file header begins with `PS-X EXE`\n- it is the main boot executable\n\nCommunity notes indicate it contains:\n\n- persistent core code and libraries\n- the zone LBA table for `ZND` files\n- global tables needed to locate major content\n\nImplication for modding:\n\n- if files move or expand, this EXE may need table updates\n\n### `BATTLE/BATTLE.PRG`\n\nThis appears to be the main gameplay engine overlay.\n\nCommunity documentation identifies `BATTLE.PRG` as the main engine executable used during runtime.\n\nImplication for modding:\n\n- script opcode handlers live here\n- behavior changes beyond data swaps may require reversing this PRG\n\n### `MAP/*.MPD`\n\nThese are single-room map data files.\n\nLocal observation:\n\n- headers look like section pointer tables\n- files vary in size widely\n- some tiny entries look like stubs or empty slots\n\nCommunity documentation says `MPD` stores:\n\n- room geometry\n- collision\n- door data\n- enemies\n- treasure\n- script section\n\nThis is the confirmed core file for room-specific event scripting.\n\n### `MAP/*.ZND`\n\nThese are zone-level files.\n\nLocal observation:\n\n- `ZONE001.ZND` starts with a structured header and pointer-like values\n- some later `ZONE` files are tiny, almost empty placeholders\n\nCommunity documentation says `ZND` stores:\n\n- references to `MPD` rooms\n- references to `ZUD` unit bundles\n- textures used by the rooms in that zone\n\nImplication for modding:\n\n- rooms are grouped into zones\n- to place custom rooms or enemy packages, `ZND` is part of the routing layer\n\n### `MAP/*.ZUD`\n\nThese are zone unit data bundles.\n\nLocal observation:\n\n- `Z001U00.ZUD` contains the `H01` model signature seen in `OBJ/*.SHP`\n\nCommunity documentation says `ZUD` packages:\n\n- one character `SHP`\n- optional weapon `WEP`\n- optional shield `WEP`\n- common `SEQ`\n- battle `SEQ`\n\nImplication for modding:\n\n- this is a strong target for making or swapping enemy and NPC packages\n\n### `OBJ/*.SHP`\n\nThese appear to be base character model files.\n\nLocal observation:\n\n- `OBJ/00.SHP` begins with `H01`\n- structure looks model-like rather than script-like\n\nImplication for modding:\n\n- custom characters will likely involve editing or replacing `SHP`\n\n### `OBJ/*.SEQ`\n\nThese appear to be animation sequence files.\n\nImplication for modding:\n\n- custom motions or remapped action sets likely depend on `SEQ`\n\n### `OBJ/*.WEP`\n\nThese are weapon or shield model files.\n\nImplication for modding:\n\n- used standalone and also inside `ZUD` bundles\n\n### `EVENT/*.EVT`\n\nThese are event-related binary files.\n\nLocal observation:\n\n- there are 512 of them\n- all are exactly 6144 bytes\n- they are not identical\n- `EVENT/0100.EVT` appears to be completely blank\n- headers and body bytes look opcode-like rather than plain text\n\nImportant caution:\n\n- I did not confirm a strong public format page for `EVT`\n- they are clearly important, but less well nailed down here than `MPD`\n\nWorking hypothesis:\n\n- `EVT` is likely a fixed-size event or cutscene container, table, or helper script resource\n\n## How Scripting Appears To Work\n\nThe best-confirmed room scripting path is inside the `ScriptSection` of each `MPD` file.\n\nThis is not plaintext scripting. It appears to be bytecode interpreted by the game engine.\n\nCommunity documentation for `MPD` script layout says the script section contains:\n\n- script length\n- pointers to dialog text and other sub-blocks\n- script opcodes\n- encoded dialog text\n\nThat matches the local binary patterns much better than a text-based script format would.\n\n## Confirmed Script Opcode Direction\n\nCommunity reverse-engineering notes identify the `MPD` script opcode system and place its handler tables in the US version of `BATTLE.PRG`.\n\nDocumented useful opcodes include:\n\n- `0x10` `DialogShow`\n- `0x11` `DialogText`\n- `0x12` `DialogHide`\n- `0x20` `ModelLoad`\n- `0x22` `ModelAnimate`\n- `0x26` `ModelPosition`\n- `0x28` `ModelMoveTo`\n- `0x38` `ModelLookAt`\n- `0x3A` `ModelLoadAnimations`\n- `0x44` `SetEngineMode`\n- `0x54` `BattleOver`\n- `0x58` `SetHeadsUpDisplayMode`\n- `0x68` `LoadRoom`\n- `0x69` `LoadScene`\n- `0x6D` `DisplayRoom`\n- `0x90` `MusicLoad`\n- `0x92` `MusicPlay`\n- `0xA2` `CameraZoomIn`\n- `0xC0` `CameraDirection`\n- `0xC1` `CameraSetAngle`\n- `0xC2` `CameraLookAt`\n- `0xD0` `CameraPosition`\n- `0xD1` `SetCameraPosition`\n- `0xD4` `CameraHeight`\n- `0xE0` `CameraWait`\n- `0xEA` `CameraZoom`\n- `0xEC` `CameraZoomScalar`\n- `0xF0` `Wait`\n- `0xFF` `return`\n\nPractical takeaway:\n\n- cutscenes are very likely authored by sequencing opcodes for models, camera, audio, room changes, and dialog\n- story work means editing `MPD` script bytecode and text, not just swapping textures\n\n## Text Encoding Notes\n\nSome text in overlays is plain enough to spot directly.\n\nExample:\n\n- `MENU/MAINMENU.PRG` visibly contains English UI strings like damage types and menu labels\n\nOther text resources use a custom encoding.\n\nExamples:\n\n- `MENU/ITEMNAME.BIN`\n- `MENU/ITEMHELP.BIN`\n- `SMALL/MON.BIN`\n\nCommunity table notes indicate Vagrant Story uses a custom text table with terminators and control bytes rather than ASCII.\n\nPractical takeaway:\n\n- dialog and item text extraction will need a table-driven decoder\n\n## What Looks Promising For Expansion\n\nSeveral files look like obvious empty or stub slots.\n\nExamples seen locally:\n\n- `EVENT/0100.EVT` is all zeroes\n- `MAP/MAP511.MPD` is a tiny stub-like map file\n- `MAP/ZONE071.ZND` is only 68 bytes and mostly empty\n\nCommunity US LBA listings also show multiple tiny `ZONE` entries later in the index range.\n\nPractical takeaway:\n\n- creating fully brand-new dynamic content is harder\n- repurposing unused or stub slots is likely the most practical path\n\n## Likely Content Relationships\n\nThe most useful mental model right now is:\n\n1. `SLUS_010.40` points to `ZND` zones\n2. each `ZND` points to one or more `MPD` room files and zero or more `ZUD` bundles\n3. each `MPD` contains room geometry plus room-local script data\n4. each `ZUD` packages a character model and its gear/animations\n5. `BATTLE.PRG` provides the code that interprets script opcodes\n\nThat means:\n\n- a story scene probably starts in an `MPD`\n- that `MPD` script loads models, animations, camera actions, and dialog\n- the models themselves may come through `ZUD` bundles or indexed object resources\n\n## What Is Realistic To Attempt\n\n### Most realistic first projects\n\n- replace an existing room with custom geometry\n- alter room scripts in an existing `MPD`\n- swap enemy or NPC packages through `ZUD`\n- change dialog text once the text table is decoded\n- reuse an empty `EVT`, `MPD`, or `ZND` slot\n\n### Harder but still plausible\n\n- make a custom multi-room area by reassigning zone and room relationships\n- import/export models and animations through community tooling\n- rebuild disc images while preserving or updating LBA tables correctly\n\n### Much harder\n\n- expand beyond the engine's expected slot counts\n- add truly new systems without reversing engine code\n- freely move files around without patching all table references\n\n## Suggested Modding Workflow\n\nIf starting from scratch, a practical path would be:\n\n1. choose one existing room to study\n2. identify its `ZND -> MPD -> ZUD` relationship\n3. dump the `MPD` script section into readable opcodes\n4. decode that room's dialog block with the Vagrant Story text table\n5. confirm how the scene loads models, camera, and room transitions\n6. repurpose one empty or low-value slot for experiments\n7. only after that, handle disc rebuild and LBA correction\n\n## Good Local Targets To Inspect Next\n\n- `SLUS_010.40`\n- `BATTLE/BATTLE.PRG`\n- `MAP/MAP000.MPD`\n- `MAP/MAP511.MPD`\n- `MAP/ZONE001.ZND`\n- `MAP/ZONE071.ZND`\n- `MAP/Z001U00.ZUD`\n- `OBJ/00.SHP`\n- `EVENT/0000.EVT`\n- `EVENT/0100.EVT`\n- `MENU/ITEMNAME.BIN`\n- `SMALL/MON.BIN`\n\n## Tooling Notes\n\nOne promising public toolchain is the Blender addon here:\n\n- https://github.com/korobetski/blender-vagrant-story\n\nIts README says it supports or is working toward:\n\n- `WEP` import/export\n- `SHP` import\n- `SEQ` import\n- `ZUD` import\n- `MPD` import\n\nThis is especially useful if the goal is map and character editing rather than pure hex work.\n\n## External References\n\nThese were used to confirm format roles and engine behavior:\n\n- Data Crystal file format hub: https://datacrystal.tcrf.net/wiki/Vagrant_Story/File_formats\n- Data Crystal `MPD` format: https://datacrystal.tcrf.net/wiki/Vagrant_Story/MPD_files\n- Data Crystal `ZND` format: https://datacrystal.tcrf.net/wiki/Vagrant_Story/ZND_files\n- Data Crystal `ZUD` format: https://datacrystal.tcrf.net/wiki/Vagrant_Story/ZUD_files\n- Data Crystal script opcodes: https://datacrystal.tcrf.net/wiki/Vagrant_Story/Script_Opcodes\n- Data Crystal level data overview: https://datacrystal.tcrf.net/wiki/Vagrant_Story/Level_data\n- Data Crystal executables notes: https://datacrystal.tcrf.net/wiki/Vagrant_Story/Executables\n- Data Crystal US LBA list: https://datacrystal.tcrf.net/wiki/Vagrant_Story/SLUS_LBA_List\n- Blender addon repo: https://github.com/korobetski/blender-vagrant-story\n\n## Current Best Summary\n\nIf the main question is \"where do I edit scripting for new story and scenes?\", the best answer right now is:\n\n- start with `MAP/*.MPD`\n- focus on the `ScriptSection`\n- decode its opcodes and text table\n- treat `EVENT/*.EVT` as important but secondary until its format is better understood\n\nIf the main question is \"where do I edit maps and characters?\", then:\n\n- rooms live in `MPD`\n- zone grouping and textures live in `ZND`\n- enemy/NPC packages live in `ZUD`\n- base models and animations live in `OBJ` as `SHP`, `SEQ`, and `WEP`\n\n## Best Next Step\n\nThe most useful next automation would be a small dumper that:\n\n- parses an `MPD` header\n- extracts the `ScriptSection`\n- prints opcode bytes in readable form\n- finds the dialog text pointer table\n- decodes strings using the Vagrant Story text table\n\nThat would turn the current high-level map into something directly editable.\n",
+    "markdown_with_json_links": "# Vagrant Story USA Modding Overview\n\nThis file is a working reference for the extracted USA disc contents in this folder.\n\nIt combines:\n\n- direct observations from the local disc files\n- practical reverse-engineering notes\n- a few community references that help confirm the file roles\n\n## Disc Layout\n\nThe root of the extracted disc looks like this:\n\n- `BATTLE/`\n- `BG/`\n- `EFFECT/`\n- `ENDING/`\n- `EVENT/`\n- `GIM/`\n- `MAP/`\n- `MENU/`\n- `MOV/`\n- `MUSIC/`\n- `OBJ/`\n- `SE/`\n- `SMALL/`\n- `SOUND/`\n- `TITLE/`\n- `DBGFNT.TIM`\n- `SLUS_010.40`\n- `SYSTEM.CNF`\n\nThere are 5161 files total in this extraction.\n\n## High-Level Modding Map\n\nIf the goal is to make new maps, characters, events, or story scenes, the most important locations are:\n\n- `SLUS_010.40`\n- `BATTLE/BATTLE.PRG`\n- `MAP/*.MPD`\n- `MAP/*.ZND`\n- `MAP/*.ZUD`\n- `OBJ/*.SHP`\n- `OBJ/*.SEQ`\n- `OBJ/*.WEP`\n- `EVENT/*.EVT`\n\nThe game appears to be heavily slot-based rather than fully dynamic.\n\nImportant counts from the extracted files:\n\n- `MAP`: 512 `MPD` files\n- `MAP`: 256 `ZND` files\n- `MAP`: 455 `ZUD` files\n- `EVENT`: 512 `EVT` files\n- `OBJ`: 202 `SHP` files\n- `OBJ`: 700 `SEQ` files\n- `OBJ`: 127 `WEP` files\n\nThat strongly suggests the engine expects many resources by fixed index.\n\n## What Each Major Format Seems To Do\n\n### `SLUS_010.40`\n\nThis is the root PS-X executable.\n\nLocal observation:\n\n- file header begins with `PS-X EXE`\n- it is the main boot executable\n\nCommunity notes indicate it contains:\n\n- persistent core code and libraries\n- the zone LBA table for `ZND` files\n- global tables needed to locate major content\n\nImplication for modding:\n\n- if files move or expand, this EXE may need table updates\n\n### `BATTLE/BATTLE.PRG`\n\nThis appears to be the main gameplay engine overlay.\n\nCommunity documentation identifies `BATTLE.PRG` as the main engine executable used during runtime.\n\nImplication for modding:\n\n- script opcode handlers live here\n- behavior changes beyond data swaps may require reversing this PRG\n\n### `MAP/*.MPD`\n\nThese are single-room map data files.\n\nLocal observation:\n\n- headers look like section pointer tables\n- files vary in size widely\n- some tiny entries look like stubs or empty slots\n\nCommunity documentation says `MPD` stores:\n\n- room geometry\n- collision\n- door data\n- enemies\n- treasure\n- script section\n\nThis is the confirmed core file for room-specific event scripting.\n\n### `MAP/*.ZND`\n\nThese are zone-level files.\n\nLocal observation:\n\n- `ZONE001.ZND` starts with a structured header and pointer-like values\n- some later `ZONE` files are tiny, almost empty placeholders\n\nCommunity documentation says `ZND` stores:\n\n- references to `MPD` rooms\n- references to `ZUD` unit bundles\n- textures used by the rooms in that zone\n\nImplication for modding:\n\n- rooms are grouped into zones\n- to place custom rooms or enemy packages, `ZND` is part of the routing layer\n\n### `MAP/*.ZUD`\n\nThese are zone unit data bundles.\n\nLocal observation:\n\n- `Z001U00.ZUD` contains the `H01` model signature seen in `OBJ/*.SHP`\n\nCommunity documentation says `ZUD` packages:\n\n- one character `SHP`\n- optional weapon `WEP`\n- optional shield `WEP`\n- common `SEQ`\n- battle `SEQ`\n\nImplication for modding:\n\n- this is a strong target for making or swapping enemy and NPC packages\n\n### `OBJ/*.SHP`\n\nThese appear to be base character model files.\n\nLocal observation:\n\n- `OBJ/00.SHP` begins with `H01`\n- structure looks model-like rather than script-like\n\nImplication for modding:\n\n- custom characters will likely involve editing or replacing `SHP`\n\n### `OBJ/*.SEQ`\n\nThese appear to be animation sequence files.\n\nImplication for modding:\n\n- custom motions or remapped action sets likely depend on `SEQ`\n\n### `OBJ/*.WEP`\n\nThese are weapon or shield model files.\n\nImplication for modding:\n\n- used standalone and also inside `ZUD` bundles\n\n### `EVENT/*.EVT`\n\nThese are event-related binary files.\n\nLocal observation:\n\n- there are 512 of them\n- all are exactly 6144 bytes\n- they are not identical\n- `EVENT/0100.EVT` appears to be completely blank\n- headers and body bytes look opcode-like rather than plain text\n\nImportant caution:\n\n- I did not confirm a strong public format page for `EVT`\n- they are clearly important, but less well nailed down here than `MPD`\n\nWorking hypothesis:\n\n- `EVT` is likely a fixed-size event or cutscene container, table, or helper script resource\n\n## How Scripting Appears To Work\n\nThe best-confirmed room scripting path is inside the `ScriptSection` of each `MPD` file.\n\nThis is not plaintext scripting. It appears to be bytecode interpreted by the game engine.\n\nCommunity documentation for `MPD` script layout says the script section contains:\n\n- script length\n- pointers to dialog text and other sub-blocks\n- script opcodes\n- encoded dialog text\n\nThat matches the local binary patterns much better than a text-based script format would.\n\n## Confirmed Script Opcode Direction\n\nCommunity reverse-engineering notes identify the `MPD` script opcode system and place its handler tables in the US version of `BATTLE.PRG`.\n\nDocumented useful opcodes include:\n\n- `0x10` `DialogShow`\n- `0x11` `DialogText`\n- `0x12` `DialogHide`\n- `0x20` `ModelLoad`\n- `0x22` `ModelAnimate`\n- `0x26` `ModelPosition`\n- `0x28` `ModelMoveTo`\n- `0x38` `ModelLookAt`\n- `0x3A` `ModelLoadAnimations`\n- `0x44` `SetEngineMode`\n- `0x54` `BattleOver`\n- `0x58` `SetHeadsUpDisplayMode`\n- `0x68` `LoadRoom`\n- `0x69` `LoadScene`\n- `0x6D` `DisplayRoom`\n- `0x90` `MusicLoad`\n- `0x92` `MusicPlay`\n- `0xA2` `CameraZoomIn`\n- `0xC0` `CameraDirection`\n- `0xC1` `CameraSetAngle`\n- `0xC2` `CameraLookAt`\n- `0xD0` `CameraPosition`\n- `0xD1` `SetCameraPosition`\n- `0xD4` `CameraHeight`\n- `0xE0` `CameraWait`\n- `0xEA` `CameraZoom`\n- `0xEC` `CameraZoomScalar`\n- `0xF0` `Wait`\n- `0xFF` `return`\n\nPractical takeaway:\n\n- cutscenes are very likely authored by sequencing opcodes for models, camera, audio, room changes, and dialog\n- story work means editing `MPD` script bytecode and text, not just swapping textures\n\n## Text Encoding Notes\n\nSome text in overlays is plain enough to spot directly.\n\nExample:\n\n- `MENU/MAINMENU.PRG` visibly contains English UI strings like damage types and menu labels\n\nOther text resources use a custom encoding.\n\nExamples:\n\n- `MENU/ITEMNAME.BIN`\n- `MENU/ITEMHELP.BIN`\n- `SMALL/MON.BIN`\n\nCommunity table notes indicate Vagrant Story uses a custom text table with terminators and control bytes rather than ASCII.\n\nPractical takeaway:\n\n- dialog and item text extraction will need a table-driven decoder\n\n## What Looks Promising For Expansion\n\nSeveral files look like obvious empty or stub slots.\n\nExamples seen locally:\n\n- `EVENT/0100.EVT` is all zeroes\n- `MAP/MAP511.MPD` is a tiny stub-like map file\n- `MAP/ZONE071.ZND` is only 68 bytes and mostly empty\n\nCommunity US LBA listings also show multiple tiny `ZONE` entries later in the index range.\n\nPractical takeaway:\n\n- creating fully brand-new dynamic content is harder\n- repurposing unused or stub slots is likely the most practical path\n\n## Likely Content Relationships\n\nThe most useful mental model right now is:\n\n1. `SLUS_010.40` points to `ZND` zones\n2. each `ZND` points to one or more `MPD` room files and zero or more `ZUD` bundles\n3. each `MPD` contains room geometry plus room-local script data\n4. each `ZUD` packages a character model and its gear/animations\n5. `BATTLE.PRG` provides the code that interprets script opcodes\n\nThat means:\n\n- a story scene probably starts in an `MPD`\n- that `MPD` script loads models, animations, camera actions, and dialog\n- the models themselves may come through `ZUD` bundles or indexed object resources\n\n## What Is Realistic To Attempt\n\n### Most realistic first projects\n\n- replace an existing room with custom geometry\n- alter room scripts in an existing `MPD`\n- swap enemy or NPC packages through `ZUD`\n- change dialog text once the text table is decoded\n- reuse an empty `EVT`, `MPD`, or `ZND` slot\n\n### Harder but still plausible\n\n- make a custom multi-room area by reassigning zone and room relationships\n- import/export models and animations through community tooling\n- rebuild disc images while preserving or updating LBA tables correctly\n\n### Much harder\n\n- expand beyond the engine's expected slot counts\n- add truly new systems without reversing engine code\n- freely move files around without patching all table references\n\n## Suggested Modding Workflow\n\nIf starting from scratch, a practical path would be:\n\n1. choose one existing room to study\n2. identify its `ZND -> MPD -> ZUD` relationship\n3. dump the `MPD` script section into readable opcodes\n4. decode that room's dialog block with the Vagrant Story text table\n5. confirm how the scene loads models, camera, and room transitions\n6. repurpose one empty or low-value slot for experiments\n7. only after that, handle disc rebuild and LBA correction\n\n## Good Local Targets To Inspect Next\n\n- `SLUS_010.40`\n- `BATTLE/BATTLE.PRG`\n- `MAP/MAP000.MPD`\n- `MAP/MAP511.MPD`\n- `MAP/ZONE001.ZND`\n- `MAP/ZONE071.ZND`\n- `MAP/Z001U00.ZUD`\n- `OBJ/00.SHP`\n- `EVENT/0000.EVT`\n- `EVENT/0100.EVT`\n- `MENU/ITEMNAME.BIN`\n- `SMALL/MON.BIN`\n\n## Tooling Notes\n\nOne promising public toolchain is the Blender addon here:\n\n- https://github.com/korobetski/blender-vagrant-story\n\nIts README says it supports or is working toward:\n\n- `WEP` import/export\n- `SHP` import\n- `SEQ` import\n- `ZUD` import\n- `MPD` import\n\nThis is especially useful if the goal is map and character editing rather than pure hex work.\n\n## External References\n\nThese were used to confirm format roles and engine behavior:\n\n- Data Crystal file format hub: https://datacrystal.tcrf.net/wiki/Vagrant_Story/File_formats\n- Data Crystal `MPD` format: https://datacrystal.tcrf.net/wiki/Vagrant_Story/MPD_files\n- Data Crystal `ZND` format: https://datacrystal.tcrf.net/wiki/Vagrant_Story/ZND_files\n- Data Crystal `ZUD` format: https://datacrystal.tcrf.net/wiki/Vagrant_Story/ZUD_files\n- Data Crystal script opcodes: https://datacrystal.tcrf.net/wiki/Vagrant_Story/Script_Opcodes\n- Data Crystal level data overview: https://datacrystal.tcrf.net/wiki/Vagrant_Story/Level_data\n- Data Crystal executables notes: https://datacrystal.tcrf.net/wiki/Vagrant_Story/Executables\n- Data Crystal US LBA list: https://datacrystal.tcrf.net/wiki/Vagrant_Story/SLUS_LBA_List\n- Blender addon repo: https://github.com/korobetski/blender-vagrant-story\n\n## Current Best Summary\n\nIf the main question is \"where do I edit scripting for new story and scenes?\", the best answer right now is:\n\n- start with `MAP/*.MPD`\n- focus on the `ScriptSection`\n- decode its opcodes and text table\n- treat `EVENT/*.EVT` as important but secondary until its format is better understood\n\nIf the main question is \"where do I edit maps and characters?\", then:\n\n- rooms live in `MPD`\n- zone grouping and textures live in `ZND`\n- enemy/NPC packages live in `ZUD`\n- base models and animations live in `OBJ` as `SHP`, `SEQ`, and `WEP`\n\n## Best Next Step\n\nThe most useful next automation would be a small dumper that:\n\n- parses an `MPD` header\n- extracts the `ScriptSection`\n- prints opcode bytes in readable form\n- finds the dialog text pointer table\n- decodes strings using the Vagrant Story text table\n\nThat would turn the current high-level map into something directly editable.\n"
+  }
+}

@@ -1,0 +1,346 @@
+{
+  "content": {
+    "document_type": "artifact_index",
+    "title": "RE Campaign Artifact Index",
+    "groups": [
+      {
+        "group": "Table Exports",
+        "entries": [
+          {
+            "entry": "file_:../../decomp/evidence/inittbl_opcode_table.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/inittbl_opcode_table_xrefs.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/battle_sound_candidate_xrefs.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/battle_sound_dispatch_table.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/battle_runtime_opcode_table_xrefs.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/battle_runtime_reader_xrefs.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/battle_runtime_reader_caller_xrefs.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/inittbl_runtime_opcode_table_accesses.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/battle_runtime_opcode_table_accesses.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/slus_runtime_opcode_table_accesses.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/title_runtime_opcode_table_accesses.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/battle_runtime_opcode_table_pointer_usage.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/inittbl_system_dat_loader_slice.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/system_dat_header_words.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/runtime_opcode_table_binary_scan.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/opcode_0x80_runtime_automation_summary.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/opcode_0x80_runtime_snapshot_compare.json"
+          }
+        ]
+      },
+      {
+        "group": "Handler Slices",
+        "entries": [
+          {
+            "entry": "file_:../../decomp/evidence/battle_0x80_handler_slices.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/battle_sound_candidate_slice.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/inittbl_0x80_copy_slice.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/battle_0x80_sound_cluster_slices.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/battle_runtime_reader_call_chain_slices.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/battle_runtime_reader_caller_slice.json"
+          }
+        ]
+      },
+      {
+        "group": "Reconciliation Reports",
+        "entries": [
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_copy_path_static.md.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_sound_cluster_static.md.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_runtime_dispatch_static.md.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_runtime_slot_access_static.md.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_system_dat_static.md.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_binary_address_scan.md.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_runtime_capture_plan.md.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/opcode_0x80_runtime_input_plan.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_runtime_memcard_probe.md.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/opcode_0x80_runtime_memcard_probe.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_runtime_support.md.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/opcode_0x80_runtime_automation_summary.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/opcode_0x80_runtime_expected_table.bin"
+          }
+        ]
+      },
+      {
+        "group": "Proof Packets",
+        "entries": [
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_cli_pass.md.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_semantic_proof.md.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_neighbor_sound_context.md.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/opcode_0x80_neighbor_consumer_scan.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_residual_context.md.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/opcode_0x80_residual_scan.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_template_context.md.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/opcode_0x80_template_scan.json"
+          },
+          {
+            "entry": "file_:decomp/evidence/opcode_0x80_shared_stub_family_audit.md.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/opcode_0x80_runtime_observation_template.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/opcode_0x80_runtime_observation.json"
+          },
+          {
+            "entry": "file_:../../decomp/evidence/opcode_0x80_runtime_snapshot_compare.json"
+          }
+        ]
+      },
+      {
+        "group": "Verification Helpers",
+        "entries": [
+          {
+            "entry": "file_:../../decomp/verification/compare_opcode_table_snapshots.py"
+          },
+          {
+            "entry": "file_:../../decomp/verification/record_runtime_observation.py"
+          },
+          {
+            "entry": "file_:../../decomp/verification/finalize_runtime_observation.py"
+          },
+          {
+            "entry": "file_:../../decomp/verification/analyze_opcode_0x80_residuals.py"
+          },
+          {
+            "entry": "file_:../../decomp/verification/analyze_opcode_0x80_templates.py"
+          },
+          {
+            "entry": "file_:../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua"
+          },
+          {
+            "entry": "file_:../../decomp/verification/run_opcode_0x80_runtime_capture.ps1"
+          },
+          {
+            "entry": "file_:../../decomp/verification/probe_psx_memcards.py"
+          }
+        ]
+      }
+    ],
+    "source_markdown_path": "docs/campaign/RE_CAMPAIGN_ARTIFACT_INDEX.md",
+    "summary": "This catalog keeps the durable artifact list out of [`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body) so the ledger can stay focused on campaign state, conflicts, and handoff.",
+    "body": {
+      "content": [
+        {
+          "ulist": [
+            "This catalog keeps the durable artifact list out of\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body) so the ledger can\nstay focused on campaign state, conflicts, and handoff.",
+            "Register new exports and packets here when a pass leaves behind durable local\nevidence under `decomp/`."
+          ]
+        }
+      ],
+      "sections": {
+        "table-exports": {
+          "heading": "Table Exports",
+          "content": [
+            {
+              "ulist": [
+                "[`../../decomp/evidence/inittbl_opcode_table.json`](../../decomp/evidence/inittbl_opcode_table.json)",
+                "[`../../decomp/evidence/inittbl_opcode_table_xrefs.json`](../../decomp/evidence/inittbl_opcode_table_xrefs.json)",
+                "[`../../decomp/evidence/battle_sound_candidate_xrefs.json`](../../decomp/evidence/battle_sound_candidate_xrefs.json)",
+                "[`../../decomp/evidence/battle_sound_dispatch_table.json`](../../decomp/evidence/battle_sound_dispatch_table.json)",
+                "[`../../decomp/evidence/battle_runtime_opcode_table_xrefs.json`](../../decomp/evidence/battle_runtime_opcode_table_xrefs.json)",
+                "[`../../decomp/evidence/battle_runtime_reader_xrefs.json`](../../decomp/evidence/battle_runtime_reader_xrefs.json)",
+                "[`../../decomp/evidence/battle_runtime_reader_caller_xrefs.json`](../../decomp/evidence/battle_runtime_reader_caller_xrefs.json)",
+                "[`../../decomp/evidence/inittbl_runtime_opcode_table_accesses.json`](../../decomp/evidence/inittbl_runtime_opcode_table_accesses.json)",
+                "[`../../decomp/evidence/battle_runtime_opcode_table_accesses.json`](../../decomp/evidence/battle_runtime_opcode_table_accesses.json)",
+                "[`../../decomp/evidence/slus_runtime_opcode_table_accesses.json`](../../decomp/evidence/slus_runtime_opcode_table_accesses.json)",
+                "[`../../decomp/evidence/title_runtime_opcode_table_accesses.json`](../../decomp/evidence/title_runtime_opcode_table_accesses.json)",
+                "[`../../decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`](../../decomp/evidence/battle_runtime_opcode_table_pointer_usage.json)",
+                "[`../../decomp/evidence/inittbl_system_dat_loader_slice.json`](../../decomp/evidence/inittbl_system_dat_loader_slice.json)",
+                "[`../../decomp/evidence/system_dat_header_words.json`](../../decomp/evidence/system_dat_header_words.json)",
+                "[`../../decomp/evidence/runtime_opcode_table_binary_scan.json`](../../decomp/evidence/runtime_opcode_table_binary_scan.json)",
+                "[`../../decomp/evidence/opcode_0x80_runtime_automation_summary.json`](../../decomp/evidence/opcode_0x80_runtime_automation_summary.json)",
+                "[`../../decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`](../../decomp/evidence/opcode_0x80_runtime_snapshot_compare.json)"
+              ]
+            }
+          ]
+        },
+        "handler-slices": {
+          "heading": "Handler Slices",
+          "content": [
+            {
+              "ulist": [
+                "[`../../decomp/evidence/battle_0x80_handler_slices.json`](../../decomp/evidence/battle_0x80_handler_slices.json)",
+                "[`../../decomp/evidence/battle_sound_candidate_slice.json`](../../decomp/evidence/battle_sound_candidate_slice.json)",
+                "[`../../decomp/evidence/inittbl_0x80_copy_slice.json`](../../decomp/evidence/inittbl_0x80_copy_slice.json)",
+                "[`../../decomp/evidence/battle_0x80_sound_cluster_slices.json`](../../decomp/evidence/battle_0x80_sound_cluster_slices.json)",
+                "[`../../decomp/evidence/battle_runtime_reader_call_chain_slices.json`](../../decomp/evidence/battle_runtime_reader_call_chain_slices.json)",
+                "[`../../decomp/evidence/battle_runtime_reader_caller_slice.json`](../../decomp/evidence/battle_runtime_reader_caller_slice.json)"
+              ]
+            }
+          ]
+        },
+        "reconciliation-reports": {
+          "heading": "Reconciliation Reports",
+          "content": [
+            {
+              "ulist": [
+                "[`decomp/evidence/opcode_0x80_copy_path_static.md.json`](decomp/evidence/opcode_0x80_copy_path_static.md.json#/body)",
+                "[`decomp/evidence/opcode_0x80_sound_cluster_static.md.json`](decomp/evidence/opcode_0x80_sound_cluster_static.md.json#/body)",
+                "[`decomp/evidence/opcode_0x80_runtime_dispatch_static.md.json`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md.json#/body)",
+                "[`decomp/evidence/opcode_0x80_runtime_slot_access_static.md.json`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md.json#/body)",
+                "[`decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md.json`](decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md.json#/body)",
+                "[`decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md.json`](decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md.json#/body)",
+                "[`decomp/evidence/opcode_0x80_system_dat_static.md.json`](decomp/evidence/opcode_0x80_system_dat_static.md.json#/body)",
+                "[`decomp/evidence/opcode_0x80_binary_address_scan.md.json`](decomp/evidence/opcode_0x80_binary_address_scan.md.json#/body)",
+                "[`decomp/evidence/opcode_0x80_runtime_capture_plan.md.json`](decomp/evidence/opcode_0x80_runtime_capture_plan.md.json#/body)",
+                "[`../../decomp/evidence/opcode_0x80_runtime_input_plan.json`](../../decomp/evidence/opcode_0x80_runtime_input_plan.json)",
+                "[`../../decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json`](../../decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json)",
+                "[`../../decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`](../../decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json)",
+                "[`decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md.json`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md.json#/body)",
+                "[`decomp/evidence/opcode_0x80_runtime_memcard_probe.md.json`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md.json#/body)",
+                "[`../../decomp/evidence/opcode_0x80_runtime_memcard_probe.json`](../../decomp/evidence/opcode_0x80_runtime_memcard_probe.json)",
+                "[`decomp/evidence/opcode_0x80_runtime_support.md.json`](decomp/evidence/opcode_0x80_runtime_support.md.json#/body)",
+                "[`../../decomp/evidence/opcode_0x80_runtime_automation_summary.json`](../../decomp/evidence/opcode_0x80_runtime_automation_summary.json)",
+                "[`../../decomp/evidence/opcode_0x80_runtime_expected_table.bin`](../../decomp/evidence/opcode_0x80_runtime_expected_table.bin)"
+              ]
+            }
+          ]
+        },
+        "proof-packets": {
+          "heading": "Proof Packets",
+          "content": [
+            {
+              "ulist": [
+                "[`decomp/evidence/opcode_0x80_cli_pass.md.json`](decomp/evidence/opcode_0x80_cli_pass.md.json#/body)",
+                "[`decomp/evidence/opcode_0x80_semantic_proof.md.json`](decomp/evidence/opcode_0x80_semantic_proof.md.json#/body)",
+                "[`decomp/evidence/opcode_0x80_neighbor_sound_context.md.json`](decomp/evidence/opcode_0x80_neighbor_sound_context.md.json#/body)",
+                "[`decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md.json`](decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md.json#/body)",
+                "[`../../decomp/evidence/opcode_0x80_neighbor_consumer_scan.json`](../../decomp/evidence/opcode_0x80_neighbor_consumer_scan.json)",
+                "[`decomp/evidence/opcode_0x80_residual_context.md.json`](decomp/evidence/opcode_0x80_residual_context.md.json#/body)",
+                "[`../../decomp/evidence/opcode_0x80_residual_scan.json`](../../decomp/evidence/opcode_0x80_residual_scan.json)",
+                "[`decomp/evidence/opcode_0x80_template_context.md.json`](decomp/evidence/opcode_0x80_template_context.md.json#/body)",
+                "[`../../decomp/evidence/opcode_0x80_template_scan.json`](../../decomp/evidence/opcode_0x80_template_scan.json)",
+                "[`decomp/evidence/opcode_0x80_shared_stub_family_audit.md.json`](decomp/evidence/opcode_0x80_shared_stub_family_audit.md.json#/body)",
+                "[`../../decomp/evidence/opcode_0x80_runtime_observation_template.json`](../../decomp/evidence/opcode_0x80_runtime_observation_template.json)",
+                "[`../../decomp/evidence/opcode_0x80_runtime_observation.json`](../../decomp/evidence/opcode_0x80_runtime_observation.json)",
+                "[`../../decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`](../../decomp/evidence/opcode_0x80_runtime_snapshot_compare.json)"
+              ]
+            }
+          ]
+        },
+        "verification-helpers": {
+          "heading": "Verification Helpers",
+          "content": [
+            {
+              "ulist": [
+                "[`../../decomp/verification/compare_opcode_table_snapshots.py`](../../decomp/verification/compare_opcode_table_snapshots.py)",
+                "[`../../decomp/verification/record_runtime_observation.py`](../../decomp/verification/record_runtime_observation.py)",
+                "[`../../decomp/verification/finalize_runtime_observation.py`](../../decomp/verification/finalize_runtime_observation.py)",
+                "[`../../decomp/verification/analyze_opcode_0x80_residuals.py`](../../decomp/verification/analyze_opcode_0x80_residuals.py)",
+                "[`../../decomp/verification/analyze_opcode_0x80_templates.py`](../../decomp/verification/analyze_opcode_0x80_templates.py)",
+                "[`../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua)",
+                "[`../../decomp/verification/run_opcode_0x80_runtime_capture.ps1`](../../decomp/verification/run_opcode_0x80_runtime_capture.ps1)",
+                "[`../../decomp/verification/probe_psx_memcards.py`](../../decomp/verification/probe_psx_memcards.py)"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "5ea7bfa1610ffbb94ef3c0686e0c75098da7c6e7e7e116388aabb60dddbe6e8d",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:45:42Z",
+    "raw_markdown": "# RE Campaign Artifact Index\n\nThis catalog keeps the durable artifact list out of\n[`../../RE_CAMPAIGN_MEMORY.md`](../../RE_CAMPAIGN_MEMORY.md) so the ledger can\nstay focused on campaign state, conflicts, and handoff.\n\nRegister new exports and packets here when a pass leaves behind durable local\nevidence under `decomp/`.\n\n## Table Exports\n\n- [`../../decomp/evidence/inittbl_opcode_table.json`](../../decomp/evidence/inittbl_opcode_table.json)\n- [`../../decomp/evidence/inittbl_opcode_table_xrefs.json`](../../decomp/evidence/inittbl_opcode_table_xrefs.json)\n- [`../../decomp/evidence/battle_sound_candidate_xrefs.json`](../../decomp/evidence/battle_sound_candidate_xrefs.json)\n- [`../../decomp/evidence/battle_sound_dispatch_table.json`](../../decomp/evidence/battle_sound_dispatch_table.json)\n- [`../../decomp/evidence/battle_runtime_opcode_table_xrefs.json`](../../decomp/evidence/battle_runtime_opcode_table_xrefs.json)\n- [`../../decomp/evidence/battle_runtime_reader_xrefs.json`](../../decomp/evidence/battle_runtime_reader_xrefs.json)\n- [`../../decomp/evidence/battle_runtime_reader_caller_xrefs.json`](../../decomp/evidence/battle_runtime_reader_caller_xrefs.json)\n- [`../../decomp/evidence/inittbl_runtime_opcode_table_accesses.json`](../../decomp/evidence/inittbl_runtime_opcode_table_accesses.json)\n- [`../../decomp/evidence/battle_runtime_opcode_table_accesses.json`](../../decomp/evidence/battle_runtime_opcode_table_accesses.json)\n- [`../../decomp/evidence/slus_runtime_opcode_table_accesses.json`](../../decomp/evidence/slus_runtime_opcode_table_accesses.json)\n- [`../../decomp/evidence/title_runtime_opcode_table_accesses.json`](../../decomp/evidence/title_runtime_opcode_table_accesses.json)\n- [`../../decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`](../../decomp/evidence/battle_runtime_opcode_table_pointer_usage.json)\n- [`../../decomp/evidence/inittbl_system_dat_loader_slice.json`](../../decomp/evidence/inittbl_system_dat_loader_slice.json)\n- [`../../decomp/evidence/system_dat_header_words.json`](../../decomp/evidence/system_dat_header_words.json)\n- [`../../decomp/evidence/runtime_opcode_table_binary_scan.json`](../../decomp/evidence/runtime_opcode_table_binary_scan.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_automation_summary.json`](../../decomp/evidence/opcode_0x80_runtime_automation_summary.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`](../../decomp/evidence/opcode_0x80_runtime_snapshot_compare.json)\n\n## Handler Slices\n\n- [`../../decomp/evidence/battle_0x80_handler_slices.json`](../../decomp/evidence/battle_0x80_handler_slices.json)\n- [`../../decomp/evidence/battle_sound_candidate_slice.json`](../../decomp/evidence/battle_sound_candidate_slice.json)\n- [`../../decomp/evidence/inittbl_0x80_copy_slice.json`](../../decomp/evidence/inittbl_0x80_copy_slice.json)\n- [`../../decomp/evidence/battle_0x80_sound_cluster_slices.json`](../../decomp/evidence/battle_0x80_sound_cluster_slices.json)\n- [`../../decomp/evidence/battle_runtime_reader_call_chain_slices.json`](../../decomp/evidence/battle_runtime_reader_call_chain_slices.json)\n- [`../../decomp/evidence/battle_runtime_reader_caller_slice.json`](../../decomp/evidence/battle_runtime_reader_caller_slice.json)\n\n## Reconciliation Reports\n\n- [`../../decomp/evidence/opcode_0x80_copy_path_static.md`](../../decomp/evidence/opcode_0x80_copy_path_static.md)\n- [`../../decomp/evidence/opcode_0x80_sound_cluster_static.md`](../../decomp/evidence/opcode_0x80_sound_cluster_static.md)\n- [`../../decomp/evidence/opcode_0x80_runtime_dispatch_static.md`](../../decomp/evidence/opcode_0x80_runtime_dispatch_static.md)\n- [`../../decomp/evidence/opcode_0x80_runtime_slot_access_static.md`](../../decomp/evidence/opcode_0x80_runtime_slot_access_static.md)\n- [`../../decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md`](../../decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md)\n- [`../../decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md`](../../decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md)\n- [`../../decomp/evidence/opcode_0x80_system_dat_static.md`](../../decomp/evidence/opcode_0x80_system_dat_static.md)\n- [`../../decomp/evidence/opcode_0x80_binary_address_scan.md`](../../decomp/evidence/opcode_0x80_binary_address_scan.md)\n- [`../../decomp/evidence/opcode_0x80_runtime_capture_plan.md`](../../decomp/evidence/opcode_0x80_runtime_capture_plan.md)\n- [`../../decomp/evidence/opcode_0x80_runtime_input_plan.json`](../../decomp/evidence/opcode_0x80_runtime_input_plan.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json`](../../decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`](../../decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md`](../../decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md)\n- [`../../decomp/evidence/opcode_0x80_runtime_memcard_probe.md`](../../decomp/evidence/opcode_0x80_runtime_memcard_probe.md)\n- [`../../decomp/evidence/opcode_0x80_runtime_memcard_probe.json`](../../decomp/evidence/opcode_0x80_runtime_memcard_probe.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_support.md`](../../decomp/evidence/opcode_0x80_runtime_support.md)\n- [`../../decomp/evidence/opcode_0x80_runtime_automation_summary.json`](../../decomp/evidence/opcode_0x80_runtime_automation_summary.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_expected_table.bin`](../../decomp/evidence/opcode_0x80_runtime_expected_table.bin)\n\n## Proof Packets\n\n- [`../../decomp/evidence/opcode_0x80_cli_pass.md`](../../decomp/evidence/opcode_0x80_cli_pass.md)\n- [`../../decomp/evidence/opcode_0x80_semantic_proof.md`](../../decomp/evidence/opcode_0x80_semantic_proof.md)\n- [`../../decomp/evidence/opcode_0x80_neighbor_sound_context.md`](../../decomp/evidence/opcode_0x80_neighbor_sound_context.md)\n- [`../../decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md`](../../decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md)\n- [`../../decomp/evidence/opcode_0x80_neighbor_consumer_scan.json`](../../decomp/evidence/opcode_0x80_neighbor_consumer_scan.json)\n- [`../../decomp/evidence/opcode_0x80_residual_context.md`](../../decomp/evidence/opcode_0x80_residual_context.md)\n- [`../../decomp/evidence/opcode_0x80_residual_scan.json`](../../decomp/evidence/opcode_0x80_residual_scan.json)\n- [`../../decomp/evidence/opcode_0x80_template_context.md`](../../decomp/evidence/opcode_0x80_template_context.md)\n- [`../../decomp/evidence/opcode_0x80_template_scan.json`](../../decomp/evidence/opcode_0x80_template_scan.json)\n- [`../../decomp/evidence/opcode_0x80_shared_stub_family_audit.md`](../../decomp/evidence/opcode_0x80_shared_stub_family_audit.md)\n- [`../../decomp/evidence/opcode_0x80_runtime_observation_template.json`](../../decomp/evidence/opcode_0x80_runtime_observation_template.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_observation.json`](../../decomp/evidence/opcode_0x80_runtime_observation.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`](../../decomp/evidence/opcode_0x80_runtime_snapshot_compare.json)\n\n## Verification Helpers\n\n- [`../../decomp/verification/compare_opcode_table_snapshots.py`](../../decomp/verification/compare_opcode_table_snapshots.py)\n- [`../../decomp/verification/record_runtime_observation.py`](../../decomp/verification/record_runtime_observation.py)\n- [`../../decomp/verification/finalize_runtime_observation.py`](../../decomp/verification/finalize_runtime_observation.py)\n- [`../../decomp/verification/analyze_opcode_0x80_residuals.py`](../../decomp/verification/analyze_opcode_0x80_residuals.py)\n- [`../../decomp/verification/analyze_opcode_0x80_templates.py`](../../decomp/verification/analyze_opcode_0x80_templates.py)\n- [`../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua)\n- [`../../decomp/verification/run_opcode_0x80_runtime_capture.ps1`](../../decomp/verification/run_opcode_0x80_runtime_capture.ps1)\n- [`../../decomp/verification/probe_psx_memcards.py`](../../decomp/verification/probe_psx_memcards.py)\n",
+    "markdown_with_json_links": "# RE Campaign Artifact Index\n\nThis catalog keeps the durable artifact list out of\n[`RE_CAMPAIGN_MEMORY.md.json`](RE_CAMPAIGN_MEMORY.md.json#/body) so the ledger can\nstay focused on campaign state, conflicts, and handoff.\n\nRegister new exports and packets here when a pass leaves behind durable local\nevidence under `decomp/`.\n\n## Table Exports\n\n- [`../../decomp/evidence/inittbl_opcode_table.json`](../../decomp/evidence/inittbl_opcode_table.json)\n- [`../../decomp/evidence/inittbl_opcode_table_xrefs.json`](../../decomp/evidence/inittbl_opcode_table_xrefs.json)\n- [`../../decomp/evidence/battle_sound_candidate_xrefs.json`](../../decomp/evidence/battle_sound_candidate_xrefs.json)\n- [`../../decomp/evidence/battle_sound_dispatch_table.json`](../../decomp/evidence/battle_sound_dispatch_table.json)\n- [`../../decomp/evidence/battle_runtime_opcode_table_xrefs.json`](../../decomp/evidence/battle_runtime_opcode_table_xrefs.json)\n- [`../../decomp/evidence/battle_runtime_reader_xrefs.json`](../../decomp/evidence/battle_runtime_reader_xrefs.json)\n- [`../../decomp/evidence/battle_runtime_reader_caller_xrefs.json`](../../decomp/evidence/battle_runtime_reader_caller_xrefs.json)\n- [`../../decomp/evidence/inittbl_runtime_opcode_table_accesses.json`](../../decomp/evidence/inittbl_runtime_opcode_table_accesses.json)\n- [`../../decomp/evidence/battle_runtime_opcode_table_accesses.json`](../../decomp/evidence/battle_runtime_opcode_table_accesses.json)\n- [`../../decomp/evidence/slus_runtime_opcode_table_accesses.json`](../../decomp/evidence/slus_runtime_opcode_table_accesses.json)\n- [`../../decomp/evidence/title_runtime_opcode_table_accesses.json`](../../decomp/evidence/title_runtime_opcode_table_accesses.json)\n- [`../../decomp/evidence/battle_runtime_opcode_table_pointer_usage.json`](../../decomp/evidence/battle_runtime_opcode_table_pointer_usage.json)\n- [`../../decomp/evidence/inittbl_system_dat_loader_slice.json`](../../decomp/evidence/inittbl_system_dat_loader_slice.json)\n- [`../../decomp/evidence/system_dat_header_words.json`](../../decomp/evidence/system_dat_header_words.json)\n- [`../../decomp/evidence/runtime_opcode_table_binary_scan.json`](../../decomp/evidence/runtime_opcode_table_binary_scan.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_automation_summary.json`](../../decomp/evidence/opcode_0x80_runtime_automation_summary.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`](../../decomp/evidence/opcode_0x80_runtime_snapshot_compare.json)\n\n## Handler Slices\n\n- [`../../decomp/evidence/battle_0x80_handler_slices.json`](../../decomp/evidence/battle_0x80_handler_slices.json)\n- [`../../decomp/evidence/battle_sound_candidate_slice.json`](../../decomp/evidence/battle_sound_candidate_slice.json)\n- [`../../decomp/evidence/inittbl_0x80_copy_slice.json`](../../decomp/evidence/inittbl_0x80_copy_slice.json)\n- [`../../decomp/evidence/battle_0x80_sound_cluster_slices.json`](../../decomp/evidence/battle_0x80_sound_cluster_slices.json)\n- [`../../decomp/evidence/battle_runtime_reader_call_chain_slices.json`](../../decomp/evidence/battle_runtime_reader_call_chain_slices.json)\n- [`../../decomp/evidence/battle_runtime_reader_caller_slice.json`](../../decomp/evidence/battle_runtime_reader_caller_slice.json)\n\n## Reconciliation Reports\n\n- [`decomp/evidence/opcode_0x80_copy_path_static.md.json`](decomp/evidence/opcode_0x80_copy_path_static.md.json#/body)\n- [`decomp/evidence/opcode_0x80_sound_cluster_static.md.json`](decomp/evidence/opcode_0x80_sound_cluster_static.md.json#/body)\n- [`decomp/evidence/opcode_0x80_runtime_dispatch_static.md.json`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md.json#/body)\n- [`decomp/evidence/opcode_0x80_runtime_slot_access_static.md.json`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md.json#/body)\n- [`decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md.json`](decomp/evidence/opcode_0x80_runtime_pointer_usage_static.md.json#/body)\n- [`decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md.json`](decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md.json#/body)\n- [`decomp/evidence/opcode_0x80_system_dat_static.md.json`](decomp/evidence/opcode_0x80_system_dat_static.md.json#/body)\n- [`decomp/evidence/opcode_0x80_binary_address_scan.md.json`](decomp/evidence/opcode_0x80_binary_address_scan.md.json#/body)\n- [`decomp/evidence/opcode_0x80_runtime_capture_plan.md.json`](decomp/evidence/opcode_0x80_runtime_capture_plan.md.json#/body)\n- [`../../decomp/evidence/opcode_0x80_runtime_input_plan.json`](../../decomp/evidence/opcode_0x80_runtime_input_plan.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json`](../../decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`](../../decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json)\n- [`decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md.json`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md.json#/body)\n- [`decomp/evidence/opcode_0x80_runtime_memcard_probe.md.json`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md.json#/body)\n- [`../../decomp/evidence/opcode_0x80_runtime_memcard_probe.json`](../../decomp/evidence/opcode_0x80_runtime_memcard_probe.json)\n- [`decomp/evidence/opcode_0x80_runtime_support.md.json`](decomp/evidence/opcode_0x80_runtime_support.md.json#/body)\n- [`../../decomp/evidence/opcode_0x80_runtime_automation_summary.json`](../../decomp/evidence/opcode_0x80_runtime_automation_summary.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_expected_table.bin`](../../decomp/evidence/opcode_0x80_runtime_expected_table.bin)\n\n## Proof Packets\n\n- [`decomp/evidence/opcode_0x80_cli_pass.md.json`](decomp/evidence/opcode_0x80_cli_pass.md.json#/body)\n- [`decomp/evidence/opcode_0x80_semantic_proof.md.json`](decomp/evidence/opcode_0x80_semantic_proof.md.json#/body)\n- [`decomp/evidence/opcode_0x80_neighbor_sound_context.md.json`](decomp/evidence/opcode_0x80_neighbor_sound_context.md.json#/body)\n- [`decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md.json`](decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md.json#/body)\n- [`../../decomp/evidence/opcode_0x80_neighbor_consumer_scan.json`](../../decomp/evidence/opcode_0x80_neighbor_consumer_scan.json)\n- [`decomp/evidence/opcode_0x80_residual_context.md.json`](decomp/evidence/opcode_0x80_residual_context.md.json#/body)\n- [`../../decomp/evidence/opcode_0x80_residual_scan.json`](../../decomp/evidence/opcode_0x80_residual_scan.json)\n- [`decomp/evidence/opcode_0x80_template_context.md.json`](decomp/evidence/opcode_0x80_template_context.md.json#/body)\n- [`../../decomp/evidence/opcode_0x80_template_scan.json`](../../decomp/evidence/opcode_0x80_template_scan.json)\n- [`decomp/evidence/opcode_0x80_shared_stub_family_audit.md.json`](decomp/evidence/opcode_0x80_shared_stub_family_audit.md.json#/body)\n- [`../../decomp/evidence/opcode_0x80_runtime_observation_template.json`](../../decomp/evidence/opcode_0x80_runtime_observation_template.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_observation.json`](../../decomp/evidence/opcode_0x80_runtime_observation.json)\n- [`../../decomp/evidence/opcode_0x80_runtime_snapshot_compare.json`](../../decomp/evidence/opcode_0x80_runtime_snapshot_compare.json)\n\n## Verification Helpers\n\n- [`../../decomp/verification/compare_opcode_table_snapshots.py`](../../decomp/verification/compare_opcode_table_snapshots.py)\n- [`../../decomp/verification/record_runtime_observation.py`](../../decomp/verification/record_runtime_observation.py)\n- [`../../decomp/verification/finalize_runtime_observation.py`](../../decomp/verification/finalize_runtime_observation.py)\n- [`../../decomp/verification/analyze_opcode_0x80_residuals.py`](../../decomp/verification/analyze_opcode_0x80_residuals.py)\n- [`../../decomp/verification/analyze_opcode_0x80_templates.py`](../../decomp/verification/analyze_opcode_0x80_templates.py)\n- [`../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua)\n- [`../../decomp/verification/run_opcode_0x80_runtime_capture.ps1`](../../decomp/verification/run_opcode_0x80_runtime_capture.ps1)\n- [`../../decomp/verification/probe_psx_memcards.py`](../../decomp/verification/probe_psx_memcards.py)\n"
+  }
+}

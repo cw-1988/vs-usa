@@ -1,0 +1,234 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_neighbor_consumer_comparison",
+    "title": "Opcode `0x80` Neighbor Consumer Comparison",
+    "summary": "Compare already-proven neighboring sound families as prepared-state explanations for audio-looking `0x80` scenes without restoring a direct sound meaning to `0x80` itself.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md",
+    "artifacts": [
+      "decomp/evidence/opcode_0x80_neighbor_consumer_scan.json",
+      "decoded_scripts/24-Unmapped/001-Unknown Room.txt",
+      "decoded_scripts/1-Wine Cellar/026-The Gallows.txt",
+      "decoded_scripts/23-Great Cathedral/415-The Dark tempts Ashley.txt"
+    ],
+    "findings": [
+      "Most legacy `0x80` scenes already stage a complete neighboring sound pair before the first `0x80`.",
+      "The `0x85/0x88` SFX-slot pair is both the most common and usually the closest prepared-state explanation.",
+      "Queue and music families still explain important edge cases without needing a direct `0x80` sound meaning.",
+      "The unresolved semantic work narrows to the `42` residual files with no complete pair before the first `0x80`."
+    ],
+    "body": {
+      "sections": {
+        "goal": {
+          "heading": "Goal",
+          "content": [
+            {
+              "ulist": [
+                "Tighten the semantic cleanup around `0x80` by comparing the already-proven\nneighboring sound families as prepared-state explanations for audio-looking\nscript scenes.",
+                "The question here is not whether `0x80` dispatches to the shared stub at\n`0x800B66E4`; that structural point is already closed.\nThe question is which neighboring sound paths best explain the same scenes\nwithout restoring a direct sound-effect meaning to `0x80`."
+              ]
+            }
+          ]
+        },
+        "method": {
+          "heading": "Method",
+          "content": [
+            {
+              "ulist": [
+                "Start from the checked-in `decoded_scripts` corpus and keep the legacy\n`SoundEffects0(...)` text only as a locator for historical `0x80` sites.",
+                "For each file containing at least one legacy-rendered `0x80`, inspect only\nthe opcodes before the first `0x80` in that file.",
+                "Treat the three already-proven neighboring families as complete prepared\nstates only when both members of the pair appear before the first `0x80`:",
+                "When more than one complete pair exists before the first `0x80`, rank the\nlocal candidate by proximity:\nwhichever pair has the latest opcode address before the first `0x80` gets\ntreated as the closest prepared-state explanation for that opening burst.",
+                "Keep representative mid-scene re-arms explicit when they change which\nneighboring family looks strongest later in the same scene."
+              ]
+            },
+            {
+              "paragraph": "The raw counts for this pass live in\n[`opcode_0x80_neighbor_consumer_scan.json`](opcode_0x80_neighbor_consumer_scan.json)."
+            }
+          ]
+        },
+        "corpus-result": {
+          "heading": "Corpus result",
+          "content": [
+            {
+              "paragraph": "Across the `127` checked-in decoded-script files that still contain at least\none legacy-rendered `0x80` line:",
+              "ulist": [
+                "`85 / 127` already stage at least one complete neighboring sound pair before\nthe first `0x80`",
+                "`83 / 127` stage the `0x85/0x88` SFX-slot pair before the first `0x80`",
+                "`44 / 127` stage the `0x9D/0x9E` sound-file queue pair before the first\n`0x80`",
+                "`20 / 127` stage the `0x90/0x92` music-slot pair before the first `0x80`",
+                "The combination split before the first `0x80` is:",
+                {
+                  "ulist": [
+                    "`40` files: only the SFX-slot pair",
+                    "`24` files: the SFX-slot pair plus the sound-file queue pair",
+                    "`18` files: all three pairs",
+                    "`1` file: only the sound-file queue pair",
+                    "`1` file: the music-slot pair plus the sound-file queue pair",
+                    "`1` file: the music-slot pair plus the SFX-slot pair",
+                    "`42` files: no complete pair before the first `0x80`"
+                  ]
+                },
+                "When multiple complete pairs are present, the closest pair before the first\n`0x80` breaks down as:",
+                {
+                  "ulist": [
+                    "`62` files: the `0x85/0x88` SFX-slot pair is closest",
+                    "`13` files: the `0x9D/0x9E` queue pair is closest",
+                    "`10` files: the `0x90/0x92` music-slot pair is closest"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "representative-scenes": {
+          "heading": "Representative scenes",
+          "sections": {
+            "map001-intro-sfx-slot-setup-is-the-closest-prepared-state": {
+              "heading": "`MAP001` intro: SFX-slot setup is the closest prepared state",
+              "content": [
+                {
+                  "paragraph": "[`decoded_scripts/24-Unmapped/001-Unknown Room.txt`](../../decoded_scripts/24-Unmapped/001-Unknown%20Room.txt)\nstages:",
+                  "ulist": [
+                    "`0010: 92 03 7F 00` -> `MusicPlay(...)`",
+                    "`00A2: 85 02 01` -> `LoadSfxSlot(2, 1)`",
+                    "`00A7: 88 01` -> `SetCurrentSfx(1)`",
+                    "The first legacy-rendered `0x80` burst does not arrive until:",
+                    {
+                      "ulist": [
+                        "`0155: 80 03 37 80 7F`"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "That puts the last music-pair opcode `0x145` bytes earlier than the first\n`0x80`, but the last SFX-pair opcode only `0xAE` bytes earlier.\nFor this checked intro route, the SFX-slot pair is the stronger local\nprepared-state explanation than the earlier music bring-up."
+                }
+              ]
+            },
+            "map026-gallows-first-burst-favors-sfx-later-bursts-get-a-queue-re-arm": {
+              "heading": "`MAP026` Gallows: first burst favors SFX, later bursts get a queue re-arm",
+              "content": [
+                {
+                  "paragraph": "[`decoded_scripts/1-Wine Cellar/026-The Gallows.txt`](../../decoded_scripts/1-Wine%20Cellar/026-The%20Gallows.txt)\nstages all three neighboring families before the first `0x80`:",
+                  "ulist": [
+                    "`0056: 9D 20` -> `LoadSoundFileById(32)`",
+                    "`0058: 9E` -> `ProcessSoundQueue()`",
+                    "`0059: 90 20 01` -> `LoadMusicSlot(32, 1)`",
+                    "`0062: 92 01 7F 00` -> `MusicPlay(...)`",
+                    "`008C: 85 10 01` -> `LoadSfxSlot(16, 1)`",
+                    "`0091: 88 01` -> `SetCurrentSfx(1)`",
+                    "The first legacy-rendered `0x80` does not appear until:",
+                    {
+                      "ulist": [
+                        "`00EB: 80 03 07 80 7F`"
+                      ]
+                    },
+                    "So the first burst sits closest to the SFX-slot pair:",
+                    {
+                      "ulist": [
+                        "`0x0091 -> 0x00EB`: `0x5A`",
+                        "`0x0062 -> 0x00EB`: `0x89`",
+                        "`0x0058 -> 0x00EB`: `0x93`"
+                      ]
+                    },
+                    "But the scene later re-arms the queue path:",
+                    {
+                      "ulist": [
+                        "`028A: 9D 20`",
+                        "`028E: 9E`",
+                        "`02D5: 80 03 0A 80 7F`"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "That later `0x028E -> 0x02D5` gap is only `0x47`, so the same file gives a\nmixed consumer story: the opening burst aligns best with SFX-slot setup, while\nlater bursts can be explained by a fresher queue-based bring-up."
+                }
+              ]
+            },
+            "map415-the-dark-tempts-ashley-no-sfx-pair-queue-plus-music-carry-the-scene": {
+              "heading": "`MAP415` The Dark tempts Ashley: no SFX pair, queue plus music carry the scene",
+              "content": [
+                {
+                  "paragraph": "[`decoded_scripts/23-Great Cathedral/415-The Dark tempts Ashley.txt`](../../decoded_scripts/23-Great%20Cathedral/415-The%20Dark%20tempts%20Ashley.txt)\nhas no `0x85/0x88` SFX pair before the sampled `0x80` bursts.\nInstead it stages:",
+                  "ulist": [
+                    "`0019: 9D AF` -> `LoadSoundFileById(175)`",
+                    "`001B: 9E` -> `ProcessSoundQueue()`",
+                    "`001C: 90 AF 01` -> `LoadMusicSlot(175, 1)`",
+                    "`0021: 92 01 7F 00` -> `MusicPlay(...)`",
+                    "The first legacy-rendered `0x80` then appears at:",
+                    {
+                      "ulist": [
+                        "`00A7: 80 03 01 80 7F`"
+                      ]
+                    },
+                    "That leaves the two remaining candidates close together:",
+                    {
+                      "ulist": [
+                        "`0x0021 -> 0x00A7`: `0x86`",
+                        "`0x001B -> 0x00A7`: `0x8C`"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "This scene therefore does not need `0x80` to be the direct sound trigger.\nThe better local reading is that the queue and music-slot paths already stage\nthe audio context up front, then `0x80` rides along with later camera and\nscreen-effect beats."
+                },
+                {
+                  "paragraph": "The same file later refreshes the music-slot side again:",
+                  "ulist": [
+                    "`04A1: 90 B0 02`",
+                    "`0533: 80 03 02 80 7F`"
+                  ]
+                },
+                {
+                  "paragraph": "So this representative route keeps the music-family explanation alive even\nafter the opening queue bring-up."
+                }
+              ]
+            }
+          }
+        },
+        "safe-takeaway": {
+          "heading": "Safe takeaway",
+          "content": [
+            {
+              "ulist": [
+                "The new first-burst comparison makes the semantic cleanup sharper than the\nearlier \"same file\" co-hosting scan.",
+                "The default local explanation for audio-looking `0x80` scenes is now the\nalready-proven neighboring families, not a hidden direct `0x80` sound role.",
+                "The `0x85/0x88` SFX-slot path is the most common and closest complete\nprepared state before the first `0x80`.",
+                "The `0x9D/0x9E` queue path matters too, especially in scenes like `MAP026`\nwhere later re-arms sit immediately before later `0x80` bursts.",
+                "The `0x90/0x92` music path usually looks more like backdrop or sustained\nscene bring-up than the default first-burst consumer, but `MAP415` shows it\ncan still be the closest surviving prepared state when no SFX pair is\npresent.",
+                "`Opcode80SharedStub` remains the safest name because the audio-looking\nmoments are now better explained as scene-specific neighboring consumers."
+              ]
+            }
+          ]
+        },
+        "remaining-gap": {
+          "heading": "Remaining gap",
+          "content": [
+            {
+              "paragraph": "This pass does not prove that every `0x80` scene is solved.\nThe main residual set is the `42` files where no complete neighboring pair\nappears before the first `0x80`."
+            },
+            {
+              "paragraph": "The next semantic pass should therefore focus on:",
+              "ulist": [
+                "whether those residual files rely on carried state from earlier script blocks\nor cross-script setup that the current single-file scan does not see",
+                "how the `0x90/0x92` music-slot path and the `0x9D/0x9E` queue path divide\nresponsibility in the non-SFX scenes"
+              ]
+            },
+            {
+              "paragraph": "Until that residual set is explained, `0x80` should stay on the structural\nlabel `Opcode80SharedStub`."
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "a8ddff0e9eacf44b15858cb8be2ea2dcdf41f504dd2054b7ed620d6bf4156887",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Opcode `0x80` Neighbor Consumer Comparison\n\n## Goal\n\nTighten the semantic cleanup around `0x80` by comparing the already-proven\nneighboring sound families as prepared-state explanations for audio-looking\nscript scenes.\n\nThe question here is not whether `0x80` dispatches to the shared stub at\n`0x800B66E4`; that structural point is already closed.\nThe question is which neighboring sound paths best explain the same scenes\nwithout restoring a direct sound-effect meaning to `0x80`.\n\n## Method\n\n- Start from the checked-in `decoded_scripts` corpus and keep the legacy\n  `SoundEffects0(...)` text only as a locator for historical `0x80` sites.\n- For each file containing at least one legacy-rendered `0x80`, inspect only\n  the opcodes before the first `0x80` in that file.\n- Treat the three already-proven neighboring families as complete prepared\n  states only when both members of the pair appear before the first `0x80`:\n  - `0x85` plus `0x88`: `LoadSfxSlot` plus `SetCurrentSfx`\n  - `0x90` plus `0x92`: `LoadMusicSlot` plus `MusicPlay`\n  - `0x9D` plus `0x9E`: `LoadSoundFileById` plus `ProcessSoundQueue`\n- When more than one complete pair exists before the first `0x80`, rank the\n  local candidate by proximity:\n  whichever pair has the latest opcode address before the first `0x80` gets\n  treated as the closest prepared-state explanation for that opening burst.\n- Keep representative mid-scene re-arms explicit when they change which\n  neighboring family looks strongest later in the same scene.\n\nThe raw counts for this pass live in\n[`opcode_0x80_neighbor_consumer_scan.json`](opcode_0x80_neighbor_consumer_scan.json).\n\n## Corpus result\n\nAcross the `127` checked-in decoded-script files that still contain at least\none legacy-rendered `0x80` line:\n\n- `85 / 127` already stage at least one complete neighboring sound pair before\n  the first `0x80`\n- `83 / 127` stage the `0x85/0x88` SFX-slot pair before the first `0x80`\n- `44 / 127` stage the `0x9D/0x9E` sound-file queue pair before the first\n  `0x80`\n- `20 / 127` stage the `0x90/0x92` music-slot pair before the first `0x80`\n\nThe combination split before the first `0x80` is:\n\n- `40` files: only the SFX-slot pair\n- `24` files: the SFX-slot pair plus the sound-file queue pair\n- `18` files: all three pairs\n- `1` file: only the sound-file queue pair\n- `1` file: the music-slot pair plus the sound-file queue pair\n- `1` file: the music-slot pair plus the SFX-slot pair\n- `42` files: no complete pair before the first `0x80`\n\nWhen multiple complete pairs are present, the closest pair before the first\n`0x80` breaks down as:\n\n- `62` files: the `0x85/0x88` SFX-slot pair is closest\n- `13` files: the `0x9D/0x9E` queue pair is closest\n- `10` files: the `0x90/0x92` music-slot pair is closest\n\n## Representative scenes\n\n### `MAP001` intro: SFX-slot setup is the closest prepared state\n\n[`decoded_scripts/24-Unmapped/001-Unknown Room.txt`](../../decoded_scripts/24-Unmapped/001-Unknown%20Room.txt)\nstages:\n\n- `0010: 92 03 7F 00` -> `MusicPlay(...)`\n- `00A2: 85 02 01` -> `LoadSfxSlot(2, 1)`\n- `00A7: 88 01` -> `SetCurrentSfx(1)`\n\nThe first legacy-rendered `0x80` burst does not arrive until:\n\n- `0155: 80 03 37 80 7F`\n\nThat puts the last music-pair opcode `0x145` bytes earlier than the first\n`0x80`, but the last SFX-pair opcode only `0xAE` bytes earlier.\nFor this checked intro route, the SFX-slot pair is the stronger local\nprepared-state explanation than the earlier music bring-up.\n\n### `MAP026` Gallows: first burst favors SFX, later bursts get a queue re-arm\n\n[`decoded_scripts/1-Wine Cellar/026-The Gallows.txt`](../../decoded_scripts/1-Wine%20Cellar/026-The%20Gallows.txt)\nstages all three neighboring families before the first `0x80`:\n\n- `0056: 9D 20` -> `LoadSoundFileById(32)`\n- `0058: 9E` -> `ProcessSoundQueue()`\n- `0059: 90 20 01` -> `LoadMusicSlot(32, 1)`\n- `0062: 92 01 7F 00` -> `MusicPlay(...)`\n- `008C: 85 10 01` -> `LoadSfxSlot(16, 1)`\n- `0091: 88 01` -> `SetCurrentSfx(1)`\n\nThe first legacy-rendered `0x80` does not appear until:\n\n- `00EB: 80 03 07 80 7F`\n\nSo the first burst sits closest to the SFX-slot pair:\n\n- `0x0091 -> 0x00EB`: `0x5A`\n- `0x0062 -> 0x00EB`: `0x89`\n- `0x0058 -> 0x00EB`: `0x93`\n\nBut the scene later re-arms the queue path:\n\n- `028A: 9D 20`\n- `028E: 9E`\n- `02D5: 80 03 0A 80 7F`\n\nThat later `0x028E -> 0x02D5` gap is only `0x47`, so the same file gives a\nmixed consumer story: the opening burst aligns best with SFX-slot setup, while\nlater bursts can be explained by a fresher queue-based bring-up.\n\n### `MAP415` The Dark tempts Ashley: no SFX pair, queue plus music carry the scene\n\n[`decoded_scripts/23-Great Cathedral/415-The Dark tempts Ashley.txt`](../../decoded_scripts/23-Great%20Cathedral/415-The%20Dark%20tempts%20Ashley.txt)\nhas no `0x85/0x88` SFX pair before the sampled `0x80` bursts.\nInstead it stages:\n\n- `0019: 9D AF` -> `LoadSoundFileById(175)`\n- `001B: 9E` -> `ProcessSoundQueue()`\n- `001C: 90 AF 01` -> `LoadMusicSlot(175, 1)`\n- `0021: 92 01 7F 00` -> `MusicPlay(...)`\n\nThe first legacy-rendered `0x80` then appears at:\n\n- `00A7: 80 03 01 80 7F`\n\nThat leaves the two remaining candidates close together:\n\n- `0x0021 -> 0x00A7`: `0x86`\n- `0x001B -> 0x00A7`: `0x8C`\n\nThis scene therefore does not need `0x80` to be the direct sound trigger.\nThe better local reading is that the queue and music-slot paths already stage\nthe audio context up front, then `0x80` rides along with later camera and\nscreen-effect beats.\n\nThe same file later refreshes the music-slot side again:\n\n- `04A1: 90 B0 02`\n- `0533: 80 03 02 80 7F`\n\nSo this representative route keeps the music-family explanation alive even\nafter the opening queue bring-up.\n\n## Safe takeaway\n\n- The new first-burst comparison makes the semantic cleanup sharper than the\n  earlier \"same file\" co-hosting scan.\n- The default local explanation for audio-looking `0x80` scenes is now the\n  already-proven neighboring families, not a hidden direct `0x80` sound role.\n- The `0x85/0x88` SFX-slot path is the most common and closest complete\n  prepared state before the first `0x80`.\n- The `0x9D/0x9E` queue path matters too, especially in scenes like `MAP026`\n  where later re-arms sit immediately before later `0x80` bursts.\n- The `0x90/0x92` music path usually looks more like backdrop or sustained\n  scene bring-up than the default first-burst consumer, but `MAP415` shows it\n  can still be the closest surviving prepared state when no SFX pair is\n  present.\n- `Opcode80SharedStub` remains the safest name because the audio-looking\n  moments are now better explained as scene-specific neighboring consumers.\n\n## Remaining gap\n\nThis pass does not prove that every `0x80` scene is solved.\nThe main residual set is the `42` files where no complete neighboring pair\nappears before the first `0x80`.\n\nThe next semantic pass should therefore focus on:\n\n- whether those residual files rely on carried state from earlier script blocks\n  or cross-script setup that the current single-file scan does not see\n- how the `0x90/0x92` music-slot path and the `0x9D/0x9E` queue path divide\n  responsibility in the non-SFX scenes\n\nUntil that residual set is explained, `0x80` should stay on the structural\nlabel `Opcode80SharedStub`.\n",
+    "markdown_with_json_links": "# Opcode `0x80` Neighbor Consumer Comparison\n\n## Goal\n\nTighten the semantic cleanup around `0x80` by comparing the already-proven\nneighboring sound families as prepared-state explanations for audio-looking\nscript scenes.\n\nThe question here is not whether `0x80` dispatches to the shared stub at\n`0x800B66E4`; that structural point is already closed.\nThe question is which neighboring sound paths best explain the same scenes\nwithout restoring a direct sound-effect meaning to `0x80`.\n\n## Method\n\n- Start from the checked-in `decoded_scripts` corpus and keep the legacy\n  `SoundEffects0(...)` text only as a locator for historical `0x80` sites.\n- For each file containing at least one legacy-rendered `0x80`, inspect only\n  the opcodes before the first `0x80` in that file.\n- Treat the three already-proven neighboring families as complete prepared\n  states only when both members of the pair appear before the first `0x80`:\n  - `0x85` plus `0x88`: `LoadSfxSlot` plus `SetCurrentSfx`\n  - `0x90` plus `0x92`: `LoadMusicSlot` plus `MusicPlay`\n  - `0x9D` plus `0x9E`: `LoadSoundFileById` plus `ProcessSoundQueue`\n- When more than one complete pair exists before the first `0x80`, rank the\n  local candidate by proximity:\n  whichever pair has the latest opcode address before the first `0x80` gets\n  treated as the closest prepared-state explanation for that opening burst.\n- Keep representative mid-scene re-arms explicit when they change which\n  neighboring family looks strongest later in the same scene.\n\nThe raw counts for this pass live in\n[`opcode_0x80_neighbor_consumer_scan.json`](opcode_0x80_neighbor_consumer_scan.json).\n\n## Corpus result\n\nAcross the `127` checked-in decoded-script files that still contain at least\none legacy-rendered `0x80` line:\n\n- `85 / 127` already stage at least one complete neighboring sound pair before\n  the first `0x80`\n- `83 / 127` stage the `0x85/0x88` SFX-slot pair before the first `0x80`\n- `44 / 127` stage the `0x9D/0x9E` sound-file queue pair before the first\n  `0x80`\n- `20 / 127` stage the `0x90/0x92` music-slot pair before the first `0x80`\n\nThe combination split before the first `0x80` is:\n\n- `40` files: only the SFX-slot pair\n- `24` files: the SFX-slot pair plus the sound-file queue pair\n- `18` files: all three pairs\n- `1` file: only the sound-file queue pair\n- `1` file: the music-slot pair plus the sound-file queue pair\n- `1` file: the music-slot pair plus the SFX-slot pair\n- `42` files: no complete pair before the first `0x80`\n\nWhen multiple complete pairs are present, the closest pair before the first\n`0x80` breaks down as:\n\n- `62` files: the `0x85/0x88` SFX-slot pair is closest\n- `13` files: the `0x9D/0x9E` queue pair is closest\n- `10` files: the `0x90/0x92` music-slot pair is closest\n\n## Representative scenes\n\n### `MAP001` intro: SFX-slot setup is the closest prepared state\n\n[`decoded_scripts/24-Unmapped/001-Unknown Room.txt`](../../decoded_scripts/24-Unmapped/001-Unknown%20Room.txt)\nstages:\n\n- `0010: 92 03 7F 00` -> `MusicPlay(...)`\n- `00A2: 85 02 01` -> `LoadSfxSlot(2, 1)`\n- `00A7: 88 01` -> `SetCurrentSfx(1)`\n\nThe first legacy-rendered `0x80` burst does not arrive until:\n\n- `0155: 80 03 37 80 7F`\n\nThat puts the last music-pair opcode `0x145` bytes earlier than the first\n`0x80`, but the last SFX-pair opcode only `0xAE` bytes earlier.\nFor this checked intro route, the SFX-slot pair is the stronger local\nprepared-state explanation than the earlier music bring-up.\n\n### `MAP026` Gallows: first burst favors SFX, later bursts get a queue re-arm\n\n[`decoded_scripts/1-Wine Cellar/026-The Gallows.txt`](../../decoded_scripts/1-Wine%20Cellar/026-The%20Gallows.txt)\nstages all three neighboring families before the first `0x80`:\n\n- `0056: 9D 20` -> `LoadSoundFileById(32)`\n- `0058: 9E` -> `ProcessSoundQueue()`\n- `0059: 90 20 01` -> `LoadMusicSlot(32, 1)`\n- `0062: 92 01 7F 00` -> `MusicPlay(...)`\n- `008C: 85 10 01` -> `LoadSfxSlot(16, 1)`\n- `0091: 88 01` -> `SetCurrentSfx(1)`\n\nThe first legacy-rendered `0x80` does not appear until:\n\n- `00EB: 80 03 07 80 7F`\n\nSo the first burst sits closest to the SFX-slot pair:\n\n- `0x0091 -> 0x00EB`: `0x5A`\n- `0x0062 -> 0x00EB`: `0x89`\n- `0x0058 -> 0x00EB`: `0x93`\n\nBut the scene later re-arms the queue path:\n\n- `028A: 9D 20`\n- `028E: 9E`\n- `02D5: 80 03 0A 80 7F`\n\nThat later `0x028E -> 0x02D5` gap is only `0x47`, so the same file gives a\nmixed consumer story: the opening burst aligns best with SFX-slot setup, while\nlater bursts can be explained by a fresher queue-based bring-up.\n\n### `MAP415` The Dark tempts Ashley: no SFX pair, queue plus music carry the scene\n\n[`decoded_scripts/23-Great Cathedral/415-The Dark tempts Ashley.txt`](../../decoded_scripts/23-Great%20Cathedral/415-The%20Dark%20tempts%20Ashley.txt)\nhas no `0x85/0x88` SFX pair before the sampled `0x80` bursts.\nInstead it stages:\n\n- `0019: 9D AF` -> `LoadSoundFileById(175)`\n- `001B: 9E` -> `ProcessSoundQueue()`\n- `001C: 90 AF 01` -> `LoadMusicSlot(175, 1)`\n- `0021: 92 01 7F 00` -> `MusicPlay(...)`\n\nThe first legacy-rendered `0x80` then appears at:\n\n- `00A7: 80 03 01 80 7F`\n\nThat leaves the two remaining candidates close together:\n\n- `0x0021 -> 0x00A7`: `0x86`\n- `0x001B -> 0x00A7`: `0x8C`\n\nThis scene therefore does not need `0x80` to be the direct sound trigger.\nThe better local reading is that the queue and music-slot paths already stage\nthe audio context up front, then `0x80` rides along with later camera and\nscreen-effect beats.\n\nThe same file later refreshes the music-slot side again:\n\n- `04A1: 90 B0 02`\n- `0533: 80 03 02 80 7F`\n\nSo this representative route keeps the music-family explanation alive even\nafter the opening queue bring-up.\n\n## Safe takeaway\n\n- The new first-burst comparison makes the semantic cleanup sharper than the\n  earlier \"same file\" co-hosting scan.\n- The default local explanation for audio-looking `0x80` scenes is now the\n  already-proven neighboring families, not a hidden direct `0x80` sound role.\n- The `0x85/0x88` SFX-slot path is the most common and closest complete\n  prepared state before the first `0x80`.\n- The `0x9D/0x9E` queue path matters too, especially in scenes like `MAP026`\n  where later re-arms sit immediately before later `0x80` bursts.\n- The `0x90/0x92` music path usually looks more like backdrop or sustained\n  scene bring-up than the default first-burst consumer, but `MAP415` shows it\n  can still be the closest surviving prepared state when no SFX pair is\n  present.\n- `Opcode80SharedStub` remains the safest name because the audio-looking\n  moments are now better explained as scene-specific neighboring consumers.\n\n## Remaining gap\n\nThis pass does not prove that every `0x80` scene is solved.\nThe main residual set is the `42` files where no complete neighboring pair\nappears before the first `0x80`.\n\nThe next semantic pass should therefore focus on:\n\n- whether those residual files rely on carried state from earlier script blocks\n  or cross-script setup that the current single-file scan does not see\n- how the `0x90/0x92` music-slot path and the `0x9D/0x9E` queue path divide\n  responsibility in the non-SFX scenes\n\nUntil that residual set is explained, `0x80` should stay on the structural\nlabel `Opcode80SharedStub`.\n"
+  }
+}

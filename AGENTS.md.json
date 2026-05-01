@@ -1,0 +1,67 @@
+{
+  "content": {
+    "document_type": "agent_policy",
+    "title": "Exploration Policy",
+    "source_markdown_path": "AGENTS.md",
+    "summary": "Prefer `jcodemunch-mcp` for source-code exploration when symbol-aware lookup, dependency analysis, or impact tracing will help.",
+    "body": {
+      "sections": {
+        "exploration-policy": {
+          "heading": "Exploration Policy",
+          "content": [
+            {
+              "ulist": [
+                "Prefer `jcodemunch-mcp` for source-code exploration when symbol-aware lookup,\ndependency analysis, or impact tracing will help.",
+                "For documentation-first work such as `.md.json` packets, evidence files,\nresearch logs, and workflow docs, use direct file reads and search first. Do\nnot force `jcodemunch-mcp` to locate or read documentation packets.",
+                "If a markdown file points to source code that needs inspection, switch to\n`jcodemunch-mcp` for the code portion of the task.",
+                "Use the lightest tool that fits:",
+                {
+                  "ulist": [
+                    "symbol lookup: `search_symbols`",
+                    "string, comment, and config lookup: `search_text`",
+                    "repo and file layout: `get_repo_outline`, `get_file_tree`",
+                    "symbol and file reading: `get_file_outline`, `get_symbol_source`,\n`get_context_bundle`",
+                    "usage and impact: `find_references`, `find_importers`,\n`get_dependency_graph`, `get_blast_radius`"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "session-routing": {
+          "heading": "Session Routing",
+          "content": [
+            {
+              "olit": [
+                "Run `resolve_repo { \"path\": \".\" }` when the task includes code exploration.",
+                "Use `suggest_queries` only when the repo is unfamiliar and the task is\ncode-heavy.",
+                "Use `plan_turn` only for code-focused tasks where ranked symbol or file\nsuggestions are likely to help.",
+                "Skip `plan_turn` for markdown-only work, process questions, and tooling\nmeta-discussion."
+              ]
+            }
+          ]
+        },
+        "working-rules": {
+          "heading": "Working Rules",
+          "content": [
+            {
+              "ulist": [
+                "If `search_symbols` reports `negative_evidence`, treat that as \"not found\"\ninstead of repeatedly re-searching with slight wording changes.",
+                "If `_meta` includes `budget_warning`, stop exploring and work with the\ncontext already gathered.",
+                "Use `get_session_context` to avoid rereading the same code context.",
+                "After edits, call `register_edit` when auto-reindex hooks are unavailable.",
+                "For bulk edits across 5 or more files, batch them in one `register_edit`\ncall."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "d75659882b45d1b1946f0e7f73e83aeb6f651b3f7efbb4d9890da6a6f8efbb56",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T22:09:20Z",
+    "raw_markdown": "## Exploration Policy\n\nPrefer `jcodemunch-mcp` for source-code exploration when symbol-aware lookup,\ndependency analysis, or impact tracing will help.\n\nFor documentation-first work such as `.md.json` packets, evidence files,\nresearch logs, and workflow docs, use direct file reads and search first. Do\nnot force `jcodemunch-mcp` to locate or read documentation packets.\n\nIf a markdown file points to source code that needs inspection, switch to\n`jcodemunch-mcp` for the code portion of the task.\n\nUse the lightest tool that fits:\n\n- symbol lookup: `search_symbols`\n- string, comment, and config lookup: `search_text`\n- repo and file layout: `get_repo_outline`, `get_file_tree`\n- symbol and file reading: `get_file_outline`, `get_symbol_source`,\n  `get_context_bundle`\n- usage and impact: `find_references`, `find_importers`,\n  `get_dependency_graph`, `get_blast_radius`\n\n## Session Routing\n\n1. Run `resolve_repo { \"path\": \".\" }` when the task includes code exploration.\n2. Use `suggest_queries` only when the repo is unfamiliar and the task is\n   code-heavy.\n3. Use `plan_turn` only for code-focused tasks where ranked symbol or file\n   suggestions are likely to help.\n4. Skip `plan_turn` for markdown-only work, process questions, and tooling\n   meta-discussion.\n\n## Working Rules\n\n- If `search_symbols` reports `negative_evidence`, treat that as \"not found\"\n  instead of repeatedly re-searching with slight wording changes.\n- If `_meta` includes `budget_warning`, stop exploring and work with the\n  context already gathered.\n- Use `get_session_context` to avoid rereading the same code context.\n- After edits, call `register_edit` when auto-reindex hooks are unavailable.\n- For bulk edits across 5 or more files, batch them in one `register_edit`\n  call.\n",
+    "markdown_with_json_links": "## Exploration Policy\n\nPrefer `jcodemunch-mcp` for source-code exploration when symbol-aware lookup,\ndependency analysis, or impact tracing will help.\n\nFor documentation-first work such as `.md.json` packets, evidence files,\nresearch logs, and workflow docs, use direct file reads and search first. Do\nnot force `jcodemunch-mcp` to locate or read documentation packets.\n\nIf a markdown file points to source code that needs inspection, switch to\n`jcodemunch-mcp` for the code portion of the task.\n\nUse the lightest tool that fits:\n\n- symbol lookup: `search_symbols`\n- string, comment, and config lookup: `search_text`\n- repo and file layout: `get_repo_outline`, `get_file_tree`\n- symbol and file reading: `get_file_outline`, `get_symbol_source`,\n  `get_context_bundle`\n- usage and impact: `find_references`, `find_importers`,\n  `get_dependency_graph`, `get_blast_radius`\n\n## Session Routing\n\n1. Run `resolve_repo { \"path\": \".\" }` when the task includes code exploration.\n2. Use `suggest_queries` only when the repo is unfamiliar and the task is\n   code-heavy.\n3. Use `plan_turn` only for code-focused tasks where ranked symbol or file\n   suggestions are likely to help.\n4. Skip `plan_turn` for markdown-only work, process questions, and tooling\n   meta-discussion.\n\n## Working Rules\n\n- If `search_symbols` reports `negative_evidence`, treat that as \"not found\"\n  instead of repeatedly re-searching with slight wording changes.\n- If `_meta` includes `budget_warning`, stop exploring and work with the\n  context already gathered.\n- Use `get_session_context` to avoid rereading the same code context.\n- After edits, call `register_edit` when auto-reindex hooks are unavailable.\n- For bulk edits across 5 or more files, batch them in one `register_edit`\n  call.\n"
+  }
+}

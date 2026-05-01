@@ -1,0 +1,434 @@
+{
+  "content": {
+    "document_type": "research_note",
+    "title": "Room Connection Findings",
+    "findings": [
+      "Use `sectionF` plus `AreaName` to classify `RoomType=Cutscene` or `RoomType=Debug`",
+      "Use `SCEN*.ARM` reachability to classify `RoomType=Playable`",
+      "`MAP009` `Entrance to Darkness` is connected to `MAP028` `Hall of Sworn Revenge`",
+      "a `sectionF`-only graph failed to show that",
+      "the scene graph recovered from `SCEN*.ARM` does show it",
+      "section index for MPD `sectionB`: `10`",
+      "`sceneId` is read from `sectionB + 0x50`",
+      "example values: - `MAP009` -> scene `1` - `MAP026` -> scene `1` - `MAP028` -> scene `2` - `MAP147` -> scene `28` - `MAP200` -> scene `26` - `MAP506` -> scene `0`",
+      "`u32 roomCount`",
+      "repeated `roomCount` times",
+      "struct format: `<IiHH>`",
+      "fields interpreted as: - unused/visited-like `int` - `room_len` - `zone_id` - `map_id`",
+      "each payload is read sequentially using `room_len`",
+      "the payload contains: - `vertex_count` - triangle count - quad count - line count group 1 - line count group 2 - marker count - marker entries",
+      "each marker is 4 bytes",
+      "interpreted as: - `vertex_index` - `target_scene_id` - `flags` - `door_id`",
+      "if `flags & 0x04` is set, that marker is a \"connecting map\" marker",
+      "`target_scene_id` is then treated as a scene-level edge",
+      "`SCEN001` contains room `(zone=11, map=1)` with a connecting-map marker to scene `2` - this is the Wine Cellar side of the Catacombs transition",
+      "`SCEN002` contains room `(zone=13, map=1)` with a connecting-map marker to scene `1` - this is the Catacombs side back to Wine Cellar",
+      "`MAP025` `The Hero's Winehall` is connected to the Catacombs scene",
+      "`MAP026` `The Gallows` belongs to the same starting scene cluster",
+      "`MAP028` `Hall of Sworn Revenge` is correctly reachable from `MAP009`",
+      "`1 <-> 2`",
+      "`2 <-> 3`",
+      "`3 <-> 28`",
+      "`4 <-> 22`",
+      "`4 <-> 28`",
+      "`5 <-> 19`",
+      "`5 <-> 29`",
+      "`6 <-> 7`",
+      "`6 <-> 19`",
+      "`7 <-> 30`",
+      "`8 <-> 9`",
+      "`9 <-> 10`",
+      "`9 <-> 30`",
+      "`10 <-> 11`",
+      "`11 <-> 12`",
+      "`13 <-> 21`",
+      "`14 <-> 19`",
+      "`15 <-> 16`",
+      "`15 <-> 21`",
+      "`16 <-> 17`",
+      "`17 <-> 21`",
+      "`18 <-> 3`",
+      "`18 <-> 22`",
+      "`19 <-> 24`",
+      "`19 <-> 26`",
+      "`19 <-> 28`",
+      "`19 <-> 30`",
+      "`20 <-> 25`",
+      "`20 <-> 30`",
+      "`21 <-> 23`",
+      "`21 <-> 29`",
+      "`22 <-> 28`",
+      "`23 <-> 26`",
+      "`23 <-> 28`",
+      "`23 <-> 29`",
+      "`24 <-> 27`",
+      "`24 <-> 29`",
+      "`25 <-> 30`",
+      "do not traverse `target_scene_id = 0` as a normal world edge",
+      "scene ids are only traversed when `1 <= scene_id <= 31`",
+      "this keeps `MAP506` isolated",
+      "`sectionF` room count is `0`",
+      "and `AreaName != Debug`",
+      "`MAP023`",
+      "`MAP211`",
+      "`MAP100` to `MAP104`",
+      "`MAP131` to `MAP138`",
+      "`MAP172`",
+      "`MAP178`",
+      "`MAP212` to `MAP214`",
+      "`MAP413` to `MAP415`",
+      "it is not `RoomType=Cutscene`",
+      "it belongs to a scene reachable from `MAP009`'s scene",
+      "reachability is computed through `SCEN*.ARM` connecting-map edges",
+      "`AreaName = Debug`",
+      "start map: `MAP009` `Entrance to Darkness`",
+      "start scene: `1`",
+      "reachable playable scenes: `31`",
+      "reachable playable maps: `365`",
+      "disconnected non-cutscene map: only `MAP506`",
+      "`MAP025` -> connected",
+      "`MAP026` -> connected",
+      "`MAP028` -> connected",
+      "`MAP023` -> cutscene-only, not connected",
+      "`MAP211` -> cutscene-only, not connected",
+      "`MAP506` -> not cutscene-only, but isolated and not connected",
+      "file_:/c:/Users/Chris/Desktop/vs usa/analyze_room_graph.py",
+      "file_:/c:/Users/Chris/Desktop/vs usa/room_names.tsv",
+      "file_:/c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h",
+      "file_:/c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c",
+      "file_:/c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/MENU/MENU5.PRG/4D8.c",
+      "`Game Data/MAP/MAP*.MPD`",
+      "`Game Data/SMALL/SCEN*.ARM`",
+      "MPD `sectionF` gives local playable room membership",
+      "MPD `sectionB.sceneId` assigns each map to a scene",
+      "`SCEN*.ARM` markers with `flags & 0x04` encode scene-to-scene \"connecting map\" edges",
+      "those scene edges are the missing cross-zone graph"
+    ],
+    "source_markdown_path": "docs/research/ROOM_CONNECTION_FINDINGS.md",
+    "summary": "This note summarizes how room connectivity appears to work in Vagrant Story, including cross-zone transitions.",
+    "body": {
+      "content": [
+        {
+          "paragraph": "This note summarizes how room connectivity appears to work in Vagrant Story, including cross-zone transitions."
+        }
+      ],
+      "sections": {
+        "main-finding": {
+          "heading": "Main Finding",
+          "content": [
+            {
+              "paragraph": "There are at least two useful layers of room connectivity:",
+              "olit": [
+                "`MAP*.MPD` section `F`\nThis is a local room cluster for the current playable area state.\nIt is useful for detecting whether a room participates in a normal playable room set at all.\nIt is not enough to recover the full world graph, because it misses many cross-zone transitions.",
+                "`SCEN*.ARM` scene data\nThis is the layer that carries the broader world-map style connectivity, including links across zones.\nThe scene payload contains per-room markers for ordinary doors and for \"connecting maps\".\nThose connecting-map markers are what bridge areas like Wine Cellar -> Catacombs.",
+                "The practical result is:",
+                {
+                  "ulist": [
+                    "Use `sectionF` plus `AreaName` to classify `RoomType=Cutscene` or `RoomType=Debug`",
+                    "Use `SCEN*.ARM` reachability to classify `RoomType=Playable`"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "why-sectionf-alone-was-wrong": {
+          "heading": "Why `sectionF` Alone Was Wrong",
+          "content": [
+            {
+              "paragraph": "The first pass only used `MAP*.MPD` section `F`, which produced a small local graph around `MAP009`.\nThat was enough to connect rooms inside the starting Wine Cellar cluster, but it missed known cross-zone links."
+            },
+            {
+              "paragraph": "Example:",
+              "ulist": [
+                "`MAP009` `Entrance to Darkness` is connected to `MAP028` `Hall of Sworn Revenge`",
+                "a `sectionF`-only graph failed to show that",
+                "the scene graph recovered from `SCEN*.ARM` does show it"
+              ]
+            },
+            {
+              "paragraph": "So `sectionF` is real data, but it is not the full traversal graph."
+            }
+          ]
+        },
+        "where-the-cross-zone-link-lives": {
+          "heading": "Where the Cross-Zone Link Lives",
+          "content": [
+            {
+              "paragraph": "The MPD room section `B` contains a `sceneId`."
+            },
+            {
+              "paragraph": "Relevant details:",
+              "ulist": [
+                "section index for MPD `sectionB`: `10`",
+                "`sceneId` is read from `sectionB + 0x50`",
+                "example values:"
+              ]
+            },
+            {
+              "paragraph": "That `sceneId` is the bridge from a map to its `SCENxxx.ARM` file."
+            }
+          ]
+        },
+        "scenarm-layout-used-by-the-script": {
+          "heading": "`SCEN*.ARM` Layout Used By The Script",
+          "content": [
+            {
+              "paragraph": "The current parser in [analyze_room_graph.py](/c:/Users/Chris/Desktop/vs usa/analyze_room_graph.py) uses this working model:",
+              "olit": [
+                "file header:",
+                "room table:",
+                "concatenated room payloads:",
+                "marker entries:",
+                "The important rule is:",
+                {
+                  "ulist": [
+                    "if `flags & 0x04` is set, that marker is a \"connecting map\" marker",
+                    "`target_scene_id` is then treated as a scene-level edge"
+                  ]
+                }
+              ]
+            },
+            {
+              "paragraph": "This matches the menu code distinction between ordinary doors and \"connecting maps\"."
+            }
+          ]
+        },
+        "example-cross-zone-connections": {
+          "heading": "Example Cross-Zone Connections",
+          "content": [
+            {
+              "paragraph": "Recovered examples from the scene files:",
+              "ulist": [
+                {
+                  "content": [
+                    {
+                      "paragraph": "`SCEN001` contains room `(zone=11, map=1)` with a connecting-map marker to scene `2`"
+                    },
+                    {
+                      "ulist": [
+                        "this is the Wine Cellar side of the Catacombs transition"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "content": [
+                    {
+                      "paragraph": "`SCEN002` contains room `(zone=13, map=1)` with a connecting-map marker to scene `1`"
+                    },
+                    {
+                      "ulist": [
+                        "this is the Catacombs side back to Wine Cellar"
+                      ]
+                    }
+                  ]
+                },
+                "That is why:",
+                {
+                  "ulist": [
+                    "`MAP025` `The Hero's Winehall` is connected to the Catacombs scene",
+                    "`MAP026` `The Gallows` belongs to the same starting scene cluster",
+                    "`MAP028` `Hall of Sworn Revenge` is correctly reachable from `MAP009`"
+                  ]
+                },
+                "Other scene-level edges found in the current pass include:",
+                {
+                  "ulist": [
+                    "`1 <-> 2`",
+                    "`2 <-> 3`",
+                    "`3 <-> 28`",
+                    "`4 <-> 22`",
+                    "`4 <-> 28`",
+                    "`5 <-> 19`",
+                    "`5 <-> 29`",
+                    "`6 <-> 7`",
+                    "`6 <-> 19`",
+                    "`7 <-> 30`",
+                    "`8 <-> 9`",
+                    "`9 <-> 10`",
+                    "`9 <-> 30`",
+                    "`10 <-> 11`",
+                    "`11 <-> 12`",
+                    "`13 <-> 21`",
+                    "`14 <-> 19`",
+                    "`15 <-> 16`",
+                    "`15 <-> 21`",
+                    "`16 <-> 17`",
+                    "`17 <-> 21`",
+                    "`18 <-> 3`",
+                    "`18 <-> 22`",
+                    "`19 <-> 24`",
+                    "`19 <-> 26`",
+                    "`19 <-> 28`",
+                    "`19 <-> 30`",
+                    "`20 <-> 25`",
+                    "`20 <-> 30`",
+                    "`21 <-> 23`",
+                    "`21 <-> 29`",
+                    "`22 <-> 28`",
+                    "`23 <-> 26`",
+                    "`23 <-> 28`",
+                    "`23 <-> 29`",
+                    "`24 <-> 27`",
+                    "`24 <-> 29`",
+                    "`25 <-> 30`"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "special-case-scene-0": {
+          "heading": "Special Case: Scene `0`",
+          "content": [
+            {
+              "paragraph": "Scene `0` behaves like a special bucket, not a normal playable area graph node."
+            },
+            {
+              "paragraph": "Important consequence:",
+              "ulist": [
+                "do not traverse `target_scene_id = 0` as a normal world edge"
+              ]
+            },
+            {
+              "paragraph": "If scene `0` is treated as a real node, it incorrectly pulls in a large set of unrelated maps, including debug and oddball maps."
+            },
+            {
+              "paragraph": "In the current script:",
+              "ulist": [
+                "scene ids are only traversed when `1 <= scene_id <= 31`",
+                "this keeps `MAP506` isolated"
+              ]
+            }
+          ]
+        },
+        "current-classification-rules": {
+          "heading": "Current Classification Rules",
+          "sections": {
+            "roomtypecutscene": {
+              "heading": "`RoomType=Cutscene`",
+              "content": [
+                {
+                  "paragraph": "A map is currently marked `RoomType=Cutscene` when:",
+                  "ulist": [
+                    "`sectionF` room count is `0`",
+                    "and `AreaName != Debug`",
+                    "This works well for disconnected story/cutscene rooms such as:",
+                    {
+                      "ulist": [
+                        "`MAP023`",
+                        "`MAP211`",
+                        "`MAP100` to `MAP104`",
+                        "`MAP131` to `MAP138`",
+                        "`MAP172`",
+                        "`MAP178`",
+                        "`MAP212` to `MAP214`",
+                        "`MAP413` to `MAP415`"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "roomtypeplayable": {
+              "heading": "`RoomType=Playable`",
+              "content": [
+                {
+                  "paragraph": "A map is currently marked `RoomType=Playable` when:",
+                  "ulist": [
+                    "it is not `RoomType=Cutscene`",
+                    "it belongs to a scene reachable from `MAP009`'s scene",
+                    "reachability is computed through `SCEN*.ARM` connecting-map edges"
+                  ]
+                }
+              ]
+            },
+            "roomtypedebug": {
+              "heading": "`RoomType=Debug`",
+              "content": [
+                {
+                  "paragraph": "A map is currently marked `RoomType=Debug` when:",
+                  "ulist": [
+                    "`AreaName = Debug`"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "current-results": {
+          "heading": "Current Results",
+          "content": [
+            {
+              "paragraph": "With `MAP009` as the root:",
+              "ulist": [
+                "start map: `MAP009` `Entrance to Darkness`",
+                "start scene: `1`",
+                "reachable playable scenes: `31`",
+                "reachable playable maps: `365`",
+                "disconnected non-cutscene map: only `MAP506`",
+                "Important spot checks:",
+                {
+                  "ulist": [
+                    "`MAP025` -> connected",
+                    "`MAP026` -> connected",
+                    "`MAP028` -> connected",
+                    "`MAP023` -> cutscene-only, not connected",
+                    "`MAP211` -> cutscene-only, not connected",
+                    "`MAP506` -> not cutscene-only, but isolated and not connected"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "files-to-look-at": {
+          "heading": "Files To Look At",
+          "content": [
+            {
+              "ulist": [
+                "[analyze_room_graph.py](/c:/Users/Chris/Desktop/vs usa/analyze_room_graph.py)",
+                "[room_names.tsv](/c:/Users/Chris/Desktop/vs usa/room_names.tsv)",
+                "[_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h](/c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)",
+                "[_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c](/c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)",
+                "[_refs/rood-reverse/src/MENU/MENU5.PRG/4D8.c](/c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/MENU/MENU5.PRG/4D8.c)",
+                "`Game Data/MAP/MAP*.MPD`",
+                "`Game Data/SMALL/SCEN*.ARM`"
+              ]
+            }
+          ]
+        },
+        "re-run": {
+          "heading": "Re-run",
+          "content": [
+            {
+              "code": "python analyze_room_graph.py\npython analyze_room_graph.py --update-tsv",
+              "language": "powershell"
+            }
+          ]
+        },
+        "short-version": {
+          "heading": "Short Version",
+          "content": [
+            {
+              "paragraph": "If the question is \"how are rooms connected even across zones?\", the most useful answer so far is:",
+              "ulist": [
+                "MPD `sectionF` gives local playable room membership",
+                "MPD `sectionB.sceneId` assigns each map to a scene",
+                "`SCEN*.ARM` markers with `flags & 0x04` encode scene-to-scene \"connecting map\" edges",
+                "those scene edges are the missing cross-zone graph"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "30b8145446e4c88687a5fff6d93c7bd4e569a47f1fa395313b05db9d4d03d5fc",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Room Connection Findings\n\nThis note summarizes how room connectivity appears to work in Vagrant Story, including cross-zone transitions.\n\n## Main Finding\n\nThere are at least two useful layers of room connectivity:\n\n1. `MAP*.MPD` section `F`\n   This is a local room cluster for the current playable area state.\n   It is useful for detecting whether a room participates in a normal playable room set at all.\n   It is not enough to recover the full world graph, because it misses many cross-zone transitions.\n\n2. `SCEN*.ARM` scene data\n   This is the layer that carries the broader world-map style connectivity, including links across zones.\n   The scene payload contains per-room markers for ordinary doors and for \"connecting maps\".\n   Those connecting-map markers are what bridge areas like Wine Cellar -> Catacombs.\n\nThe practical result is:\n\n- Use `sectionF` plus `AreaName` to classify `RoomType=Cutscene` or `RoomType=Debug`\n- Use `SCEN*.ARM` reachability to classify `RoomType=Playable`\n\n## Why `sectionF` Alone Was Wrong\n\nThe first pass only used `MAP*.MPD` section `F`, which produced a small local graph around `MAP009`.\nThat was enough to connect rooms inside the starting Wine Cellar cluster, but it missed known cross-zone links.\n\nExample:\n\n- `MAP009` `Entrance to Darkness` is connected to `MAP028` `Hall of Sworn Revenge`\n- a `sectionF`-only graph failed to show that\n- the scene graph recovered from `SCEN*.ARM` does show it\n\nSo `sectionF` is real data, but it is not the full traversal graph.\n\n## Where the Cross-Zone Link Lives\n\nThe MPD room section `B` contains a `sceneId`.\n\nRelevant details:\n\n- section index for MPD `sectionB`: `10`\n- `sceneId` is read from `sectionB + 0x50`\n- example values:\n  - `MAP009` -> scene `1`\n  - `MAP026` -> scene `1`\n  - `MAP028` -> scene `2`\n  - `MAP147` -> scene `28`\n  - `MAP200` -> scene `26`\n  - `MAP506` -> scene `0`\n\nThat `sceneId` is the bridge from a map to its `SCENxxx.ARM` file.\n\n## `SCEN*.ARM` Layout Used By The Script\n\nThe current parser in [analyze_room_graph.py](/c:/Users/Chris/Desktop/vs usa/analyze_room_graph.py) uses this working model:\n\n1. file header:\n   - `u32 roomCount`\n\n2. room table:\n   - repeated `roomCount` times\n   - struct format: `<IiHH>`\n   - fields interpreted as:\n     - unused/visited-like `int`\n     - `room_len`\n     - `zone_id`\n     - `map_id`\n\n3. concatenated room payloads:\n   - each payload is read sequentially using `room_len`\n   - the payload contains:\n     - `vertex_count`\n     - triangle count\n     - quad count\n     - line count group 1\n     - line count group 2\n     - marker count\n     - marker entries\n\n4. marker entries:\n   - each marker is 4 bytes\n   - interpreted as:\n     - `vertex_index`\n     - `target_scene_id`\n     - `flags`\n     - `door_id`\n\nThe important rule is:\n\n- if `flags & 0x04` is set, that marker is a \"connecting map\" marker\n- `target_scene_id` is then treated as a scene-level edge\n\nThis matches the menu code distinction between ordinary doors and \"connecting maps\".\n\n## Example Cross-Zone Connections\n\nRecovered examples from the scene files:\n\n- `SCEN001` contains room `(zone=11, map=1)` with a connecting-map marker to scene `2`\n  - this is the Wine Cellar side of the Catacombs transition\n- `SCEN002` contains room `(zone=13, map=1)` with a connecting-map marker to scene `1`\n  - this is the Catacombs side back to Wine Cellar\n\nThat is why:\n\n- `MAP025` `The Hero's Winehall` is connected to the Catacombs scene\n- `MAP026` `The Gallows` belongs to the same starting scene cluster\n- `MAP028` `Hall of Sworn Revenge` is correctly reachable from `MAP009`\n\nOther scene-level edges found in the current pass include:\n\n- `1 <-> 2`\n- `2 <-> 3`\n- `3 <-> 28`\n- `4 <-> 22`\n- `4 <-> 28`\n- `5 <-> 19`\n- `5 <-> 29`\n- `6 <-> 7`\n- `6 <-> 19`\n- `7 <-> 30`\n- `8 <-> 9`\n- `9 <-> 10`\n- `9 <-> 30`\n- `10 <-> 11`\n- `11 <-> 12`\n- `13 <-> 21`\n- `14 <-> 19`\n- `15 <-> 16`\n- `15 <-> 21`\n- `16 <-> 17`\n- `17 <-> 21`\n- `18 <-> 3`\n- `18 <-> 22`\n- `19 <-> 24`\n- `19 <-> 26`\n- `19 <-> 28`\n- `19 <-> 30`\n- `20 <-> 25`\n- `20 <-> 30`\n- `21 <-> 23`\n- `21 <-> 29`\n- `22 <-> 28`\n- `23 <-> 26`\n- `23 <-> 28`\n- `23 <-> 29`\n- `24 <-> 27`\n- `24 <-> 29`\n- `25 <-> 30`\n\n## Special Case: Scene `0`\n\nScene `0` behaves like a special bucket, not a normal playable area graph node.\n\nImportant consequence:\n\n- do not traverse `target_scene_id = 0` as a normal world edge\n\nIf scene `0` is treated as a real node, it incorrectly pulls in a large set of unrelated maps, including debug and oddball maps.\n\nIn the current script:\n\n- scene ids are only traversed when `1 <= scene_id <= 31`\n- this keeps `MAP506` isolated\n\n## Current Classification Rules\n\n### `RoomType=Cutscene`\n\nA map is currently marked `RoomType=Cutscene` when:\n\n- `sectionF` room count is `0`\n- and `AreaName != Debug`\n\nThis works well for disconnected story/cutscene rooms such as:\n\n- `MAP023`\n- `MAP211`\n- `MAP100` to `MAP104`\n- `MAP131` to `MAP138`\n- `MAP172`\n- `MAP178`\n- `MAP212` to `MAP214`\n- `MAP413` to `MAP415`\n\n### `RoomType=Playable`\n\nA map is currently marked `RoomType=Playable` when:\n\n- it is not `RoomType=Cutscene`\n- it belongs to a scene reachable from `MAP009`'s scene\n- reachability is computed through `SCEN*.ARM` connecting-map edges\n\n### `RoomType=Debug`\n\nA map is currently marked `RoomType=Debug` when:\n\n- `AreaName = Debug`\n\n## Current Results\n\nWith `MAP009` as the root:\n\n- start map: `MAP009` `Entrance to Darkness`\n- start scene: `1`\n- reachable playable scenes: `31`\n- reachable playable maps: `365`\n- disconnected non-cutscene map: only `MAP506`\n\nImportant spot checks:\n\n- `MAP025` -> connected\n- `MAP026` -> connected\n- `MAP028` -> connected\n- `MAP023` -> cutscene-only, not connected\n- `MAP211` -> cutscene-only, not connected\n- `MAP506` -> not cutscene-only, but isolated and not connected\n\n## Files To Look At\n\n- [analyze_room_graph.py](/c:/Users/Chris/Desktop/vs usa/analyze_room_graph.py)\n- [room_names.tsv](/c:/Users/Chris/Desktop/vs usa/room_names.tsv)\n- [_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h](/c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)\n- [_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c](/c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\n- [_refs/rood-reverse/src/MENU/MENU5.PRG/4D8.c](/c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/MENU/MENU5.PRG/4D8.c)\n- `Game Data/MAP/MAP*.MPD`\n- `Game Data/SMALL/SCEN*.ARM`\n\n## Re-run\n\n```powershell\npython analyze_room_graph.py\npython analyze_room_graph.py --update-tsv\n```\n\n## Short Version\n\nIf the question is \"how are rooms connected even across zones?\", the most useful answer so far is:\n\n- MPD `sectionF` gives local playable room membership\n- MPD `sectionB.sceneId` assigns each map to a scene\n- `SCEN*.ARM` markers with `flags & 0x04` encode scene-to-scene \"connecting map\" edges\n- those scene edges are the missing cross-zone graph\n",
+    "markdown_with_json_links": "# Room Connection Findings\n\nThis note summarizes how room connectivity appears to work in Vagrant Story, including cross-zone transitions.\n\n## Main Finding\n\nThere are at least two useful layers of room connectivity:\n\n1. `MAP*.MPD` section `F`\n   This is a local room cluster for the current playable area state.\n   It is useful for detecting whether a room participates in a normal playable room set at all.\n   It is not enough to recover the full world graph, because it misses many cross-zone transitions.\n\n2. `SCEN*.ARM` scene data\n   This is the layer that carries the broader world-map style connectivity, including links across zones.\n   The scene payload contains per-room markers for ordinary doors and for \"connecting maps\".\n   Those connecting-map markers are what bridge areas like Wine Cellar -> Catacombs.\n\nThe practical result is:\n\n- Use `sectionF` plus `AreaName` to classify `RoomType=Cutscene` or `RoomType=Debug`\n- Use `SCEN*.ARM` reachability to classify `RoomType=Playable`\n\n## Why `sectionF` Alone Was Wrong\n\nThe first pass only used `MAP*.MPD` section `F`, which produced a small local graph around `MAP009`.\nThat was enough to connect rooms inside the starting Wine Cellar cluster, but it missed known cross-zone links.\n\nExample:\n\n- `MAP009` `Entrance to Darkness` is connected to `MAP028` `Hall of Sworn Revenge`\n- a `sectionF`-only graph failed to show that\n- the scene graph recovered from `SCEN*.ARM` does show it\n\nSo `sectionF` is real data, but it is not the full traversal graph.\n\n## Where the Cross-Zone Link Lives\n\nThe MPD room section `B` contains a `sceneId`.\n\nRelevant details:\n\n- section index for MPD `sectionB`: `10`\n- `sceneId` is read from `sectionB + 0x50`\n- example values:\n  - `MAP009` -> scene `1`\n  - `MAP026` -> scene `1`\n  - `MAP028` -> scene `2`\n  - `MAP147` -> scene `28`\n  - `MAP200` -> scene `26`\n  - `MAP506` -> scene `0`\n\nThat `sceneId` is the bridge from a map to its `SCENxxx.ARM` file.\n\n## `SCEN*.ARM` Layout Used By The Script\n\nThe current parser in [analyze_room_graph.py](/c:/Users/Chris/Desktop/vs usa/analyze_room_graph.py) uses this working model:\n\n1. file header:\n   - `u32 roomCount`\n\n2. room table:\n   - repeated `roomCount` times\n   - struct format: `<IiHH>`\n   - fields interpreted as:\n     - unused/visited-like `int`\n     - `room_len`\n     - `zone_id`\n     - `map_id`\n\n3. concatenated room payloads:\n   - each payload is read sequentially using `room_len`\n   - the payload contains:\n     - `vertex_count`\n     - triangle count\n     - quad count\n     - line count group 1\n     - line count group 2\n     - marker count\n     - marker entries\n\n4. marker entries:\n   - each marker is 4 bytes\n   - interpreted as:\n     - `vertex_index`\n     - `target_scene_id`\n     - `flags`\n     - `door_id`\n\nThe important rule is:\n\n- if `flags & 0x04` is set, that marker is a \"connecting map\" marker\n- `target_scene_id` is then treated as a scene-level edge\n\nThis matches the menu code distinction between ordinary doors and \"connecting maps\".\n\n## Example Cross-Zone Connections\n\nRecovered examples from the scene files:\n\n- `SCEN001` contains room `(zone=11, map=1)` with a connecting-map marker to scene `2`\n  - this is the Wine Cellar side of the Catacombs transition\n- `SCEN002` contains room `(zone=13, map=1)` with a connecting-map marker to scene `1`\n  - this is the Catacombs side back to Wine Cellar\n\nThat is why:\n\n- `MAP025` `The Hero's Winehall` is connected to the Catacombs scene\n- `MAP026` `The Gallows` belongs to the same starting scene cluster\n- `MAP028` `Hall of Sworn Revenge` is correctly reachable from `MAP009`\n\nOther scene-level edges found in the current pass include:\n\n- `1 <-> 2`\n- `2 <-> 3`\n- `3 <-> 28`\n- `4 <-> 22`\n- `4 <-> 28`\n- `5 <-> 19`\n- `5 <-> 29`\n- `6 <-> 7`\n- `6 <-> 19`\n- `7 <-> 30`\n- `8 <-> 9`\n- `9 <-> 10`\n- `9 <-> 30`\n- `10 <-> 11`\n- `11 <-> 12`\n- `13 <-> 21`\n- `14 <-> 19`\n- `15 <-> 16`\n- `15 <-> 21`\n- `16 <-> 17`\n- `17 <-> 21`\n- `18 <-> 3`\n- `18 <-> 22`\n- `19 <-> 24`\n- `19 <-> 26`\n- `19 <-> 28`\n- `19 <-> 30`\n- `20 <-> 25`\n- `20 <-> 30`\n- `21 <-> 23`\n- `21 <-> 29`\n- `22 <-> 28`\n- `23 <-> 26`\n- `23 <-> 28`\n- `23 <-> 29`\n- `24 <-> 27`\n- `24 <-> 29`\n- `25 <-> 30`\n\n## Special Case: Scene `0`\n\nScene `0` behaves like a special bucket, not a normal playable area graph node.\n\nImportant consequence:\n\n- do not traverse `target_scene_id = 0` as a normal world edge\n\nIf scene `0` is treated as a real node, it incorrectly pulls in a large set of unrelated maps, including debug and oddball maps.\n\nIn the current script:\n\n- scene ids are only traversed when `1 <= scene_id <= 31`\n- this keeps `MAP506` isolated\n\n## Current Classification Rules\n\n### `RoomType=Cutscene`\n\nA map is currently marked `RoomType=Cutscene` when:\n\n- `sectionF` room count is `0`\n- and `AreaName != Debug`\n\nThis works well for disconnected story/cutscene rooms such as:\n\n- `MAP023`\n- `MAP211`\n- `MAP100` to `MAP104`\n- `MAP131` to `MAP138`\n- `MAP172`\n- `MAP178`\n- `MAP212` to `MAP214`\n- `MAP413` to `MAP415`\n\n### `RoomType=Playable`\n\nA map is currently marked `RoomType=Playable` when:\n\n- it is not `RoomType=Cutscene`\n- it belongs to a scene reachable from `MAP009`'s scene\n- reachability is computed through `SCEN*.ARM` connecting-map edges\n\n### `RoomType=Debug`\n\nA map is currently marked `RoomType=Debug` when:\n\n- `AreaName = Debug`\n\n## Current Results\n\nWith `MAP009` as the root:\n\n- start map: `MAP009` `Entrance to Darkness`\n- start scene: `1`\n- reachable playable scenes: `31`\n- reachable playable maps: `365`\n- disconnected non-cutscene map: only `MAP506`\n\nImportant spot checks:\n\n- `MAP025` -> connected\n- `MAP026` -> connected\n- `MAP028` -> connected\n- `MAP023` -> cutscene-only, not connected\n- `MAP211` -> cutscene-only, not connected\n- `MAP506` -> not cutscene-only, but isolated and not connected\n\n## Files To Look At\n\n- [analyze_room_graph.py](/c:/Users/Chris/Desktop/vs usa/analyze_room_graph.py)\n- [room_names.tsv](/c:/Users/Chris/Desktop/vs usa/room_names.tsv)\n- [_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h](/c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.h)\n- [_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c](/c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/BATTLE/BATTLE.PRG/146C.c)\n- [_refs/rood-reverse/src/MENU/MENU5.PRG/4D8.c](/c:/Users/Chris/Desktop/vs usa/_refs/rood-reverse/src/MENU/MENU5.PRG/4D8.c)\n- `Game Data/MAP/MAP*.MPD`\n- `Game Data/SMALL/SCEN*.ARM`\n\n## Re-run\n\n```powershell\npython analyze_room_graph.py\npython analyze_room_graph.py --update-tsv\n```\n\n## Short Version\n\nIf the question is \"how are rooms connected even across zones?\", the most useful answer so far is:\n\n- MPD `sectionF` gives local playable room membership\n- MPD `sectionB.sceneId` assigns each map to a scene\n- `SCEN*.ARM` markers with `flags & 0x04` encode scene-to-scene \"connecting map\" edges\n- those scene edges are the missing cross-zone graph\n"
+  }
+}

@@ -1,0 +1,707 @@
+{
+  "content": {
+    "document_type": "workflow_guide",
+    "title": "Multi-Pass Opcode Decomp Campaign With Cross-Session Memory",
+    "phases": [
+      {
+        "phase": "Evidence Source Rule",
+        "steps": [],
+        "checklist": [
+          "the original binary plus runtime behavior are the ground truth",
+          "artifacts under `decomp/` are the local evidence authority",
+          "file_:../../_refs/rood-reverse is hint-only and may suggest targets, addresses, or candidate meanings",
+          "never treat `_refs/rood-reverse` files as stand-alone proof in `RE_CAMPAIGN_MEMORY.md.json`",
+          "never let a proof packet rely mainly on helper-decompiled C when the claim can be converted into a local `Ghidra` export, local verification artifact, or runtime capture",
+          "if a helper-repo idea matters, convert it into a local artifact first and cite the local artifact as evidence",
+          "helper provenance can still be noted, but only after the local artifact exists"
+        ]
+      },
+      {
+        "phase": "1. Add one master cross-session memory file",
+        "steps": [
+          "`Campaign Goal` - One paragraph stating the current campaign objective: build a verified opcode/handler map for the battle-script system before promoting meanings.",
+          "`Current Phase` - One line with the active pass number and name. - Example shape: `Current phase: Pass 2 - Handler coverage and classification`",
+          "`Status Legend` - Fixed statuses: - `unstarted` - `in_progress` - `covered` - `conflicted` - `runtime_needed` - `confirmed`",
+          "`Pass Plan` - Ordered list of passes with: - pass id - goal - expected outputs - exit condition - This is the stable campaign backbone.",
+          "`Priority Targets` - Flat table for active opcode targets. - Required columns: - `target` - `current_status` - `table_owner` - `handler_owner` - `best_current_name` - `blocking_question` - `next_pass` - `evidence_links`",
+          "`Known Conflicts` - One subsection per unresolved contradiction. - Required fields: - short conflict title - what static evidence says - what competing evidence says - what is still missing - whether runtime is justified yet",
+          "`Artifacts Index` - Flat list of key machine-readable exports and proof packets. - Group by: - table exports - handler slices - reconciliation reports - proof packets",
+          "`Session Handoff` - Very short section updated every pass. - Required fields: - `last completed step` - `next recommended step` - `do not forget` - This is the actual memory bridge for the next session.",
+          "`Completed Milestones` - Append-only short log of meaningful campaign completions. - Use date + milestone + links."
+        ],
+        "checklist": [
+          "One paragraph stating the current campaign objective: build a verified opcode/handler map for the battle-script system before promoting meanings.",
+          "One line with the active pass number and name.",
+          "Example shape: `Current phase: Pass 2 - Handler coverage and classification`",
+          "Fixed statuses: - `unstarted` - `in_progress` - `covered` - `conflicted` - `runtime_needed` - `confirmed`",
+          "Ordered list of passes with: - pass id - goal - expected outputs - exit condition",
+          "This is the stable campaign backbone.",
+          "Flat table for active opcode targets.",
+          "Required columns: - `target` - `current_status` - `table_owner` - `handler_owner` - `best_current_name` - `blocking_question` - `next_pass` - `evidence_links`",
+          "One subsection per unresolved contradiction.",
+          "Required fields: - short conflict title - what static evidence says - what competing evidence says - what is still missing - whether runtime is justified yet",
+          "Flat list of key machine-readable exports and proof packets.",
+          "Group by: - table exports - handler slices - reconciliation reports - proof packets",
+          "Very short section updated every pass.",
+          "Required fields: - `last completed step` - `next recommended step` - `do not forget`",
+          "This is the actual memory bridge for the next session.",
+          "Append-only short log of meaningful campaign completions.",
+          "Use date + milestone + links."
+        ]
+      },
+      {
+        "phase": "2. Define the multi-pass campaign backbone",
+        "steps": [
+          "`Pass 0 - Bootstrap and inventory` - Goal: identify all opcode-table owners, known initializers, copy sites, and likely patch points. - Outputs: - master list of tables - overlay ownership notes - first artifact index entries - Exit condition: every known battle-script table has an owner and initializer note.",
+          "`Pass 1 - Table export coverage` - Goal: export binary-derived entries for every known relevant opcode table. - Outputs: - JSON table exports under `decomp/evidence` - wrapper scripts under `decomp/ghidra` - Exit condition: all targeted tables have reproducible exports with correct base-address notes.",
+          "`Pass 2 - Handler coverage and classification` - Goal: map every exported opcode to a handler address and classify unique handlers. - Classifications: - `stub` - `real` - `shared` - `orphan_candidate` - `unknown_gap` - Outputs: - coverage report - shared-handler map - Exit condition: every opcode in scope has a handler mapping and provisional class.",
+          "`Pass 3 - Copy/patch reconciliation` - Goal: determine whether runtime tables are copied only once or patched later. - Outputs: - copy-site notes - patch-site notes - unresolved runtime-needed list - Exit condition: every conflict is labeled either `static_resolved` or `runtime_needed`.",
+          "`Pass 4 - Semantic proof packets` - Goal: produce focused proof packets only for the high-value or conflicted opcodes. - Outputs: - one markdown proof packet per disputed opcode family - linked binary exports and script examples - Exit condition: all priority targets have either `confirmed`, `tentative`, or `conflicted` status with explicit evidence.",
+          "`Pass 5 - Naming and decoder updates` - Goal: only after the earlier passes, promote safe names into `dump_mpd_script.py` and opcode notes. - Outputs: - decoder naming changes - conclusion-note updates - Exit condition: no name promotion lacks a proof-packet anchor.",
+          "`Pass 6 - Audit and maintenance` - Goal: keep the campaign from drifting. - Outputs: - contradiction audit - stale-artifact audit - missing-export audit - Exit condition: ledger and artifacts still agree."
+        ],
+        "checklist": [
+          "Goal: identify all opcode-table owners, known initializers, copy sites, and likely patch points.",
+          "Outputs: - master list of tables - overlay ownership notes - first artifact index entries",
+          "Exit condition: every known battle-script table has an owner and initializer note.",
+          "Goal: export binary-derived entries for every known relevant opcode table.",
+          "Outputs: - JSON table exports under `decomp/evidence` - wrapper scripts under `decomp/ghidra`",
+          "Exit condition: all targeted tables have reproducible exports with correct base-address notes.",
+          "Goal: map every exported opcode to a handler address and classify unique handlers.",
+          "Classifications: - `stub` - `real` - `shared` - `orphan_candidate` - `unknown_gap`",
+          "Outputs: - coverage report - shared-handler map",
+          "Exit condition: every opcode in scope has a handler mapping and provisional class.",
+          "Goal: determine whether runtime tables are copied only once or patched later.",
+          "Outputs: - copy-site notes - patch-site notes - unresolved runtime-needed list",
+          "Exit condition: every conflict is labeled either `static_resolved` or `runtime_needed`.",
+          "Goal: produce focused proof packets only for the high-value or conflicted opcodes.",
+          "Outputs: - one markdown proof packet per disputed opcode family - linked binary exports and script examples",
+          "Exit condition: all priority targets have either `confirmed`, `tentative`, or `conflicted` status with explicit evidence.",
+          "Goal: only after the earlier passes, promote safe names into `dump_mpd_script.py` and opcode notes.",
+          "Outputs: - decoder naming changes - conclusion-note updates",
+          "Exit condition: no name promotion lacks a proof-packet anchor.",
+          "Goal: keep the campaign from drifting.",
+          "Outputs: - contradiction audit - stale-artifact audit - missing-export audit",
+          "Exit condition: ledger and artifacts still agree."
+        ]
+      },
+      {
+        "phase": "3. Standardize how each future session uses the ledger",
+        "steps": [
+          "Read: - `RE_CAMPAIGN_MEMORY.md.json` - `docs/workflows/DECOMPILATION_STRATEGY.md.json` - `docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`",
+          "Pick work only from: - `Priority Targets` - or the `next recommended step` in `Session Handoff`",
+          "During the pass, produce one of: - export artifact - coverage artifact - proof packet - contradiction note - and make sure it is a local artifact under `decomp/`, not just a helper repo citation",
+          "Before ending the pass, update only these ledger sections: - `Current Phase` - `Priority Targets` - `Known Conflicts` - `Artifacts Index` - `Session Handoff` - optional `Completed Milestones`",
+          "Never let a session end with new evidence that exists only in terminal output."
+        ],
+        "checklist": [
+          "`RE_CAMPAIGN_MEMORY.md.json`",
+          "`docs/workflows/DECOMPILATION_STRATEGY.md.json`",
+          "`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`",
+          "`Priority Targets`",
+          "or the `next recommended step` in `Session Handoff`",
+          "export artifact",
+          "coverage artifact",
+          "proof packet",
+          "contradiction note",
+          "and make sure it is a local artifact under `decomp/`, not just a helper repo citation",
+          "`Current Phase`",
+          "`Priority Targets`",
+          "`Known Conflicts`",
+          "`Artifacts Index`",
+          "`Session Handoff`",
+          "optional `Completed Milestones`"
+        ]
+      },
+      {
+        "phase": "4. Align the current docs around the ledger",
+        "steps": [],
+        "checklist": [
+          "`README.md.json` - add the new campaign ledger to the repo layout and explain that it is the cross-session memory entrypoint for opcode/decomp work",
+          "`docs/workflows/AI_RE_PASS_WORKFLOW.md.json` - require reading `RE_CAMPAIGN_MEMORY.md.json` before choosing a target - require updating the ledger before ending a pass - require choosing work from the campaign pass structure or priority-target list",
+          "`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json` - frame exports and proof packets as artifacts that must be registered in the ledger - point conflict-state tracking to the ledger rather than scattered notes",
+          "`docs/workflows/DECOMPILATION_STRATEGY.md.json` - treat the ledger as the local campaign authority for in-progress state, while binary/runtime remain evidence authority",
+          "`decomp/README.md.json` - explain that `decomp/` stores implementation artifacts while `RE_CAMPAIGN_MEMORY.md.json` stores campaign state and handoff memory",
+          "`_refs/rood-reverse` may guide investigation",
+          "local `decomp/` artifacts, binary exports, and runtime captures must carry the evidentiary weight"
+        ]
+      },
+      {
+        "phase": "5. Keep evidence and memory separate on purpose",
+        "steps": [],
+        "checklist": [
+          "`RE_CAMPAIGN_MEMORY.md.json` - campaign state - priorities - handoff memory - conflict summaries - artifact links",
+          "`decomp/evidence/*` - raw exports - proof packets - coverage outputs - contradiction-specific evidence",
+          "`_refs/rood-reverse/*` - helper corpus only - can supply leads and candidate names - should not be cited as final proof when a local artifact can be produced",
+          "existing opcode docs - stable conclusions only - not the place for active campaign state"
+        ]
+      },
+      {
+        "phase": "Test Plan",
+        "steps": [
+          "Dry-run a new session using only the docs. - A fresh pass should be able to answer: - what is the current phase? - what target should I do next? - what artifacts already exist? - what conflicts are unresolved? - when is runtime justified?",
+          "Run one simulated handoff. - One session updates `Session Handoff`. - A second session should be able to resume without rereading the entire repo history.",
+          "Validate one real target, `0x80`. - Ledger should show: - current status - binary table owner - handler owner - open conflict - linked evidence files - next recommended pass - If that can be represented cleanly, the structure is working.",
+          "Check drift prevention. - Every artifact named in the ledger should exist. - Every `confirmed` target in the ledger should have an evidence link. - No `runtime_needed` target should lack a stated static contradiction."
+        ],
+        "checklist": [
+          "A fresh pass should be able to answer: - what is the current phase? - what target should I do next? - what artifacts already exist? - what conflicts are unresolved? - when is runtime justified?",
+          "One session updates `Session Handoff`.",
+          "A second session should be able to resume without rereading the entire repo history.",
+          "Ledger should show: - current status - binary table owner - handler owner - open conflict - linked evidence files - next recommended pass",
+          "If that can be represented cleanly, the structure is working.",
+          "Every artifact named in the ledger should exist.",
+          "Every `confirmed` target in the ledger should have an evidence link.",
+          "No `runtime_needed` target should lack a stated static contradiction."
+        ]
+      },
+      {
+        "phase": "Assumptions",
+        "steps": [],
+        "checklist": [
+          "Use **one master ledger**, not per-track ledgers.",
+          "The campaign is **opcode/decomp-first**, not a whole-repo generic framework.",
+          "Existing stable notes such as `docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json` remain in place; they are not replaced by the ledger.",
+          "The ledger is intentionally markdown-first and human-maintained rather than generated.",
+          "`PCSX-Redux` remains a late-stage tie-breaker, not part of every pass."
+        ]
+      }
+    ],
+    "commands": [],
+    "source_markdown_path": "docs/campaign/Opcode Decomp Campaign Plan.md",
+    "summary": "Create one master campaign memory file, `RE_CAMPAIGN_MEMORY.md.json`, as the cross-session source of truth for opcode/decomp work, then align the existing workflow docs so every future session starts from that ledger and updates it in a consistent way.",
+    "body": {
+      "sections": {
+        "summary": {
+          "heading": "Summary",
+          "content": [
+            {
+              "ulist": [
+                "Create one master campaign memory file, `RE_CAMPAIGN_MEMORY.md.json`, as the cross-session source of truth for opcode/decomp work, then align the existing workflow docs so every future session starts from that ledger and updates it in a consistent way.",
+                "This campaign is **opcode-first**. The first objective is not “fully name every opcode,” but to finish the foundational passes that make later semantic passes cheap and safe: table ownership, runtime-copy/patch paths, handler coverage, shared-handler clustering, and contradiction tracking."
+              ]
+            }
+          ]
+        },
+        "evidence-source-rule": {
+          "heading": "Evidence Source Rule",
+          "content": [
+            {
+              "paragraph": "For this campaign, keep the authority chain explicit:",
+              "ulist": [
+                "the original binary plus runtime behavior are the ground truth",
+                "artifacts under `decomp/` are the local evidence authority",
+                "[`../../_refs/rood-reverse`](../../_refs/rood-reverse) is hint-only and may suggest\ntargets, addresses, or candidate meanings",
+                "That means:",
+                {
+                  "ulist": [
+                    "never treat `_refs/rood-reverse` files as stand-alone proof in\n`RE_CAMPAIGN_MEMORY.md.json`",
+                    "never let a proof packet rely mainly on helper-decompiled C when the claim\ncan be converted into a local `Ghidra` export, local verification artifact,\nor runtime capture",
+                    "if a helper-repo idea matters, convert it into a local artifact first and\ncite the local artifact as evidence",
+                    "helper provenance can still be noted, but only after the local artifact\nexists"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "key-changes": {
+          "heading": "Key Changes",
+          "sections": {
+            "add-one-master-cross-session-memory-file": {
+              "heading": "1. Add one master cross-session memory file",
+              "content": [
+                {
+                  "ulist": [
+                    "Create `RE_CAMPAIGN_MEMORY.md.json` at repo root.",
+                    "It should be the first repo-specific file read at the start of any substantial opcode/decomp session, alongside `docs/workflows/DECOMPILATION_STRATEGY.md.json` and `docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`.",
+                    "Use this fixed structure:",
+                    {
+                      "olit": [
+                        {
+                          "content": [
+                            {
+                              "paragraph": "`Campaign Goal`"
+                            },
+                            {
+                              "ulist": [
+                                "One paragraph stating the current campaign objective: build a verified opcode/handler map for the battle-script system before promoting meanings."
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "content": [
+                            {
+                              "paragraph": "`Current Phase`"
+                            },
+                            {
+                              "ulist": [
+                                "One line with the active pass number and name.",
+                                "Example shape: `Current phase: Pass 2 - Handler coverage and classification`"
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "content": [
+                            {
+                              "paragraph": "`Status Legend`"
+                            },
+                            {
+                              "ulist": [
+                                "Fixed statuses:"
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "content": [
+                            {
+                              "paragraph": "`Pass Plan`"
+                            },
+                            {
+                              "ulist": [
+                                "Ordered list of passes with:",
+                                "This is the stable campaign backbone."
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "content": [
+                            {
+                              "paragraph": "`Priority Targets`"
+                            },
+                            {
+                              "ulist": [
+                                "Flat table for active opcode targets.",
+                                "Required columns:"
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "content": [
+                            {
+                              "paragraph": "`Known Conflicts`"
+                            },
+                            {
+                              "ulist": [
+                                "One subsection per unresolved contradiction.",
+                                "Required fields:"
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "content": [
+                            {
+                              "paragraph": "`Artifacts Index`"
+                            },
+                            {
+                              "ulist": [
+                                "Flat list of key machine-readable exports and proof packets.",
+                                "Group by:"
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "content": [
+                            {
+                              "paragraph": "`Session Handoff`"
+                            },
+                            {
+                              "ulist": [
+                                "Very short section updated every pass.",
+                                "Required fields:",
+                                "This is the actual memory bridge for the next session."
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "content": [
+                            {
+                              "paragraph": "`Completed Milestones`"
+                            },
+                            {
+                              "ulist": [
+                                "Append-only short log of meaningful campaign completions.",
+                                "Use date + milestone + links."
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "The file should stay compact. It is a campaign ledger, not a narrative diary."
+                }
+              ]
+            },
+            "define-the-multi-pass-campaign-backbone": {
+              "heading": "2. Define the multi-pass campaign backbone",
+              "content": [
+                {
+                  "paragraph": "The master ledger should define these passes exactly:",
+                  "olit": [
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`Pass 0 - Bootstrap and inventory`"
+                        },
+                        {
+                          "ulist": [
+                            "Goal: identify all opcode-table owners, known initializers, copy sites, and likely patch points.",
+                            "Outputs:",
+                            "Exit condition: every known battle-script table has an owner and initializer note."
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`Pass 1 - Table export coverage`"
+                        },
+                        {
+                          "ulist": [
+                            "Goal: export binary-derived entries for every known relevant opcode table.",
+                            "Outputs:",
+                            "Exit condition: all targeted tables have reproducible exports with correct base-address notes."
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`Pass 2 - Handler coverage and classification`"
+                        },
+                        {
+                          "ulist": [
+                            "Goal: map every exported opcode to a handler address and classify unique handlers.",
+                            "Classifications:",
+                            "Outputs:",
+                            "Exit condition: every opcode in scope has a handler mapping and provisional class."
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`Pass 3 - Copy/patch reconciliation`"
+                        },
+                        {
+                          "ulist": [
+                            "Goal: determine whether runtime tables are copied only once or patched later.",
+                            "Outputs:",
+                            "Exit condition: every conflict is labeled either `static_resolved` or `runtime_needed`."
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`Pass 4 - Semantic proof packets`"
+                        },
+                        {
+                          "ulist": [
+                            "Goal: produce focused proof packets only for the high-value or conflicted opcodes.",
+                            "Outputs:",
+                            "Exit condition: all priority targets have either `confirmed`, `tentative`, or `conflicted` status with explicit evidence."
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`Pass 5 - Naming and decoder updates`"
+                        },
+                        {
+                          "ulist": [
+                            "Goal: only after the earlier passes, promote safe names into `dump_mpd_script.py` and opcode notes.",
+                            "Outputs:",
+                            "Exit condition: no name promotion lacks a proof-packet anchor."
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`Pass 6 - Audit and maintenance`"
+                        },
+                        {
+                          "ulist": [
+                            "Goal: keep the campaign from drifting.",
+                            "Outputs:",
+                            "Exit condition: ledger and artifacts still agree."
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "standardize-how-each-future-session-uses-the-ledger": {
+              "heading": "3. Standardize how each future session uses the ledger",
+              "content": [
+                {
+                  "paragraph": "Update the existing workflow docs so every session follows this sequence:",
+                  "olit": [
+                    "Read:",
+                    "Pick work only from:",
+                    "During the pass, produce one of:",
+                    "Before ending the pass, update only these ledger sections:",
+                    "Never let a session end with new evidence that exists only in terminal output."
+                  ]
+                }
+              ]
+            },
+            "align-the-current-docs-around-the-ledger": {
+              "heading": "4. Align the current docs around the ledger",
+              "content": [
+                {
+                  "paragraph": "Update these existing docs to reference the master memory file:",
+                  "ulist": [
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`README.md.json`"
+                        },
+                        {
+                          "ulist": [
+                            "add the new campaign ledger to the repo layout and explain that it is the cross-session memory entrypoint for opcode/decomp work"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`docs/workflows/AI_RE_PASS_WORKFLOW.md.json`"
+                        },
+                        {
+                          "ulist": [
+                            "require reading `RE_CAMPAIGN_MEMORY.md.json` before choosing a target",
+                            "require updating the ledger before ending a pass",
+                            "require choosing work from the campaign pass structure or priority-target list"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`"
+                        },
+                        {
+                          "ulist": [
+                            "frame exports and proof packets as artifacts that must be registered in the ledger",
+                            "point conflict-state tracking to the ledger rather than scattered notes"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`docs/workflows/DECOMPILATION_STRATEGY.md.json`"
+                        },
+                        {
+                          "ulist": [
+                            "treat the ledger as the local campaign authority for in-progress state, while binary/runtime remain evidence authority"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`decomp/README.md.json`"
+                        },
+                        {
+                          "ulist": [
+                            "explain that `decomp/` stores implementation artifacts while `RE_CAMPAIGN_MEMORY.md.json` stores campaign state and handoff memory"
+                          ]
+                        }
+                      ]
+                    },
+                    "Also update those docs to repeat this rule:",
+                    {
+                      "ulist": [
+                        "`_refs/rood-reverse` may guide investigation",
+                        "local `decomp/` artifacts, binary exports, and runtime captures must carry\nthe evidentiary weight"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "keep-evidence-and-memory-separate-on-purpose": {
+              "heading": "5. Keep evidence and memory separate on purpose",
+              "content": [
+                {
+                  "paragraph": "Use this division consistently:",
+                  "ulist": [
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`RE_CAMPAIGN_MEMORY.md.json`"
+                        },
+                        {
+                          "ulist": [
+                            "campaign state",
+                            "priorities",
+                            "handoff memory",
+                            "conflict summaries",
+                            "artifact links"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`decomp/evidence/*`"
+                        },
+                        {
+                          "ulist": [
+                            "raw exports",
+                            "proof packets",
+                            "coverage outputs",
+                            "contradiction-specific evidence"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "content": [
+                        {
+                          "paragraph": "`_refs/rood-reverse/*`"
+                        },
+                        {
+                          "ulist": [
+                            "helper corpus only",
+                            "can supply leads and candidate names",
+                            "should not be cited as final proof when a local artifact can be produced"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "content": [
+                        {
+                          "paragraph": "existing opcode docs"
+                        },
+                        {
+                          "ulist": [
+                            "stable conclusions only",
+                            "not the place for active campaign state"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "paragraph": "This prevents the “working memory” from being mixed into stable reference notes too early."
+                }
+              ]
+            }
+          }
+        },
+        "test-plan": {
+          "heading": "Test Plan",
+          "content": [
+            {
+              "olit": [
+                {
+                  "content": [
+                    {
+                      "paragraph": "Dry-run a new session using only the docs."
+                    },
+                    {
+                      "ulist": [
+                        "A fresh pass should be able to answer:"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "content": [
+                    {
+                      "paragraph": "Run one simulated handoff."
+                    },
+                    {
+                      "ulist": [
+                        "One session updates `Session Handoff`.",
+                        "A second session should be able to resume without rereading the entire repo history."
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "content": [
+                    {
+                      "paragraph": "Validate one real target, `0x80`."
+                    },
+                    {
+                      "ulist": [
+                        "Ledger should show:",
+                        "If that can be represented cleanly, the structure is working."
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "content": [
+                    {
+                      "paragraph": "Check drift prevention."
+                    },
+                    {
+                      "ulist": [
+                        "Every artifact named in the ledger should exist.",
+                        "Every `confirmed` target in the ledger should have an evidence link.",
+                        "No `runtime_needed` target should lack a stated static contradiction."
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "assumptions": {
+          "heading": "Assumptions",
+          "content": [
+            {
+              "ulist": [
+                "Use **one master ledger**, not per-track ledgers.",
+                "The campaign is **opcode/decomp-first**, not a whole-repo generic framework.",
+                "Existing stable notes such as `docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json` remain in place; they are not replaced by the ledger.",
+                "The ledger is intentionally markdown-first and human-maintained rather than generated.",
+                "`PCSX-Redux` remains a late-stage tie-breaker, not part of every pass."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "066ea6b00a1dc3b5779c952704f7370a19b9ef99495c7d5487306b0fd96ad002",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T22:09:35Z",
+    "raw_markdown": "# Multi-Pass Opcode Decomp Campaign With Cross-Session Memory\n\n## Summary\n\nCreate one master campaign memory file, `RE_CAMPAIGN_MEMORY.md`, as the cross-session source of truth for opcode/decomp work, then align the existing workflow docs so every future session starts from that ledger and updates it in a consistent way.\n\nThis campaign is **opcode-first**. The first objective is not “fully name every opcode,” but to finish the foundational passes that make later semantic passes cheap and safe: table ownership, runtime-copy/patch paths, handler coverage, shared-handler clustering, and contradiction tracking.\n\n## Evidence Source Rule\n\nFor this campaign, keep the authority chain explicit:\n\n- the original binary plus runtime behavior are the ground truth\n- artifacts under `decomp/` are the local evidence authority\n- [`../../_refs/rood-reverse`](../../_refs/rood-reverse) is hint-only and may suggest\n  targets, addresses, or candidate meanings\n\nThat means:\n\n- never treat `_refs/rood-reverse` files as stand-alone proof in\n  `RE_CAMPAIGN_MEMORY.md`\n- never let a proof packet rely mainly on helper-decompiled C when the claim\n  can be converted into a local `Ghidra` export, local verification artifact,\n  or runtime capture\n- if a helper-repo idea matters, convert it into a local artifact first and\n  cite the local artifact as evidence\n- helper provenance can still be noted, but only after the local artifact\n  exists\n\n## Key Changes\n\n### 1. Add one master cross-session memory file\n\nCreate `RE_CAMPAIGN_MEMORY.md` at repo root.\n\nIt should be the first repo-specific file read at the start of any substantial opcode/decomp session, alongside `DECOMPILATION_STRATEGY.md` and `CLI_DECOMPILATION_WORKFLOW.md`.\n\nUse this fixed structure:\n\n1. `Campaign Goal`\n   - One paragraph stating the current campaign objective: build a verified opcode/handler map for the battle-script system before promoting meanings.\n\n2. `Current Phase`\n   - One line with the active pass number and name.\n   - Example shape: `Current phase: Pass 2 - Handler coverage and classification`\n\n3. `Status Legend`\n   - Fixed statuses:\n     - `unstarted`\n     - `in_progress`\n     - `covered`\n     - `conflicted`\n     - `runtime_needed`\n     - `confirmed`\n\n4. `Pass Plan`\n   - Ordered list of passes with:\n     - pass id\n     - goal\n     - expected outputs\n     - exit condition\n   - This is the stable campaign backbone.\n\n5. `Priority Targets`\n   - Flat table for active opcode targets.\n   - Required columns:\n     - `target`\n     - `current_status`\n     - `table_owner`\n     - `handler_owner`\n     - `best_current_name`\n     - `blocking_question`\n     - `next_pass`\n     - `evidence_links`\n\n6. `Known Conflicts`\n   - One subsection per unresolved contradiction.\n   - Required fields:\n     - short conflict title\n     - what static evidence says\n     - what competing evidence says\n     - what is still missing\n     - whether runtime is justified yet\n\n7. `Artifacts Index`\n   - Flat list of key machine-readable exports and proof packets.\n   - Group by:\n     - table exports\n     - handler slices\n     - reconciliation reports\n     - proof packets\n\n8. `Session Handoff`\n   - Very short section updated every pass.\n   - Required fields:\n     - `last completed step`\n     - `next recommended step`\n     - `do not forget`\n   - This is the actual memory bridge for the next session.\n\n9. `Completed Milestones`\n   - Append-only short log of meaningful campaign completions.\n   - Use date + milestone + links.\n\nThe file should stay compact. It is a campaign ledger, not a narrative diary.\n\n### 2. Define the multi-pass campaign backbone\n\nThe master ledger should define these passes exactly:\n\n1. `Pass 0 - Bootstrap and inventory`\n   - Goal: identify all opcode-table owners, known initializers, copy sites, and likely patch points.\n   - Outputs:\n     - master list of tables\n     - overlay ownership notes\n     - first artifact index entries\n   - Exit condition: every known battle-script table has an owner and initializer note.\n\n2. `Pass 1 - Table export coverage`\n   - Goal: export binary-derived entries for every known relevant opcode table.\n   - Outputs:\n     - JSON table exports under `decomp/evidence`\n     - wrapper scripts under `decomp/ghidra`\n   - Exit condition: all targeted tables have reproducible exports with correct base-address notes.\n\n3. `Pass 2 - Handler coverage and classification`\n   - Goal: map every exported opcode to a handler address and classify unique handlers.\n   - Classifications:\n     - `stub`\n     - `real`\n     - `shared`\n     - `orphan_candidate`\n     - `unknown_gap`\n   - Outputs:\n     - coverage report\n     - shared-handler map\n   - Exit condition: every opcode in scope has a handler mapping and provisional class.\n\n4. `Pass 3 - Copy/patch reconciliation`\n   - Goal: determine whether runtime tables are copied only once or patched later.\n   - Outputs:\n     - copy-site notes\n     - patch-site notes\n     - unresolved runtime-needed list\n   - Exit condition: every conflict is labeled either `static_resolved` or `runtime_needed`.\n\n5. `Pass 4 - Semantic proof packets`\n   - Goal: produce focused proof packets only for the high-value or conflicted opcodes.\n   - Outputs:\n     - one markdown proof packet per disputed opcode family\n     - linked binary exports and script examples\n   - Exit condition: all priority targets have either `confirmed`, `tentative`, or `conflicted` status with explicit evidence.\n\n6. `Pass 5 - Naming and decoder updates`\n   - Goal: only after the earlier passes, promote safe names into `dump_mpd_script.py` and opcode notes.\n   - Outputs:\n     - decoder naming changes\n     - conclusion-note updates\n   - Exit condition: no name promotion lacks a proof-packet anchor.\n\n7. `Pass 6 - Audit and maintenance`\n   - Goal: keep the campaign from drifting.\n   - Outputs:\n     - contradiction audit\n     - stale-artifact audit\n     - missing-export audit\n   - Exit condition: ledger and artifacts still agree.\n\n### 3. Standardize how each future session uses the ledger\n\nUpdate the existing workflow docs so every session follows this sequence:\n\n1. Read:\n   - `RE_CAMPAIGN_MEMORY.md`\n   - `DECOMPILATION_STRATEGY.md`\n   - `CLI_DECOMPILATION_WORKFLOW.md`\n\n2. Pick work only from:\n   - `Priority Targets`\n   - or the `next recommended step` in `Session Handoff`\n\n3. During the pass, produce one of:\n   - export artifact\n   - coverage artifact\n   - proof packet\n   - contradiction note\n   - and make sure it is a local artifact under `decomp/`, not just a helper\n     repo citation\n\n4. Before ending the pass, update only these ledger sections:\n   - `Current Phase`\n   - `Priority Targets`\n   - `Known Conflicts`\n   - `Artifacts Index`\n   - `Session Handoff`\n   - optional `Completed Milestones`\n\n5. Never let a session end with new evidence that exists only in terminal output.\n\n### 4. Align the current docs around the ledger\n\nUpdate these existing docs to reference the master memory file:\n\n- `README.md`\n  - add the new campaign ledger to the repo layout and explain that it is the cross-session memory entrypoint for opcode/decomp work\n\n- `AI_RE_PASS_WORKFLOW.md`\n  - require reading `RE_CAMPAIGN_MEMORY.md` before choosing a target\n  - require updating the ledger before ending a pass\n  - require choosing work from the campaign pass structure or priority-target list\n\n- `CLI_DECOMPILATION_WORKFLOW.md`\n  - frame exports and proof packets as artifacts that must be registered in the ledger\n  - point conflict-state tracking to the ledger rather than scattered notes\n\n- `DECOMPILATION_STRATEGY.md`\n  - treat the ledger as the local campaign authority for in-progress state, while binary/runtime remain evidence authority\n\n- `decomp/README.md`\n  - explain that `decomp/` stores implementation artifacts while `RE_CAMPAIGN_MEMORY.md` stores campaign state and handoff memory\n\nAlso update those docs to repeat this rule:\n\n- `_refs/rood-reverse` may guide investigation\n- local `decomp/` artifacts, binary exports, and runtime captures must carry\n  the evidentiary weight\n\n### 5. Keep evidence and memory separate on purpose\n\nUse this division consistently:\n\n- `RE_CAMPAIGN_MEMORY.md`\n  - campaign state\n  - priorities\n  - handoff memory\n  - conflict summaries\n  - artifact links\n\n- `decomp/evidence/*`\n  - raw exports\n  - proof packets\n  - coverage outputs\n  - contradiction-specific evidence\n\n- `_refs/rood-reverse/*`\n  - helper corpus only\n  - can supply leads and candidate names\n  - should not be cited as final proof when a local artifact can be produced\n\n- existing opcode docs\n  - stable conclusions only\n  - not the place for active campaign state\n\nThis prevents the “working memory” from being mixed into stable reference notes too early.\n\n## Test Plan\n\n1. Dry-run a new session using only the docs.\n   - A fresh pass should be able to answer:\n     - what is the current phase?\n     - what target should I do next?\n     - what artifacts already exist?\n     - what conflicts are unresolved?\n     - when is runtime justified?\n\n2. Run one simulated handoff.\n   - One session updates `Session Handoff`.\n   - A second session should be able to resume without rereading the entire repo history.\n\n3. Validate one real target, `0x80`.\n   - Ledger should show:\n     - current status\n     - binary table owner\n     - handler owner\n     - open conflict\n     - linked evidence files\n     - next recommended pass\n   - If that can be represented cleanly, the structure is working.\n\n4. Check drift prevention.\n   - Every artifact named in the ledger should exist.\n   - Every `confirmed` target in the ledger should have an evidence link.\n   - No `runtime_needed` target should lack a stated static contradiction.\n\n## Assumptions\n\n- Use **one master ledger**, not per-track ledgers.\n- The campaign is **opcode/decomp-first**, not a whole-repo generic framework.\n- Existing stable notes such as `OPCODE_BEHAVIOR_REFERENCE.md` remain in place; they are not replaced by the ledger.\n- The ledger is intentionally markdown-first and human-maintained rather than generated.\n- `PCSX-Redux` remains a late-stage tie-breaker, not part of every pass.\n",
+    "markdown_with_json_links": "# Multi-Pass Opcode Decomp Campaign With Cross-Session Memory\n\n## Summary\n\nCreate one master campaign memory file, `RE_CAMPAIGN_MEMORY.md.json`, as the cross-session source of truth for opcode/decomp work, then align the existing workflow docs so every future session starts from that ledger and updates it in a consistent way.\n\nThis campaign is **opcode-first**. The first objective is not “fully name every opcode,” but to finish the foundational passes that make later semantic passes cheap and safe: table ownership, runtime-copy/patch paths, handler coverage, shared-handler clustering, and contradiction tracking.\n\n## Evidence Source Rule\n\nFor this campaign, keep the authority chain explicit:\n\n- the original binary plus runtime behavior are the ground truth\n- artifacts under `decomp/` are the local evidence authority\n- [`../../_refs/rood-reverse`](../../_refs/rood-reverse) is hint-only and may suggest\n  targets, addresses, or candidate meanings\n\nThat means:\n\n- never treat `_refs/rood-reverse` files as stand-alone proof in\n  `RE_CAMPAIGN_MEMORY.md.json`\n- never let a proof packet rely mainly on helper-decompiled C when the claim\n  can be converted into a local `Ghidra` export, local verification artifact,\n  or runtime capture\n- if a helper-repo idea matters, convert it into a local artifact first and\n  cite the local artifact as evidence\n- helper provenance can still be noted, but only after the local artifact\n  exists\n\n## Key Changes\n\n### 1. Add one master cross-session memory file\n\nCreate `RE_CAMPAIGN_MEMORY.md.json` at repo root.\n\nIt should be the first repo-specific file read at the start of any substantial opcode/decomp session, alongside `docs/workflows/DECOMPILATION_STRATEGY.md.json` and `docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`.\n\nUse this fixed structure:\n\n1. `Campaign Goal`\n   - One paragraph stating the current campaign objective: build a verified opcode/handler map for the battle-script system before promoting meanings.\n\n2. `Current Phase`\n   - One line with the active pass number and name.\n   - Example shape: `Current phase: Pass 2 - Handler coverage and classification`\n\n3. `Status Legend`\n   - Fixed statuses:\n     - `unstarted`\n     - `in_progress`\n     - `covered`\n     - `conflicted`\n     - `runtime_needed`\n     - `confirmed`\n\n4. `Pass Plan`\n   - Ordered list of passes with:\n     - pass id\n     - goal\n     - expected outputs\n     - exit condition\n   - This is the stable campaign backbone.\n\n5. `Priority Targets`\n   - Flat table for active opcode targets.\n   - Required columns:\n     - `target`\n     - `current_status`\n     - `table_owner`\n     - `handler_owner`\n     - `best_current_name`\n     - `blocking_question`\n     - `next_pass`\n     - `evidence_links`\n\n6. `Known Conflicts`\n   - One subsection per unresolved contradiction.\n   - Required fields:\n     - short conflict title\n     - what static evidence says\n     - what competing evidence says\n     - what is still missing\n     - whether runtime is justified yet\n\n7. `Artifacts Index`\n   - Flat list of key machine-readable exports and proof packets.\n   - Group by:\n     - table exports\n     - handler slices\n     - reconciliation reports\n     - proof packets\n\n8. `Session Handoff`\n   - Very short section updated every pass.\n   - Required fields:\n     - `last completed step`\n     - `next recommended step`\n     - `do not forget`\n   - This is the actual memory bridge for the next session.\n\n9. `Completed Milestones`\n   - Append-only short log of meaningful campaign completions.\n   - Use date + milestone + links.\n\nThe file should stay compact. It is a campaign ledger, not a narrative diary.\n\n### 2. Define the multi-pass campaign backbone\n\nThe master ledger should define these passes exactly:\n\n1. `Pass 0 - Bootstrap and inventory`\n   - Goal: identify all opcode-table owners, known initializers, copy sites, and likely patch points.\n   - Outputs:\n     - master list of tables\n     - overlay ownership notes\n     - first artifact index entries\n   - Exit condition: every known battle-script table has an owner and initializer note.\n\n2. `Pass 1 - Table export coverage`\n   - Goal: export binary-derived entries for every known relevant opcode table.\n   - Outputs:\n     - JSON table exports under `decomp/evidence`\n     - wrapper scripts under `decomp/ghidra`\n   - Exit condition: all targeted tables have reproducible exports with correct base-address notes.\n\n3. `Pass 2 - Handler coverage and classification`\n   - Goal: map every exported opcode to a handler address and classify unique handlers.\n   - Classifications:\n     - `stub`\n     - `real`\n     - `shared`\n     - `orphan_candidate`\n     - `unknown_gap`\n   - Outputs:\n     - coverage report\n     - shared-handler map\n   - Exit condition: every opcode in scope has a handler mapping and provisional class.\n\n4. `Pass 3 - Copy/patch reconciliation`\n   - Goal: determine whether runtime tables are copied only once or patched later.\n   - Outputs:\n     - copy-site notes\n     - patch-site notes\n     - unresolved runtime-needed list\n   - Exit condition: every conflict is labeled either `static_resolved` or `runtime_needed`.\n\n5. `Pass 4 - Semantic proof packets`\n   - Goal: produce focused proof packets only for the high-value or conflicted opcodes.\n   - Outputs:\n     - one markdown proof packet per disputed opcode family\n     - linked binary exports and script examples\n   - Exit condition: all priority targets have either `confirmed`, `tentative`, or `conflicted` status with explicit evidence.\n\n6. `Pass 5 - Naming and decoder updates`\n   - Goal: only after the earlier passes, promote safe names into `dump_mpd_script.py` and opcode notes.\n   - Outputs:\n     - decoder naming changes\n     - conclusion-note updates\n   - Exit condition: no name promotion lacks a proof-packet anchor.\n\n7. `Pass 6 - Audit and maintenance`\n   - Goal: keep the campaign from drifting.\n   - Outputs:\n     - contradiction audit\n     - stale-artifact audit\n     - missing-export audit\n   - Exit condition: ledger and artifacts still agree.\n\n### 3. Standardize how each future session uses the ledger\n\nUpdate the existing workflow docs so every session follows this sequence:\n\n1. Read:\n   - `RE_CAMPAIGN_MEMORY.md.json`\n   - `docs/workflows/DECOMPILATION_STRATEGY.md.json`\n   - `docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`\n\n2. Pick work only from:\n   - `Priority Targets`\n   - or the `next recommended step` in `Session Handoff`\n\n3. During the pass, produce one of:\n   - export artifact\n   - coverage artifact\n   - proof packet\n   - contradiction note\n   - and make sure it is a local artifact under `decomp/`, not just a helper\n     repo citation\n\n4. Before ending the pass, update only these ledger sections:\n   - `Current Phase`\n   - `Priority Targets`\n   - `Known Conflicts`\n   - `Artifacts Index`\n   - `Session Handoff`\n   - optional `Completed Milestones`\n\n5. Never let a session end with new evidence that exists only in terminal output.\n\n### 4. Align the current docs around the ledger\n\nUpdate these existing docs to reference the master memory file:\n\n- `README.md.json`\n  - add the new campaign ledger to the repo layout and explain that it is the cross-session memory entrypoint for opcode/decomp work\n\n- `docs/workflows/AI_RE_PASS_WORKFLOW.md.json`\n  - require reading `RE_CAMPAIGN_MEMORY.md.json` before choosing a target\n  - require updating the ledger before ending a pass\n  - require choosing work from the campaign pass structure or priority-target list\n\n- `docs/workflows/CLI_DECOMPILATION_WORKFLOW.md.json`\n  - frame exports and proof packets as artifacts that must be registered in the ledger\n  - point conflict-state tracking to the ledger rather than scattered notes\n\n- `docs/workflows/DECOMPILATION_STRATEGY.md.json`\n  - treat the ledger as the local campaign authority for in-progress state, while binary/runtime remain evidence authority\n\n- `decomp/README.md.json`\n  - explain that `decomp/` stores implementation artifacts while `RE_CAMPAIGN_MEMORY.md.json` stores campaign state and handoff memory\n\nAlso update those docs to repeat this rule:\n\n- `_refs/rood-reverse` may guide investigation\n- local `decomp/` artifacts, binary exports, and runtime captures must carry\n  the evidentiary weight\n\n### 5. Keep evidence and memory separate on purpose\n\nUse this division consistently:\n\n- `RE_CAMPAIGN_MEMORY.md.json`\n  - campaign state\n  - priorities\n  - handoff memory\n  - conflict summaries\n  - artifact links\n\n- `decomp/evidence/*`\n  - raw exports\n  - proof packets\n  - coverage outputs\n  - contradiction-specific evidence\n\n- `_refs/rood-reverse/*`\n  - helper corpus only\n  - can supply leads and candidate names\n  - should not be cited as final proof when a local artifact can be produced\n\n- existing opcode docs\n  - stable conclusions only\n  - not the place for active campaign state\n\nThis prevents the “working memory” from being mixed into stable reference notes too early.\n\n## Test Plan\n\n1. Dry-run a new session using only the docs.\n   - A fresh pass should be able to answer:\n     - what is the current phase?\n     - what target should I do next?\n     - what artifacts already exist?\n     - what conflicts are unresolved?\n     - when is runtime justified?\n\n2. Run one simulated handoff.\n   - One session updates `Session Handoff`.\n   - A second session should be able to resume without rereading the entire repo history.\n\n3. Validate one real target, `0x80`.\n   - Ledger should show:\n     - current status\n     - binary table owner\n     - handler owner\n     - open conflict\n     - linked evidence files\n     - next recommended pass\n   - If that can be represented cleanly, the structure is working.\n\n4. Check drift prevention.\n   - Every artifact named in the ledger should exist.\n   - Every `confirmed` target in the ledger should have an evidence link.\n   - No `runtime_needed` target should lack a stated static contradiction.\n\n## Assumptions\n\n- Use **one master ledger**, not per-track ledgers.\n- The campaign is **opcode/decomp-first**, not a whole-repo generic framework.\n- Existing stable notes such as `docs/campaign/OPCODE_BEHAVIOR_REFERENCE.md.json` remain in place; they are not replaced by the ledger.\n- The ledger is intentionally markdown-first and human-maintained rather than generated.\n- `PCSX-Redux` remains a late-stage tie-breaker, not part of every pass.\n"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "content": {
+    "document_type": "readme_navigation",
+    "readme_scope": "decomp/verification/test-runs/map001-main-menu-bridge",
+    "title": "MAP001 Main-Menu Bridge",
+    "summary": "This run folder preserves a two-pass `PCSX-Redux` handoff for the retail `MAP001` intro route:",
+    "source_markdown_path": "decomp/verification/test-runs/map001-main-menu-bridge/README.md",
+    "body": {
+      "content": [
+        {
+          "paragraph": "This run folder preserves a two-pass `PCSX-Redux` handoff for the retail\n`MAP001` intro route:",
+          "ulist": [
+            "`input-plan-01_create_init_main_menu.json`: cold-boots to the title menu,\nstops before `New Game`, and creates `save-states/init-main-menu.savestate`",
+            "`input-plan-02_resume_map001_intro.json`: loads that savestate and continues\nthe stripped `MAP001` listener-control route from `New Game`",
+            "Layout:",
+            {
+              "ulist": [
+                "`save-states/`: checked-in or newly created savestates for this run family",
+                "`artifacts/`: wrapper-managed snapshots, summaries, and screenshots created\nduring execution"
+              ]
+            }
+          ]
+        },
+        {
+          "paragraph": "Suggested wrapper shape:",
+          "code": "pwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -RunDirectory \"decomp/verification/test-runs/map001-main-menu-bridge\" `\n  -InputPlanPath \"decomp/verification/test-runs/map001-main-menu-bridge/input-plan-01_create_init_main_menu.json\"",
+          "language": "powershell"
+        }
+      ]
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "c92f69262d20b71d47c4be20e549019c5e7f32d55d54036461aab2761439b0be",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# MAP001 Main-Menu Bridge\n\nThis run folder preserves a two-pass `PCSX-Redux` handoff for the retail\n`MAP001` intro route:\n\n- `input-plan-01_create_init_main_menu.json`: cold-boots to the title menu,\n  stops before `New Game`, and creates `save-states/init-main-menu.savestate`\n- `input-plan-02_resume_map001_intro.json`: loads that savestate and continues\n  the stripped `MAP001` listener-control route from `New Game`\n\nLayout:\n\n- `save-states/`: checked-in or newly created savestates for this run family\n- `artifacts/`: wrapper-managed snapshots, summaries, and screenshots created\n  during execution\n\nSuggested wrapper shape:\n\n```powershell\npwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -RunDirectory \"decomp/verification/test-runs/map001-main-menu-bridge\" `\n  -InputPlanPath \"decomp/verification/test-runs/map001-main-menu-bridge/input-plan-01_create_init_main_menu.json\"\n```\n",
+    "markdown_with_json_links": "# MAP001 Main-Menu Bridge\n\nThis run folder preserves a two-pass `PCSX-Redux` handoff for the retail\n`MAP001` intro route:\n\n- `input-plan-01_create_init_main_menu.json`: cold-boots to the title menu,\n  stops before `New Game`, and creates `save-states/init-main-menu.savestate`\n- `input-plan-02_resume_map001_intro.json`: loads that savestate and continues\n  the stripped `MAP001` listener-control route from `New Game`\n\nLayout:\n\n- `save-states/`: checked-in or newly created savestates for this run family\n- `artifacts/`: wrapper-managed snapshots, summaries, and screenshots created\n  during execution\n\nSuggested wrapper shape:\n\n```powershell\npwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `\n  -IsoPath \"Game Data/Vagrant Story (USA).cue\" `\n  -RunDirectory \"decomp/verification/test-runs/map001-main-menu-bridge\" `\n  -InputPlanPath \"decomp/verification/test-runs/map001-main-menu-bridge/input-plan-01_create_init_main_menu.json\"\n```\n"
+  }
+}

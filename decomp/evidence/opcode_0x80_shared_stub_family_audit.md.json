@@ -1,0 +1,94 @@
+{
+  "content": {
+    "document_type": "opcode_evidence_packet",
+    "packet_id": "opcode_0x80_shared_stub_family_audit",
+    "title": "Opcode `0x80` Shared Stub Family Audit",
+    "summary": "Make the widened `0x800B66E4` family explicit so later naming work does not mistake shared table membership for direct semantic proof.",
+    "source_markdown_path": "decomp/evidence/opcode_0x80_shared_stub_family_audit.md",
+    "artifacts": [
+      "decomp/evidence/inittbl_opcode_table.json",
+      "decomp/evidence/battle_0x80_handler_slices.json",
+      "decomp/evidence/opcode_0x80_runtime_automation_summary.json"
+    ],
+    "findings": [
+      "`0x800B66E4` is a heterogeneous shared-stub family with `30` mapped opcode slots.",
+      "Static and runtime evidence both show that `0x80` is not uniquely special inside that family.",
+      "Shared-stub membership is a structural fact, not a semantic proof."
+    ],
+    "body": {
+      "sections": {
+        "goal": {
+          "heading": "Goal",
+          "content": [
+            {
+              "paragraph": "Make the widened `0x800B66E4` family explicit so future naming work does not\nmistake one shared `INITBTL.PRG` table target for direct user-facing proof of\ndialog, room, music, or sound semantics."
+            }
+          ]
+        },
+        "static-family-membership": {
+          "heading": "Static family membership",
+          "content": [
+            {
+              "paragraph": "`decomp/evidence/inittbl_opcode_table.json` maps `30` opcode slots to the same\n`INITBTL.PRG` handler address `0x800B66E4`:",
+              "ulist": [
+                "Named or semi-named members:\n`0x10` (`DialogShow`), `0x11` (`DialogText`), `0x22` (`ModelAnimate`),\n`0x44` (`SetEngineMode`), `0x54` (`BattleOver`), `0x69` (`LoadScene`),\n`0x6D` (`DisplayRoom`), `0x80` (`Opcode80SharedStub`), and\n`0x92` (`MusicPlay`)",
+                "Placeholder-heavy remainder:\n`0x13`, `0x32`, `0x35`, `0x36`, `0x43`, `0x48`, `0x81`, `0x82`, `0x8F`,\n`0x93`, `0x94`, `0x95`, `0x96`, `0x97`, `0x98`, `0x9B`, `0x9C`, `0x9F`,\n`0xA9`, and `0xBB`"
+              ]
+            },
+            {
+              "paragraph": "The current local `BATTLE.PRG` slice in\n`decomp/evidence/battle_0x80_handler_slices.json` still shows the target as a\ntwo-instruction return-zero stub:",
+              "code": "800b66e4 jr ra\n800b66e8 clear v0",
+              "language": "text"
+            }
+          ]
+        },
+        "why-the-widened-family-matters": {
+          "heading": "Why the widened family matters",
+          "content": [
+            {
+              "ulist": [
+                "The same stub now spans currently named dialog, model, engine-mode, room,\nbattle-end, and music-looking opcode slots in this table.",
+                "That means the `INITBTL.PRG` table hit is structural dispatch evidence, not\nstandalone proof that any one member of the family has a direct user-facing\nmeaning tied to `0x800B66E4`.",
+                "For `0x80` specifically, the widened family removes the last remaining\n\"maybe this one stub slot is secretly sound-special\" intuition.\nA sound-only reading is now less plausible because the same slot also owns\nclearly non-audio neighborhoods in the same export."
+              ]
+            }
+          ]
+        },
+        "retail-runtime-cross-check": {
+          "heading": "Retail runtime cross-check",
+          "content": [
+            {
+              "paragraph": "The validated `MAP001` listener-control packet keeps the widened family from\nbeing just a static-export curiosity:",
+              "ulist": [
+                "`decomp/evidence/opcode_0x80_runtime_automation_summary.json` records a\nhandler-probe plan that groups\n`0x10`, `0x11`, `0x22`, `0x69`, `0x6A`, `0x6D`, `0x80`, `0x82`, `0x92`,\n`0xA9`, and `0xBB` under `0x800B66E4`",
+                "The same checked retail run directly observes non-`0x80` members landing on\nthat stub in the live copied runtime table:\n`0x10 x1`, `0x13 x5`, `0x44 x7`, and `0x80 x1`"
+              ]
+            },
+            {
+              "paragraph": "That confirms the shared-family interpretation on retail runtime for more than\njust the `0x80-0x82` trio."
+            }
+          ]
+        },
+        "safe-campaign-consequence": {
+          "heading": "Safe campaign consequence",
+          "content": [
+            {
+              "ulist": [
+                "Keep `0x80` on the structural label `Opcode80SharedStub`.",
+                "Do not cite `0x800B66E4` table membership by itself as proof for\n`DialogShow`, `DialogText`, `ModelAnimate`, `SetEngineMode`, `BattleOver`,\n`LoadScene`, `DisplayRoom`, `MusicPlay`, or any placeholder member in this\nfamily.",
+                "Treat this audit as a guardrail: shared-stub membership is a \"do not\noverclaim\" fact, not a family-wide rollback order.",
+                "The next semantic pass for `0x80` should explain the surrounding\naudio-looking script sites through neighboring confirmed sound-family\nopcodes, prepared state, or other consumer paths, not by reviving the old\n`SoundEffects0` label."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "schema_version": "mdjson.v8",
+    "source_sha256": "3de62d5893b7a5e89e9c73c5ed5ac8b5a1e13a6302c1f83bb9114a8483835336",
+    "generated_from": "decomp/verification/upgrade_md_json.py",
+    "generated_at": "2026-05-01T21:42:26Z",
+    "raw_markdown": "# Opcode `0x80` Shared Stub Family Audit\n\n## Goal\n\nMake the widened `0x800B66E4` family explicit so future naming work does not\nmistake one shared `INITBTL.PRG` table target for direct user-facing proof of\ndialog, room, music, or sound semantics.\n\n## Static family membership\n\n`decomp/evidence/inittbl_opcode_table.json` maps `30` opcode slots to the same\n`INITBTL.PRG` handler address `0x800B66E4`:\n\n- Named or semi-named members:\n  `0x10` (`DialogShow`), `0x11` (`DialogText`), `0x22` (`ModelAnimate`),\n  `0x44` (`SetEngineMode`), `0x54` (`BattleOver`), `0x69` (`LoadScene`),\n  `0x6D` (`DisplayRoom`), `0x80` (`Opcode80SharedStub`), and\n  `0x92` (`MusicPlay`)\n- Placeholder-heavy remainder:\n  `0x13`, `0x32`, `0x35`, `0x36`, `0x43`, `0x48`, `0x81`, `0x82`, `0x8F`,\n  `0x93`, `0x94`, `0x95`, `0x96`, `0x97`, `0x98`, `0x9B`, `0x9C`, `0x9F`,\n  `0xA9`, and `0xBB`\n\nThe current local `BATTLE.PRG` slice in\n`decomp/evidence/battle_0x80_handler_slices.json` still shows the target as a\ntwo-instruction return-zero stub:\n\n```text\n800b66e4 jr ra\n800b66e8 clear v0\n```\n\n## Why the widened family matters\n\n- The same stub now spans currently named dialog, model, engine-mode, room,\n  battle-end, and music-looking opcode slots in this table.\n- That means the `INITBTL.PRG` table hit is structural dispatch evidence, not\n  standalone proof that any one member of the family has a direct user-facing\n  meaning tied to `0x800B66E4`.\n- For `0x80` specifically, the widened family removes the last remaining\n  \"maybe this one stub slot is secretly sound-special\" intuition.\n  A sound-only reading is now less plausible because the same slot also owns\n  clearly non-audio neighborhoods in the same export.\n\n## Retail runtime cross-check\n\nThe validated `MAP001` listener-control packet keeps the widened family from\nbeing just a static-export curiosity:\n\n- `decomp/evidence/opcode_0x80_runtime_automation_summary.json` records a\n  handler-probe plan that groups\n  `0x10`, `0x11`, `0x22`, `0x69`, `0x6A`, `0x6D`, `0x80`, `0x82`, `0x92`,\n  `0xA9`, and `0xBB` under `0x800B66E4`\n- The same checked retail run directly observes non-`0x80` members landing on\n  that stub in the live copied runtime table:\n  `0x10 x1`, `0x13 x5`, `0x44 x7`, and `0x80 x1`\n\nThat confirms the shared-family interpretation on retail runtime for more than\njust the `0x80-0x82` trio.\n\n## Safe campaign consequence\n\n- Keep `0x80` on the structural label `Opcode80SharedStub`.\n- Do not cite `0x800B66E4` table membership by itself as proof for\n  `DialogShow`, `DialogText`, `ModelAnimate`, `SetEngineMode`, `BattleOver`,\n  `LoadScene`, `DisplayRoom`, `MusicPlay`, or any placeholder member in this\n  family.\n- Treat this audit as a guardrail: shared-stub membership is a \"do not\n  overclaim\" fact, not a family-wide rollback order.\n- The next semantic pass for `0x80` should explain the surrounding\n  audio-looking script sites through neighboring confirmed sound-family\n  opcodes, prepared state, or other consumer paths, not by reviving the old\n  `SoundEffects0` label.\n",
+    "markdown_with_json_links": "# Opcode `0x80` Shared Stub Family Audit\n\n## Goal\n\nMake the widened `0x800B66E4` family explicit so future naming work does not\nmistake one shared `INITBTL.PRG` table target for direct user-facing proof of\ndialog, room, music, or sound semantics.\n\n## Static family membership\n\n`decomp/evidence/inittbl_opcode_table.json` maps `30` opcode slots to the same\n`INITBTL.PRG` handler address `0x800B66E4`:\n\n- Named or semi-named members:\n  `0x10` (`DialogShow`), `0x11` (`DialogText`), `0x22` (`ModelAnimate`),\n  `0x44` (`SetEngineMode`), `0x54` (`BattleOver`), `0x69` (`LoadScene`),\n  `0x6D` (`DisplayRoom`), `0x80` (`Opcode80SharedStub`), and\n  `0x92` (`MusicPlay`)\n- Placeholder-heavy remainder:\n  `0x13`, `0x32`, `0x35`, `0x36`, `0x43`, `0x48`, `0x81`, `0x82`, `0x8F`,\n  `0x93`, `0x94`, `0x95`, `0x96`, `0x97`, `0x98`, `0x9B`, `0x9C`, `0x9F`,\n  `0xA9`, and `0xBB`\n\nThe current local `BATTLE.PRG` slice in\n`decomp/evidence/battle_0x80_handler_slices.json` still shows the target as a\ntwo-instruction return-zero stub:\n\n```text\n800b66e4 jr ra\n800b66e8 clear v0\n```\n\n## Why the widened family matters\n\n- The same stub now spans currently named dialog, model, engine-mode, room,\n  battle-end, and music-looking opcode slots in this table.\n- That means the `INITBTL.PRG` table hit is structural dispatch evidence, not\n  standalone proof that any one member of the family has a direct user-facing\n  meaning tied to `0x800B66E4`.\n- For `0x80` specifically, the widened family removes the last remaining\n  \"maybe this one stub slot is secretly sound-special\" intuition.\n  A sound-only reading is now less plausible because the same slot also owns\n  clearly non-audio neighborhoods in the same export.\n\n## Retail runtime cross-check\n\nThe validated `MAP001` listener-control packet keeps the widened family from\nbeing just a static-export curiosity:\n\n- `decomp/evidence/opcode_0x80_runtime_automation_summary.json` records a\n  handler-probe plan that groups\n  `0x10`, `0x11`, `0x22`, `0x69`, `0x6A`, `0x6D`, `0x80`, `0x82`, `0x92`,\n  `0xA9`, and `0xBB` under `0x800B66E4`\n- The same checked retail run directly observes non-`0x80` members landing on\n  that stub in the live copied runtime table:\n  `0x10 x1`, `0x13 x5`, `0x44 x7`, and `0x80 x1`\n\nThat confirms the shared-family interpretation on retail runtime for more than\njust the `0x80-0x82` trio.\n\n## Safe campaign consequence\n\n- Keep `0x80` on the structural label `Opcode80SharedStub`.\n- Do not cite `0x800B66E4` table membership by itself as proof for\n  `DialogShow`, `DialogText`, `ModelAnimate`, `SetEngineMode`, `BattleOver`,\n  `LoadScene`, `DisplayRoom`, `MusicPlay`, or any placeholder member in this\n  family.\n- Treat this audit as a guardrail: shared-stub membership is a \"do not\n  overclaim\" fact, not a family-wide rollback order.\n- The next semantic pass for `0x80` should explain the surrounding\n  audio-looking script sites through neighboring confirmed sound-family\n  opcodes, prepared state, or other consumer paths, not by reviving the old\n  `SoundEffects0` label.\n"
+  }
+}
