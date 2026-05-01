@@ -12,6 +12,7 @@ Default read set for the next opcode/decomp pass:
 If the next pass is continuing `0x80`, add:
 
 - [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md)
+- [`decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md)
 - [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json)
 - [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
 
@@ -124,7 +125,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `runtime_needed` | `INITBTL.PRG` static table at `0x800FAF7C`, copied by the init-time routine at `0x800FAAAC` into runtime slot `0x800F4C28` | Initial slot `0x800B66E4` is a shared stub for `0x80-0x82`; former competing target `0x800BA2E0` is now locally anchored to the `BATTLE.PRG` sound subdispatch table at `0x800E9F30`; recovered reader `FUN_800BFBB8` dispatches through the copied runtime table via `jalr` | `SoundEffects0` placeholder only | Do runtime dumps from `0x800F4C28` ever diverge from the binary baseline before `0x80-0x82` dispatch, and if so which handlers replace `0x800B66E4`? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md), [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md) |
+| `opcode 0x80` | `runtime_needed` | `INITBTL.PRG` static table at `0x800FAF7C`, copied by the init-time routine at `0x800FAAAC` into runtime slot `0x800F4C28` | Initial slot `0x800B66E4` is a shared stub for `0x80-0x82`; former competing target `0x800BA2E0` is now locally anchored to the `BATTLE.PRG` sound subdispatch table at `0x800E9F30`; recovered reader `FUN_800BFBB8` dispatches through the copied runtime table via `jalr` | `SoundEffects0` placeholder only | Do runtime dumps from `0x800F4C28` ever diverge from the binary baseline before `0x80-0x82` dispatch, and if not, which later reader or rewrite site actually governs the disputed live behavior? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md), [`opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md), [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md) |
 
 ## Known Conflicts
 
@@ -169,7 +170,12 @@ Current phase: Pass 3 - Copy/patch reconciliation
   the `New Game` branch, not the old blank-card branch itself.
   If both tracked snapshots still match the baseline and the table write
   watchpoint stays quiet, this contradiction can be downgraded to
-  `static_resolved` and carried forward into `Pass 4`.
+  `static_resolved` and carried forward into `Pass 4`. The newer bat-control
+  negative run raises a second runtime interpretation to test explicitly: if
+  early live gameplay plus a first combat exchange still produce no
+  `0x800BFBB8` hit, then the next decisive pass may need to discover a later
+  copied-table reader or a more exact script/cutscene trigger, not just prove
+  "gameplay happened."
 - Is runtime justified yet:
   Yes. Static sweeps have narrowed the contradiction enough that `PCSX-Redux`
   is now the clean tie-breaker.
@@ -207,14 +213,20 @@ Use the artifact index for:
   not exercise the watched runtime reader.
 - `next recommended step`: keep the preserved bat-control route as a
   regression/control artifact, but stop spending passes on blind cold-boot
-  timing tweaks alone. Prefer running
-  `decomp/verification/run_opcode_0x80_runtime_capture.ps1` with a near-battle
-  or target-cutscene savestate (`-UseNewestSaveState` or `-SaveStatePath`).
-  If no savestate is available yet, pivot the Lua capture toward broader copied
-  table reader discovery instead of assuming `0x800BFBB8` should fire as soon
-  as player control or the first bat encounter begins. Once a run reaches a
-  real reader or rewrite site, capture `after_init` and `pre_dispatch`, then
-  run `decomp/verification/finalize_runtime_observation.py --in-place`. If the
+  timing tweaks alone. Preferred order for the next runtime pass:
+  1. run `decomp/verification/run_opcode_0x80_runtime_capture.ps1` with a
+     near-battle or target-cutscene savestate (`-UseNewestSaveState` or
+     `-SaveStatePath`)
+  2. if no savestate exists yet, pivot the Lua capture toward broader copied
+     table reader discovery or later script/cutscene triggers instead of
+     assuming `0x800BFBB8` should fire as soon as player control or the first
+     bat encounter begins
+  3. use the bat-control route only as a regression check after instrumentation
+     changes, because it already proved that early live gameplay is a weak
+     trigger for this contradiction
+  Once a run reaches a real reader or rewrite site, capture `after_init` and
+  `pre_dispatch`, then run
+  `decomp/verification/finalize_runtime_observation.py --in-place`. If the
   compare report shows `0x80-0x82` rewrites, immediately import those rows with
   `record_runtime_observation.py import-compare --replace-derived --finalize`.
   If both snapshots match the baseline and no rewrite evidence appears, relabel
