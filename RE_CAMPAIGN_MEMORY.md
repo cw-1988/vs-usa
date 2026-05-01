@@ -13,6 +13,7 @@ If the next pass is continuing `0x80`, add:
 
 - [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md)
 - [`decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md)
+- [`decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`](decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json)
 - [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json)
 - [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json)
 - [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
@@ -126,7 +127,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `runtime_needed` | `INITBTL.PRG` static table at `0x800FAF7C`, copied by the init-time routine at `0x800FAAAC` into runtime slot `0x800F4C28` | Initial slot `0x800B66E4` is a shared stub for `0x80-0x82`; former competing target `0x800BA2E0` is now locally anchored to the `BATTLE.PRG` sound subdispatch table at `0x800E9F30`; recovered reader `FUN_800BFBB8` dispatches through the copied runtime table via `jalr` | `SoundEffects0` placeholder only | Do runtime dumps from `0x800F4C28` ever diverge from the binary baseline before `0x80-0x82` dispatch, and if not, which later reader or rewrite site actually governs the disputed live behavior? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_reader_call_chain_static.md`](decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md), [`opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md), [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md) |
+| `opcode 0x80` | `runtime_needed` | `INITBTL.PRG` static table at `0x800FAF7C`, copied by the init-time routine at `0x800FAAAC` into runtime slot `0x800F4C28` | Initial slot `0x800B66E4` is a shared stub for `0x80-0x82`; former competing target `0x800BA2E0` is now locally anchored to the `BATTLE.PRG` sound subdispatch table at `0x800E9F30`; recovered reader `FUN_800BFBB8` dispatches through the copied runtime table via `jalr` | `SoundEffects0` placeholder only | Do runtime dumps from `0x800F4C28` ever diverge from the binary baseline before `0x80-0x82` dispatch, and if not, which later reader or rewrite site actually governs the disputed live behavior? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_reader_call_chain_static.md`](decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md), [`opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md), [`opcode_0x80_runtime_input_plan_bat_kill.json`](decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json), [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md) |
 
 ## Known Conflicts
 
@@ -177,6 +178,9 @@ Current phase: Pass 3 - Copy/patch reconciliation
   first bat, yet still recorded no `0x800BFBB8` reader hit, no candidate hit,
   no table-write hit, and no snapshots. The widened rerun now also armed probe
   breakpoints for `0x800BF850` and `0x8007A36C`, and those stayed silent too.
+  The runtime summary now also preserves per-step input-plan start/complete
+  notes with frame numbers, so route drift can be checked from one JSON packet
+  before opening screenshot crumbs or retuning button timing again.
   The next decisive pass therefore needs either a nearer savestate or a wider
   trigger search beyond that recovered reader chain, not more blind proof that
   "gameplay happened."
@@ -239,7 +243,10 @@ Use the artifact index for:
   and the first combat exchange still do not enter the recovered reader chain.
   This confirms that the retail-disc automation path is functional and
   reproducible, but it does not yet confirm that the disputed trigger itself
-  has been reached.
+  has been reached. The checked-in automation summary now also records
+  step-level input-plan start/complete notes with frame numbers, so future
+  retunes can distinguish route drift from breakpoint silence without leaning
+  only on screenshot review.
 - `next recommended step`: keep the preserved bat-control route as a
   regression/control artifact, but stop spending passes on blind cold-boot
   timing tweaks alone. Preferred order for the next runtime pass:
@@ -254,7 +261,11 @@ Use the artifact index for:
   3. use the bat-control route only as a regression check after instrumentation
      changes, because it already proved that early live gameplay is a weak
      trigger for this contradiction
-  4. if the widened pass still stays silent, record which copied-table reader,
+  4. when a regression run stays silent, read the step-level notes in
+     `opcode_0x80_runtime_automation_summary.json` first to confirm whether the
+     route still reached the intended control handoff before spending time on
+     screenshots or timing churn
+  5. if the widened pass still stays silent, record which copied-table reader,
      script family, or cutscene hook becomes the next candidate before trying
      another cold-boot timing retune
   Once a run reaches a real reader or rewrite site, capture `after_init` and
@@ -333,6 +344,12 @@ Use the artifact index for:
   [`decomp/evidence/battle_runtime_reader_xrefs.json`](decomp/evidence/battle_runtime_reader_xrefs.json),
   [`decomp/evidence/battle_runtime_reader_caller_xrefs.json`](decomp/evidence/battle_runtime_reader_caller_xrefs.json),
   [`decomp/evidence/battle_runtime_reader_call_chain_slices.json`](decomp/evidence/battle_runtime_reader_call_chain_slices.json),
+  [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json)
+- `2026-05-01`: taught the `0x80` runtime capture Lua to log each input-plan
+  step start/completion to the console and preserved those frame-stamped notes
+  in the automation summary JSON, so future cold-boot regressions can tell
+  route drift from breakpoint silence faster. Links:
+  [`decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](decomp/verification/pcsx_redux_opcode_0x80_capture.lua),
   [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json)
 - `2026-04-30`: made the automated `PCSX-Redux` runtime path savestate-ready
   and validated the scripted capture path against the local disc image. Links:
