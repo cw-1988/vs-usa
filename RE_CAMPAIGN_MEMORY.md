@@ -13,6 +13,7 @@ If the next pass is continuing `0x80`, add:
 
 - [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md)
 - [`decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md)
+- [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json)
 - [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json)
 - [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
 
@@ -166,16 +167,20 @@ Current phase: Pass 3 - Copy/patch reconciliation
   then sends two delayed `START` skips as control-handoff probes. That pass
   extended the timeout to `4380` frames and still recorded no
   `0x800BFBB8` reader hit, no table-write hit, and no snapshots, so the
-  remaining cold-boot blocker is now the post-title gameplay-entry timing after
-  the `New Game` branch, not the old blank-card branch itself.
+  old blank-card branch is no longer the live question. The preserved
+  bat-control follow-up went farther: it reached player control, rotated into
+  the adjacent room, unsheathed, opened the attack sphere, and attacked the
+  first bat, yet still recorded no `0x800BFBB8` reader hit, no candidate hit,
+  no table-write hit, and no snapshots. The next decisive pass therefore needs
+  either a nearer savestate or broader reader/trigger discovery, not more
+  blind proof that "gameplay happened."
   If both tracked snapshots still match the baseline and the table write
   watchpoint stays quiet, this contradiction can be downgraded to
-  `static_resolved` and carried forward into `Pass 4`. The newer bat-control
-  negative run raises a second runtime interpretation to test explicitly: if
-  early live gameplay plus a first combat exchange still produce no
-  `0x800BFBB8` hit, then the next decisive pass may need to discover a later
-  copied-table reader or a more exact script/cutscene trigger, not just prove
-  "gameplay happened."
+  `static_resolved` and carried forward into `Pass 4`. If the next widened
+  runtime pass still finds no copied-table reads or rewrites around the real
+  target moment, then the working assumption that `FUN_800BFBB8` is the
+  decisive live reader for this contradiction should be reopened explicitly in
+  the notes rather than protected by more cold-boot route churn.
 - Is runtime justified yet:
   Yes. Static sweeps have narrowed the contradiction enough that `PCSX-Redux`
   is now the clean tie-breaker.
@@ -224,6 +229,9 @@ Use the artifact index for:
   3. use the bat-control route only as a regression check after instrumentation
      changes, because it already proved that early live gameplay is a weak
      trigger for this contradiction
+  4. if the widened pass still stays silent, record which copied-table reader,
+     script family, or cutscene hook becomes the next candidate before trying
+     another cold-boot timing retune
   Once a run reaches a real reader or rewrite site, capture `after_init` and
   `pre_dispatch`, then run
   `decomp/verification/finalize_runtime_observation.py --in-place`. If the
