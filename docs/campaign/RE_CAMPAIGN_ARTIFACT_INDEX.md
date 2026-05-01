@@ -62,6 +62,8 @@ evidence under `decomp/`.
 - [`../../decomp/evidence/opcode_0x80_cli_pass.md`](../../decomp/evidence/opcode_0x80_cli_pass.md)
 - [`../../decomp/evidence/opcode_0x80_semantic_proof.md`](../../decomp/evidence/opcode_0x80_semantic_proof.md)
 - [`../../decomp/evidence/opcode_0x80_neighbor_sound_context.md`](../../decomp/evidence/opcode_0x80_neighbor_sound_context.md)
+- [`../../decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md`](../../decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md)
+- [`../../decomp/evidence/opcode_0x80_neighbor_consumer_scan.json`](../../decomp/evidence/opcode_0x80_neighbor_consumer_scan.json)
 - [`../../decomp/evidence/opcode_0x80_shared_stub_family_audit.md`](../../decomp/evidence/opcode_0x80_shared_stub_family_audit.md)
 - [`../../decomp/evidence/opcode_0x80_runtime_observation_template.json`](../../decomp/evidence/opcode_0x80_runtime_observation_template.json)
 - [`../../decomp/evidence/opcode_0x80_runtime_observation.json`](../../decomp/evidence/opcode_0x80_runtime_observation.json)

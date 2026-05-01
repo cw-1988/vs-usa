@@ -1,0 +1,91 @@
+{
+  "files_with_legacy_0x80": 127,
+  "files_with_any_complete_neighbor_pair_before_first_0x80": 85,
+  "complete_pair_counts_before_first_0x80": {
+    "0x85/0x88 LoadSfxSlot + SetCurrentSfx": 83,
+    "0x90/0x92 LoadMusicSlot + MusicPlay": 20,
+    "0x9D/0x9E LoadSoundFileById + ProcessSoundQueue": 44
+  },
+  "combination_counts_before_first_0x80": {
+    "none": 42,
+    "sfx_pair_only": 40,
+    "queue_pair_only": 1,
+    "music_pair_plus_sfx_pair": 1,
+    "music_pair_plus_queue_pair": 1,
+    "queue_pair_plus_sfx_pair": 24,
+    "music_pair_plus_queue_pair_plus_sfx_pair": 18
+  },
+  "closest_complete_pair_before_first_0x80": {
+    "0x85/0x88 LoadSfxSlot + SetCurrentSfx": 62,
+    "0x90/0x92 LoadMusicSlot + MusicPlay": 10,
+    "0x9D/0x9E LoadSoundFileById + ProcessSoundQueue": 13
+  },
+  "representative_scenes": {
+    "MAP001_intro": {
+      "file": "decoded_scripts/24-Unmapped/001-Unknown Room.txt",
+      "first_0x80": "0x0155",
+      "families_before_first_0x80": {
+        "music_pair": {
+          "last_opcode_addr": "0x0010",
+          "distance_to_first_0x80": "0x0145"
+        },
+        "sfx_pair": {
+          "last_opcode_addr": "0x00A7",
+          "distance_to_first_0x80": "0x00AE"
+        }
+      },
+      "closest_family_before_first_0x80": "sfx_pair",
+      "notes": "Closest prepared state is the 0x85/0x88 SFX-slot pair; the earlier 0x92 looks more like background music bring-up than the immediate consumer for the later burst."
+    },
+    "MAP026_gallows": {
+      "file": "decoded_scripts/1-Wine Cellar/026-The Gallows.txt",
+      "first_0x80": "0x00EB",
+      "families_before_first_0x80": {
+        "queue_pair": {
+          "last_opcode_addr": "0x0058",
+          "distance_to_first_0x80": "0x0093"
+        },
+        "music_pair": {
+          "last_opcode_addr": "0x0062",
+          "distance_to_first_0x80": "0x0089"
+        },
+        "sfx_pair": {
+          "last_opcode_addr": "0x0091",
+          "distance_to_first_0x80": "0x005A"
+        }
+      },
+      "closest_family_before_first_0x80": "sfx_pair",
+      "later_rearm_before_later_0x80": {
+        "queue_pair": {
+          "last_opcode_addr": "0x028E",
+          "next_0x80": "0x02D5",
+          "distance": "0x0047"
+        }
+      },
+      "notes": "First burst most closely follows the SFX-slot pair, but the later 0x9D/0x9E re-arm before 0x02D5 shows the same scene also uses the sound-file queue path without needing 0x80 itself to be the sound trigger."
+    },
+    "MAP415_dark_tempts_ashley": {
+      "file": "decoded_scripts/23-Great Cathedral/415-The Dark tempts Ashley.txt",
+      "first_0x80": "0x00A7",
+      "families_before_first_0x80": {
+        "queue_pair": {
+          "last_opcode_addr": "0x001B",
+          "distance_to_first_0x80": "0x008C"
+        },
+        "music_pair": {
+          "last_opcode_addr": "0x0021",
+          "distance_to_first_0x80": "0x0086"
+        }
+      },
+      "closest_family_before_first_0x80": "music_pair",
+      "later_rearm_before_later_0x80": {
+        "music_pair_partial": {
+          "last_opcode_addr": "0x04A1",
+          "next_0x80": "0x0533",
+          "distance": "0x0092"
+        }
+      },
+      "notes": "This scene has no 0x85/0x88 SFX pair before the sampled 0x80 bursts; the local file instead stages queue and music-slot state up front, then later refreshes the music-slot side again before more 0x80 beats."
+    }
+  }
+}

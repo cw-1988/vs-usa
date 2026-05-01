@@ -266,6 +266,19 @@ Current narrow:
   opcodes before later `0x80` bursts appear.
   That makes the old name unnecessary for many audio-looking scenes even
   before the final consumer path is fully traced.
+- A stricter first-burst prepared-state comparison now sharpens that result.
+  `85` of those `127` files already stage at least one complete neighboring
+  sound pair before the first `0x80` in the same file:
+  `83` stage `0x85/0x88`, `44` stage `0x9D/0x9E`, and `20` stage
+  `0x90/0x92`.
+  When multiple complete pairs exist, the closest pair before the first
+  `0x80` is the SFX-slot path in `62` files, the queue path in `13`, and the
+  music-slot path in `10`.
+  That turns the neighboring-family explanation from a loose co-hosting hint
+  into a scene-ordering result: the default local replacement for the old
+  `SoundEffects0` reading is usually the already-proven `0x85/0x88`
+  prepared-state path, with `MAP026`-style queue re-arms and `MAP415`-style
+  music-heavy scenes covering important exceptions.
 - `LoadSoundFileById` and `ProcessSoundQueue` are especially strong locally
   because real scripts commonly pair `9D xx` with a later `9E`.
 - `LoadSfxSlot`, `FreeSfxSlot`, `SetCurrentSfx`, `LoadMusicSlot`, and
@@ -280,6 +293,11 @@ What is still missing for `Confirmed`:
   scenes already contain explicit `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, or
   `0x9E` setup, but it still does not identify which downstream consumer turns
   that prepared state into the audible result for each scene.
+- The stricter first-burst scan leaves a concrete residual set:
+  `42` currently decoded `0x80` files still reach their first `0x80` without
+  any complete neighboring sound pair in the same file before it.
+  Those scenes now need carried-state, cross-script, or non-paired neighbor
+  explanations rather than another attempt to reinterpret the verified stub.
 - A consumer-path explanation strong enough to account for those scenes without
   leaning on the widened `0x800B66E4` stub family as if it were direct audio
   proof.

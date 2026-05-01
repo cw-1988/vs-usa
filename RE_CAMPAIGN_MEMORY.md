@@ -129,7 +129,7 @@ Current phase: Pass 5 - Naming and decoder updates
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `tentative` | `INITBTL.PRG` static table at `0x800FAF7C`, copied by the init-time routine at `0x800FAAAC` into pointer slot `0x800F4C28` and resolved live at `0x801119F0`; checked `after_init` and `pre_dispatch` snapshots still match that copied baseline byte-for-byte | Initial slot `0x800B66E4` is a shared return-zero stub reused by a widened `30`-opcode `INITBTL.PRG` family that includes named dialog, model, room, battle-end, and music-looking members as well as `0x80-0x82`; former competing target `0x800BA2E0` is now locally anchored to the separate `BATTLE.PRG` sound subdispatch table at `0x800E9F30`; recovered reader `FUN_800BFBB8` dispatches through the copied runtime table via `jalr`, and the validated `MAP001` listener-control run logs retail `0x10`, `0x13`, `0x44`, and `0x80` landing on `0x800B66E4` with no post-init table-write hits | `Opcode80SharedStub` | Now that the widened `0x800B66E4` family is explicit, which neighboring opcodes or prepared-state paths explain the audio-looking `0x80` script sites well enough to retire the historical sound label everywhere? | `Pass 5 - Naming and decoder updates` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_semantic_proof.md`](decomp/evidence/opcode_0x80_semantic_proof.md), [`opcode_0x80_neighbor_sound_context.md`](decomp/evidence/opcode_0x80_neighbor_sound_context.md), [`opcode_0x80_shared_stub_family_audit.md`](decomp/evidence/opcode_0x80_shared_stub_family_audit.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_reader_call_chain_static.md`](decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md), [`opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md), [`opcode_0x80_runtime_input_plan_bat_kill.json`](decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json), [`opcode_0x80_runtime_input_plan_map001_listener.json`](decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json), [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md) |
+| `opcode 0x80` | `tentative` | `INITBTL.PRG` static table at `0x800FAF7C`, copied by the init-time routine at `0x800FAAAC` into pointer slot `0x800F4C28` and resolved live at `0x801119F0`; checked `after_init` and `pre_dispatch` snapshots still match that copied baseline byte-for-byte | Initial slot `0x800B66E4` is a shared return-zero stub reused by a widened `30`-opcode `INITBTL.PRG` family that includes named dialog, model, room, battle-end, and music-looking members as well as `0x80-0x82`; former competing target `0x800BA2E0` is now locally anchored to the separate `BATTLE.PRG` sound subdispatch table at `0x800E9F30`; recovered reader `FUN_800BFBB8` dispatches through the copied runtime table via `jalr`, and the validated `MAP001` listener-control run logs retail `0x10`, `0x13`, `0x44`, and `0x80` landing on `0x800B66E4` with no post-init table-write hits | `Opcode80SharedStub` | After the first-burst prepared-state scan, which of the remaining `42` legacy-`0x80` files without a complete pre-burst neighbor pair still need carried-state or cross-script explanation, and when do `0x9D/0x9E` or `0x90/0x92` outrank the default `0x85/0x88` path? | `Pass 5 - Naming and decoder updates` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_semantic_proof.md`](decomp/evidence/opcode_0x80_semantic_proof.md), [`opcode_0x80_neighbor_sound_context.md`](decomp/evidence/opcode_0x80_neighbor_sound_context.md), [`opcode_0x80_neighbor_consumer_comparison.md`](decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md), [`opcode_0x80_neighbor_consumer_scan.json`](decomp/evidence/opcode_0x80_neighbor_consumer_scan.json), [`opcode_0x80_shared_stub_family_audit.md`](decomp/evidence/opcode_0x80_shared_stub_family_audit.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_reader_call_chain_static.md`](decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md), [`opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md), [`opcode_0x80_runtime_input_plan_bat_kill.json`](decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json), [`opcode_0x80_runtime_input_plan_map001_listener.json`](decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json), [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md) |
 
 ## Known Conflicts
 
@@ -185,8 +185,20 @@ Current phase: Pass 5 - Naming and decoder updates
   `0x9E` sound-family neighbors, and representative scenes such as `MAP001`,
   `MAP026`, and `MAP415` arm those neighboring paths before later `0x80`
   bursts.
-  What still stays open is which one of those prepared-state families is the
-  decisive consumer for each scene.
+  The stricter first-burst comparison now narrows that further:
+  `85` files already stage at least one complete neighboring sound pair before
+  the first `0x80`, and the closest such pair is the `0x85/0x88` SFX path in
+  `62` of those files, the `0x9D/0x9E` queue path in `13`, and the
+  `0x90/0x92` music path in `10`.
+  Representative scenes now split more cleanly:
+  `MAP001` and the first `MAP026` burst align most closely with the SFX-slot
+  pair, later `MAP026` beats get a fresher `0x9D/0x9E` queue re-arm, and
+  `MAP415` relies on queue-plus-music setup without any earlier `0x85/0x88`
+  pair.
+  What still stays open is the residual set:
+  the `42` currently decoded files whose first `0x80` appears before any
+  complete neighboring pair in the same file, plus the exact consumer split
+  between the queue and music families in the non-SFX scenes.
 - Is runtime justified yet:
   Not for the copy/patch tie-breaker.
   Keep the validated `MAP001` listener route only as a regression path when
@@ -213,34 +225,41 @@ Use the artifact index for:
 
 ## Session Handoff
 
-- `last completed step`: the `Pass 5` neighboring-sound context packet for
-  `0x80` is now checked in.
-  The validated `MAP001` listener-control route and shared-family audit had
-  already closed the direct-handler question.
+- `last completed step`: the `Pass 5` neighboring-consumer comparison packet
+  for `0x80` is now checked in.
+  The earlier neighboring-context scan already showed that many
+  audio-looking `0x80` scenes co-host explicit `0x85`, `0x88`, `0x90`,
+  `0x92`, `0x9D`, and `0x9E` setup in the same file.
   The new packet
-  [`opcode_0x80_neighbor_sound_context.md`](decomp/evidence/opcode_0x80_neighbor_sound_context.md)
-  adds the positive script-side explanation the handoff asked for:
-  many representative audio-looking `0x80` scenes already co-host explicit
-  `0x85`, `0x88`, `0x90`, `0x92`, `0x9D`, and `0x9E` setup, so the historical
-  sound label is no longer the least-bad explanation for those moments.
+  [`opcode_0x80_neighbor_consumer_comparison.md`](decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md)
+  sharpens that into a first-burst ordering result:
+  `85` of the `127` legacy-`0x80` files already stage a complete neighboring
+  sound pair before the first `0x80`, and the closest such pair is the
+  `0x85/0x88` SFX path in `62` files, the `0x9D/0x9E` queue path in `13`,
+  and the `0x90/0x92` music path in `10`.
 - `next recommended step`: keep `0x80` as a `Pass 5` semantic cleanup target,
   not a runtime blocker. Preferred order for the next pass:
-  1. use the shared-family audit plus the neighboring-context packet as naming
-     constraints:
+  1. use the shared-family audit plus the neighboring-context and
+     neighboring-consumer packets as naming constraints:
      do not treat `0x800B66E4` table membership as standalone proof for
      `0x80`, `0x10`, `0x11`, `0x22`, `0x69`, `0x6D`, `0x92`, or any other
      member of the widened cluster, and do not treat script-side co-location
      alone as proof that `0x80` is itself the direct sound trigger
-  2. focus the next semantic pass on the consumer relationship between the
-     already-proven neighboring sound families:
-     compare how `0x9D` plus `0x9E` queueing, `0x90` plus `0x92` music-slot
-     playback, and `0x85` plus `0x88` SFX-slot selection account for the same
-     representative `MAP001`, `MAP026`, and `MAP415` scenes
-  3. if a new semantic theory needs live checking, rerun the validated
+  2. focus the next semantic pass on the residual set instead of the already
+     explained majority:
+     inspect the `42` currently decoded files whose first `0x80` appears
+     before any complete neighboring pair in the same file, and decide whether
+     they depend on carried state, cross-script setup, or partial neighbor
+     sequences
+  3. within the non-SFX scenes, compare how the `0x9D` plus `0x9E` queue path
+     and the `0x90` plus `0x92` music path divide responsibility so
+     `MAP415`-style cases do not get forced back into a fake direct `0x80`
+     meaning
+  4. if a new semantic theory needs live checking, rerun the validated
      `MAP001` listener route with
      `decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json`
      so the probe set stays grounded in the same retail intro script
-  4. keep the bat-control route only as a negative-control regression, because
+  5. keep the bat-control route only as a negative-control regression, because
      it still proves that early free movement/combat is a poor proxy trigger
      for the intro-side `0x80` question
 - `do not forget`: preserve the distinction between structural proof and
@@ -252,6 +271,25 @@ Use the artifact index for:
 
 ## Completed Milestones
 
+- `2026-05-01`: completed the `Pass 5` neighboring-consumer comparison packet
+  for `0x80`.
+  The stricter first-burst scan now shows that `85` of the `127` decoded files
+  with legacy-rendered `0x80` lines already stage at least one complete
+  neighboring sound pair before the first `0x80`, with the nearest pair
+  breaking `62` times toward the `0x85/0x88` SFX-slot path, `13` times toward
+  the `0x9D/0x9E` queue path, and `10` times toward the `0x90/0x92`
+  music-slot path.
+  Representative files now split cleanly enough to keep the old direct-sound
+  label retired for positive reasons: `MAP001` and the first `MAP026` burst
+  favor SFX-slot setup, later `MAP026` beats get a fresher queue re-arm, and
+  `MAP415` stays explainable through queue-plus-music setup without any prior
+  `0x85/0x88` pair.
+  Links:
+  [`opcode_0x80_neighbor_consumer_comparison.md`](decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md),
+  [`opcode_0x80_neighbor_consumer_scan.json`](decomp/evidence/opcode_0x80_neighbor_consumer_scan.json),
+  [`decoded_scripts/24-Unmapped/001-Unknown Room.txt`](decoded_scripts/24-Unmapped/001-Unknown%20Room.txt),
+  [`decoded_scripts/1-Wine Cellar/026-The Gallows.txt`](decoded_scripts/1-Wine%20Cellar/026-The%20Gallows.txt),
+  [`decoded_scripts/23-Great Cathedral/415-The Dark tempts Ashley.txt`](decoded_scripts/23-Great%20Cathedral/415-The%20Dark%20tempts%20Ashley.txt)
 - `2026-05-01`: completed the `Pass 5` neighboring-sound context packet for
   `0x80`.
   A direct decoded-script scan now shows that `88` of the `127` files
