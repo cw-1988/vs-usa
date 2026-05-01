@@ -16,7 +16,7 @@ If the next pass is continuing `0x80`, add:
 - [`decoded_scripts/24-Unmapped/001-Unknown Room.txt`](decoded_scripts/24-Unmapped/001-Unknown%20Room.txt)
 - [`decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md)
 - [`decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`](decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json)
-- [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json)
+- [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),,
 - [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json)
 - [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
 
@@ -228,20 +228,20 @@ Use the artifact index for:
 
 ## Session Handoff
 
-- `last completed step`: the latest `MAP001` listener-control regression pass
-  treated the new live-console trigger logging as a tooling change that still
-  had to clear the retail-runtime baseline. It first exposed a blocking
-  `PCSX-Redux` `Update configuration` modal, then hardened the wrapper/Lua
-  path enough to get back to a clean automated rerun. The successful pass kept
-  the pointer-slot fix (`0x800F4C28 -> 0x801119F0`) intact, printed trigger
-  hits into the emulator console as they fired, and still reached the proven
-  reader chain on the untouched intro: `0x8007A36C` and `0x800BF850` each hit
-  `78` times, `0x800BFBB8` hit `76` times, the sound-family candidate
-  `0x800BA2E0` stayed silent, and the decoded-script handler probes still hit
-  across the expected `MAP001` opcode families. Most importantly for the
-  original contradiction, the dispatch log still records
-  `0x80 -> 0x800B66E4` directly from the retail intro while the copied table
-  shows no post-init write hits.
+- `last completed step`: the latest automation pass added a checked-in
+  two-stage savestate bridge under
+  `decomp/verification/test-runs/map001-main-menu-bridge/`, then used it to
+  prove a real `PCSX-Redux` sequencing quirk: loading the savestate during Lua
+  startup made the restored title-menu frame look frozen even though
+  `ExecutionFlow::SaveStateLoaded` fired, while deferring
+  `PCSX.loadSaveState(...)` until `ExecutionFlow::ShellReached` restored a
+  healthy resumed run. The clean resumed rerun now loads
+  `save-states/init-main-menu.savestate`, waits `45` frames, presses
+  `CIRCLE` at `New Game`, resolves the pointer-slot fix
+  (`0x800F4C28 -> 0x801119F0`), hits the proven reader chain on the untouched
+  intro (`0x8007A36C` and `0x800BF850` x`78`, `0x800BFBB8` x`76`), and still
+  records retail `0x80 -> 0x800B66E4` dispatches with no post-init copied-table
+  write hits.
 - `next recommended step`: keep the `MAP001` listener route as the default
   positive-control regression and pivot the runtime work from "does the trigger
   chain work?" to "what makes `0x80` do real work after landing on the shared
@@ -304,6 +304,15 @@ Use the artifact index for:
   [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),
   [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json),
   [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
+- `2026-05-01`: added a checked-in `MAP001` main-menu savestate bridge and
+  fixed the resumed-pass freeze by deferring `PCSX.loadSaveState(...)` until
+  `ExecutionFlow::ShellReached` instead of calling it during Lua startup.
+  Links:
+  [`decomp/verification/test-runs/map001-main-menu-bridge/README.md`](decomp/verification/test-runs/map001-main-menu-bridge/README.md),
+  [`decomp/verification/test-runs/map001-main-menu-bridge/input-plan-01_create_init_main_menu.json`](decomp/verification/test-runs/map001-main-menu-bridge/input-plan-01_create_init_main_menu.json),
+  [`decomp/verification/test-runs/map001-main-menu-bridge/input-plan-02_resume_map001_intro.json`](decomp/verification/test-runs/map001-main-menu-bridge/input-plan-02_resume_map001_intro.json),
+  [`decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](decomp/verification/pcsx_redux_opcode_0x80_capture.lua),
+  [`decomp/verification/run_opcode_0x80_runtime_capture.ps1`](decomp/verification/run_opcode_0x80_runtime_capture.ps1)
 - `2026-05-01`: added a checked-in no-savestate fallback for the `0x80`
   runtime tie-breaker. Links:
   [`decomp/verification/run_opcode_0x80_runtime_capture.ps1`](decomp/verification/run_opcode_0x80_runtime_capture.ps1),

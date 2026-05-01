@@ -11,6 +11,7 @@ param(
     [string[]]$SaveStateSearchRoots = @("decomp/evidence", ".codex_tmp", "."),
     [string[]]$SaveStatePatterns = @("*.p2s", "*.p2s.gz", "*.savestate", "*.savestate.gz", "*.state", "*.state.gz"),
     [switch]$KeepPreparedSaveState,
+    [string]$RunDirectory,
     [string]$InputPlanPath,
     [switch]$UseDefaultInputPlan,
     [string]$DefaultInputPlanPath = "decomp/evidence/opcode_0x80_runtime_input_plan.json",
@@ -228,8 +229,51 @@ function ConvertTo-PositiveInt {
     return $parsed
 }
 
+function Resolve-PlanAssetPath {
+    param(
+        [Parameter(Mandatory = $true)]$Value,
+        [Parameter(Mandatory = $true)][string]$PlanPath,
+        [Parameter(Mandatory = $true)][string]$Label,
+        [switch]$EnsureParentDirectory
+    )
+
+    $referencePath = ""
+    if ($Value -is [string]) {
+        $referencePath = [string]$Value
+    } else {
+        $referencePath = [string](Get-ObjectPropertyValue -Object $Value -Name "path" -Default "")
+    }
+
+    if ([string]::IsNullOrWhiteSpace($referencePath)) {
+        throw "$Label must resolve to a non-empty path."
+    }
+
+    $baseDirectory = Split-Path -Parent $PlanPath
+    if ([string]::IsNullOrWhiteSpace($baseDirectory)) {
+        $baseDirectory = $RepoRoot
+    }
+
+    $resolvedPath = if ([System.IO.Path]::IsPathRooted($referencePath)) {
+        [System.IO.Path]::GetFullPath($referencePath)
+    } else {
+        [System.IO.Path]::GetFullPath((Join-Path $baseDirectory $referencePath))
+    }
+
+    if ($EnsureParentDirectory) {
+        $parentDirectory = Split-Path -Parent $resolvedPath
+        if (-not [string]::IsNullOrWhiteSpace($parentDirectory)) {
+            New-Item -ItemType Directory -Force -Path $parentDirectory | Out-Null
+        }
+    }
+
+    return $resolvedPath
+}
+
 function Prepare-InputPlan {
-    param([Parameter(Mandatory = $true)][string]$Path)
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [string]$PreparedDirectory
+    )
 
     $resolvedPath = Resolve-RepoPath -Path $Path
     Assert-Exists -Path $resolvedPath -Label "Input plan"
@@ -245,34 +289,35 @@ function Prepare-InputPlan {
     $padNumber = ConvertTo-PositiveInt -Value (Get-ObjectPropertyValue -Object $plan -Name "pad_number" -Default 1) -Label "pad_number"
     $initialDelayFrames = ConvertTo-NonNegativeInt -Value (Get-ObjectPropertyValue -Object $plan -Name "initial_delay_frames" -Default 0) -Label "initial_delay_frames"
     $analogMode = [bool](Get-ObjectPropertyValue -Object $plan -Name "analog_mode" -Default $false)
+    $quitWhenFinished = [bool](Get-ObjectPropertyValue -Object $plan -Name "quit_when_finished" -Default $false)
+    $loadStatePath = $null
+    if (Test-ObjectProperty -Object $plan -Name "load_state") {
+        $loadStatePath = Resolve-PlanAssetPath -Value (Get-ObjectPropertyValue -Object $plan -Name "load_state") -PlanPath $resolvedPath -Label "Input plan load_state"
+    }
 
-    $preparedDirectory = Join-Path $RepoRoot ".codex_tmp\pcsx-redux"
+    if ([string]::IsNullOrWhiteSpace($PreparedDirectory)) {
+        $PreparedDirectory = Join-Path $RepoRoot ".codex_tmp\pcsx-redux"
+    }
+    $preparedDirectory = Resolve-RepoPath -Path $PreparedDirectory
     New-Item -ItemType Directory -Force -Path $preparedDirectory | Out-Null
 
     $preparedPath = Join-Path $preparedDirectory ("opcode_0x80_input_plan-{0}.tsv" -f [Guid]::NewGuid().ToString("N"))
     $lines = New-Object System.Collections.Generic.List[string]
     $currentFrame = $initialDelayFrames
     $stepIndex = 0
+    $createSaveStateStepCount = 0
 
     foreach ($step in $steps) {
         $stepIndex += 1
         $buttons = @(Get-ObjectPropertyValue -Object $step -Name "buttons" -Default @())
-        if ($buttons.Count -eq 0) {
-            throw "Input plan step $stepIndex has no buttons."
+        $createSaveStateValue = Get-ObjectPropertyValue -Object $step -Name "create_save_state" -Default $null
+        $hasButtons = $buttons.Count -gt 0
+        $hasCreateSaveState = $null -ne $createSaveStateValue
+        if ($hasButtons -and $hasCreateSaveState) {
+            throw "Input plan step $stepIndex cannot define both buttons and create_save_state."
         }
-
-        $buttonNames = @()
-        foreach ($button in $buttons) {
-            $buttonText = [string]$button
-            if ([string]::IsNullOrWhiteSpace($buttonText)) {
-                throw "Input plan step $stepIndex contains an empty button name."
-            }
-            $buttonNames += $buttonText.Trim().ToUpperInvariant()
-        }
-
-        $holdFrames = ConvertTo-NonNegativeInt -Value (Get-ObjectPropertyValue -Object $step -Name "hold_frames" -Default 8) -Label "hold_frames for step $stepIndex"
-        if ($holdFrames -eq 0) {
-            throw "Input plan step $stepIndex must hold at least one frame."
+        if (-not $hasButtons -and -not $hasCreateSaveState) {
+            throw "Input plan step $stepIndex must define either buttons or create_save_state."
         }
 
         $waitFramesAfter = ConvertTo-NonNegativeInt -Value (Get-ObjectPropertyValue -Object $step -Name "wait_frames_after" -Default 30) -Label "wait_frames_after for step $stepIndex"
@@ -286,21 +331,51 @@ function Prepare-InputPlan {
         $note = $note -replace "\r?\n", " "
         $note = $note -replace "`t", " "
 
-        $lines.Add(("{0}`t{1}`t{2}`t{3}" -f $startFrame, $holdFrames, ($buttonNames -join ","), $note))
-        $currentFrame = $startFrame + $holdFrames + $waitFramesAfter
+        $stepKind = ""
+        $stepDuration = 0
+        $stepPayload = ""
+        if ($hasButtons) {
+            $buttonNames = @()
+            foreach ($button in $buttons) {
+                $buttonText = [string]$button
+                if ([string]::IsNullOrWhiteSpace($buttonText)) {
+                    throw "Input plan step $stepIndex contains an empty button name."
+                }
+                $buttonNames += $buttonText.Trim().ToUpperInvariant()
+            }
+
+            $stepDuration = ConvertTo-NonNegativeInt -Value (Get-ObjectPropertyValue -Object $step -Name "hold_frames" -Default 8) -Label "hold_frames for step $stepIndex"
+            if ($stepDuration -eq 0) {
+                throw "Input plan step $stepIndex must hold at least one frame."
+            }
+
+            $stepKind = "buttons"
+            $stepPayload = ($buttonNames -join ",")
+        } else {
+            $stepKind = "create_save_state"
+            $stepDuration = 1
+            $stepPayload = Resolve-PlanAssetPath -Value $createSaveStateValue -PlanPath $resolvedPath -Label "create_save_state for step $stepIndex" -EnsureParentDirectory
+            $createSaveStateStepCount += 1
+        }
+
+        $lines.Add(("{0}`t{1}`t{2}`t{3}`t{4}" -f $stepKind, $startFrame, $stepDuration, $stepPayload, $note))
+        $currentFrame = $startFrame + $stepDuration + $waitFramesAfter
     }
 
     [System.IO.File]::WriteAllLines($preparedPath, $lines, [System.Text.Encoding]::ASCII)
 
     return [pscustomobject]@{
-        SourcePath         = $resolvedPath
-        PreparedPath       = $preparedPath
-        Description        = $description
-        PadSlot            = $padSlot
-        PadNumber          = $padNumber
-        AnalogMode         = $analogMode
-        InitialDelayFrames = $initialDelayFrames
-        StepCount          = $stepIndex
+        SourcePath            = $resolvedPath
+        PreparedPath          = $preparedPath
+        Description           = $description
+        PadSlot               = $padSlot
+        PadNumber             = $padNumber
+        AnalogMode            = $analogMode
+        InitialDelayFrames    = $initialDelayFrames
+        StepCount             = $stepIndex
+        CreateSaveStateSteps  = $createSaveStateStepCount
+        QuitWhenFinished      = $quitWhenFinished
+        LoadSaveStatePath     = $loadStatePath
         FinalFrameAfterWaits = $currentFrame
     }
 }
@@ -406,6 +481,32 @@ function Initialize-PcsxReduxConfig {
     }
 }
 
+$runDirectoryPath = $null
+$runArtifactDirectory = $null
+$runSaveStateDirectory = $null
+$preparedPlanDirectory = $null
+if (-not [string]::IsNullOrWhiteSpace($RunDirectory)) {
+    $runDirectoryPath = Resolve-RepoPath -Path $RunDirectory
+    $runArtifactDirectory = Join-Path $runDirectoryPath "artifacts"
+    $runSaveStateDirectory = Join-Path $runDirectoryPath "save-states"
+    $preparedPlanDirectory = Join-Path $runArtifactDirectory "prepared"
+
+    New-Item -ItemType Directory -Force -Path $runDirectoryPath, $runArtifactDirectory, $runSaveStateDirectory, $preparedPlanDirectory | Out-Null
+
+    if (-not $PSBoundParameters.ContainsKey("AfterInitPath")) {
+        $AfterInitPath = Join-Path $runArtifactDirectory "opcode_0x80_runtime_after_init.bin"
+    }
+    if (-not $PSBoundParameters.ContainsKey("PreDispatchPath")) {
+        $PreDispatchPath = Join-Path $runArtifactDirectory "opcode_0x80_runtime_pre_dispatch.bin"
+    }
+    if (-not $PSBoundParameters.ContainsKey("SummaryPath")) {
+        $SummaryPath = Join-Path $runArtifactDirectory "opcode_0x80_runtime_automation_summary.json"
+    }
+    if (-not $PSBoundParameters.ContainsKey("ScreenshotDirectory")) {
+        $ScreenshotDirectory = Join-Path $runArtifactDirectory "opcode_0x80_runtime_frames"
+    }
+}
+
 $pcsxReduxExe = Resolve-RepoPath -Path $PcsxReduxExe
 $biosPath = Resolve-RepoPath -Path $BiosPath
 $luaScript = Resolve-RepoPath -Path $LuaScript
@@ -459,10 +560,23 @@ $pcsxReduxDirectory = Split-Path -Parent $pcsxReduxExe
 if ([string]::IsNullOrWhiteSpace($pcsxReduxDirectory)) {
     $pcsxReduxDirectory = $RepoRoot
 }
+if ($runSaveStateDirectory) {
+    $effectiveSaveStateSearchRoots = @($runSaveStateDirectory) + $effectiveSaveStateSearchRoots
+}
 if ($pcsxReduxDirectory -and ($effectiveSaveStateSearchRoots -notcontains $pcsxReduxDirectory)) {
     $effectiveSaveStateSearchRoots += $pcsxReduxDirectory
 }
 Initialize-PcsxReduxConfig -BiosPath $biosPath
+
+if ($UseDefaultInputPlan) {
+    $inputPlanInfo = Prepare-InputPlan -Path $DefaultInputPlanPath -PreparedDirectory $preparedPlanDirectory
+} elseif (-not [string]::IsNullOrWhiteSpace($InputPlanPath)) {
+    $inputPlanInfo = Prepare-InputPlan -Path $InputPlanPath -PreparedDirectory $preparedPlanDirectory
+}
+
+if ($inputPlanInfo -and $inputPlanInfo.LoadSaveStatePath -and ($UseNewestSaveState -or -not [string]::IsNullOrWhiteSpace($SaveStatePath))) {
+    throw "Input plan '$($inputPlanInfo.SourcePath)' defines load_state, so do not also pass -SaveStatePath or -UseNewestSaveState."
+}
 
 if ($UseNewestSaveState) {
     $discoveredSaveState = Get-NewestSaveState -SearchRoots $effectiveSaveStateSearchRoots -Patterns $SaveStatePatterns
@@ -476,12 +590,9 @@ if ($UseNewestSaveState) {
 } elseif (-not [string]::IsNullOrWhiteSpace($SaveStatePath)) {
     $saveStateInfo = Prepare-SaveState -Path $SaveStatePath
     $saveStatePath = $saveStateInfo.LoadPath
-}
-
-if ($UseDefaultInputPlan) {
-    $inputPlanInfo = Prepare-InputPlan -Path $DefaultInputPlanPath
-} elseif (-not [string]::IsNullOrWhiteSpace($InputPlanPath)) {
-    $inputPlanInfo = Prepare-InputPlan -Path $InputPlanPath
+} elseif ($inputPlanInfo -and $inputPlanInfo.LoadSaveStatePath) {
+    $saveStateInfo = Prepare-SaveState -Path $inputPlanInfo.LoadSaveStatePath
+    $saveStatePath = $saveStateInfo.LoadPath
 }
 
 if (-not [string]::IsNullOrWhiteSpace($DecodedScriptPath)) {
@@ -546,6 +657,7 @@ $env:VS_OPCODE_INPUT_PLAN_DESCRIPTION = if ($inputPlanInfo) { $inputPlanInfo.Des
 $env:VS_OPCODE_INPUT_PLAN_PAD_SLOT = if ($inputPlanInfo) { "$($inputPlanInfo.PadSlot)" } else { "" }
 $env:VS_OPCODE_INPUT_PLAN_PAD_NUMBER = if ($inputPlanInfo) { "$($inputPlanInfo.PadNumber)" } else { "" }
 $env:VS_OPCODE_INPUT_PLAN_ANALOG_MODE = if ($inputPlanInfo -and $inputPlanInfo.AnalogMode) { "1" } else { "0" }
+$env:VS_OPCODE_INPUT_PLAN_QUIT_WHEN_FINISHED = if ($inputPlanInfo -and $inputPlanInfo.QuitWhenFinished) { "1" } else { "0" }
 $env:VS_OPCODE_SCREENSHOT_DIR = $screenshotDirectory
 
 $cpuCoreFlag = if ($CpuCore -eq "dynarec") { "-dynarec" } else { "-interpreter" }
@@ -580,6 +692,10 @@ Write-Host "Summary path: $summaryPath"
 Write-Host "Screenshot directory: $screenshotDirectory"
 Write-Host "CPU core: $CpuCore"
 Write-Host "Debugger: $(if ($DisableDebugger) { 'disabled' } else { 'enabled' })"
+if ($runDirectoryPath) {
+    Write-Host "Run directory: $runDirectoryPath"
+    Write-Host "Run save-state directory: $runSaveStateDirectory"
+}
 if ($saveStatePath) {
     Write-Host "Save state: $saveStatePath"
     if ($saveStateInfo.SourcePath -ne $saveStatePath) {
@@ -592,7 +708,13 @@ if ($saveStatePath) {
 if ($inputPlanInfo) {
     Write-Host "Input plan source: $($inputPlanInfo.SourcePath)"
     Write-Host "Input plan steps: $($inputPlanInfo.StepCount)"
+    if ($inputPlanInfo.CreateSaveStateSteps -gt 0) {
+        Write-Host "Input plan save-state actions: $($inputPlanInfo.CreateSaveStateSteps)"
+    }
     Write-Host "Input plan final frame: $($inputPlanInfo.FinalFrameAfterWaits)"
+    if ($inputPlanInfo.QuitWhenFinished) {
+        Write-Host "Input plan requests clean exit after the final scheduled step."
+    }
     if ($effectiveTimeoutFrames -ne $TimeoutFrames) {
         Write-Host "Timeout frames raised from $TimeoutFrames to $effectiveTimeoutFrames to cover the input plan plus slack."
     }
@@ -757,6 +879,39 @@ if ($summaryScreenCaptures.Count -gt 0) {
     )
 }
 
+$summaryCreatedSaveStates = @()
+$summaryInputPlanCreatedSaveStates = @(Get-ObjectPropertyValue -Object $summaryInputPlan -Name "created_save_states" -Default @())
+if ($summaryInputPlanCreatedSaveStates.Count -gt 0) {
+    foreach ($createdSaveState in $summaryInputPlanCreatedSaveStates) {
+        $createdPath = [string](Get-ObjectPropertyValue -Object $createdSaveState -Name "path" -Default "")
+        if ([string]::IsNullOrWhiteSpace($createdPath)) {
+            continue
+        }
+
+        $createdFrame = Get-ObjectPropertyValue -Object $createdSaveState -Name "frame" -Default $null
+        $createdNote = [string](Get-ObjectPropertyValue -Object $createdSaveState -Name "note" -Default "")
+        $summaryCreatedSaveStates += if ($createdFrame -ne $null) {
+            "{0}@frame{1}" -f $createdPath, $createdFrame
+        } else {
+            $createdPath
+        }
+
+        $recorderNote = "Automated PCSX-Redux capture created savestate '$createdPath'"
+        if ($createdFrame -ne $null) {
+            $recorderNote += " at frame $createdFrame"
+        }
+        if (-not [string]::IsNullOrWhiteSpace($createdNote)) {
+            $recorderNote += " ($createdNote)"
+        }
+
+        Invoke-Recorder @(
+            $observationPath,
+            "add-note",
+            "--note", $recorderNote
+        )
+    }
+}
+
 $candidateHits = @()
 if ($summary.candidate_hits) {
     foreach ($property in $summary.candidate_hits.PSObject.Properties) {
@@ -882,6 +1037,10 @@ if ($snapshotSummaries.Count -gt 0) {
 
 if ($dispatchSummaries.Count -gt 0) {
     $noteParts += ("dispatches=" + ($dispatchSummaries -join " | "))
+}
+
+if ($summaryCreatedSaveStates.Count -gt 0) {
+    $noteParts += ("created_save_states=" + ($summaryCreatedSaveStates -join " | "))
 }
 
 $noteParts += "summary_json=$summaryPath"

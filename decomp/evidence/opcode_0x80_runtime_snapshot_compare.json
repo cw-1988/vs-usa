@@ -26,9 +26,9 @@
   "snapshots": [
     {
       "label": "after_init",
-      "path": "C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_after_init.bin",
+      "path": "C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\verification\\test-runs\\map001-main-menu-bridge\\artifacts\\opcode_0x80_runtime_after_init.bin",
       "file_metadata": {
-        "path": "C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_after_init.bin",
+        "path": "C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\verification\\test-runs\\map001-main-menu-bridge\\artifacts\\opcode_0x80_runtime_after_init.bin",
         "size_bytes": 1024,
         "sha256": "bf98e99d441e94b8bf4d421b59c5994c74b254adbd7736bede778ae0d905b844"
       },
@@ -158,9 +158,9 @@
     },
     {
       "label": "pre_dispatch",
-      "path": "C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_pre_dispatch.bin",
+      "path": "C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\verification\\test-runs\\map001-main-menu-bridge\\artifacts\\opcode_0x80_runtime_pre_dispatch.bin",
       "file_metadata": {
-        "path": "C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_pre_dispatch.bin",
+        "path": "C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\verification\\test-runs\\map001-main-menu-bridge\\artifacts\\opcode_0x80_runtime_pre_dispatch.bin",
         "size_bytes": 1024,
         "sha256": "bf98e99d441e94b8bf4d421b59c5994c74b254adbd7736bede778ae0d905b844"
       },

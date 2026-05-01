@@ -1,0 +1,18 @@
+{
+  "description": "Resume from the init-main-menu savestate and continue the MAP001 listener-control route from New Game into the untouched intro.",
+  "pad_slot": 1,
+  "pad_number": 1,
+  "analog_mode": false,
+  "initial_delay_frames": 45,
+  "load_state": "save-states/init-main-menu.savestate",
+  "steps": [
+    {
+      "buttons": [
+        "CIRCLE"
+      ],
+      "hold_frames": 8,
+      "wait_frames_after": 1000,
+      "note": "New game and observe MAP001 intro"
+    }
+  ]
+}

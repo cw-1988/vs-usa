@@ -1,0 +1,31 @@
+{
+  "description": "Cold-boot to the retail title menu, stop before New Game, and preserve an init-main-menu savestate for follow-up MAP001 intro passes.",
+  "pad_slot": 1,
+  "pad_number": 1,
+  "analog_mode": false,
+  "initial_delay_frames": 900,
+  "quit_when_finished": true,
+  "steps": [
+    {
+      "buttons": [
+        "START"
+      ],
+      "hold_frames": 10,
+      "wait_frames_after": 300,
+      "note": "Squaresoft skip"
+    },
+    {
+      "buttons": [
+        "START"
+      ],
+      "hold_frames": 10,
+      "wait_frames_after": 240,
+      "note": "Video skip"
+    },
+    {
+      "create_save_state": "save-states/init-main-menu.savestate",
+      "wait_frames_after": 0,
+      "note": "Capture init main menu before New Game"
+    }
+  ]
+}

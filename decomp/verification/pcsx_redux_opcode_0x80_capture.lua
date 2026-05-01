@@ -23,6 +23,14 @@ local function parse_int(value, default)
     error("unable to parse integer value: " .. tostring(value))
 end
 
+local function try_parse_int(value, default)
+    local ok, parsed = pcall(parse_int, value, default)
+    if ok then
+        return parsed
+    end
+    return default
+end
+
 local function split_csv(raw)
     local items = {}
     for item in string.gmatch(raw or "", "[^,]+") do
@@ -149,6 +157,7 @@ local config = {
     input_plan_pad_slot = parse_int(os.getenv("VS_OPCODE_INPUT_PLAN_PAD_SLOT"), 1),
     input_plan_pad_number = parse_int(os.getenv("VS_OPCODE_INPUT_PLAN_PAD_NUMBER"), 1),
     input_plan_analog_mode = parse_bool(os.getenv("VS_OPCODE_INPUT_PLAN_ANALOG_MODE"), false),
+    input_plan_quit_when_finished = parse_bool(os.getenv("VS_OPCODE_INPUT_PLAN_QUIT_WHEN_FINISHED"), false),
     screenshot_dir = os.getenv("VS_OPCODE_SCREENSHOT_DIR") or "",
 }
 
@@ -183,6 +192,7 @@ local state = {
     save_state_load_count = 0,
     input_plan = nil,
     screen_captures = {},
+    created_save_states = {},
     runtime_table_base = nil,
     table_write_breakpoint_installed = false,
     handler_probe_breakpoints_installed = false,
@@ -556,6 +566,8 @@ local function capture_screen(label, reason)
     end
 end
 
+local request_quit
+
 local function queue_safe(label, func)
     PCSX.nextTick(function()
         local ok, err = pcall(func)
@@ -594,6 +606,29 @@ local function clear_input_plan_overrides()
     plan.active_buttons = {}
 end
 
+local function create_save_state(path, note)
+    local ok, err = pcall(function()
+        local save_state_file = Support.File.open(path, "TRUNCATE")
+        save_state_file:writeMoveSlice(PCSX.createSaveState())
+        save_state_file:close()
+    end)
+
+    if not ok then
+        add_note("failed to create savestate at " .. tostring(path) .. ": " .. tostring(err))
+        return false
+    end
+
+    state.created_save_states[#state.created_save_states + 1] = {
+        path = path,
+        note = note,
+        frame = state.frame_count,
+        timestamp = utc_now(),
+    }
+    add_note("created savestate at " .. tostring(path))
+    log_console("created savestate at " .. tostring(path))
+    return true
+end
+
 local function reset_input_plan_progress()
     local plan = state.input_plan
     if plan == nil then
@@ -608,6 +643,42 @@ local function reset_input_plan_progress()
         step.started = false
         step.completed = false
     end
+end
+
+local function load_configured_save_state(trigger_reason)
+    if config.save_state_path == nil or config.save_state_path == "" then
+        return false
+    end
+    if state.save_state_load_requested then
+        return false
+    end
+
+    state.save_state_load_requested = true
+
+    local ok, err = pcall(function()
+        local save_state_file = Support.File.open(config.save_state_path)
+        PCSX.loadSaveState(save_state_file)
+        save_state_file:close()
+    end)
+
+    if ok then
+        local load_note = "loaded savestate " .. config.save_state_path
+        if config.save_state_source_path ~= nil and config.save_state_source_path ~= "" then
+            load_note = load_note .. " (source " .. config.save_state_source_path .. ")"
+        end
+        if config.save_state_was_decompressed then
+            load_note = load_note .. " via decompressed gzip staging"
+        end
+        if trigger_reason ~= nil and trigger_reason ~= "" then
+            load_note = load_note .. " after " .. trigger_reason
+        end
+        add_note(load_note)
+        return true
+    end
+
+    state.save_state_load_requested = false
+    add_note("failed to load savestate " .. config.save_state_path .. ": " .. tostring(err))
+    return false
 end
 
 local function load_input_plan()
@@ -631,37 +702,61 @@ local function load_input_plan()
             if #fields < 3 then
                 add_note("ignoring malformed input plan line " .. tostring(line_number))
             else
-                local start_frame = parse_int(fields[1], nil)
-                local duration_frames = parse_int(fields[2], nil)
-                local button_names = split_csv(fields[3])
-                local note = fields[4] or ("step " .. tostring(line_number))
-                local button_values = {}
-                local resolved_names = {}
-                local has_unknown_button = false
+                local is_new_format = try_parse_int(fields[1], nil) == nil
+                local kind = is_new_format and fields[1] or "buttons"
+                local start_frame = try_parse_int(is_new_format and fields[2] or fields[1], nil)
+                local duration_frames = try_parse_int(is_new_format and fields[3] or fields[2], nil)
+                local payload = is_new_format and (fields[4] or "") or (fields[3] or "")
+                local note = (is_new_format and fields[5] or fields[4]) or ("step " .. tostring(line_number))
 
-                for _, button_name in ipairs(button_names) do
-                    local normalized_name = string.upper(button_name)
-                    local button_value = button_constants and button_constants[normalized_name] or nil
-                    if button_value == nil then
-                        add_note("input plan line " .. tostring(line_number) .. " references unknown button " .. normalized_name)
-                        has_unknown_button = true
-                    else
-                        button_values[#button_values + 1] = button_value
-                        resolved_names[#resolved_names + 1] = normalized_name
+                if kind == "buttons" then
+                    local button_names = split_csv(payload)
+                    local button_values = {}
+                    local resolved_names = {}
+                    local has_unknown_button = false
+
+                    for _, button_name in ipairs(button_names) do
+                        local normalized_name = string.upper(button_name)
+                        local button_value = button_constants and button_constants[normalized_name] or nil
+                        if button_value == nil then
+                            add_note("input plan line " .. tostring(line_number) .. " references unknown button " .. normalized_name)
+                            has_unknown_button = true
+                        else
+                            button_values[#button_values + 1] = button_value
+                            resolved_names[#resolved_names + 1] = normalized_name
+                        end
                     end
-                end
 
-                if not has_unknown_button and start_frame ~= nil and duration_frames ~= nil and duration_frames > 0 and #button_values > 0 then
-                    steps[#steps + 1] = {
-                        line_number = line_number,
-                        start_frame = start_frame,
-                        duration_frames = duration_frames,
-                        button_names = resolved_names,
-                        button_values = button_values,
-                        note = note,
-                        started = false,
-                        completed = false,
-                    }
+                    if not has_unknown_button and start_frame ~= nil and duration_frames ~= nil and duration_frames > 0 and #button_values > 0 then
+                        steps[#steps + 1] = {
+                            line_number = line_number,
+                            kind = "buttons",
+                            start_frame = start_frame,
+                            duration_frames = duration_frames,
+                            button_names = resolved_names,
+                            button_values = button_values,
+                            note = note,
+                            started = false,
+                            completed = false,
+                        }
+                    end
+                elseif kind == "create_save_state" then
+                    if start_frame ~= nil and duration_frames ~= nil and duration_frames > 0 and payload ~= "" then
+                        steps[#steps + 1] = {
+                            line_number = line_number,
+                            kind = "create_save_state",
+                            start_frame = start_frame,
+                            duration_frames = duration_frames,
+                            save_state_path = payload,
+                            note = note,
+                            started = false,
+                            completed = false,
+                        }
+                    else
+                        add_note("ignoring malformed create_save_state line " .. tostring(line_number))
+                    end
+                else
+                    add_note("ignoring unsupported input plan step kind " .. tostring(kind) .. " on line " .. tostring(line_number))
                 end
             end
         end
@@ -688,6 +783,7 @@ local function load_input_plan()
         pad_slot = config.input_plan_pad_slot,
         pad_number = config.input_plan_pad_number,
         analog_mode = config.input_plan_analog_mode,
+        quit_when_finished = config.input_plan_quit_when_finished,
         steps = steps,
         active_buttons = {},
         started_steps = 0,
@@ -729,27 +825,28 @@ local function update_input_plan()
             if not step.started then
                 step.started = true
                 plan.started_steps = plan.started_steps + 1
-                local step_started_message =
-                    "input plan step "
-                        .. tostring(index)
-                        .. " started at frame "
-                        .. tostring(state.frame_count)
-                        .. ": "
-                        .. step.note
-                        .. " ["
-                        .. table.concat(step.button_names, "+")
-                        .. "]"
+                local step_started_message = "input plan step " .. tostring(index) .. " started at frame " .. tostring(state.frame_count) .. ": " .. step.note
+                if step.kind == "buttons" then
+                    step_started_message = step_started_message .. " [" .. table.concat(step.button_names, "+") .. "]"
+                elseif step.kind == "create_save_state" then
+                    step_started_message = step_started_message .. " [save=" .. tostring(step.save_state_path) .. "]"
+                    create_save_state(step.save_state_path, step.note)
+                end
                 add_note(step_started_message)
                 log_console(step_started_message)
             end
-            for button_index, button_value in ipairs(step.button_values) do
-                desired_buttons[button_value] = step.button_names[button_index]
+            if step.kind == "buttons" then
+                for button_index, button_value in ipairs(step.button_values) do
+                    desired_buttons[button_value] = step.button_names[button_index]
+                end
             end
         elseif state.frame_count >= end_frame and not step.completed then
             step.completed = true
             plan.completed_steps = plan.completed_steps + 1
             add_note("input plan step " .. tostring(index) .. " completed: " .. step.note)
-            capture_screen(string.format("step-%02d-complete", index), "input_plan_step_complete")
+            if step.kind == "buttons" then
+                capture_screen(string.format("step-%02d-complete", index), "input_plan_step_complete")
+            end
         end
     end
 
@@ -770,6 +867,10 @@ local function update_input_plan()
     if not plan.finished_noted and plan.completed_steps >= #plan.steps then
         add_note("input plan finished all scheduled steps by frame " .. tostring(state.frame_count))
         plan.finished_noted = true
+        if plan.quit_when_finished and not state.quit_requested then
+            request_quit(0, "input plan finished all scheduled steps")
+            return
+        end
     end
 end
 
@@ -806,9 +907,11 @@ local function write_summary()
             pad_slot = state.input_plan.pad_slot,
             pad_number = state.input_plan.pad_number,
             analog_mode = state.input_plan.analog_mode,
+            quit_when_finished = state.input_plan.quit_when_finished,
             step_count = #state.input_plan.steps,
             started_steps = state.input_plan.started_steps,
             completed_steps = state.input_plan.completed_steps,
+            created_save_states = state.created_save_states,
         } or nil,
         screen_captures = state.screen_captures,
     }
@@ -822,7 +925,7 @@ local function write_summary()
     handle:close()
 end
 
-local function request_quit(code, reason)
+request_quit = function(code, reason)
     if state.quit_requested then
         return
     end
@@ -1094,6 +1197,15 @@ listeners[#listeners + 1] = PCSX.Events.createEventListener("Quitting", function
     end)
 end)
 
+listeners[#listeners + 1] = PCSX.Events.createEventListener("ExecutionFlow::ShellReached", function()
+    queue_safe("shell reached", function()
+        if config.save_state_path ~= nil and config.save_state_path ~= "" and not state.save_state_load_requested then
+            add_note("execution shell reached; loading deferred savestate")
+            load_configured_save_state("ExecutionFlow::ShellReached")
+        end
+    end)
+end)
+
 listeners[#listeners + 1] = PCSX.Events.createEventListener("ExecutionFlow::SaveStateLoaded", function()
     state.save_state_load_count = state.save_state_load_count + 1
     add_note("savestate load event observed")
@@ -1108,23 +1220,7 @@ listeners[#listeners + 1] = PCSX.Events.createEventListener("ExecutionFlow::Save
 end)
 
 if config.save_state_path ~= nil and config.save_state_path ~= "" then
-    local ok, err = pcall(function()
-        local save_state_file = Support.File.open(config.save_state_path)
-        PCSX.loadSaveState(save_state_file)
-        save_state_file:close()
-    end)
-    if ok then
-        local load_note = "loaded savestate " .. config.save_state_path
-        if config.save_state_source_path ~= nil and config.save_state_source_path ~= "" then
-            load_note = load_note .. " (source " .. config.save_state_source_path .. ")"
-        end
-        if config.save_state_was_decompressed then
-            load_note = load_note .. " via decompressed gzip staging"
-        end
-        add_note(load_note)
-    else
-        add_note("failed to load savestate " .. config.save_state_path .. ": " .. tostring(err))
-    end
+    add_note("queued savestate load until ExecutionFlow::ShellReached")
 end
 
 function DrawImguiFrame()
