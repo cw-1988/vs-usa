@@ -6,6 +6,29 @@ ledger stays focused on current state, conflicts, and handoff.
 
 ## Milestones
 
+- `2026-05-01`: corrected the `0x80` runtime capture to dereference pointer
+  slot `0x800F4C28`, added decoded-script handler probes plus selectable
+  interpreter/dynarec launch modes, and turned the stripped `MAP001` `New
+  Game` route into a real retail-runtime positive control with live reader and
+  handler hits. Links:
+  [`../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua),
+  [`../../decomp/verification/run_opcode_0x80_runtime_capture.ps1`](../../decomp/verification/run_opcode_0x80_runtime_capture.ps1),
+  [`../../decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json`](../../decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json),
+  [`../../decomp/evidence/opcode_0x80_runtime_automation_summary.json`](../../decomp/evidence/opcode_0x80_runtime_automation_summary.json),
+  [`../../decomp/evidence/opcode_0x80_runtime_observation.json`](../../decomp/evidence/opcode_0x80_runtime_observation.json)
+- `2026-05-01`: preserved a stronger cold-boot negative-control route for the
+  `0x80` runtime contradiction by checking in the bat-control input plan and
+  its no-hit runtime packet. Links:
+  [`../../decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`](../../decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json),
+  [`../../decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md`](../../decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md),
+  [`../../decomp/evidence/opcode_0x80_runtime_automation_summary.json`](../../decomp/evidence/opcode_0x80_runtime_automation_summary.json),
+  [`../../decomp/evidence/opcode_0x80_runtime_observation.json`](../../decomp/evidence/opcode_0x80_runtime_observation.json)
+- `2026-05-01`: taught the `0x80` runtime capture flow to preserve frame-stamped
+  input-plan step notes in the automation summary, making it easier to tell
+  route drift from breakpoint silence on future reruns. Links:
+  [`../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](../../decomp/verification/pcsx_redux_opcode_0x80_capture.lua),
+  [`../../decomp/evidence/opcode_0x80_runtime_automation_summary.json`](../../decomp/evidence/opcode_0x80_runtime_automation_summary.json),
+  [`../../decomp/evidence/opcode_0x80_runtime_support.md`](../../decomp/evidence/opcode_0x80_runtime_support.md)
 - `2026-05-01`: added the checked-in no-savestate fallback for the `0x80`
   runtime tie-breaker by replaying a JSON pad-input plan and hardening the
   wrapper/Lua callbacks. Links:

@@ -1,0 +1,33 @@
+{
+  "description": "Cold-boot MAP001 listener-control route for Vagrant Story (USA). This plan only skips the publisher/video intro, confirms New Game on the title menu, and then leaves the opening MAP001 cutscene untouched so early intro opcodes such as the first SoundEffects0 calls can exercise the runtime capture without later START skips or player-control inputs.",
+  "pad_slot": 1,
+  "pad_number": 1,
+  "analog_mode": false,
+  "initial_delay_frames": 900,
+  "steps": [
+    {
+      "buttons": [
+        "START"
+      ],
+      "hold_frames": 10,
+      "wait_frames_after": 300,
+      "note": "Squaresoft skip"
+    },
+    {
+      "buttons": [
+        "START"
+      ],
+      "hold_frames": 10,
+      "wait_frames_after": 150,
+      "note": "Video skip"
+    },
+    {
+      "buttons": [
+        "CIRCLE"
+      ],
+      "hold_frames": 8,
+      "wait_frames_after": 1000,
+      "note": "New game and observe MAP001 intro"
+    }
+  ]
+}

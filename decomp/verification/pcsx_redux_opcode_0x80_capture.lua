@@ -54,6 +54,10 @@ local function hex32(value)
     return string.format("0x%08X", value % 0x100000000)
 end
 
+local function hex8(value)
+    return string.format("0x%02X", value % 0x100)
+end
+
 local function json_escape(text)
     text = tostring(text)
     text = text:gsub("\\", "\\\\")
@@ -121,6 +125,7 @@ local config = {
     table_address = parse_int(os.getenv("VS_OPCODE_TABLE_ADDRESS"), 0x800F4C28),
     table_size = parse_int(os.getenv("VS_OPCODE_TABLE_SIZE"), 0x400),
     focus_opcodes = split_csv(os.getenv("VS_OPCODE_FOCUS_OPCODES") or "0x80,0x81,0x82"),
+    handler_probe_opcodes = split_csv(os.getenv("VS_OPCODE_HANDLER_OPCODES") or ""),
     reader_address = parse_int(os.getenv("VS_OPCODE_READER_ADDRESS"), 0x800BFBB8),
     reader_caller_address = parse_int(os.getenv("VS_OPCODE_READER_CALLER_ADDRESS"), 0x800BF850),
     reader_grandcaller_address = parse_int(os.getenv("VS_OPCODE_READER_GRANDCALLER_ADDRESS"), 0x8007A36C),
@@ -132,6 +137,7 @@ local config = {
     idle_cycles = parse_int(os.getenv("VS_OPCODE_IDLE_CYCLES"), 200000),
     timeout_frames = parse_int(os.getenv("VS_OPCODE_TIMEOUT_FRAMES"), 1800),
     post_reader_frames = parse_int(os.getenv("VS_OPCODE_POST_READER_FRAMES"), 180),
+    min_breakpoint_frame = parse_int(os.getenv("VS_OPCODE_MIN_BREAKPOINT_FRAME"), 0),
     min_write_pc = parse_int(os.getenv("VS_OPCODE_MIN_WRITE_PC"), 0x80000000),
     quit_on_candidate_hit = parse_bool(os.getenv("VS_OPCODE_QUIT_ON_CANDIDATE_HIT"), true),
     save_state_path = os.getenv("VS_OPCODE_SAVE_STATE_PATH"),
@@ -155,7 +161,8 @@ local state = {
     candidate_hit_count = 0,
     write_breakpoint = {
         kind = "write",
-        address_range = hex32(config.table_address) .. "-" .. hex32(config.table_address + config.table_size - 1),
+        pointer_slot = hex32(config.table_address),
+        address_range = nil,
     },
     exec_breakpoints = {
         reader = hex32(config.reader_address),
@@ -167,12 +174,18 @@ local state = {
     saw_write = false,
     snapshots = {},
     candidate_hits = {},
+    dispatch_by_opcode = {},
+    handler_probe_hits = {},
+    handler_probe_plan = {},
     notes = {},
     quit_requested = false,
     exit_code = 0,
     save_state_load_count = 0,
     input_plan = nil,
     screen_captures = {},
+    runtime_table_base = nil,
+    table_write_breakpoint_installed = false,
+    handler_probe_breakpoints_installed = false,
 }
 
 local function add_note(text)
@@ -206,9 +219,46 @@ local function read_u32_le(mem_ptr, offset)
     return b0 + b1 * 0x100 + b2 * 0x10000 + b3 * 0x1000000
 end
 
-local function capture_focus_handlers()
+local function read_u8(mem_ptr, offset)
+    return tonumber(mem_ptr[offset])
+end
+
+local function read_u32_at_address(address)
     local mem_ptr = PCSX.getMemPtr()
-    local table_base = ram_offset(config.table_address)
+    return read_u32_le(mem_ptr, ram_offset(address))
+end
+
+local function resolve_runtime_table_base()
+    local pointer_value = read_u32_at_address(config.table_address)
+    if pointer_value == nil or pointer_value == 0 then
+        return nil
+    end
+    return pointer_value
+end
+
+local function get_runtime_table_base()
+    if state.runtime_table_base ~= nil and state.runtime_table_base ~= 0 then
+        return state.runtime_table_base
+    end
+    return resolve_runtime_table_base()
+end
+
+local function normalize_opcode_text(opcode_text)
+    local opcode_value = parse_int(opcode_text, nil)
+    if opcode_value == nil then
+        return nil
+    end
+    return hex8(opcode_value), opcode_value
+end
+
+local function capture_focus_handlers()
+    local runtime_table_base = get_runtime_table_base()
+    if runtime_table_base == nil then
+        return {}
+    end
+
+    local mem_ptr = PCSX.getMemPtr()
+    local table_base = ram_offset(runtime_table_base)
     local handlers = {}
     for _, opcode_text in ipairs(config.focus_opcodes) do
         local opcode_value = parse_int(opcode_text, nil)
@@ -220,13 +270,190 @@ local function capture_focus_handlers()
     return handlers
 end
 
+local function capture_raw_bytes(address, count)
+    local mem_ptr = PCSX.getMemPtr()
+    local base = ram_offset(address)
+    local parts = {}
+    for index = 0, count - 1 do
+        parts[#parts + 1] = string.format("%02X", read_u8(mem_ptr, base + index))
+    end
+    return table.concat(parts, " ")
+end
+
+local function capture_current_dispatch()
+    local registers = PCSX.getRegisters()
+    local context_ptr = tonumber(registers.GPR.n.a0)
+    if context_ptr == nil or context_ptr == 0 then
+        return nil
+    end
+
+    local mem_ptr = PCSX.getMemPtr()
+    local context_offset = ram_offset(context_ptr)
+    local script_ptr = read_u32_le(mem_ptr, context_offset)
+    if script_ptr == nil or script_ptr == 0 then
+        return nil
+    end
+
+    local script_offset = ram_offset(script_ptr)
+    local opcode_value = read_u8(mem_ptr, script_offset)
+    if opcode_value == nil then
+        return nil
+    end
+
+    local runtime_table_base = get_runtime_table_base()
+    if runtime_table_base == nil then
+        return nil
+    end
+
+    local handler_offset = ram_offset(runtime_table_base) + opcode_value * 4
+    local handler_value = read_u32_le(mem_ptr, handler_offset)
+
+    return {
+        opcode = hex8(opcode_value),
+        handler_address = hex32(handler_value),
+        context_ptr = hex32(context_ptr),
+        script_ptr = hex32(script_ptr),
+        reader_arg1 = hex32(tonumber(registers.GPR.n.a1)),
+        pc = current_pc_hex(),
+        raw_bytes = capture_raw_bytes(script_ptr, 5),
+    }
+end
+
+local function build_handler_probe_targets()
+    if #config.handler_probe_opcodes == 0 then
+        return {}
+    end
+
+    local runtime_table_base = get_runtime_table_base()
+    if runtime_table_base == nil then
+        return {}
+    end
+
+    local mem_ptr = PCSX.getMemPtr()
+    local table_base = ram_offset(runtime_table_base)
+    local targets_by_address = {}
+
+    for _, opcode_text in ipairs(config.handler_probe_opcodes) do
+        local normalized_opcode, opcode_value = normalize_opcode_text(opcode_text)
+        if normalized_opcode ~= nil then
+            local handler_offset = table_base + opcode_value * 4
+            local handler_value = read_u32_le(mem_ptr, handler_offset)
+            local handler_address = hex32(handler_value)
+            local target = targets_by_address[handler_address]
+            if target == nil then
+                target = {
+                    address = handler_value,
+                    address_hex = handler_address,
+                    opcodes = {},
+                }
+                targets_by_address[handler_address] = target
+            end
+            target.opcodes[#target.opcodes + 1] = normalized_opcode
+        end
+    end
+
+    local target_keys = {}
+    for address_hex in pairs(targets_by_address) do
+        target_keys[#target_keys + 1] = address_hex
+    end
+    table.sort(target_keys)
+
+    local targets = {}
+    for _, address_hex in ipairs(target_keys) do
+        local target = targets_by_address[address_hex]
+        table.sort(target.opcodes)
+        targets[#targets + 1] = target
+    end
+
+    return targets
+end
+
+local function record_dispatch_observation(entry)
+    if entry == nil or entry.opcode == nil then
+        return
+    end
+
+    local aggregate = state.dispatch_by_opcode[entry.opcode]
+    if aggregate == nil then
+        aggregate = {
+            opcode = entry.opcode,
+            hit_count = 0,
+            handler_counts = {},
+            first_context_ptr = entry.context_ptr,
+            first_script_ptr = entry.script_ptr,
+            first_reader_arg1 = entry.reader_arg1,
+            first_pc = entry.pc,
+            sample_raw_bytes = entry.raw_bytes,
+        }
+        state.dispatch_by_opcode[entry.opcode] = aggregate
+    end
+
+    aggregate.hit_count = aggregate.hit_count + 1
+    aggregate.last_context_ptr = entry.context_ptr
+    aggregate.last_script_ptr = entry.script_ptr
+    aggregate.last_reader_arg1 = entry.reader_arg1
+    aggregate.last_pc = entry.pc
+    aggregate.last_handler_address = entry.handler_address
+    aggregate.handler_counts[entry.handler_address] = (aggregate.handler_counts[entry.handler_address] or 0) + 1
+
+    if aggregate.hit_count == 1 then
+        add_note(
+            "reader dispatch observed "
+                .. entry.opcode
+                .. " -> "
+                .. entry.handler_address
+                .. " from script "
+                .. entry.script_ptr
+                .. " via context "
+                .. entry.context_ptr
+                .. " raw="
+                .. entry.raw_bytes
+        )
+    end
+end
+
+local function build_dispatch_summary()
+    local opcode_keys = {}
+    for opcode in pairs(state.dispatch_by_opcode) do
+        opcode_keys[#opcode_keys + 1] = opcode
+    end
+    table.sort(opcode_keys)
+
+    local summary = {}
+    for _, opcode in ipairs(opcode_keys) do
+        local aggregate = state.dispatch_by_opcode[opcode]
+        summary[#summary + 1] = {
+            opcode = aggregate.opcode,
+            hit_count = aggregate.hit_count,
+            last_handler_address = aggregate.last_handler_address,
+            handler_counts = aggregate.handler_counts,
+            first_context_ptr = aggregate.first_context_ptr,
+            first_script_ptr = aggregate.first_script_ptr,
+            first_reader_arg1 = aggregate.first_reader_arg1,
+            first_pc = aggregate.first_pc,
+            last_context_ptr = aggregate.last_context_ptr,
+            last_script_ptr = aggregate.last_script_ptr,
+            last_reader_arg1 = aggregate.last_reader_arg1,
+            last_pc = aggregate.last_pc,
+            sample_raw_bytes = aggregate.sample_raw_bytes,
+        }
+    end
+    return summary
+end
+
 local function dump_snapshot(label, path, reason)
     if state.snapshots[label] ~= nil then
         return
     end
 
+    local runtime_table_base = get_runtime_table_base()
+    if runtime_table_base == nil then
+        add_note("skipped " .. label .. " snapshot because runtime table base is unresolved")
+        return
+    end
+
     local mem_ptr = PCSX.getMemPtr()
-    local table_base = ram_offset(config.table_address)
+    local table_base = ram_offset(runtime_table_base)
     local payload = ffi.string(mem_ptr + table_base, config.table_size)
     local handle, err = io.open(path, "wb")
     if not handle then
@@ -241,6 +468,7 @@ local function dump_snapshot(label, path, reason)
         timestamp = utc_now(),
         reason = reason,
         pc = current_pc_hex(),
+        runtime_table_base = hex32(runtime_table_base),
         focus_handlers = capture_focus_handlers(),
     }
     add_note("captured " .. label .. " snapshot via " .. reason)
@@ -537,6 +765,10 @@ local function write_summary()
         probe_hits = state.probe_hits,
         snapshots = state.snapshots,
         candidate_hits = state.candidate_hits,
+        dispatch_observations = build_dispatch_summary(),
+        runtime_table_base = state.runtime_table_base and hex32(state.runtime_table_base) or nil,
+        handler_probe_plan = state.handler_probe_plan,
+        handler_probe_hits = state.handler_probe_hits,
         notes = state.notes,
         exit_code = state.exit_code,
         save_state = {
@@ -586,46 +818,19 @@ local listeners = {}
 state.input_plan = load_input_plan()
 
 breakpoints[#breakpoints + 1] = PCSX.addBreakpoint(
-    config.table_address,
-    "Write",
-    config.table_size,
-    "opcode table write",
-    function(address, width, cause)
-        local pc_value = current_pc_value()
-        if pc_value < config.min_write_pc then
-            state.ignored_write_hit_count = state.ignored_write_hit_count + 1
-            if state.ignored_write_hit_count == 1 then
-                local address_hex = hex32(address)
-                local pc_hex = hex32(pc_value)
-                queue_safe("ignored write note", function()
-                    add_note("ignoring pre-runtime opcode-table write at " .. address_hex .. " from pc " .. pc_hex)
-                end)
-            end
-            return
-        end
-
-        state.write_hit_count = state.write_hit_count + 1
-        state.saw_write = true
-        state.last_write_cycle = tonumber(PCSX.getCPUCycles())
-        if state.write_hit_count == 1 then
-            local address_hex = hex32(address)
-            local pc_hex = hex32(pc_value)
-            queue_safe("first write note", function()
-                add_note("first opcode-table write hit at " .. address_hex .. " from pc " .. pc_hex)
-            end)
-        end
-    end
-)
-
-breakpoints[#breakpoints + 1] = PCSX.addBreakpoint(
     config.reader_address,
     "Exec",
     4,
     "runtime opcode reader",
     function()
+        if state.frame_count < config.min_breakpoint_frame then
+            return
+        end
         state.reader_hit_count = state.reader_hit_count + 1
         local pc_hex = current_pc_hex()
         queue_safe("reader breakpoint", function()
+            local dispatch_entry = capture_current_dispatch()
+            record_dispatch_observation(dispatch_entry)
             if state.snapshots.after_init == nil then
                 dump_snapshot("after_init", config.after_init_path, "reader_breakpoint_fallback")
             end
@@ -633,7 +838,18 @@ breakpoints[#breakpoints + 1] = PCSX.addBreakpoint(
                 dump_snapshot("pre_dispatch", config.pre_dispatch_path, "reader_breakpoint")
                 state.pre_dispatch_frame = state.frame_count
             end
-            add_note("reader breakpoint hit at " .. pc_hex)
+            if dispatch_entry ~= nil then
+                add_note(
+                    "reader breakpoint hit at "
+                        .. pc_hex
+                        .. " for "
+                        .. dispatch_entry.opcode
+                        .. " -> "
+                        .. dispatch_entry.handler_address
+                )
+            else
+                add_note("reader breakpoint hit at " .. pc_hex)
+            end
         end)
     end
 )
@@ -645,6 +861,9 @@ local function add_candidate_breakpoint(address, label)
         4,
         label,
         function()
+            if state.frame_count < config.min_breakpoint_frame then
+                return
+            end
             local key = hex32(address)
             local entry = state.candidate_hits[key] or {
                 label = label,
@@ -685,6 +904,9 @@ local function add_probe_breakpoint(address, label)
         4,
         label,
         function()
+            if state.frame_count < config.min_breakpoint_frame then
+                return
+            end
             local entry = state.probe_hits[key] or {
                 label = label,
                 hit_count = 0,
@@ -698,6 +920,118 @@ local function add_probe_breakpoint(address, label)
             end)
         end
     )
+end
+
+local function add_runtime_table_write_breakpoint(address)
+    if address == nil or address == 0 then
+        return
+    end
+
+    state.write_breakpoint.address_range = hex32(address) .. "-" .. hex32(address + config.table_size - 1)
+    breakpoints[#breakpoints + 1] = PCSX.addBreakpoint(
+        address,
+        "Write",
+        config.table_size,
+        "opcode handler table write",
+        function(hit_address)
+            local pc_value = current_pc_value()
+            if pc_value < config.min_write_pc then
+                state.ignored_write_hit_count = state.ignored_write_hit_count + 1
+                if state.ignored_write_hit_count == 1 then
+                    local address_hex = hex32(hit_address)
+                    local pc_hex = hex32(pc_value)
+                    queue_safe("ignored write note", function()
+                        add_note("ignoring pre-runtime opcode-table write at " .. address_hex .. " from pc " .. pc_hex)
+                    end)
+                end
+                return
+            end
+
+            state.write_hit_count = state.write_hit_count + 1
+            state.saw_write = true
+            state.last_write_cycle = tonumber(PCSX.getCPUCycles())
+            if state.write_hit_count == 1 then
+                local address_hex = hex32(hit_address)
+                local pc_hex = hex32(pc_value)
+                queue_safe("first write note", function()
+                    add_note("first opcode-table write hit at " .. address_hex .. " from pc " .. pc_hex)
+                end)
+            end
+        end
+    )
+    state.table_write_breakpoint_installed = true
+    add_note("installed runtime table write breakpoint for " .. state.write_breakpoint.address_range)
+end
+
+local function add_handler_probe_breakpoint(target)
+    if target == nil or target.address == nil or target.address == 0 then
+        return
+    end
+
+    local address_hex = target.address_hex
+    local label = "script handler probe " .. table.concat(target.opcodes, "/")
+    breakpoints[#breakpoints + 1] = PCSX.addBreakpoint(
+        target.address,
+        "Exec",
+        4,
+        label,
+        function()
+            if state.frame_count < config.min_breakpoint_frame then
+                return
+            end
+
+            local entry = state.handler_probe_hits[address_hex] or {
+                label = label,
+                opcodes = target.opcodes,
+                hit_count = 0,
+                pcs = {},
+            }
+            entry.hit_count = entry.hit_count + 1
+            entry.pcs[#entry.pcs + 1] = current_pc_hex()
+            state.handler_probe_hits[address_hex] = entry
+            queue_safe(label .. " hit", function()
+                add_note("script handler probe hit at " .. address_hex .. " for " .. table.concat(target.opcodes, ","))
+            end)
+        end
+    )
+end
+
+local function ensure_runtime_table_instrumentation()
+    local runtime_table_base = get_runtime_table_base()
+    if runtime_table_base == nil or runtime_table_base == 0 then
+        return
+    end
+
+    if state.runtime_table_base == nil then
+        state.runtime_table_base = runtime_table_base
+        add_note(
+            "resolved runtime opcode table pointer slot "
+                .. hex32(config.table_address)
+                .. " -> "
+                .. hex32(runtime_table_base)
+        )
+    end
+
+    if not state.table_write_breakpoint_installed then
+        add_runtime_table_write_breakpoint(runtime_table_base)
+    end
+
+    if not state.handler_probe_breakpoints_installed and #config.handler_probe_opcodes > 0 then
+        local targets = build_handler_probe_targets()
+        local plan = {}
+        for _, target in ipairs(targets) do
+            if target.address ~= 0 then
+                add_handler_probe_breakpoint(target)
+                plan[#plan + 1] = {
+                    address = target.address_hex,
+                    opcodes = target.opcodes,
+                }
+            end
+        end
+        state.handler_probe_plan = plan
+        state.handler_probe_breakpoints_installed = true
+        add_note("installed " .. tostring(#plan) .. " script handler probe breakpoint(s)")
+    end
 end
 
 add_candidate_breakpoint(config.stub_address, "stub candidate")
@@ -760,6 +1094,7 @@ function DrawImguiFrame()
     state.frame_count = state.frame_count + 1
     local cycles = tonumber(PCSX.getCPUCycles())
 
+    ensure_runtime_table_instrumentation()
     update_input_plan()
 
     if state.saw_write and state.snapshots.after_init == nil and state.last_write_cycle ~= nil then

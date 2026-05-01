@@ -74,11 +74,24 @@ The wrapper now also auto-raises the runtime timeout when an input plan would
 otherwise outlast the base `1800`-frame default. That matters for the
 checked-in cold-boot scaffold because the latest retunes are longer than the
 first six-step starter plan and rely on visual checkpoints to prove progress.
-The current blocker is no longer hidden timeout behavior: the route now reaches
-the title menu and can open the `Load / Memory Card slot 1` screen, but it
-still records no `0x800BFBB8` reader hit, no runtime-table write hit, and no
-snapshots because the repo-local cards do not yet provide a usable path into
-live gameplay.
+The latest `MAP001` listener-control rerun moved this packet past the old
+"maybe the automation or trigger chain is broken" stage:
+
+- the Lua capture now treats `0x800F4C28` as a pointer slot and resolves the
+  live runtime table at `0x801119F0`
+- the stripped `New Game` intro route reaches the recovered reader family on
+  retail runtime (`0x8007A36C` x`955`, `0x800BF850` x`955`, `0x800BFBB8`
+  x`1049`)
+- decoded-script handler probes based on
+  `decoded_scripts/24-Unmapped/001-Unknown Room.txt` now fire across dozens of
+  `MAP001` opcode families
+- the dispatch log records direct retail intro samples for
+  `0x80 -> 0x800B66E4` while the copied table still shows no post-init write
+  hits
+
+That means the next runtime pass should stop spending time on basic trigger
+validation and instead instrument what happens after shared stub `0x800B66E4`
+is selected for `0x80`.
 
 Official `PCSX-Redux` docs that back this path:
 
@@ -103,6 +116,21 @@ Recommended usage shape:
 pwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `
   -IsoPath "<path-to-disc-image>"
 ```
+
+For route-only smoke tests where breakpoint accuracy is not needed, the wrapper
+now also supports a fast dynarec path:
+
+```powershell
+pwsh -File decomp/verification/run_opcode_0x80_runtime_capture.ps1 `
+  -IsoPath "Game Data/Vagrant Story (USA).cue" `
+  -CpuCore dynarec `
+  -DisableDebugger
+```
+
+Keep the real contradiction-proof passes on `interpreter` plus debugger. The
+official docs note that Lua breakpoints require the debugger and the
+interpreter path, so the real speedup for semantic work is still a near-target
+savestate rather than repeated full cold boots.
 
 When a nearer launch state exists, prefer resuming from that state instead of
 repeating a cold boot. The wrapper now supports both explicit savestate paths
@@ -139,6 +167,16 @@ near-battle savestate again as soon as one exists. If no save-bearing card is
 available, the next cold-boot branch should be `New Game` far enough to earn a
 real save or checkpoint, not more retries of the blank-card `Load` path.
 
+The current preserved regression/control pair lives at:
+
+- `decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`
+- `decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md`
+
+Treat that pair as the stronger fallback checkpoint, not as positive opcode
+proof. It now documents a route that reaches player control, changes rooms,
+opens combat state, and lands the opening bat attack while still producing no
+reader/caller/grandcaller hits and no snapshots.
+
 Current cold-boot status:
 
 - the wrapper now emits per-step screen-capture artifacts under
@@ -158,6 +196,9 @@ Current cold-boot status:
   recorded no `0x800BFBB8` reader hit, no table-write hit, and no snapshots
 - the preserved bat-control negative route now goes farther and still stays
   silent on `0x800BFBB8`, `0x800BF850`, and `0x8007A36C`
+- the automation summary JSON now preserves per-step input-plan
+  start/completion notes with frame numbers, so a silent rerun can be checked
+  for route drift before spending time on screenshots or fresh timing churn
 - the next fallback edit should therefore widen from the `0x8007A36C ->
   0x800BF850 -> 0x800BFBB8` chain or add a savestate-bearing handoff artifact,
   not restore the blank-card `Load` route or rely on more blind early-gameplay
@@ -188,6 +229,8 @@ Expected outputs:
 - `decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin`
 - `decomp/evidence/opcode_0x80_runtime_automation_summary.json`
 - optional replay metadata for `decomp/evidence/opcode_0x80_runtime_input_plan.json`
+  inside the automation summary and observation packet notes
+- optional replay metadata for `decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`
   inside the automation summary and observation packet notes
 - refreshed `decomp/evidence/opcode_0x80_runtime_observation.json`
 - refreshed compare/support artifacts through the existing finalize flow

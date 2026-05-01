@@ -12,6 +12,8 @@ Default read set for the next opcode/decomp pass:
 If the next pass is continuing `0x80`, add:
 
 - [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md)
+- [`decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json`](decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json)
+- [`decoded_scripts/24-Unmapped/001-Unknown Room.txt`](decoded_scripts/24-Unmapped/001-Unknown%20Room.txt)
 - [`decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md)
 - [`decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`](decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json)
 - [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json)
@@ -127,7 +129,7 @@ Current phase: Pass 3 - Copy/patch reconciliation
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `runtime_needed` | `INITBTL.PRG` static table at `0x800FAF7C`, copied by the init-time routine at `0x800FAAAC` into runtime slot `0x800F4C28` | Initial slot `0x800B66E4` is a shared stub for `0x80-0x82`; former competing target `0x800BA2E0` is now locally anchored to the `BATTLE.PRG` sound subdispatch table at `0x800E9F30`; recovered reader `FUN_800BFBB8` dispatches through the copied runtime table via `jalr` | `SoundEffects0` placeholder only | Do runtime dumps from `0x800F4C28` ever diverge from the binary baseline before `0x80-0x82` dispatch, and if not, which later reader or rewrite site actually governs the disputed live behavior? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_reader_call_chain_static.md`](decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md), [`opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md), [`opcode_0x80_runtime_input_plan_bat_kill.json`](decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json), [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md) |
+| `opcode 0x80` | `runtime_needed` | `INITBTL.PRG` static table at `0x800FAF7C`, copied by the init-time routine at `0x800FAAAC` into pointer slot `0x800F4C28` and resolved live at `0x801119F0` during the validated `MAP001` intro pass | Initial slot `0x800B66E4` is a shared stub for `0x80-0x82`; former competing target `0x800BA2E0` is now locally anchored to the `BATTLE.PRG` sound subdispatch table at `0x800E9F30`; recovered reader `FUN_800BFBB8` dispatches through the copied runtime table via `jalr`, and the `MAP001` listener-control run now proves that chain is live on retail runtime | `SoundEffects0` placeholder only | Now that the live reader chain is proven and `0x80` still resolves to shared stub `0x800B66E4`, what later state, side table, or secondary callee gives `0x80` its real sound behavior without a copied-table rewrite? | `Pass 3 - Copy/patch reconciliation` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_reader_call_chain_static.md`](decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md), [`opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md), [`opcode_0x80_runtime_input_plan_bat_kill.json`](decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json), [`opcode_0x80_runtime_input_plan_map001_listener.json`](decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json), [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md) |
 
 ## Known Conflicts
 
@@ -151,8 +153,8 @@ Current phase: Pass 3 - Copy/patch reconciliation
   verified init-time copy even though current direct-slot sweeps and pointer
   tracing have not recovered a rewrite path.
 - What is still missing:
-  A runtime snapshot that proves whether the copied table contents ever diverge
-  from the binary baseline before `0x80-0x82` dispatch. The active packet is
+  A tighter local proof of what happens after the now-validated `0x80`
+  dispatch lands on shared stub `0x800B66E4`. The active packet is
   anchored by
   [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md),
   [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json),
@@ -184,18 +186,14 @@ Current phase: Pass 3 - Copy/patch reconciliation
   The next decisive pass therefore needs either a nearer savestate or a wider
   trigger search beyond that recovered reader chain, not more blind proof that
   "gameplay happened."
-  Validation boundary for the current runtime suite:
-  it is now a checked-in automation and negative-control harness, not a
-  positive trigger-proof packet yet. The preserved runs were executed against
-  the repo-local retail disc image (`Game Data/Vagrant Story (USA).cue`) using
-  cold-boot input plans plus breakpoint/watchpoint instrumentation. That is
-  enough to prove that the wrapper launches, drives the title/menu flow, can
-  reach live player control, and records "no hit" outcomes reproducibly for the
-  tested branches. It is not enough to claim that the disputed live `0x80`
-  trigger was reached or that the copied table was observed at the decisive
-  moment, because no checked-in run has yet produced a reader hit, upstream
-  caller hit, post-init table-write hit, `after_init` snapshot, or
-  `pre_dispatch` snapshot.
+  That `MAP001` listener-control proof now exists. The corrected runtime pass
+  dereferences pointer slot `0x800F4C28`, resolves the live table at
+  `0x801119F0`, hits `0x8007A36C -> 0x800BF850 -> 0x800BFBB8` repeatedly, and
+  records `0x80 -> 0x800B66E4` dispatches directly from the retail intro
+  script while also proving dozens of other `MAP001` opcode-family handlers.
+  That closes the old "maybe the trigger plumbing is broken" branch. The live
+  question is narrower now: why does `0x80` still map to the shared stub even
+  though the surrounding script system is demonstrably active?
   No local artifact in this pass uses a custom `PRG`, patched executable, or
   custom ISO as a positive-control trigger source; if a future pass introduces
   one, keep that proof path labeled separately from retail-runtime evidence.
@@ -230,44 +228,39 @@ Use the artifact index for:
 
 ## Session Handoff
 
-- `last completed step`: the no-savestate `PCSX-Redux` fallback is now
-  instrumented enough to leave screenshot checkpoints, and the latest retunes
-  proved that `START` pushes through the intro chain, this build uses `O`
-  confirm / `X` cancel, and the checked-in route can reach live player control
-  from a `New Game` cold boot. The newest preserved retune rotated into the
-  adjacent room, unsheathed, opened the attack sphere, and attacked the first
-  bat, then timed out at `4886` frames with no `0x800BFBB8` reader hit, no
-  `0x800BF850` caller hit, no `0x8007A36C` upstream-caller hit, no candidate
-  hit, no table-write hit, and no snapshots. That makes the bat-kill route a
-  stronger negative control than before: early live gameplay, room transition,
-  and the first combat exchange still do not enter the recovered reader chain.
-  This confirms that the retail-disc automation path is functional and
-  reproducible, but it does not yet confirm that the disputed trigger itself
-  has been reached. The checked-in automation summary now also records
-  step-level input-plan start/complete notes with frame numbers, so future
-  retunes can distinguish route drift from breakpoint silence without leaning
-  only on screenshot review.
-- `next recommended step`: keep the preserved bat-control route as a
-  regression/control artifact, but stop spending passes on blind cold-boot
-  timing tweaks alone. Preferred order for the next runtime pass:
-  1. run `decomp/verification/run_opcode_0x80_runtime_capture.ps1` with a
-     near-battle or target-cutscene savestate (`-UseNewestSaveState` or
-     `-SaveStatePath`)
-  2. if no savestate exists yet, keep the widened probe breakpoints for
-     `0x800BF850` and `0x8007A36C`, then pivot the Lua capture outward from
-     that chain or the `0x800F4C38` pointer family instead of assuming
-     `0x800BFBB8` should fire as soon as player control or the first bat
-     encounter begins
-  3. use the bat-control route only as a regression check after instrumentation
-     changes, because it already proved that early live gameplay is a weak
-     trigger for this contradiction
-  4. when a regression run stays silent, read the step-level notes in
-     `opcode_0x80_runtime_automation_summary.json` first to confirm whether the
-     route still reached the intended control handoff before spending time on
-     screenshots or timing churn
-  5. if the widened pass still stays silent, record which copied-table reader,
-     script family, or cutscene hook becomes the next candidate before trying
-     another cold-boot timing retune
+- `last completed step`: the corrected `MAP001` listener-control rerun is now
+  the first real retail-runtime positive control for this packet. It fixed the
+  long-standing pointer-slot mistake by resolving `0x800F4C28` to live table
+  base `0x801119F0`, then proved the reader chain works on the untouched intro:
+  `0x8007A36C` and `0x800BF850` each hit `955` times, `0x800BFBB8` hit
+  `1049` times, the sound-family candidate `0x800BA2E0` hit `13` times, and
+  the decoded-script handler probes fired across dozens of `MAP001` opcode
+  families. Most importantly for the original contradiction, the dispatch log
+  now records `0x80 -> 0x800B66E4` directly from the retail intro while the
+  copied table still shows no post-init write hits.
+- `next recommended step`: keep the `MAP001` listener route as the default
+  positive-control regression and pivot the runtime work from "does the trigger
+  chain work?" to "what makes `0x80` do real work after landing on the shared
+  stub?" Preferred order for the next pass:
+  1. rerun the validated `MAP001` route with
+     `decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json`
+     whenever the Lua/wrapper instrumentation changes, and include
+     `decoded_scripts/24-Unmapped/001-Unknown Room.txt` so the handler-probe
+     set stays grounded in the same intro script
+  2. build or preserve a near-`0x80` savestate inside the `MAP001` intro so
+     the next semantic pass can sit directly on the first `0x80` call instead
+     of replaying the whole cold boot
+  3. instrument outward from shared stub `0x800B66E4` and its immediate
+     callers/side tables rather than treating `0x800BA2E0` as the hidden
+     direct handler; the validated reader log now shows `0x80` itself still
+     dispatching to the stub
+  4. keep the bat-control route only as a negative-control regression, because
+     it still proves that early free movement/combat is a poor proxy trigger
+     for this contradiction
+  5. use `-CpuCore dynarec -DisableDebugger` only for route smoke tests;
+     breakpoint-driven proof still needs interpreter plus debugger, so the real
+     speedup path for semantic work is a near-target savestate, not more full
+     cold boots
   Once a run reaches a real reader or rewrite site, capture `after_init` and
   `pre_dispatch`, then run
   `decomp/verification/finalize_runtime_observation.py --in-place`. If the
@@ -284,6 +277,9 @@ Use the artifact index for:
   the result as a compare-only observation. For the cold-boot fallback
   specifically, preserve which menu path, button mapping, and card assumptions
   were actually tested so the next pass does not retry a known dead branch.
+  If the next pass uses the stripped `MAP001` listener-control route, label it
+  explicitly as the positive-control baseline for retail runtime, not as a
+  substitute for the later semantic pass on `0x80` itself.
   If a future validation pass uses a custom `PRG`, patched executable, or
   custom ISO as a positive control for the instrumentation, label that run
   explicitly as tooling proof rather than retail-runtime opcode proof.
@@ -351,6 +347,17 @@ Use the artifact index for:
   route drift from breakpoint silence faster. Links:
   [`decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](decomp/verification/pcsx_redux_opcode_0x80_capture.lua),
   [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json)
+- `2026-05-01`: corrected the `0x80` runtime capture to treat `0x800F4C28` as
+  a pointer slot, added decoded-script handler probes plus selectable
+  interpreter/dynarec launch modes, and validated the full retail `MAP001`
+  listener-control path with `1049` reader hits and direct `0x80 -> 0x800B66E4`
+  dispatch samples. Links:
+  [`decomp/verification/pcsx_redux_opcode_0x80_capture.lua`](decomp/verification/pcsx_redux_opcode_0x80_capture.lua),
+  [`decomp/verification/run_opcode_0x80_runtime_capture.ps1`](decomp/verification/run_opcode_0x80_runtime_capture.ps1),
+  [`decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json`](decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json),
+  [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),
+  [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json),
+  [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
 - `2026-04-30`: made the automated `PCSX-Redux` runtime path savestate-ready
   and validated the scripted capture path against the local disc image. Links:
   [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),

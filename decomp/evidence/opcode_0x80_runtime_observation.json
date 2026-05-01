@@ -50,37 +50,1396 @@
   "snapshots": [
     {
       "label": "after_init",
-      "path": "decomp/evidence/opcode_0x80_runtime_after_init.bin",
-      "capture_point": "Immediately after the INITBTL copy into 0x800F4C28"
+      "path": "C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_after_init.bin",
+      "capture_point": "Automated PCSX-Redux capture after opcode-table writes settled."
     },
     {
       "label": "pre_dispatch",
-      "path": "decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin",
-      "capture_point": "Late runtime state before any candidate 0x80-0x82 dispatch"
+      "path": "C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_pre_dispatch.bin",
+      "capture_point": "Automated PCSX-Redux capture at the runtime opcode reader."
     }
   ],
-  "breakpoint_hits": [],
+  "breakpoint_hits": [
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:04Z",
+      "address": "0x800BFBB8",
+      "hit_count": 1049,
+      "pc": "0x800BFBB8",
+      "note": "Automated PCSX-Redux capture reached the recovered runtime opcode reader."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:04Z",
+      "address": "0x8007A36C",
+      "hit_count": 955,
+      "pc": "0x8007A36C",
+      "note": "Automated PCSX-Redux capture hit upstream probe breakpoint 'reader grandcaller'."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:05Z",
+      "address": "0x800BF850",
+      "hit_count": 955,
+      "pc": "0x800BF850",
+      "note": "Automated PCSX-Redux capture hit upstream probe breakpoint 'reader caller'."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:05Z",
+      "address": "0x800BA2E0",
+      "hit_count": 13,
+      "pc": "0x800BA2E0",
+      "note": "Automated PCSX-Redux capture hit candidate handler breakpoint 'sound-family candidate'."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:14Z",
+      "address": "0x800B6724",
+      "hit_count": 11,
+      "pc": "0x800B6724",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x0C]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:14Z",
+      "address": "0x800B6744",
+      "hit_count": 1,
+      "pc": "0x800B6744",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x0D]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:14Z",
+      "address": "0x800B6FD8",
+      "hit_count": 1,
+      "pc": "0x800B6FD8",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x16]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:15Z",
+      "address": "0x800B7014",
+      "hit_count": 3,
+      "pc": "0x800B7014",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x17]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:15Z",
+      "address": "0x800B70E8",
+      "hit_count": 3,
+      "pc": "0x800B70E8",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x18]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:15Z",
+      "address": "0x800B71C4",
+      "hit_count": 1,
+      "pc": "0x800B71C4",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x19]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:15Z",
+      "address": "0x800B7574",
+      "hit_count": 3,
+      "pc": "0x800B7574",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x20]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:15Z",
+      "address": "0x800B770C",
+      "hit_count": 13,
+      "pc": "0x800B770C",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x23]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:15Z",
+      "address": "0x800B77DC",
+      "hit_count": 4,
+      "pc": "0x800B77DC",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x24]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:15Z",
+      "address": "0x800B792C",
+      "hit_count": 13,
+      "pc": "0x800B792C",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x26]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:15Z",
+      "address": "0x800B7B58",
+      "hit_count": 10,
+      "pc": "0x800B7B58",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x28]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:15Z",
+      "address": "0x800B7C90",
+      "hit_count": 2,
+      "pc": "0x800B7C90",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x29]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:15Z",
+      "address": "0x800B7DC4",
+      "hit_count": 4,
+      "pc": "0x800B7DC4",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x2B]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:15Z",
+      "address": "0x800B804C",
+      "hit_count": 6,
+      "pc": "0x800B804C",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x2E]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:16Z",
+      "address": "0x800B81A0",
+      "hit_count": 11,
+      "pc": "0x800B81A0",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x31]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:16Z",
+      "address": "0x800B8290",
+      "hit_count": 2,
+      "pc": "0x800B8290",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x33]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:16Z",
+      "address": "0x800B8510",
+      "hit_count": 4,
+      "pc": "0x800B8510",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x38]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:16Z",
+      "address": "0x800B8590",
+      "hit_count": 3,
+      "pc": "0x800B8590",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x39]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:16Z",
+      "address": "0x800B860C",
+      "hit_count": 2,
+      "pc": "0x800B860C",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x3A]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:16Z",
+      "address": "0x800B86E8",
+      "hit_count": 50,
+      "pc": "0x800B86E8",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x3B]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:16Z",
+      "address": "0x800B8764",
+      "hit_count": 1,
+      "pc": "0x800B8764",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x3D]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:16Z",
+      "address": "0x800B8788",
+      "hit_count": 8,
+      "pc": "0x800B8788",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x3E]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:16Z",
+      "address": "0x800B92D0",
+      "hit_count": 1,
+      "pc": "0x800B92D0",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x58]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:16Z",
+      "address": "0x800B9670",
+      "hit_count": 2,
+      "pc": "0x800B9670",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x5D]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:16Z",
+      "address": "0x800B9F28",
+      "hit_count": 1,
+      "pc": "0x800B9F28",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x73]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:17Z",
+      "address": "0x800B9F4C",
+      "hit_count": 1,
+      "pc": "0x800B9F4C",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x74]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:17Z",
+      "address": "0x800B9F70",
+      "hit_count": 2,
+      "pc": "0x800B9F70",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x75]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:17Z",
+      "address": "0x800B9FC0",
+      "hit_count": 2,
+      "pc": "0x800B9FC0",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x77]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:17Z",
+      "address": "0x800BA0E4",
+      "hit_count": 1,
+      "pc": "0x800BA0E4",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x78]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:17Z",
+      "address": "0x800BA108",
+      "hit_count": 1,
+      "pc": "0x800BA108",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x7A]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:17Z",
+      "address": "0x800BA218",
+      "hit_count": 1,
+      "pc": "0x800BA218",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x7B]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:17Z",
+      "address": "0x800BA444",
+      "hit_count": 1,
+      "pc": "0x800BA444",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x85]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:17Z",
+      "address": "0x800BA470",
+      "hit_count": 6,
+      "pc": "0x800BA470",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x86]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:17Z",
+      "address": "0x800BA4C8",
+      "hit_count": 1,
+      "pc": "0x800BA4C8",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0x88]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:17Z",
+      "address": "0x800BA8BC",
+      "hit_count": 2,
+      "pc": "0x800BA8BC",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0xA0]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:18Z",
+      "address": "0x800BA90C",
+      "hit_count": 2,
+      "pc": "0x800BA90C",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0xA1]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:18Z",
+      "address": "0x800BA94C",
+      "hit_count": 99,
+      "pc": "0x800BA94C",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0xA2]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:18Z",
+      "address": "0x800BAA04",
+      "hit_count": 1,
+      "pc": "0x800BAA04",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0xA3]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:18Z",
+      "address": "0x800BAA34",
+      "hit_count": 2,
+      "pc": "0x800BAA34",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0xA4]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:18Z",
+      "address": "0x800BB4CC",
+      "hit_count": 2,
+      "pc": "0x800BB4CC",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0xF1]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:18Z",
+      "address": "0x800BB504",
+      "hit_count": 1,
+      "pc": "0x800BB504",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0xF4]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:18Z",
+      "address": "0x800BB554",
+      "hit_count": 4,
+      "pc": "0x800BB554",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0xF5]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:18Z",
+      "address": "0x800BB5A4",
+      "hit_count": 2,
+      "pc": "0x800BB5A4",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0xF6]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:18Z",
+      "address": "0x800BC2E8",
+      "hit_count": 44,
+      "pc": "0x800BC2E8",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0xC0,0xC1,0xC2,0xC4,0xD0,0xD1,0xD2,0xD4]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:18Z",
+      "address": "0x800BD444",
+      "hit_count": 11,
+      "pc": "0x800BD444",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0xE2]."
+    },
+    {
+      "kind": "exec",
+      "timestamp": "2026-05-01T10:13:18Z",
+      "address": "0x800BDC9C",
+      "hit_count": 25,
+      "pc": "0x800BDC9C",
+      "note": "Automated PCSX-Redux script handler probe hit for opcode set [0xEA,0xEB,0xEC,0xEF]."
+    }
+  ],
   "table_mutations": [],
-  "dispatch_observations": [],
+  "dispatch_observations": [
+    {
+      "opcode": "0x00",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:05Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x24000302; raw=00 00 24 64 C0; hit_count=286"
+    },
+    {
+      "opcode": "0x01",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:05Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x148FB100; raw=01 01 01 01 01; hit_count=23"
+    },
+    {
+      "opcode": "0x02",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:05Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x2027BDFF; raw=02 14 00 BF 8F; hit_count=6"
+    },
+    {
+      "opcode": "0x03",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:05Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x00C82536; raw=03 3C CC 19 63; hit_count=4"
+    },
+    {
+      "opcode": "0x04",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:05Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x09240501; raw=04 57 0F 93 04; hit_count=53"
+    },
+    {
+      "opcode": "0x05",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:05Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0xE027BD00; raw=05 00 05 92 05; hit_count=3"
+    },
+    {
+      "opcode": "0x06",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:05Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x40180024; raw=06 00 00 00 1D; hit_count=6"
+    },
+    {
+      "opcode": "0x07",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:06Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x00000C00; raw=07 00 09 24 07; hit_count=1"
+    },
+    {
+      "opcode": "0x08",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:06Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x030200F8; raw=08 00 E0 03 00; hit_count=62"
+    },
+    {
+      "opcode": "0x0A",
+      "handler_address": "0x800B66F4",
+      "timestamp": "2026-05-01T10:13:06Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x40000900; raw=0A 00 03 24 00; hit_count=4"
+    },
+    {
+      "opcode": "0x0B",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:06Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x02BF8010; raw=0B 06 00 00 00; hit_count=1"
+    },
+    {
+      "opcode": "0x0C",
+      "handler_address": "0x800B6724",
+      "timestamp": "2026-05-01T10:13:06Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x09002027; raw=0C 10 00 84 24; hit_count=4"
+    },
+    {
+      "opcode": "0x0D",
+      "handler_address": "0x800B6744",
+      "timestamp": "2026-05-01T10:13:06Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x00FF0000; raw=0D 00 00 00 0D; hit_count=2"
+    },
+    {
+      "opcode": "0x0F",
+      "handler_address": "0x800B68C4",
+      "timestamp": "2026-05-01T10:13:06Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0xFEBE2403; raw=0F 0F 0C 16 16; hit_count=2"
+    },
+    {
+      "opcode": "0x10",
+      "handler_address": "0x800B66E4",
+      "timestamp": "2026-05-01T10:13:06Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0xB1001802; raw=10 3C 74 10 02; hit_count=10"
+    },
+    {
+      "opcode": "0x12",
+      "handler_address": "0x800B6B74",
+      "timestamp": "2026-05-01T10:13:06Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0xB03C11F0; raw=12 02 40 E1 EE; hit_count=2"
+    },
+    {
+      "opcode": "0x13",
+      "handler_address": "0x800B66E4",
+      "timestamp": "2026-05-01T10:13:06Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x00240900; raw=13 0A 6E 0C 18; hit_count=6"
+    },
+    {
+      "opcode": "0x14",
+      "handler_address": "0x800B66EC",
+      "timestamp": "2026-05-01T10:13:07Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x63000800; raw=14 00 B0 8F 00; hit_count=10"
+    },
+    {
+      "opcode": "0x18",
+      "handler_address": "0x800B70E8",
+      "timestamp": "2026-05-01T10:13:07Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x007400BD; raw=18 00 14 00 10; hit_count=11"
+    },
+    {
+      "opcode": "0x1A",
+      "handler_address": "0x800B66EC",
+      "timestamp": "2026-05-01T10:13:07Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x435FA824; raw=1A FC 02 FD 02; hit_count=2"
+    },
+    {
+      "opcode": "0x1C",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:07Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x60000700; raw=1C 00 BF AF 18; hit_count=7"
+    },
+    {
+      "opcode": "0x1D",
+      "handler_address": "0x800B7358",
+      "timestamp": "2026-05-01T10:13:07Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x00F80934; raw=1D 9D 1D 94 24; hit_count=4"
+    },
+    {
+      "opcode": "0x1F",
+      "handler_address": "0x800B7490",
+      "timestamp": "2026-05-01T10:13:07Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x435FA434; raw=1F FD 01 C9 05; hit_count=1"
+    },
+    {
+      "opcode": "0x20",
+      "handler_address": "0x800B7574",
+      "timestamp": "2026-05-01T10:13:07Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x015400B9; raw=20 00 1C 00 18; hit_count=1"
+    },
+    {
+      "opcode": "0x21",
+      "handler_address": "0x800B75F4",
+      "timestamp": "2026-05-01T10:13:07Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x8720253C; raw=21 10 44 00 00; hit_count=3"
+    },
+    {
+      "opcode": "0x24",
+      "handler_address": "0x800B77DC",
+      "timestamp": "2026-05-01T10:13:07Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x0502008F; raw=24 00 00 80 AC; hit_count=10"
+    },
+    {
+      "opcode": "0x25",
+      "handler_address": "0x800B784C",
+      "timestamp": "2026-05-01T10:13:07Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0xE00008AC; raw=25 20 C4 00 B0; hit_count=1"
+    },
+    {
+      "opcode": "0x27",
+      "handler_address": "0x800B7A98",
+      "timestamp": "2026-05-01T10:13:07Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x00F80924; raw=27 88 28 96 24; hit_count=9"
+    },
+    {
+      "opcode": "0x28",
+      "handler_address": "0x800B7B58",
+      "timestamp": "2026-05-01T10:13:07Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x11151010; raw=28 B4 28 A5 F7; hit_count=5"
+    },
+    {
+      "opcode": "0x2B",
+      "handler_address": "0x800B7DC4",
+      "timestamp": "2026-05-01T10:13:08Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x625F70A0; raw=2B 00 00 00 00; hit_count=1"
+    },
+    {
+      "opcode": "0x2D",
+      "handler_address": "0x800B7F84",
+      "timestamp": "2026-05-01T10:13:08Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x00009180; raw=2D 00 0D 00 06; hit_count=2"
+    },
+    {
+      "opcode": "0x2E",
+      "handler_address": "0x800B804C",
+      "timestamp": "2026-05-01T10:13:08Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x009300BB; raw=2E 50 00 40 00; hit_count=1"
+    },
+    {
+      "opcode": "0x30",
+      "handler_address": "0x800B66EC",
+      "timestamp": "2026-05-01T10:13:08Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x4410F034; raw=30 F0 10 00 34; hit_count=1"
+    },
+    {
+      "opcode": "0x32",
+      "handler_address": "0x800B66E4",
+      "timestamp": "2026-05-01T10:13:08Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x043C04F0; raw=32 02 00 EF 0E; hit_count=10"
+    },
+    {
+      "opcode": "0x33",
+      "handler_address": "0x800B8290",
+      "timestamp": "2026-05-01T10:13:08Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x007700CA; raw=33 34 1E 27 33; hit_count=1"
+    },
+    {
+      "opcode": "0x34",
+      "handler_address": "0x800B8360",
+      "timestamp": "2026-05-01T10:13:08Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x84000300; raw=34 2B 00 00 24; hit_count=1"
+    },
+    {
+      "opcode": "0x38",
+      "handler_address": "0x800B8510",
+      "timestamp": "2026-05-01T10:13:08Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x8210F43C; raw=38 F4 10 00 3C; hit_count=3"
+    },
+    {
+      "opcode": "0x39",
+      "handler_address": "0x800B8590",
+      "timestamp": "2026-05-01T10:13:08Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x0824082A; raw=39 0D 08 09 35; hit_count=1"
+    },
+    {
+      "opcode": "0x3C",
+      "handler_address": "0x800B8708",
+      "timestamp": "2026-05-01T10:13:08Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0xBD001803; raw=3C 74 10 02 8E; hit_count=2"
+    },
+    {
+      "opcode": "0x3D",
+      "handler_address": "0x800B8764",
+      "timestamp": "2026-05-01T10:13:09Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x9E7CAAD2; raw=3D EF 13 DD 5D; hit_count=7"
+    },
+    {
+      "opcode": "0x40",
+      "handler_address": "0x800B88D4",
+      "timestamp": "2026-05-01T10:13:09Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0xE7FFFF8C; raw=40 02 80 FD 40; hit_count=1"
+    },
+    {
+      "opcode": "0x41",
+      "handler_address": "0x800B8A10",
+      "timestamp": "2026-05-01T10:13:09Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x11151010; raw=41 01 F0 00 44; hit_count=1"
+    },
+    {
+      "opcode": "0x44",
+      "handler_address": "0x800B66E4",
+      "timestamp": "2026-05-01T10:13:09Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x09002036; raw=44 8C 00 00 00; hit_count=8"
+    },
+    {
+      "opcode": "0x48",
+      "handler_address": "0x800B66E4",
+      "timestamp": "2026-05-01T10:13:09Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0xA95F8C8D; raw=48 A7 73 94 A8; hit_count=2"
+    },
+    {
+      "opcode": "0x57",
+      "handler_address": "0x800B92A0",
+      "timestamp": "2026-05-01T10:13:09Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x08240502; raw=57 0F 93 04 55; hit_count=1"
+    },
+    {
+      "opcode": "0x5C",
+      "handler_address": "0x800B9608",
+      "timestamp": "2026-05-01T10:13:09Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x065F9C00; raw=5C 46 0F 67 5C; hit_count=2"
+    },
+    {
+      "opcode": "0x62",
+      "handler_address": "0x800B97E4",
+      "timestamp": "2026-05-01T10:13:09Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x010C0052; raw=62 10 02 00 62; hit_count=1"
+    },
+    {
+      "opcode": "0x64",
+      "handler_address": "0x800B9818",
+      "timestamp": "2026-05-01T10:13:09Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x002B3400; raw=64 00 24 26 94; hit_count=2"
+    },
+    {
+      "opcode": "0x69",
+      "handler_address": "0x800B66E4",
+      "timestamp": "2026-05-01T10:13:09Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x5F943C03; raw=69 27 5D E5 54; hit_count=1"
+    },
+    {
+      "opcode": "0x7F",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:09Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x44001A24; raw=7F FF 03 24 24; hit_count=1"
+    },
+    {
+      "opcode": "0x80",
+      "handler_address": "0x800B66E4",
+      "timestamp": "2026-05-01T10:13:10Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x05001024; raw=80 48 04 00 21; hit_count=9"
+    },
+    {
+      "opcode": "0x84",
+      "handler_address": "0x800BA404",
+      "timestamp": "2026-05-01T10:13:10Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x5A27E43C; raw=84 01 E2 A4 07; hit_count=2"
+    },
+    {
+      "opcode": "0x85",
+      "handler_address": "0x800BA444",
+      "timestamp": "2026-05-01T10:13:10Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x625F9424; raw=85 87 FC 01 93; hit_count=5"
+    },
+    {
+      "opcode": "0x86",
+      "handler_address": "0x800BA470",
+      "timestamp": "2026-05-01T10:13:10Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x00EB0103; raw=86 2C 00 62 86; hit_count=2"
+    },
+    {
+      "opcode": "0x87",
+      "handler_address": "0x800BA494",
+      "timestamp": "2026-05-01T10:13:10Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x635F9400; raw=87 88 89 31 87; hit_count=1"
+    },
+    {
+      "opcode": "0x88",
+      "handler_address": "0x800BA4C8",
+      "timestamp": "2026-05-01T10:13:10Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x4410F48C; raw=88 F4 10 00 8C; hit_count=3"
+    },
+    {
+      "opcode": "0x89",
+      "handler_address": "0x800BA4EC",
+      "timestamp": "2026-05-01T10:13:10Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x801F9981; raw=89 8E FD 02 A8; hit_count=1"
+    },
+    {
+      "opcode": "0x8B",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:10Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x00002402; raw=8B 00 0C 00 E0; hit_count=1"
+    },
+    {
+      "opcode": "0x8D",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:10Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x09240500; raw=8D 04 57 0F 93; hit_count=1"
+    },
+    {
+      "opcode": "0x8E",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:10Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x05002024; raw=8E 09 00 0C 10; hit_count=7"
+    },
+    {
+      "opcode": "0x8F",
+      "handler_address": "0x800B66E4",
+      "timestamp": "2026-05-01T10:13:10Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x625F943C; raw=8F 63 A3 5B FE; hit_count=2"
+    },
+    {
+      "opcode": "0x90",
+      "handler_address": "0x800BA588",
+      "timestamp": "2026-05-01T10:13:11Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0xB00014AF; raw=90 00 00 00 00; hit_count=2"
+    },
+    {
+      "opcode": "0x93",
+      "handler_address": "0x800B66E4",
+      "timestamp": "2026-05-01T10:13:11Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x801F9610; raw=93 94 A8 1B A5; hit_count=1"
+    },
+    {
+      "opcode": "0x94",
+      "handler_address": "0x800B66E4",
+      "timestamp": "2026-05-01T10:13:11Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x40180390; raw=94 02 61 E3 66; hit_count=2"
+    },
+    {
+      "opcode": "0x96",
+      "handler_address": "0x800B66E4",
+      "timestamp": "2026-05-01T10:13:11Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x008D00BB; raw=96 00 00 00 00; hit_count=1"
+    },
+    {
+      "opcode": "0x99",
+      "handler_address": "0x800BA74C",
+      "timestamp": "2026-05-01T10:13:11Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x3C1A0000; raw=99 99 99 99 99; hit_count=1"
+    },
+    {
+      "opcode": "0xA0",
+      "handler_address": "0x800BA8BC",
+      "timestamp": "2026-05-01T10:13:11Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x801ED089; raw=A0 E1 1F A1 00; hit_count=1"
+    },
+    {
+      "opcode": "0xA3",
+      "handler_address": "0x800BAA04",
+      "timestamp": "2026-05-01T10:13:11Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x625F9014; raw=A3 5A AA 00 C2; hit_count=1"
+    },
+    {
+      "opcode": "0xA8",
+      "handler_address": "0x800BAAF0",
+      "timestamp": "2026-05-01T10:13:11Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x05010024; raw=A8 A1 01 80 E0; hit_count=12"
+    },
+    {
+      "opcode": "0xA9",
+      "handler_address": "0x800B66E4",
+      "timestamp": "2026-05-01T10:13:11Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0xFFDF3083; raw=A9 13 0C 02 87; hit_count=1"
+    },
+    {
+      "opcode": "0xAC",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:11Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0xB000148F; raw=AC 00 00 02 3C; hit_count=2"
+    },
+    {
+      "opcode": "0xB0",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:11Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x02000710; raw=B0 00 10 24 20; hit_count=1"
+    },
+    {
+      "opcode": "0xB1",
+      "handler_address": "0x800BAC38",
+      "timestamp": "2026-05-01T10:13:12Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x02153880; raw=B1 00 11 02 42; hit_count=1"
+    },
+    {
+      "opcode": "0xB8",
+      "handler_address": "0x800BB288",
+      "timestamp": "2026-05-01T10:13:12Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x020000A0; raw=B8 2A 08 24 08; hit_count=7"
+    },
+    {
+      "opcode": "0xBF",
+      "handler_address": "0x800BD6C4",
+      "timestamp": "2026-05-01T10:13:12Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x2400038F; raw=BF 8C 3A C0 BF; hit_count=2"
+    },
+    {
+      "opcode": "0xC0",
+      "handler_address": "0x800BC2E8",
+      "timestamp": "2026-05-01T10:13:12Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x40000400; raw=C0 5F C0 BF E0; hit_count=3"
+    },
+    {
+      "opcode": "0xC2",
+      "handler_address": "0x800BC2E8",
+      "timestamp": "2026-05-01T10:13:12Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x038FBF00; raw=C2 0F 00 80 EE; hit_count=2"
+    },
+    {
+      "opcode": "0xC6",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:12Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x007500BD; raw=C6 16 00 00 00; hit_count=1"
+    },
+    {
+      "opcode": "0xC8",
+      "handler_address": "0x800BC2E8",
+      "timestamp": "2026-05-01T10:13:12Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x040002A0; raw=C8 61 C0 BF 08; hit_count=1"
+    },
+    {
+      "opcode": "0xC9",
+      "handler_address": "0x800BC2E8",
+      "timestamp": "2026-05-01T10:13:12Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x801F9910; raw=C9 0A 91 A8 41; hit_count=2"
+    },
+    {
+      "opcode": "0xCA",
+      "handler_address": "0x800BC2E8",
+      "timestamp": "2026-05-01T10:13:12Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x8005123A; raw=CA AA 01 A1 14; hit_count=2"
+    },
+    {
+      "opcode": "0xCC",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:12Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x441803A0; raw=CC 02 66 E7 61; hit_count=5"
+    },
+    {
+      "opcode": "0xCE",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:12Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x007500BD; raw=CE 00 00 D0 FF; hit_count=2"
+    },
+    {
+      "opcode": "0xD0",
+      "handler_address": "0x800BC2E8",
+      "timestamp": "2026-05-01T10:13:13Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x007500BD; raw=D0 16 00 3D 50; hit_count=1"
+    },
+    {
+      "opcode": "0xD1",
+      "handler_address": "0x800BC2E8",
+      "timestamp": "2026-05-01T10:13:13Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x11151010; raw=D1 00 06 01 24; hit_count=1"
+    },
+    {
+      "opcode": "0xD8",
+      "handler_address": "0x800BC2E8",
+      "timestamp": "2026-05-01T10:13:13Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0xB0001400; raw=D8 FF BD 27 20; hit_count=1"
+    },
+    {
+      "opcode": "0xDA",
+      "handler_address": "0x800BC2E8",
+      "timestamp": "2026-05-01T10:13:13Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x02153880; raw=DA 00 CE 00 0D; hit_count=2"
+    },
+    {
+      "opcode": "0xE0",
+      "handler_address": "0x800B66EC",
+      "timestamp": "2026-05-01T10:13:13Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x000012B4; raw=E0 FF BD 27 18; hit_count=47"
+    },
+    {
+      "opcode": "0xE4",
+      "handler_address": "0x800BD6C4",
+      "timestamp": "2026-05-01T10:13:13Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x4318013C; raw=E4 01 FC 01 E0; hit_count=1"
+    },
+    {
+      "opcode": "0xE8",
+      "handler_address": "0x800BB38C",
+      "timestamp": "2026-05-01T10:13:13Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x030009AC; raw=E8 FF BD 27 07; hit_count=1"
+    },
+    {
+      "opcode": "0xE9",
+      "handler_address": "0x800BB3BC",
+      "timestamp": "2026-05-01T10:13:13Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x40000C30; raw=E9 FF 43 10 07; hit_count=1"
+    },
+    {
+      "opcode": "0xEC",
+      "handler_address": "0x800BDC9C",
+      "timestamp": "2026-05-01T10:13:13Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x431801A0; raw=EC 01 61 E3 66; hit_count=2"
+    },
+    {
+      "opcode": "0xEE",
+      "handler_address": "0x800BDC9C",
+      "timestamp": "2026-05-01T10:13:13Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x007500C0; raw=EE 00 16 00 2D; hit_count=3"
+    },
+    {
+      "opcode": "0xF4",
+      "handler_address": "0x800BB504",
+      "timestamp": "2026-05-01T10:13:13Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x02FFFF3C; raw=F4 62 07 80 00; hit_count=4"
+    },
+    {
+      "opcode": "0xF5",
+      "handler_address": "0x800BB554",
+      "timestamp": "2026-05-01T10:13:14Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x4018003C; raw=F5 FF 00 00 01; hit_count=1"
+    },
+    {
+      "opcode": "0xF7",
+      "handler_address": "0x800BB5AC",
+      "timestamp": "2026-05-01T10:13:14Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x03000A3C; raw=F7 FF 03 24 17; hit_count=1"
+    },
+    {
+      "opcode": "0xF8",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:14Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x006000C0; raw=F8 2A 08 24 08; hit_count=1"
+    },
+    {
+      "opcode": "0xFC",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:14Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x8210F400; raw=FC F3 10 00 00; hit_count=3"
+    },
+    {
+      "opcode": "0xFD",
+      "handler_address": "0x800B66A8",
+      "timestamp": "2026-05-01T10:13:14Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x801F8DA4; raw=FD 90 C9 0D D8; hit_count=1"
+    },
+    {
+      "opcode": "0xFE",
+      "handler_address": "0x800BB604",
+      "timestamp": "2026-05-01T10:13:14Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x801F84C2; raw=FE 00 11 51 FC; hit_count=1"
+    },
+    {
+      "opcode": "0xFF",
+      "handler_address": "0x800BB604",
+      "timestamp": "2026-05-01T10:13:14Z",
+      "source_breakpoint": "0x800BFBB8",
+      "note": "Automated PCSX-Redux reader dispatch sample; script_ptr=0x20000824; raw=FF FF 02 24 94; hit_count=14"
+    }
+  ],
   "comparison_summary": {
-    "generated_utc": "2026-05-01T01:22:29Z",
-    "compared_snapshot_count": 0,
-    "compared_snapshot_labels": [],
-    "missing_snapshot_count": 2,
-    "missing_snapshot_labels": [
+    "generated_utc": "2026-05-01T10:13:19Z",
+    "compared_snapshot_count": 2,
+    "compared_snapshot_labels": [
       "after_init",
       "pre_dispatch"
     ],
-    "all_compared_snapshots_match_baseline": false,
+    "missing_snapshot_count": 0,
+    "missing_snapshot_labels": [],
+    "all_compared_snapshots_match_baseline": true,
     "any_focus_opcode_changed": false,
     "planned_breakpoint_count": 6,
-    "recorded_breakpoint_hit_count": 0,
+    "recorded_breakpoint_hit_count": 50,
     "recorded_table_mutation_count": 0,
-    "recorded_dispatch_count": 0,
-    "recorded_note_count": 107,
-    "focus_opcodes": {}
+    "recorded_dispatch_count": 101,
+    "recorded_note_count": 118,
+    "focus_opcodes": {
+      "0x80": {
+        "expected_handler": "0x800B66E4",
+        "observed_handlers": [
+          "0x800B66E4"
+        ],
+        "changed_in_snapshots": [],
+        "snapshot_details": [
+          {
+            "label": "after_init",
+            "observed_handler": "0x800B66E4",
+            "changed": false,
+            "observed_matches_export_opcodes": [
+              "0x10",
+              "0x11",
+              "0x13",
+              "0x22",
+              "0x32",
+              "0x35",
+              "0x36",
+              "0x43",
+              "0x44",
+              "0x48",
+              "0x54",
+              "0x69",
+              "0x6A",
+              "0x6D",
+              "0x80",
+              "0x81",
+              "0x82",
+              "0x8F",
+              "0x92",
+              "0x93",
+              "0x94",
+              "0x95",
+              "0x96",
+              "0x97",
+              "0x98",
+              "0x9B",
+              "0x9C",
+              "0x9F",
+              "0xA9",
+              "0xBB"
+            ]
+          },
+          {
+            "label": "pre_dispatch",
+            "observed_handler": "0x800B66E4",
+            "changed": false,
+            "observed_matches_export_opcodes": [
+              "0x10",
+              "0x11",
+              "0x13",
+              "0x22",
+              "0x32",
+              "0x35",
+              "0x36",
+              "0x43",
+              "0x44",
+              "0x48",
+              "0x54",
+              "0x69",
+              "0x6A",
+              "0x6D",
+              "0x80",
+              "0x81",
+              "0x82",
+              "0x8F",
+              "0x92",
+              "0x93",
+              "0x94",
+              "0x95",
+              "0x96",
+              "0x97",
+              "0x98",
+              "0x9B",
+              "0x9C",
+              "0x9F",
+              "0xA9",
+              "0xBB"
+            ]
+          }
+        ]
+      },
+      "0x81": {
+        "expected_handler": "0x800B66E4",
+        "observed_handlers": [
+          "0x800B66E4"
+        ],
+        "changed_in_snapshots": [],
+        "snapshot_details": [
+          {
+            "label": "after_init",
+            "observed_handler": "0x800B66E4",
+            "changed": false,
+            "observed_matches_export_opcodes": [
+              "0x10",
+              "0x11",
+              "0x13",
+              "0x22",
+              "0x32",
+              "0x35",
+              "0x36",
+              "0x43",
+              "0x44",
+              "0x48",
+              "0x54",
+              "0x69",
+              "0x6A",
+              "0x6D",
+              "0x80",
+              "0x81",
+              "0x82",
+              "0x8F",
+              "0x92",
+              "0x93",
+              "0x94",
+              "0x95",
+              "0x96",
+              "0x97",
+              "0x98",
+              "0x9B",
+              "0x9C",
+              "0x9F",
+              "0xA9",
+              "0xBB"
+            ]
+          },
+          {
+            "label": "pre_dispatch",
+            "observed_handler": "0x800B66E4",
+            "changed": false,
+            "observed_matches_export_opcodes": [
+              "0x10",
+              "0x11",
+              "0x13",
+              "0x22",
+              "0x32",
+              "0x35",
+              "0x36",
+              "0x43",
+              "0x44",
+              "0x48",
+              "0x54",
+              "0x69",
+              "0x6A",
+              "0x6D",
+              "0x80",
+              "0x81",
+              "0x82",
+              "0x8F",
+              "0x92",
+              "0x93",
+              "0x94",
+              "0x95",
+              "0x96",
+              "0x97",
+              "0x98",
+              "0x9B",
+              "0x9C",
+              "0x9F",
+              "0xA9",
+              "0xBB"
+            ]
+          }
+        ]
+      },
+      "0x82": {
+        "expected_handler": "0x800B66E4",
+        "observed_handlers": [
+          "0x800B66E4"
+        ],
+        "changed_in_snapshots": [],
+        "snapshot_details": [
+          {
+            "label": "after_init",
+            "observed_handler": "0x800B66E4",
+            "changed": false,
+            "observed_matches_export_opcodes": [
+              "0x10",
+              "0x11",
+              "0x13",
+              "0x22",
+              "0x32",
+              "0x35",
+              "0x36",
+              "0x43",
+              "0x44",
+              "0x48",
+              "0x54",
+              "0x69",
+              "0x6A",
+              "0x6D",
+              "0x80",
+              "0x81",
+              "0x82",
+              "0x8F",
+              "0x92",
+              "0x93",
+              "0x94",
+              "0x95",
+              "0x96",
+              "0x97",
+              "0x98",
+              "0x9B",
+              "0x9C",
+              "0x9F",
+              "0xA9",
+              "0xBB"
+            ]
+          },
+          {
+            "label": "pre_dispatch",
+            "observed_handler": "0x800B66E4",
+            "changed": false,
+            "observed_matches_export_opcodes": [
+              "0x10",
+              "0x11",
+              "0x13",
+              "0x22",
+              "0x32",
+              "0x35",
+              "0x36",
+              "0x43",
+              "0x44",
+              "0x48",
+              "0x54",
+              "0x69",
+              "0x6A",
+              "0x6D",
+              "0x80",
+              "0x81",
+              "0x82",
+              "0x8F",
+              "0x92",
+              "0x93",
+              "0x94",
+              "0x95",
+              "0x96",
+              "0x97",
+              "0x98",
+              "0x9B",
+              "0x9C",
+              "0x9F",
+              "0xA9",
+              "0xBB"
+            ]
+          }
+        ]
+      }
+    }
   },
-  "conclusion": "Runtime observation packet is not finalized yet: no listed snapshot files were available for comparison.",
+  "conclusion": "Recorded runtime snapshots matched the INITBTL baseline, and dispatch observations can now be compared directly against the unchanged copied table.",
   "notes": [
     {
       "timestamp": "2026-04-30T21:44:58Z",
@@ -509,6 +1868,50 @@
     {
       "timestamp": "2026-05-01T01:19:32Z",
       "text": "Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=4886; write_hits=0; reader_hits=0; summary_json=C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_automation_summary.json"
+    },
+    {
+      "timestamp": "2026-05-01T10:00:39Z",
+      "text": "Automated PCSX-Redux capture used input plan 'C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_input_plan_map001_listener.json'; prepared_path=C:\\Users\\Chris\\Desktop\\vs usa\\.codex_tmp\\pcsx-redux\\opcode_0x80_input_plan-b4e49a9afab54938ba30aa086f507be3.tsv; pad=1/1; steps=3/3; description=Cold-boot MAP001 listener-control route for Vagrant Story (USA). This plan only skips the publisher/video intro, confirms New Game on the title menu, and then leaves the opening MAP001 cutscene untouched so early intro opcodes such as the first SoundEffects0 calls can exercise the runtime capture without later START skips or player-control inputs."
+    },
+    {
+      "timestamp": "2026-05-01T10:00:39Z",
+      "text": "Automated PCSX-Redux capture wrote 4 screen capture(s) under C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_frames."
+    },
+    {
+      "timestamp": "2026-05-01T10:00:39Z",
+      "text": "Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=4978; write_hits=0; reader_hits=0; summary_json=C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_automation_summary.json"
+    },
+    {
+      "timestamp": "2026-05-01T10:09:43Z",
+      "text": "Automated PCSX-Redux capture wrote 1 screen capture(s) under C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_frames."
+    },
+    {
+      "timestamp": "2026-05-01T10:09:43Z",
+      "text": "Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=10; write_hits=0; reader_hits=0; summary_json=C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_automation_summary.json"
+    },
+    {
+      "timestamp": "2026-05-01T10:11:18Z",
+      "text": "Automated PCSX-Redux capture used input plan 'C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_input_plan_map001_listener.json'; prepared_path=C:\\Users\\Chris\\Desktop\\vs usa\\.codex_tmp\\pcsx-redux\\opcode_0x80_input_plan-811417bf1fd34d28a48c436556dc11a3.tsv; pad=1/1; steps=3/3; description=Cold-boot MAP001 listener-control route for Vagrant Story (USA). This plan only skips the publisher/video intro, confirms New Game on the title menu, and then leaves the opening MAP001 cutscene untouched so early intro opcodes such as the first SoundEffects0 calls can exercise the runtime capture without later START skips or player-control inputs."
+    },
+    {
+      "timestamp": "2026-05-01T10:11:18Z",
+      "text": "Automated PCSX-Redux capture wrote 4 screen capture(s) under C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_frames."
+    },
+    {
+      "timestamp": "2026-05-01T10:11:18Z",
+      "text": "Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=4978; write_hits=0; reader_hits=0; runtime_table_base=0x801119F0; summary_json=C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_automation_summary.json"
+    },
+    {
+      "timestamp": "2026-05-01T10:13:05Z",
+      "text": "Automated PCSX-Redux capture used input plan 'C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_input_plan_map001_listener.json'; prepared_path=C:\\Users\\Chris\\Desktop\\vs usa\\.codex_tmp\\pcsx-redux\\opcode_0x80_input_plan-be110f85ec9b4db7b0e3346574aa02a5.tsv; pad=1/1; steps=3/3; description=Cold-boot MAP001 listener-control route for Vagrant Story (USA). This plan only skips the publisher/video intro, confirms New Game on the title menu, and then leaves the opening MAP001 cutscene untouched so early intro opcodes such as the first SoundEffects0 calls can exercise the runtime capture without later START skips or player-control inputs."
+    },
+    {
+      "timestamp": "2026-05-01T10:13:05Z",
+      "text": "Automated PCSX-Redux capture wrote 3 screen capture(s) under C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_frames."
+    },
+    {
+      "timestamp": "2026-05-01T10:13:19Z",
+      "text": "Automated PCSX-Redux capture summary; process_exit=0; summary_exit=0; frames=4333; write_hits=0; reader_hits=1049; runtime_table_base=0x801119F0; candidate_hits=0x800BA2E0 x13; probe_hits=0x8007A36C x955, 0x800BF850 x955; handler_hits=0x800B6724 [0x0C] x11, 0x800B6744 [0x0D] x1, 0x800B6FD8 [0x16] x1, 0x800B7014 [0x17] x3, 0x800B70E8 [0x18] x3, 0x800B71C4 [0x19] x1, 0x800B7574 [0x20] x3, 0x800B770C [0x23] x13, 0x800B77DC [0x24] x4, 0x800B792C [0x26] x13, 0x800B7B58 [0x28] x10, 0x800B7C90 [0x29] x2, 0x800B7DC4 [0x2B] x4, 0x800B804C [0x2E] x6, 0x800B81A0 [0x31] x11, 0x800B8290 [0x33] x2, 0x800B8510 [0x38] x4, 0x800B8590 [0x39] x3, 0x800B860C [0x3A] x2, 0x800B86E8 [0x3B] x50, 0x800B8764 [0x3D] x1, 0x800B8788 [0x3E] x8, 0x800B92D0 [0x58] x1, 0x800B9670 [0x5D] x2, 0x800B9F28 [0x73] x1, 0x800B9F4C [0x74] x1, 0x800B9F70 [0x75] x2, 0x800B9FC0 [0x77] x2, 0x800BA0E4 [0x78] x1, 0x800BA108 [0x7A] x1, 0x800BA218 [0x7B] x1, 0x800BA444 [0x85] x1, 0x800BA470 [0x86] x6, 0x800BA4C8 [0x88] x1, 0x800BA8BC [0xA0] x2, 0x800BA90C [0xA1] x2, 0x800BA94C [0xA2] x99, 0x800BAA04 [0xA3] x1, 0x800BAA34 [0xA4] x2, 0x800BB4CC [0xF1] x2, 0x800BB504 [0xF4] x1, 0x800BB554 [0xF5] x4, 0x800BB5A4 [0xF6] x2, 0x800BC2E8 [0xC0,0xC1,0xC2,0xC4,0xD0,0xD1,0xD2,0xD4] x44, 0x800BD444 [0xE2] x11, 0x800BDC9C [0xEA,0xEB,0xEC,0xEF] x25; focus_handlers=after_init: 0x80->0x800B66E4, 0x81->0x800B66E4, 0x82->0x800B66E4 | pre_dispatch: 0x80->0x800B66E4, 0x81->0x800B66E4, 0x82->0x800B66E4; dispatches=0x00->0x800B66A8 x286 | 0x01->0x800B66A8 x23 | 0x02->0x800B66A8 x6 | 0x03->0x800B66A8 x4 | 0x04->0x800B66A8 x53 | 0x05->0x800B66A8 x3 | 0x06->0x800B66A8 x6 | 0x07->0x800B66A8 x1 | 0x08->0x800B66A8 x62 | 0x0A->0x800B66F4 x4 | 0x0B->0x800B66A8 x1 | 0x0C->0x800B6724 x4 | 0x0D->0x800B6744 x2 | 0x0F->0x800B68C4 x2 | 0x10->0x800B66E4 x10 | 0x12->0x800B6B74 x2 | 0x13->0x800B66E4 x6 | 0x14->0x800B66EC x10 | 0x18->0x800B70E8 x11 | 0x1A->0x800B66EC x2 | 0x1C->0x800B66A8 x7 | 0x1D->0x800B7358 x4 | 0x1F->0x800B7490 x1 | 0x20->0x800B7574 x1 | 0x21->0x800B75F4 x3 | 0x24->0x800B77DC x10 | 0x25->0x800B784C x1 | 0x27->0x800B7A98 x9 | 0x28->0x800B7B58 x5 | 0x2B->0x800B7DC4 x1 | 0x2D->0x800B7F84 x2 | 0x2E->0x800B804C x1 | 0x30->0x800B66EC x1 | 0x32->0x800B66E4 x10 | 0x33->0x800B8290 x1 | 0x34->0x800B8360 x1 | 0x38->0x800B8510 x3 | 0x39->0x800B8590 x1 | 0x3C->0x800B8708 x2 | 0x3D->0x800B8764 x7 | 0x40->0x800B88D4 x1 | 0x41->0x800B8A10 x1 | 0x44->0x800B66E4 x8 | 0x48->0x800B66E4 x2 | 0x57->0x800B92A0 x1 | 0x5C->0x800B9608 x2 | 0x62->0x800B97E4 x1 | 0x64->0x800B9818 x2 | 0x69->0x800B66E4 x1 | 0x7F->0x800B66A8 x1 | 0x80->0x800B66E4 x9 | 0x84->0x800BA404 x2 | 0x85->0x800BA444 x5 | 0x86->0x800BA470 x2 | 0x87->0x800BA494 x1 | 0x88->0x800BA4C8 x3 | 0x89->0x800BA4EC x1 | 0x8B->0x800B66A8 x1 | 0x8D->0x800B66A8 x1 | 0x8E->0x800B66A8 x7 | 0x8F->0x800B66E4 x2 | 0x90->0x800BA588 x2 | 0x93->0x800B66E4 x1 | 0x94->0x800B66E4 x2 | 0x96->0x800B66E4 x1 | 0x99->0x800BA74C x1 | 0xA0->0x800BA8BC x1 | 0xA3->0x800BAA04 x1 | 0xA8->0x800BAAF0 x12 | 0xA9->0x800B66E4 x1 | 0xAC->0x800B66A8 x2 | 0xB0->0x800B66A8 x1 | 0xB1->0x800BAC38 x1 | 0xB8->0x800BB288 x7 | 0xBF->0x800BD6C4 x2 | 0xC0->0x800BC2E8 x3 | 0xC2->0x800BC2E8 x2 | 0xC6->0x800B66A8 x1 | 0xC8->0x800BC2E8 x1 | 0xC9->0x800BC2E8 x2 | 0xCA->0x800BC2E8 x2 | 0xCC->0x800B66A8 x5 | 0xCE->0x800B66A8 x2 | 0xD0->0x800BC2E8 x1 | 0xD1->0x800BC2E8 x1 | 0xD8->0x800BC2E8 x1 | 0xDA->0x800BC2E8 x2 | 0xE0->0x800B66EC x47 | 0xE4->0x800BD6C4 x1 | 0xE8->0x800BB38C x1 | 0xE9->0x800BB3BC x1 | 0xEC->0x800BDC9C x2 | 0xEE->0x800BDC9C x3 | 0xF4->0x800BB504 x4 | 0xF5->0x800BB554 x1 | 0xF7->0x800BB5AC x1 | 0xF8->0x800B66A8 x1 | 0xFC->0x800B66A8 x3 | 0xFD->0x800B66A8 x1 | 0xFE->0x800BB604 x1 | 0xFF->0x800BB604 x14; summary_json=C:\\Users\\Chris\\Desktop\\vs usa\\decomp\\evidence\\opcode_0x80_runtime_automation_summary.json"
     }
   ]
 }

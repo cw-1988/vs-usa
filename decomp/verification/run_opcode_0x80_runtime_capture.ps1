@@ -2,6 +2,8 @@
 param(
     [string]$PcsxReduxExe = "tools/pcsx-redux/pcsx-redux.exe",
     [string]$BiosPath = "tools/pcsx-redux/openbios.bin",
+    [ValidateSet("interpreter", "dynarec")][string]$CpuCore = "interpreter",
+    [switch]$DisableDebugger,
     [string]$IsoPath,
     [string]$ExePath,
     [string]$SaveStatePath,
@@ -12,6 +14,7 @@ param(
     [string]$InputPlanPath,
     [switch]$UseDefaultInputPlan,
     [string]$DefaultInputPlanPath = "decomp/evidence/opcode_0x80_runtime_input_plan.json",
+    [string]$DecodedScriptPath,
     [string]$Memcard1Path = "memcard1.mcd",
     [string]$Memcard2Path = "memcard2.mcd",
     [string]$LuaScript = "decomp/verification/pcsx_redux_opcode_0x80_capture.lua",
@@ -32,7 +35,9 @@ param(
     [int]$TimeoutFrames = 1800,
     [int]$PostReaderFrames = 180,
     [int]$InputPlanTimeoutSlackFrames = 600,
+    [int]$MinBreakpointFrame = 0,
     [string]$MinWritePc = "0x80000000",
+    [int]$LaunchTimeoutSeconds = 180,
     [int]$SummaryWaitSeconds = 120,
     [switch]$QuitOnCandidateHit
 )
@@ -65,6 +70,30 @@ function Assert-Exists {
 
     if (-not (Test-Path -LiteralPath $Path)) {
         throw "$Label not found: $Path"
+    }
+}
+
+function Stop-ProcessTree {
+    param([Parameter(Mandatory = $true)][int]$RootId)
+
+    $queue = New-Object System.Collections.Generic.Queue[int]
+    $allIds = New-Object System.Collections.Generic.List[int]
+    $queue.Enqueue($RootId)
+
+    while ($queue.Count -gt 0) {
+        $currentId = $queue.Dequeue()
+        $allIds.Add($currentId) | Out-Null
+
+        $children = @(Get-CimInstance Win32_Process -Filter "ParentProcessId = $currentId" -ErrorAction SilentlyContinue)
+        foreach ($child in $children) {
+            if ($child.ProcessId -and ($allIds -notcontains [int]$child.ProcessId)) {
+                $queue.Enqueue([int]$child.ProcessId)
+            }
+        }
+    }
+
+    foreach ($id in ($allIds | Sort-Object -Descending | Select-Object -Unique)) {
+        Stop-Process -Id $id -Force -ErrorAction SilentlyContinue
     }
 }
 
@@ -276,6 +305,35 @@ function Prepare-InputPlan {
     }
 }
 
+function Get-DecodedScriptOpcodes {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $resolvedPath = Resolve-RepoPath -Path $Path
+    Assert-Exists -Path $resolvedPath -Label "Decoded script"
+
+    $opcodeSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+    $pattern = '^\s*[0-9A-Fa-f]+:\s+([0-9A-Fa-f]{2})\b'
+
+    foreach ($line in [System.IO.File]::ReadLines($resolvedPath)) {
+        $match = [System.Text.RegularExpressions.Regex]::Match($line, $pattern)
+        if ($match.Success) {
+            [void]$opcodeSet.Add(("0x" + $match.Groups[1].Value.ToUpperInvariant()))
+        }
+    }
+
+    if ($opcodeSet.Count -eq 0) {
+        throw "Decoded script '$resolvedPath' did not yield any opcode bytes."
+    }
+
+    $opcodes = @($opcodeSet | Sort-Object)
+    return [pscustomobject]@{
+        SourcePath = $resolvedPath
+        OpcodeCount = $opcodes.Count
+        Opcodes = $opcodes
+        OpcodeCsv = ($opcodes -join ",")
+    }
+}
+
 function Prepare-SaveState {
     param([Parameter(Mandatory = $true)][string]$Path)
 
@@ -324,6 +382,7 @@ $screenshotDirectory = Resolve-RepoPath -Path $ScreenshotDirectory
 $saveStatePath = $null
 $saveStateInfo = $null
 $inputPlanInfo = $null
+$decodedScriptInfo = $null
 $memcard1Path = $null
 $memcard2Path = $null
 
@@ -386,6 +445,10 @@ if ($UseDefaultInputPlan) {
     $inputPlanInfo = Prepare-InputPlan -Path $InputPlanPath
 }
 
+if (-not [string]::IsNullOrWhiteSpace($DecodedScriptPath)) {
+    $decodedScriptInfo = Get-DecodedScriptOpcodes -Path $DecodedScriptPath
+}
+
 $effectiveTimeoutFrames = $TimeoutFrames
 if ($inputPlanInfo) {
     $inputPlanDrivenTimeout = [Math]::Max(
@@ -420,6 +483,7 @@ Get-ChildItem -LiteralPath $screenshotDirectory -File -ErrorAction SilentlyConti
 $env:VS_OPCODE_TABLE_ADDRESS = $TableAddress
 $env:VS_OPCODE_TABLE_SIZE = $TableSize
 $env:VS_OPCODE_FOCUS_OPCODES = $FocusOpcodes
+$env:VS_OPCODE_HANDLER_OPCODES = if ($decodedScriptInfo) { $decodedScriptInfo.OpcodeCsv } else { "" }
 $env:VS_OPCODE_READER_ADDRESS = $ReaderAddress
 $env:VS_OPCODE_READER_CALLER_ADDRESS = $ReaderCallerAddress
 $env:VS_OPCODE_READER_GRANDCALLER_ADDRESS = $ReaderGrandcallerAddress
@@ -431,6 +495,7 @@ $env:VS_OPCODE_AUTOMATION_SUMMARY_PATH = $summaryPath
 $env:VS_OPCODE_IDLE_CYCLES = "$IdleCycles"
 $env:VS_OPCODE_TIMEOUT_FRAMES = "$effectiveTimeoutFrames"
 $env:VS_OPCODE_POST_READER_FRAMES = "$PostReaderFrames"
+$env:VS_OPCODE_MIN_BREAKPOINT_FRAME = "$MinBreakpointFrame"
 $env:VS_OPCODE_MIN_WRITE_PC = $MinWritePc
 $env:VS_OPCODE_QUIT_ON_CANDIDATE_HIT = if ($QuitOnCandidateHit) { "1" } else { "0" }
 $env:VS_OPCODE_SAVE_STATE_PATH = if ($saveStatePath) { $saveStatePath } else { "" }
@@ -444,13 +509,16 @@ $env:VS_OPCODE_INPUT_PLAN_PAD_NUMBER = if ($inputPlanInfo) { "$($inputPlanInfo.P
 $env:VS_OPCODE_INPUT_PLAN_ANALOG_MODE = if ($inputPlanInfo -and $inputPlanInfo.AnalogMode) { "1" } else { "0" }
 $env:VS_OPCODE_SCREENSHOT_DIR = $screenshotDirectory
 
+$cpuCoreFlag = if ($CpuCore -eq "dynarec") { "-dynarec" } else { "-interpreter" }
+$debuggerFlag = if ($DisableDebugger) { "-no-debugger" } else { "-debugger" }
+
 $args = @(
     "-portable",
     "-testmode",
     "-run",
     "-fastboot",
-    "-interpreter",
-    "-debugger",
+    $cpuCoreFlag,
+    $debuggerFlag,
     "-bios", $biosPath,
     $bootFlag, $bootPath,
     "-dofile", $luaScript,
@@ -471,6 +539,8 @@ Write-Host "Executable: $pcsxReduxExe"
 Write-Host "Boot source: $bootPath"
 Write-Host "Summary path: $summaryPath"
 Write-Host "Screenshot directory: $screenshotDirectory"
+Write-Host "CPU core: $CpuCore"
+Write-Host "Debugger: $(if ($DisableDebugger) { 'disabled' } else { 'enabled' })"
 if ($saveStatePath) {
     Write-Host "Save state: $saveStatePath"
     if ($saveStateInfo.SourcePath -ne $saveStatePath) {
@@ -488,6 +558,10 @@ if ($inputPlanInfo) {
         Write-Host "Timeout frames raised from $TimeoutFrames to $effectiveTimeoutFrames to cover the input plan plus slack."
     }
 }
+if ($decodedScriptInfo) {
+    Write-Host "Decoded script source: $($decodedScriptInfo.SourcePath)"
+    Write-Host "Decoded script opcode count: $($decodedScriptInfo.OpcodeCount)"
+}
 if ($memcard1Path) {
     Write-Host "Memcard1: $memcard1Path"
 }
@@ -498,8 +572,13 @@ if ($memcard2Path) {
 $processExitCode = $null
 try {
     $process = Start-Process -FilePath $pcsxReduxExe -ArgumentList $args -PassThru
+    $launchDeadline = [DateTime]::UtcNow.AddSeconds($LaunchTimeoutSeconds)
 
     while (-not (Test-Path -LiteralPath $summaryPath) -and -not $process.HasExited) {
+        if ([DateTime]::UtcNow -ge $launchDeadline) {
+            Stop-ProcessTree -RootId $process.Id
+            throw "PCSX-Redux did not produce a summary within $LaunchTimeoutSeconds seconds."
+        }
         Start-Sleep -Milliseconds 500
         $process.Refresh()
     }
@@ -653,6 +732,64 @@ if ($summary.candidate_hits) {
     }
 }
 
+$dispatchSummaries = @()
+$summaryDispatchObservations = @(Get-ObjectPropertyValue -Object $summary -Name "dispatch_observations" -Default @())
+foreach ($dispatch in $summaryDispatchObservations) {
+    $opcode = [string](Get-ObjectPropertyValue -Object $dispatch -Name "opcode" -Default "")
+    $handlerAddress = [string](Get-ObjectPropertyValue -Object $dispatch -Name "last_handler_address" -Default "")
+    if ([string]::IsNullOrWhiteSpace($opcode) -or [string]::IsNullOrWhiteSpace($handlerAddress)) {
+        continue
+    }
+
+    $hitCount = Get-ObjectPropertyValue -Object $dispatch -Name "hit_count" -Default 0
+    $scriptPtr = [string](Get-ObjectPropertyValue -Object $dispatch -Name "first_script_ptr" -Default "")
+    $rawBytes = [string](Get-ObjectPropertyValue -Object $dispatch -Name "sample_raw_bytes" -Default "")
+    $noteParts = @("Automated PCSX-Redux reader dispatch sample")
+    if (-not [string]::IsNullOrWhiteSpace($scriptPtr)) {
+        $noteParts += ("script_ptr=" + $scriptPtr)
+    }
+    if (-not [string]::IsNullOrWhiteSpace($rawBytes)) {
+        $noteParts += ("raw=" + $rawBytes)
+    }
+
+    Invoke-Recorder @(
+        $observationPath,
+        "add-dispatch",
+        "--opcode", $opcode,
+        "--handler-address", $handlerAddress,
+        "--source-breakpoint", $ReaderAddress,
+        "--note", (($noteParts -join "; ") + "; hit_count=" + $hitCount)
+    )
+
+    $dispatchSummaries += ("{0}->{1} x{2}" -f $opcode, $handlerAddress, $hitCount)
+}
+
+$handlerProbeHits = @()
+$summaryHandlerProbeHits = Get-ObjectPropertyValue -Object $summary -Name "handler_probe_hits" -Default $null
+if ($summaryHandlerProbeHits) {
+    foreach ($property in $summaryHandlerProbeHits.PSObject.Properties) {
+        $probe = $property.Value
+        $opcodes = @()
+        $probeOpcodes = Get-ObjectPropertyValue -Object $probe -Name "opcodes" -Default @()
+        foreach ($opcode in $probeOpcodes) {
+            $opcodes += [string]$opcode
+        }
+
+        if ((Get-ObjectPropertyValue -Object $probe -Name "hit_count" -Default 0) -gt 0) {
+            $handlerProbeHits += ("{0} [{1}] x{2}" -f $property.Name, ($opcodes -join ","), $probe.hit_count)
+            Invoke-Recorder @(
+                $observationPath,
+                "add-breakpoint-hit",
+                "--kind", "exec",
+                "--address", $property.Name,
+                "--hit-count", "$($probe.hit_count)",
+                "--pc", $property.Name,
+                "--note", ("Automated PCSX-Redux script handler probe hit for opcode set [{0}]." -f ($opcodes -join ","))
+            )
+        }
+    }
+}
+
 $snapshotSummaries = @()
 if ($summary.snapshots) {
     foreach ($labelProperty in $summary.snapshots.PSObject.Properties) {
@@ -678,6 +815,11 @@ $noteParts = @(
     "reader_hits=$($summary.reader_hit_count)"
 )
 
+$runtimeTableBase = [string](Get-ObjectPropertyValue -Object $summary -Name "runtime_table_base" -Default "")
+if (-not [string]::IsNullOrWhiteSpace($runtimeTableBase)) {
+    $noteParts += ("runtime_table_base=" + $runtimeTableBase)
+}
+
 if ($candidateHits.Count -gt 0) {
     $noteParts += ("candidate_hits=" + ($candidateHits -join ", "))
 }
@@ -686,8 +828,16 @@ if ($probeHits.Count -gt 0) {
     $noteParts += ("probe_hits=" + ($probeHits -join ", "))
 }
 
+if ($handlerProbeHits.Count -gt 0) {
+    $noteParts += ("handler_hits=" + ($handlerProbeHits -join ", "))
+}
+
 if ($snapshotSummaries.Count -gt 0) {
     $noteParts += ("focus_handlers=" + ($snapshotSummaries -join " | "))
+}
+
+if ($dispatchSummaries.Count -gt 0) {
+    $noteParts += ("dispatches=" + ($dispatchSummaries -join " | "))
 }
 
 $noteParts += "summary_json=$summaryPath"

@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Generated from `Pass 3 - Copy/patch reconciliation` on `2026-05-01 01:22:29Z`.
+- Generated from `Pass 3 - Copy/patch reconciliation` on `2026-05-01 10:13:19Z`.
 - Observation source: `decomp/evidence/opcode_0x80_runtime_observation.json`
 - Baseline export: `decomp/evidence/inittbl_opcode_table.json`
 - Runtime table address: `0x800F4C28`
@@ -10,12 +10,14 @@
 
 ## Snapshot Comparison
 
-- Missing snapshot file for `after_init`: `decomp/evidence/opcode_0x80_runtime_after_init.bin` (Immediately after the INITBTL copy into 0x800F4C28)
-- Missing snapshot file for `pre_dispatch`: `decomp/evidence/opcode_0x80_runtime_pre_dispatch.bin` (Late runtime state before any candidate 0x80-0x82 dispatch)
+- `after_init` compared `1024` bytes: `256` matching entries, `0` changed entries, sha256 `bf98e99d441e94b8bf4d421b59c5994c74b254adbd7736bede778ae0d905b844`
+- `pre_dispatch` compared `1024` bytes: `256` matching entries, `0` changed entries, sha256 `bf98e99d441e94b8bf4d421b59c5994c74b254adbd7736bede778ae0d905b844`
 
 ## Focus Opcode Summary
 
-- No focus-opcode comparison rows were available.
+- `0x80` expected `0x800B66E4`; observed handlers: `0x800B66E4`
+- `0x81` expected `0x800B66E4`; observed handlers: `0x800B66E4`
+- `0x82` expected `0x800B66E4`; observed handlers: `0x800B66E4`
 
 ## Planned Breakpoints
 
@@ -28,7 +30,56 @@
 
 ## Breakpoint Hits
 
-- No breakpoint hits were recorded in the observation JSON yet.
+- `exec` breakpoint at `0x800BFBB8`, hit `1049` time(s), timestamp `2026-05-01T10:13:04Z`, PC `0x800BFBB8`, Automated PCSX-Redux capture reached the recovered runtime opcode reader.
+- `exec` breakpoint at `0x8007A36C`, hit `955` time(s), timestamp `2026-05-01T10:13:04Z`, PC `0x8007A36C`, Automated PCSX-Redux capture hit upstream probe breakpoint 'reader grandcaller'.
+- `exec` breakpoint at `0x800BF850`, hit `955` time(s), timestamp `2026-05-01T10:13:05Z`, PC `0x800BF850`, Automated PCSX-Redux capture hit upstream probe breakpoint 'reader caller'.
+- `exec` breakpoint at `0x800BA2E0`, hit `13` time(s), timestamp `2026-05-01T10:13:05Z`, PC `0x800BA2E0`, Automated PCSX-Redux capture hit candidate handler breakpoint 'sound-family candidate'.
+- `exec` breakpoint at `0x800B6724`, hit `11` time(s), timestamp `2026-05-01T10:13:14Z`, PC `0x800B6724`, Automated PCSX-Redux script handler probe hit for opcode set [0x0C].
+- `exec` breakpoint at `0x800B6744`, hit `1` time(s), timestamp `2026-05-01T10:13:14Z`, PC `0x800B6744`, Automated PCSX-Redux script handler probe hit for opcode set [0x0D].
+- `exec` breakpoint at `0x800B6FD8`, hit `1` time(s), timestamp `2026-05-01T10:13:14Z`, PC `0x800B6FD8`, Automated PCSX-Redux script handler probe hit for opcode set [0x16].
+- `exec` breakpoint at `0x800B7014`, hit `3` time(s), timestamp `2026-05-01T10:13:15Z`, PC `0x800B7014`, Automated PCSX-Redux script handler probe hit for opcode set [0x17].
+- `exec` breakpoint at `0x800B70E8`, hit `3` time(s), timestamp `2026-05-01T10:13:15Z`, PC `0x800B70E8`, Automated PCSX-Redux script handler probe hit for opcode set [0x18].
+- `exec` breakpoint at `0x800B71C4`, hit `1` time(s), timestamp `2026-05-01T10:13:15Z`, PC `0x800B71C4`, Automated PCSX-Redux script handler probe hit for opcode set [0x19].
+- `exec` breakpoint at `0x800B7574`, hit `3` time(s), timestamp `2026-05-01T10:13:15Z`, PC `0x800B7574`, Automated PCSX-Redux script handler probe hit for opcode set [0x20].
+- `exec` breakpoint at `0x800B770C`, hit `13` time(s), timestamp `2026-05-01T10:13:15Z`, PC `0x800B770C`, Automated PCSX-Redux script handler probe hit for opcode set [0x23].
+- `exec` breakpoint at `0x800B77DC`, hit `4` time(s), timestamp `2026-05-01T10:13:15Z`, PC `0x800B77DC`, Automated PCSX-Redux script handler probe hit for opcode set [0x24].
+- `exec` breakpoint at `0x800B792C`, hit `13` time(s), timestamp `2026-05-01T10:13:15Z`, PC `0x800B792C`, Automated PCSX-Redux script handler probe hit for opcode set [0x26].
+- `exec` breakpoint at `0x800B7B58`, hit `10` time(s), timestamp `2026-05-01T10:13:15Z`, PC `0x800B7B58`, Automated PCSX-Redux script handler probe hit for opcode set [0x28].
+- `exec` breakpoint at `0x800B7C90`, hit `2` time(s), timestamp `2026-05-01T10:13:15Z`, PC `0x800B7C90`, Automated PCSX-Redux script handler probe hit for opcode set [0x29].
+- `exec` breakpoint at `0x800B7DC4`, hit `4` time(s), timestamp `2026-05-01T10:13:15Z`, PC `0x800B7DC4`, Automated PCSX-Redux script handler probe hit for opcode set [0x2B].
+- `exec` breakpoint at `0x800B804C`, hit `6` time(s), timestamp `2026-05-01T10:13:15Z`, PC `0x800B804C`, Automated PCSX-Redux script handler probe hit for opcode set [0x2E].
+- `exec` breakpoint at `0x800B81A0`, hit `11` time(s), timestamp `2026-05-01T10:13:16Z`, PC `0x800B81A0`, Automated PCSX-Redux script handler probe hit for opcode set [0x31].
+- `exec` breakpoint at `0x800B8290`, hit `2` time(s), timestamp `2026-05-01T10:13:16Z`, PC `0x800B8290`, Automated PCSX-Redux script handler probe hit for opcode set [0x33].
+- `exec` breakpoint at `0x800B8510`, hit `4` time(s), timestamp `2026-05-01T10:13:16Z`, PC `0x800B8510`, Automated PCSX-Redux script handler probe hit for opcode set [0x38].
+- `exec` breakpoint at `0x800B8590`, hit `3` time(s), timestamp `2026-05-01T10:13:16Z`, PC `0x800B8590`, Automated PCSX-Redux script handler probe hit for opcode set [0x39].
+- `exec` breakpoint at `0x800B860C`, hit `2` time(s), timestamp `2026-05-01T10:13:16Z`, PC `0x800B860C`, Automated PCSX-Redux script handler probe hit for opcode set [0x3A].
+- `exec` breakpoint at `0x800B86E8`, hit `50` time(s), timestamp `2026-05-01T10:13:16Z`, PC `0x800B86E8`, Automated PCSX-Redux script handler probe hit for opcode set [0x3B].
+- `exec` breakpoint at `0x800B8764`, hit `1` time(s), timestamp `2026-05-01T10:13:16Z`, PC `0x800B8764`, Automated PCSX-Redux script handler probe hit for opcode set [0x3D].
+- `exec` breakpoint at `0x800B8788`, hit `8` time(s), timestamp `2026-05-01T10:13:16Z`, PC `0x800B8788`, Automated PCSX-Redux script handler probe hit for opcode set [0x3E].
+- `exec` breakpoint at `0x800B92D0`, hit `1` time(s), timestamp `2026-05-01T10:13:16Z`, PC `0x800B92D0`, Automated PCSX-Redux script handler probe hit for opcode set [0x58].
+- `exec` breakpoint at `0x800B9670`, hit `2` time(s), timestamp `2026-05-01T10:13:16Z`, PC `0x800B9670`, Automated PCSX-Redux script handler probe hit for opcode set [0x5D].
+- `exec` breakpoint at `0x800B9F28`, hit `1` time(s), timestamp `2026-05-01T10:13:16Z`, PC `0x800B9F28`, Automated PCSX-Redux script handler probe hit for opcode set [0x73].
+- `exec` breakpoint at `0x800B9F4C`, hit `1` time(s), timestamp `2026-05-01T10:13:17Z`, PC `0x800B9F4C`, Automated PCSX-Redux script handler probe hit for opcode set [0x74].
+- `exec` breakpoint at `0x800B9F70`, hit `2` time(s), timestamp `2026-05-01T10:13:17Z`, PC `0x800B9F70`, Automated PCSX-Redux script handler probe hit for opcode set [0x75].
+- `exec` breakpoint at `0x800B9FC0`, hit `2` time(s), timestamp `2026-05-01T10:13:17Z`, PC `0x800B9FC0`, Automated PCSX-Redux script handler probe hit for opcode set [0x77].
+- `exec` breakpoint at `0x800BA0E4`, hit `1` time(s), timestamp `2026-05-01T10:13:17Z`, PC `0x800BA0E4`, Automated PCSX-Redux script handler probe hit for opcode set [0x78].
+- `exec` breakpoint at `0x800BA108`, hit `1` time(s), timestamp `2026-05-01T10:13:17Z`, PC `0x800BA108`, Automated PCSX-Redux script handler probe hit for opcode set [0x7A].
+- `exec` breakpoint at `0x800BA218`, hit `1` time(s), timestamp `2026-05-01T10:13:17Z`, PC `0x800BA218`, Automated PCSX-Redux script handler probe hit for opcode set [0x7B].
+- `exec` breakpoint at `0x800BA444`, hit `1` time(s), timestamp `2026-05-01T10:13:17Z`, PC `0x800BA444`, Automated PCSX-Redux script handler probe hit for opcode set [0x85].
+- `exec` breakpoint at `0x800BA470`, hit `6` time(s), timestamp `2026-05-01T10:13:17Z`, PC `0x800BA470`, Automated PCSX-Redux script handler probe hit for opcode set [0x86].
+- `exec` breakpoint at `0x800BA4C8`, hit `1` time(s), timestamp `2026-05-01T10:13:17Z`, PC `0x800BA4C8`, Automated PCSX-Redux script handler probe hit for opcode set [0x88].
+- `exec` breakpoint at `0x800BA8BC`, hit `2` time(s), timestamp `2026-05-01T10:13:17Z`, PC `0x800BA8BC`, Automated PCSX-Redux script handler probe hit for opcode set [0xA0].
+- `exec` breakpoint at `0x800BA90C`, hit `2` time(s), timestamp `2026-05-01T10:13:18Z`, PC `0x800BA90C`, Automated PCSX-Redux script handler probe hit for opcode set [0xA1].
+- `exec` breakpoint at `0x800BA94C`, hit `99` time(s), timestamp `2026-05-01T10:13:18Z`, PC `0x800BA94C`, Automated PCSX-Redux script handler probe hit for opcode set [0xA2].
+- `exec` breakpoint at `0x800BAA04`, hit `1` time(s), timestamp `2026-05-01T10:13:18Z`, PC `0x800BAA04`, Automated PCSX-Redux script handler probe hit for opcode set [0xA3].
+- `exec` breakpoint at `0x800BAA34`, hit `2` time(s), timestamp `2026-05-01T10:13:18Z`, PC `0x800BAA34`, Automated PCSX-Redux script handler probe hit for opcode set [0xA4].
+- `exec` breakpoint at `0x800BB4CC`, hit `2` time(s), timestamp `2026-05-01T10:13:18Z`, PC `0x800BB4CC`, Automated PCSX-Redux script handler probe hit for opcode set [0xF1].
+- `exec` breakpoint at `0x800BB504`, hit `1` time(s), timestamp `2026-05-01T10:13:18Z`, PC `0x800BB504`, Automated PCSX-Redux script handler probe hit for opcode set [0xF4].
+- `exec` breakpoint at `0x800BB554`, hit `4` time(s), timestamp `2026-05-01T10:13:18Z`, PC `0x800BB554`, Automated PCSX-Redux script handler probe hit for opcode set [0xF5].
+- `exec` breakpoint at `0x800BB5A4`, hit `2` time(s), timestamp `2026-05-01T10:13:18Z`, PC `0x800BB5A4`, Automated PCSX-Redux script handler probe hit for opcode set [0xF6].
+- `exec` breakpoint at `0x800BC2E8`, hit `44` time(s), timestamp `2026-05-01T10:13:18Z`, PC `0x800BC2E8`, Automated PCSX-Redux script handler probe hit for opcode set [0xC0,0xC1,0xC2,0xC4,0xD0,0xD1,0xD2,0xD4].
+- `exec` breakpoint at `0x800BD444`, hit `11` time(s), timestamp `2026-05-01T10:13:18Z`, PC `0x800BD444`, Automated PCSX-Redux script handler probe hit for opcode set [0xE2].
+- `exec` breakpoint at `0x800BDC9C`, hit `25` time(s), timestamp `2026-05-01T10:13:18Z`, PC `0x800BDC9C`, Automated PCSX-Redux script handler probe hit for opcode set [0xEA,0xEB,0xEC,0xEF].
 
 ## Table Mutations
 
@@ -36,7 +87,107 @@
 
 ## Dispatch Observations
 
-- No dispatch observations were recorded yet.
+- Opcode `0x00` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:05Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x24000302; raw=00 00 24 64 C0; hit_count=286
+- Opcode `0x01` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:05Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x148FB100; raw=01 01 01 01 01; hit_count=23
+- Opcode `0x02` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:05Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x2027BDFF; raw=02 14 00 BF 8F; hit_count=6
+- Opcode `0x03` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:05Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x00C82536; raw=03 3C CC 19 63; hit_count=4
+- Opcode `0x04` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:05Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x09240501; raw=04 57 0F 93 04; hit_count=53
+- Opcode `0x05` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:05Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0xE027BD00; raw=05 00 05 92 05; hit_count=3
+- Opcode `0x06` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:05Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x40180024; raw=06 00 00 00 1D; hit_count=6
+- Opcode `0x07` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:06Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x00000C00; raw=07 00 09 24 07; hit_count=1
+- Opcode `0x08` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:06Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x030200F8; raw=08 00 E0 03 00; hit_count=62
+- Opcode `0x0A` dispatched to `0x800B66F4` (timestamp `2026-05-01T10:13:06Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x40000900; raw=0A 00 03 24 00; hit_count=4
+- Opcode `0x0B` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:06Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x02BF8010; raw=0B 06 00 00 00; hit_count=1
+- Opcode `0x0C` dispatched to `0x800B6724` (timestamp `2026-05-01T10:13:06Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x09002027; raw=0C 10 00 84 24; hit_count=4
+- Opcode `0x0D` dispatched to `0x800B6744` (timestamp `2026-05-01T10:13:06Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x00FF0000; raw=0D 00 00 00 0D; hit_count=2
+- Opcode `0x0F` dispatched to `0x800B68C4` (timestamp `2026-05-01T10:13:06Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0xFEBE2403; raw=0F 0F 0C 16 16; hit_count=2
+- Opcode `0x10` dispatched to `0x800B66E4` (timestamp `2026-05-01T10:13:06Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0xB1001802; raw=10 3C 74 10 02; hit_count=10
+- Opcode `0x12` dispatched to `0x800B6B74` (timestamp `2026-05-01T10:13:06Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0xB03C11F0; raw=12 02 40 E1 EE; hit_count=2
+- Opcode `0x13` dispatched to `0x800B66E4` (timestamp `2026-05-01T10:13:06Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x00240900; raw=13 0A 6E 0C 18; hit_count=6
+- Opcode `0x14` dispatched to `0x800B66EC` (timestamp `2026-05-01T10:13:07Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x63000800; raw=14 00 B0 8F 00; hit_count=10
+- Opcode `0x18` dispatched to `0x800B70E8` (timestamp `2026-05-01T10:13:07Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x007400BD; raw=18 00 14 00 10; hit_count=11
+- Opcode `0x1A` dispatched to `0x800B66EC` (timestamp `2026-05-01T10:13:07Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x435FA824; raw=1A FC 02 FD 02; hit_count=2
+- Opcode `0x1C` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:07Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x60000700; raw=1C 00 BF AF 18; hit_count=7
+- Opcode `0x1D` dispatched to `0x800B7358` (timestamp `2026-05-01T10:13:07Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x00F80934; raw=1D 9D 1D 94 24; hit_count=4
+- Opcode `0x1F` dispatched to `0x800B7490` (timestamp `2026-05-01T10:13:07Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x435FA434; raw=1F FD 01 C9 05; hit_count=1
+- Opcode `0x20` dispatched to `0x800B7574` (timestamp `2026-05-01T10:13:07Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x015400B9; raw=20 00 1C 00 18; hit_count=1
+- Opcode `0x21` dispatched to `0x800B75F4` (timestamp `2026-05-01T10:13:07Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x8720253C; raw=21 10 44 00 00; hit_count=3
+- Opcode `0x24` dispatched to `0x800B77DC` (timestamp `2026-05-01T10:13:07Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x0502008F; raw=24 00 00 80 AC; hit_count=10
+- Opcode `0x25` dispatched to `0x800B784C` (timestamp `2026-05-01T10:13:07Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0xE00008AC; raw=25 20 C4 00 B0; hit_count=1
+- Opcode `0x27` dispatched to `0x800B7A98` (timestamp `2026-05-01T10:13:07Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x00F80924; raw=27 88 28 96 24; hit_count=9
+- Opcode `0x28` dispatched to `0x800B7B58` (timestamp `2026-05-01T10:13:07Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x11151010; raw=28 B4 28 A5 F7; hit_count=5
+- Opcode `0x2B` dispatched to `0x800B7DC4` (timestamp `2026-05-01T10:13:08Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x625F70A0; raw=2B 00 00 00 00; hit_count=1
+- Opcode `0x2D` dispatched to `0x800B7F84` (timestamp `2026-05-01T10:13:08Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x00009180; raw=2D 00 0D 00 06; hit_count=2
+- Opcode `0x2E` dispatched to `0x800B804C` (timestamp `2026-05-01T10:13:08Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x009300BB; raw=2E 50 00 40 00; hit_count=1
+- Opcode `0x30` dispatched to `0x800B66EC` (timestamp `2026-05-01T10:13:08Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x4410F034; raw=30 F0 10 00 34; hit_count=1
+- Opcode `0x32` dispatched to `0x800B66E4` (timestamp `2026-05-01T10:13:08Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x043C04F0; raw=32 02 00 EF 0E; hit_count=10
+- Opcode `0x33` dispatched to `0x800B8290` (timestamp `2026-05-01T10:13:08Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x007700CA; raw=33 34 1E 27 33; hit_count=1
+- Opcode `0x34` dispatched to `0x800B8360` (timestamp `2026-05-01T10:13:08Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x84000300; raw=34 2B 00 00 24; hit_count=1
+- Opcode `0x38` dispatched to `0x800B8510` (timestamp `2026-05-01T10:13:08Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x8210F43C; raw=38 F4 10 00 3C; hit_count=3
+- Opcode `0x39` dispatched to `0x800B8590` (timestamp `2026-05-01T10:13:08Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x0824082A; raw=39 0D 08 09 35; hit_count=1
+- Opcode `0x3C` dispatched to `0x800B8708` (timestamp `2026-05-01T10:13:08Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0xBD001803; raw=3C 74 10 02 8E; hit_count=2
+- Opcode `0x3D` dispatched to `0x800B8764` (timestamp `2026-05-01T10:13:09Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x9E7CAAD2; raw=3D EF 13 DD 5D; hit_count=7
+- Opcode `0x40` dispatched to `0x800B88D4` (timestamp `2026-05-01T10:13:09Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0xE7FFFF8C; raw=40 02 80 FD 40; hit_count=1
+- Opcode `0x41` dispatched to `0x800B8A10` (timestamp `2026-05-01T10:13:09Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x11151010; raw=41 01 F0 00 44; hit_count=1
+- Opcode `0x44` dispatched to `0x800B66E4` (timestamp `2026-05-01T10:13:09Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x09002036; raw=44 8C 00 00 00; hit_count=8
+- Opcode `0x48` dispatched to `0x800B66E4` (timestamp `2026-05-01T10:13:09Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0xA95F8C8D; raw=48 A7 73 94 A8; hit_count=2
+- Opcode `0x57` dispatched to `0x800B92A0` (timestamp `2026-05-01T10:13:09Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x08240502; raw=57 0F 93 04 55; hit_count=1
+- Opcode `0x5C` dispatched to `0x800B9608` (timestamp `2026-05-01T10:13:09Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x065F9C00; raw=5C 46 0F 67 5C; hit_count=2
+- Opcode `0x62` dispatched to `0x800B97E4` (timestamp `2026-05-01T10:13:09Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x010C0052; raw=62 10 02 00 62; hit_count=1
+- Opcode `0x64` dispatched to `0x800B9818` (timestamp `2026-05-01T10:13:09Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x002B3400; raw=64 00 24 26 94; hit_count=2
+- Opcode `0x69` dispatched to `0x800B66E4` (timestamp `2026-05-01T10:13:09Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x5F943C03; raw=69 27 5D E5 54; hit_count=1
+- Opcode `0x7F` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:09Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x44001A24; raw=7F FF 03 24 24; hit_count=1
+- Opcode `0x80` dispatched to `0x800B66E4` (timestamp `2026-05-01T10:13:10Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x05001024; raw=80 48 04 00 21; hit_count=9
+- Opcode `0x84` dispatched to `0x800BA404` (timestamp `2026-05-01T10:13:10Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x5A27E43C; raw=84 01 E2 A4 07; hit_count=2
+- Opcode `0x85` dispatched to `0x800BA444` (timestamp `2026-05-01T10:13:10Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x625F9424; raw=85 87 FC 01 93; hit_count=5
+- Opcode `0x86` dispatched to `0x800BA470` (timestamp `2026-05-01T10:13:10Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x00EB0103; raw=86 2C 00 62 86; hit_count=2
+- Opcode `0x87` dispatched to `0x800BA494` (timestamp `2026-05-01T10:13:10Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x635F9400; raw=87 88 89 31 87; hit_count=1
+- Opcode `0x88` dispatched to `0x800BA4C8` (timestamp `2026-05-01T10:13:10Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x4410F48C; raw=88 F4 10 00 8C; hit_count=3
+- Opcode `0x89` dispatched to `0x800BA4EC` (timestamp `2026-05-01T10:13:10Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x801F9981; raw=89 8E FD 02 A8; hit_count=1
+- Opcode `0x8B` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:10Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x00002402; raw=8B 00 0C 00 E0; hit_count=1
+- Opcode `0x8D` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:10Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x09240500; raw=8D 04 57 0F 93; hit_count=1
+- Opcode `0x8E` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:10Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x05002024; raw=8E 09 00 0C 10; hit_count=7
+- Opcode `0x8F` dispatched to `0x800B66E4` (timestamp `2026-05-01T10:13:10Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x625F943C; raw=8F 63 A3 5B FE; hit_count=2
+- Opcode `0x90` dispatched to `0x800BA588` (timestamp `2026-05-01T10:13:11Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0xB00014AF; raw=90 00 00 00 00; hit_count=2
+- Opcode `0x93` dispatched to `0x800B66E4` (timestamp `2026-05-01T10:13:11Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x801F9610; raw=93 94 A8 1B A5; hit_count=1
+- Opcode `0x94` dispatched to `0x800B66E4` (timestamp `2026-05-01T10:13:11Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x40180390; raw=94 02 61 E3 66; hit_count=2
+- Opcode `0x96` dispatched to `0x800B66E4` (timestamp `2026-05-01T10:13:11Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x008D00BB; raw=96 00 00 00 00; hit_count=1
+- Opcode `0x99` dispatched to `0x800BA74C` (timestamp `2026-05-01T10:13:11Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x3C1A0000; raw=99 99 99 99 99; hit_count=1
+- Opcode `0xA0` dispatched to `0x800BA8BC` (timestamp `2026-05-01T10:13:11Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x801ED089; raw=A0 E1 1F A1 00; hit_count=1
+- Opcode `0xA3` dispatched to `0x800BAA04` (timestamp `2026-05-01T10:13:11Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x625F9014; raw=A3 5A AA 00 C2; hit_count=1
+- Opcode `0xA8` dispatched to `0x800BAAF0` (timestamp `2026-05-01T10:13:11Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x05010024; raw=A8 A1 01 80 E0; hit_count=12
+- Opcode `0xA9` dispatched to `0x800B66E4` (timestamp `2026-05-01T10:13:11Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0xFFDF3083; raw=A9 13 0C 02 87; hit_count=1
+- Opcode `0xAC` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:11Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0xB000148F; raw=AC 00 00 02 3C; hit_count=2
+- Opcode `0xB0` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:11Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x02000710; raw=B0 00 10 24 20; hit_count=1
+- Opcode `0xB1` dispatched to `0x800BAC38` (timestamp `2026-05-01T10:13:12Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x02153880; raw=B1 00 11 02 42; hit_count=1
+- Opcode `0xB8` dispatched to `0x800BB288` (timestamp `2026-05-01T10:13:12Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x020000A0; raw=B8 2A 08 24 08; hit_count=7
+- Opcode `0xBF` dispatched to `0x800BD6C4` (timestamp `2026-05-01T10:13:12Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x2400038F; raw=BF 8C 3A C0 BF; hit_count=2
+- Opcode `0xC0` dispatched to `0x800BC2E8` (timestamp `2026-05-01T10:13:12Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x40000400; raw=C0 5F C0 BF E0; hit_count=3
+- Opcode `0xC2` dispatched to `0x800BC2E8` (timestamp `2026-05-01T10:13:12Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x038FBF00; raw=C2 0F 00 80 EE; hit_count=2
+- Opcode `0xC6` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:12Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x007500BD; raw=C6 16 00 00 00; hit_count=1
+- Opcode `0xC8` dispatched to `0x800BC2E8` (timestamp `2026-05-01T10:13:12Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x040002A0; raw=C8 61 C0 BF 08; hit_count=1
+- Opcode `0xC9` dispatched to `0x800BC2E8` (timestamp `2026-05-01T10:13:12Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x801F9910; raw=C9 0A 91 A8 41; hit_count=2
+- Opcode `0xCA` dispatched to `0x800BC2E8` (timestamp `2026-05-01T10:13:12Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x8005123A; raw=CA AA 01 A1 14; hit_count=2
+- Opcode `0xCC` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:12Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x441803A0; raw=CC 02 66 E7 61; hit_count=5
+- Opcode `0xCE` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:12Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x007500BD; raw=CE 00 00 D0 FF; hit_count=2
+- Opcode `0xD0` dispatched to `0x800BC2E8` (timestamp `2026-05-01T10:13:13Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x007500BD; raw=D0 16 00 3D 50; hit_count=1
+- Opcode `0xD1` dispatched to `0x800BC2E8` (timestamp `2026-05-01T10:13:13Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x11151010; raw=D1 00 06 01 24; hit_count=1
+- Opcode `0xD8` dispatched to `0x800BC2E8` (timestamp `2026-05-01T10:13:13Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0xB0001400; raw=D8 FF BD 27 20; hit_count=1
+- Opcode `0xDA` dispatched to `0x800BC2E8` (timestamp `2026-05-01T10:13:13Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x02153880; raw=DA 00 CE 00 0D; hit_count=2
+- Opcode `0xE0` dispatched to `0x800B66EC` (timestamp `2026-05-01T10:13:13Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x000012B4; raw=E0 FF BD 27 18; hit_count=47
+- Opcode `0xE4` dispatched to `0x800BD6C4` (timestamp `2026-05-01T10:13:13Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x4318013C; raw=E4 01 FC 01 E0; hit_count=1
+- Opcode `0xE8` dispatched to `0x800BB38C` (timestamp `2026-05-01T10:13:13Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x030009AC; raw=E8 FF BD 27 07; hit_count=1
+- Opcode `0xE9` dispatched to `0x800BB3BC` (timestamp `2026-05-01T10:13:13Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x40000C30; raw=E9 FF 43 10 07; hit_count=1
+- Opcode `0xEC` dispatched to `0x800BDC9C` (timestamp `2026-05-01T10:13:13Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x431801A0; raw=EC 01 61 E3 66; hit_count=2
+- Opcode `0xEE` dispatched to `0x800BDC9C` (timestamp `2026-05-01T10:13:13Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x007500C0; raw=EE 00 16 00 2D; hit_count=3
+- Opcode `0xF4` dispatched to `0x800BB504` (timestamp `2026-05-01T10:13:13Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x02FFFF3C; raw=F4 62 07 80 00; hit_count=4
+- Opcode `0xF5` dispatched to `0x800BB554` (timestamp `2026-05-01T10:13:14Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x4018003C; raw=F5 FF 00 00 01; hit_count=1
+- Opcode `0xF7` dispatched to `0x800BB5AC` (timestamp `2026-05-01T10:13:14Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x03000A3C; raw=F7 FF 03 24 17; hit_count=1
+- Opcode `0xF8` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:14Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x006000C0; raw=F8 2A 08 24 08; hit_count=1
+- Opcode `0xFC` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:14Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x8210F400; raw=FC F3 10 00 00; hit_count=3
+- Opcode `0xFD` dispatched to `0x800B66A8` (timestamp `2026-05-01T10:13:14Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x801F8DA4; raw=FD 90 C9 0D D8; hit_count=1
+- Opcode `0xFE` dispatched to `0x800BB604` (timestamp `2026-05-01T10:13:14Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x801F84C2; raw=FE 00 11 51 FC; hit_count=1
+- Opcode `0xFF` dispatched to `0x800BB604` (timestamp `2026-05-01T10:13:14Z`, source `0x800BFBB8`): Automated PCSX-Redux reader dispatch sample; script_ptr=0x20000824; raw=FF FF 02 24 94; hit_count=14
 
 ## Notes
 
@@ -147,7 +298,18 @@
 - Automated PCSX-Redux capture used input plan 'C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_input_plan_bat_kill.json'; prepared_path=C:\Users\Chris\Desktop\vs usa\.codex_tmp\pcsx-redux\opcode_0x80_input_plan-f80c94507adc4df2974122676c0bcab1.tsv; pad=1/1; steps=12/12; description=Preserved cold-boot negative-control route for Vagrant Story (USA). This 12-step plan reaches player control after the New Game intro skips, rotates into the adjacent room, unsheathes, opens the attack sphere, and lands the opening bat attack. The corresponding automated run finished at 2026-05-01T00:51:26Z with frame_count=4886, reader_hit_count=0, write_hit_count=0, candidate_hit_count=0, and no snapshots, so keep this plan as a durable proof that early post-intro control plus the first bat encounter still do not exercise the watched opcode 0x80 runtime reader. (`2026-05-01T01:19:32Z`)
 - Automated PCSX-Redux capture wrote 13 screen capture(s) under C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_frames. (`2026-05-01T01:19:32Z`)
 - Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=4886; write_hits=0; reader_hits=0; summary_json=C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_automation_summary.json (`2026-05-01T01:19:32Z`)
+- Automated PCSX-Redux capture used input plan 'C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_input_plan_map001_listener.json'; prepared_path=C:\Users\Chris\Desktop\vs usa\.codex_tmp\pcsx-redux\opcode_0x80_input_plan-b4e49a9afab54938ba30aa086f507be3.tsv; pad=1/1; steps=3/3; description=Cold-boot MAP001 listener-control route for Vagrant Story (USA). This plan only skips the publisher/video intro, confirms New Game on the title menu, and then leaves the opening MAP001 cutscene untouched so early intro opcodes such as the first SoundEffects0 calls can exercise the runtime capture without later START skips or player-control inputs. (`2026-05-01T10:00:39Z`)
+- Automated PCSX-Redux capture wrote 4 screen capture(s) under C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_frames. (`2026-05-01T10:00:39Z`)
+- Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=4978; write_hits=0; reader_hits=0; summary_json=C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_automation_summary.json (`2026-05-01T10:00:39Z`)
+- Automated PCSX-Redux capture wrote 1 screen capture(s) under C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_frames. (`2026-05-01T10:09:43Z`)
+- Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=10; write_hits=0; reader_hits=0; summary_json=C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_automation_summary.json (`2026-05-01T10:09:43Z`)
+- Automated PCSX-Redux capture used input plan 'C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_input_plan_map001_listener.json'; prepared_path=C:\Users\Chris\Desktop\vs usa\.codex_tmp\pcsx-redux\opcode_0x80_input_plan-811417bf1fd34d28a48c436556dc11a3.tsv; pad=1/1; steps=3/3; description=Cold-boot MAP001 listener-control route for Vagrant Story (USA). This plan only skips the publisher/video intro, confirms New Game on the title menu, and then leaves the opening MAP001 cutscene untouched so early intro opcodes such as the first SoundEffects0 calls can exercise the runtime capture without later START skips or player-control inputs. (`2026-05-01T10:11:18Z`)
+- Automated PCSX-Redux capture wrote 4 screen capture(s) under C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_frames. (`2026-05-01T10:11:18Z`)
+- Automated PCSX-Redux capture summary; process_exit=0; summary_exit=2; frames=4978; write_hits=0; reader_hits=0; runtime_table_base=0x801119F0; summary_json=C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_automation_summary.json (`2026-05-01T10:11:18Z`)
+- Automated PCSX-Redux capture used input plan 'C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_input_plan_map001_listener.json'; prepared_path=C:\Users\Chris\Desktop\vs usa\.codex_tmp\pcsx-redux\opcode_0x80_input_plan-be110f85ec9b4db7b0e3346574aa02a5.tsv; pad=1/1; steps=3/3; description=Cold-boot MAP001 listener-control route for Vagrant Story (USA). This plan only skips the publisher/video intro, confirms New Game on the title menu, and then leaves the opening MAP001 cutscene untouched so early intro opcodes such as the first SoundEffects0 calls can exercise the runtime capture without later START skips or player-control inputs. (`2026-05-01T10:13:05Z`)
+- Automated PCSX-Redux capture wrote 3 screen capture(s) under C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_frames. (`2026-05-01T10:13:05Z`)
+- Automated PCSX-Redux capture summary; process_exit=0; summary_exit=0; frames=4333; write_hits=0; reader_hits=1049; runtime_table_base=0x801119F0; candidate_hits=0x800BA2E0 x13; probe_hits=0x8007A36C x955, 0x800BF850 x955; handler_hits=0x800B6724 [0x0C] x11, 0x800B6744 [0x0D] x1, 0x800B6FD8 [0x16] x1, 0x800B7014 [0x17] x3, 0x800B70E8 [0x18] x3, 0x800B71C4 [0x19] x1, 0x800B7574 [0x20] x3, 0x800B770C [0x23] x13, 0x800B77DC [0x24] x4, 0x800B792C [0x26] x13, 0x800B7B58 [0x28] x10, 0x800B7C90 [0x29] x2, 0x800B7DC4 [0x2B] x4, 0x800B804C [0x2E] x6, 0x800B81A0 [0x31] x11, 0x800B8290 [0x33] x2, 0x800B8510 [0x38] x4, 0x800B8590 [0x39] x3, 0x800B860C [0x3A] x2, 0x800B86E8 [0x3B] x50, 0x800B8764 [0x3D] x1, 0x800B8788 [0x3E] x8, 0x800B92D0 [0x58] x1, 0x800B9670 [0x5D] x2, 0x800B9F28 [0x73] x1, 0x800B9F4C [0x74] x1, 0x800B9F70 [0x75] x2, 0x800B9FC0 [0x77] x2, 0x800BA0E4 [0x78] x1, 0x800BA108 [0x7A] x1, 0x800BA218 [0x7B] x1, 0x800BA444 [0x85] x1, 0x800BA470 [0x86] x6, 0x800BA4C8 [0x88] x1, 0x800BA8BC [0xA0] x2, 0x800BA90C [0xA1] x2, 0x800BA94C [0xA2] x99, 0x800BAA04 [0xA3] x1, 0x800BAA34 [0xA4] x2, 0x800BB4CC [0xF1] x2, 0x800BB504 [0xF4] x1, 0x800BB554 [0xF5] x4, 0x800BB5A4 [0xF6] x2, 0x800BC2E8 [0xC0,0xC1,0xC2,0xC4,0xD0,0xD1,0xD2,0xD4] x44, 0x800BD444 [0xE2] x11, 0x800BDC9C [0xEA,0xEB,0xEC,0xEF] x25; focus_handlers=after_init: 0x80->0x800B66E4, 0x81->0x800B66E4, 0x82->0x800B66E4 | pre_dispatch: 0x80->0x800B66E4, 0x81->0x800B66E4, 0x82->0x800B66E4; dispatches=0x00->0x800B66A8 x286 | 0x01->0x800B66A8 x23 | 0x02->0x800B66A8 x6 | 0x03->0x800B66A8 x4 | 0x04->0x800B66A8 x53 | 0x05->0x800B66A8 x3 | 0x06->0x800B66A8 x6 | 0x07->0x800B66A8 x1 | 0x08->0x800B66A8 x62 | 0x0A->0x800B66F4 x4 | 0x0B->0x800B66A8 x1 | 0x0C->0x800B6724 x4 | 0x0D->0x800B6744 x2 | 0x0F->0x800B68C4 x2 | 0x10->0x800B66E4 x10 | 0x12->0x800B6B74 x2 | 0x13->0x800B66E4 x6 | 0x14->0x800B66EC x10 | 0x18->0x800B70E8 x11 | 0x1A->0x800B66EC x2 | 0x1C->0x800B66A8 x7 | 0x1D->0x800B7358 x4 | 0x1F->0x800B7490 x1 | 0x20->0x800B7574 x1 | 0x21->0x800B75F4 x3 | 0x24->0x800B77DC x10 | 0x25->0x800B784C x1 | 0x27->0x800B7A98 x9 | 0x28->0x800B7B58 x5 | 0x2B->0x800B7DC4 x1 | 0x2D->0x800B7F84 x2 | 0x2E->0x800B804C x1 | 0x30->0x800B66EC x1 | 0x32->0x800B66E4 x10 | 0x33->0x800B8290 x1 | 0x34->0x800B8360 x1 | 0x38->0x800B8510 x3 | 0x39->0x800B8590 x1 | 0x3C->0x800B8708 x2 | 0x3D->0x800B8764 x7 | 0x40->0x800B88D4 x1 | 0x41->0x800B8A10 x1 | 0x44->0x800B66E4 x8 | 0x48->0x800B66E4 x2 | 0x57->0x800B92A0 x1 | 0x5C->0x800B9608 x2 | 0x62->0x800B97E4 x1 | 0x64->0x800B9818 x2 | 0x69->0x800B66E4 x1 | 0x7F->0x800B66A8 x1 | 0x80->0x800B66E4 x9 | 0x84->0x800BA404 x2 | 0x85->0x800BA444 x5 | 0x86->0x800BA470 x2 | 0x87->0x800BA494 x1 | 0x88->0x800BA4C8 x3 | 0x89->0x800BA4EC x1 | 0x8B->0x800B66A8 x1 | 0x8D->0x800B66A8 x1 | 0x8E->0x800B66A8 x7 | 0x8F->0x800B66E4 x2 | 0x90->0x800BA588 x2 | 0x93->0x800B66E4 x1 | 0x94->0x800B66E4 x2 | 0x96->0x800B66E4 x1 | 0x99->0x800BA74C x1 | 0xA0->0x800BA8BC x1 | 0xA3->0x800BAA04 x1 | 0xA8->0x800BAAF0 x12 | 0xA9->0x800B66E4 x1 | 0xAC->0x800B66A8 x2 | 0xB0->0x800B66A8 x1 | 0xB1->0x800BAC38 x1 | 0xB8->0x800BB288 x7 | 0xBF->0x800BD6C4 x2 | 0xC0->0x800BC2E8 x3 | 0xC2->0x800BC2E8 x2 | 0xC6->0x800B66A8 x1 | 0xC8->0x800BC2E8 x1 | 0xC9->0x800BC2E8 x2 | 0xCA->0x800BC2E8 x2 | 0xCC->0x800B66A8 x5 | 0xCE->0x800B66A8 x2 | 0xD0->0x800BC2E8 x1 | 0xD1->0x800BC2E8 x1 | 0xD8->0x800BC2E8 x1 | 0xDA->0x800BC2E8 x2 | 0xE0->0x800B66EC x47 | 0xE4->0x800BD6C4 x1 | 0xE8->0x800BB38C x1 | 0xE9->0x800BB3BC x1 | 0xEC->0x800BDC9C x2 | 0xEE->0x800BDC9C x3 | 0xF4->0x800BB504 x4 | 0xF5->0x800BB554 x1 | 0xF7->0x800BB5AC x1 | 0xF8->0x800B66A8 x1 | 0xFC->0x800B66A8 x3 | 0xFD->0x800B66A8 x1 | 0xFE->0x800BB604 x1 | 0xFF->0x800BB604 x14; summary_json=C:\Users\Chris\Desktop\vs usa\decomp\evidence\opcode_0x80_runtime_automation_summary.json (`2026-05-01T10:13:19Z`)
 
 ## Conclusion
 
-Runtime observation packet is not finalized yet: no listed snapshot files were available for comparison.
+Recorded runtime snapshots matched the INITBTL baseline, and dispatch observations can now be compared directly against the unchanged copied table.
