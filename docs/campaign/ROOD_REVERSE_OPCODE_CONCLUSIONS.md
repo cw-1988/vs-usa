@@ -301,6 +301,24 @@ Current narrow:
   `408-The Gallows (Mino Zombie, new chest)` versus `026-The Gallows`.
   Those are now the clearest carry-over or alternate-state candidates, rather
   than the default explanation for the full residual set.
+- A newer template-context pass sharpens that structural reading even more.
+  `39` of the `42` residual files now collapse into just two repeated
+  double-`0x80` scaffolds:
+  `36` use the paired `0x41/0x42` opener and `3` use the paired
+  `0x1D/0x1E` burst.
+  The dominant `0x41/0x42` family is especially non-audio-looking:
+  `34` of its `36` files contain no sound-family opcode anywhere in the file,
+  `26` reach the first burst through the same
+  `DialogHide` -> `Opcode14` -> `SetHeadsUpDisplayMode(1)` lead-in, and
+  `20` continue through the same
+  `Opcode45` -> `ModelControlViaScript` -> `Opcode45` -> `Opcode43` ->
+  `ModelControlViaScript` post-burst spine.
+  The smaller `0x1D/0x1E` family likewise lands in repeated dialog or
+  battle-mode control bundles, while the only true holdouts now are the three
+  singleton or variant scenes `021`, `022`, and `025`.
+  That pushes the residual story further away from hidden sound playback and
+  further toward room-entry or cutscene template reuse that still carries an
+  inert `0x80` burst.
 - `LoadSoundFileById` and `ProcessSoundQueue` are especially strong locally
   because real scripts commonly pair `9D xx` with a later `9E`.
 - `LoadSfxSlot`, `FreeSfxSlot`, `SetCurrentSfx`, `LoadMusicSlot`, and
@@ -320,8 +338,11 @@ What is still missing for `Confirmed`:
   any complete neighboring sound pair in the same file before it, but the new
   residual pass shows that most of those files are repeated opener templates
   rather than fresh audio-heavy holdouts.
-  What remains open is the template-level meaning of the repeated `0x41/0x42`
-  and `0x1D/0x1E` bursts, plus the smaller carry-over or variant subset.
+  The newer template-context pass narrows that further:
+  the repeated `0x41/0x42` and `0x1D/0x1E` bursts now look like stable
+  room-entry or cutscene scaffolds, so what remains open is their provenance
+  and the behavior of the few singleton or variant cases, not whether they are
+  secretly the main direct sound path.
 - A consumer-path explanation for the minority cases that really do look like
   carry-over or later-rearm scenes, without leaning on the widened
   `0x800B66E4` stub family as if it were direct audio proof.

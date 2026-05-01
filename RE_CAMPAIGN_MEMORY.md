@@ -11,12 +11,14 @@ Default read set for the next opcode/decomp pass:
 
 If the next pass is continuing `0x80`, add:
 
+- [`decomp/evidence/opcode_0x80_template_context.md`](decomp/evidence/opcode_0x80_template_context.md)
+- [`decomp/evidence/opcode_0x80_template_scan.json`](decomp/evidence/opcode_0x80_template_scan.json)
 - [`decomp/evidence/opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md)
 - [`decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json`](decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json)
 - [`decoded_scripts/24-Unmapped/001-Unknown Room.txt`](decoded_scripts/24-Unmapped/001-Unknown%20Room.txt)
 - [`decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md)
 - [`decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json`](decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json)
-- [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json),,
+- [`decomp/evidence/opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json)
 - [`decomp/evidence/opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json)
 - [`decomp/evidence/opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md)
 
@@ -129,7 +131,7 @@ Current phase: Pass 5 - Naming and decoder updates
 
 | target | current_status | table_owner | handler_owner | best_current_name | blocking_question | next_pass | evidence_links |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `opcode 0x80` | `tentative` | `INITBTL.PRG` static table at `0x800FAF7C`, copied by the init-time routine at `0x800FAAAC` into pointer slot `0x800F4C28` and resolved live at `0x801119F0`; checked `after_init` and `pre_dispatch` snapshots still match that copied baseline byte-for-byte | Initial slot `0x800B66E4` is a shared return-zero stub reused by a widened `30`-opcode `INITBTL.PRG` family that includes named dialog, model, room, battle-end, and music-looking members as well as `0x80-0x82`; former competing target `0x800BA2E0` is now locally anchored to the separate `BATTLE.PRG` sound subdispatch table at `0x800E9F30`; recovered reader `FUN_800BFBB8` dispatches through the copied runtime table via `jalr`, and the validated `MAP001` listener-control run logs retail `0x10`, `0x13`, `0x44`, and `0x80` landing on `0x800B66E4` with no post-init table-write hits | `Opcode80SharedStub` | After the residual-context pass, what is the template-level role of the repeated `0x41/0x42` and `0x1D/0x1E` `0x80` bursts, and which few same-title or later-rearm exceptions still need carry-over follow-up? | `Pass 5 - Naming and decoder updates` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_semantic_proof.md`](decomp/evidence/opcode_0x80_semantic_proof.md), [`opcode_0x80_neighbor_sound_context.md`](decomp/evidence/opcode_0x80_neighbor_sound_context.md), [`opcode_0x80_neighbor_consumer_comparison.md`](decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md), [`opcode_0x80_neighbor_consumer_scan.json`](decomp/evidence/opcode_0x80_neighbor_consumer_scan.json), [`opcode_0x80_residual_context.md`](decomp/evidence/opcode_0x80_residual_context.md), [`opcode_0x80_residual_scan.json`](decomp/evidence/opcode_0x80_residual_scan.json), [`opcode_0x80_shared_stub_family_audit.md`](decomp/evidence/opcode_0x80_shared_stub_family_audit.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_reader_call_chain_static.md`](decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md), [`opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md), [`opcode_0x80_runtime_input_plan_bat_kill.json`](decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json), [`opcode_0x80_runtime_input_plan_map001_listener.json`](decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json), [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md) |
+| `opcode 0x80` | `tentative` | `INITBTL.PRG` static table at `0x800FAF7C`, copied by the init-time routine at `0x800FAAAC` into pointer slot `0x800F4C28` and resolved live at `0x801119F0`; checked `after_init` and `pre_dispatch` snapshots still match that copied baseline byte-for-byte | Initial slot `0x800B66E4` is a shared return-zero stub reused by a widened `30`-opcode `INITBTL.PRG` family that includes named dialog, model, room, battle-end, and music-looking members as well as `0x80-0x82`; former competing target `0x800BA2E0` is now locally anchored to the separate `BATTLE.PRG` sound subdispatch table at `0x800E9F30`; recovered reader `FUN_800BFBB8` dispatches through the copied runtime table via `jalr`, and the validated `MAP001` listener-control run logs retail `0x10`, `0x13`, `0x44`, and `0x80` landing on `0x800B66E4` with no post-init table-write hits | `Opcode80SharedStub` | After the template-context pass, can the few remaining singleton or variant cases be tied cleanly to the same room-entry or cutscene scaffolds, or do they expose a second structural producer for the inert `0x80` burst? | `Pass 5 - Naming and decoder updates` | [`opcode_0x80_cli_pass.md`](decomp/evidence/opcode_0x80_cli_pass.md), [`opcode_0x80_semantic_proof.md`](decomp/evidence/opcode_0x80_semantic_proof.md), [`opcode_0x80_neighbor_sound_context.md`](decomp/evidence/opcode_0x80_neighbor_sound_context.md), [`opcode_0x80_neighbor_consumer_comparison.md`](decomp/evidence/opcode_0x80_neighbor_consumer_comparison.md), [`opcode_0x80_neighbor_consumer_scan.json`](decomp/evidence/opcode_0x80_neighbor_consumer_scan.json), [`opcode_0x80_residual_context.md`](decomp/evidence/opcode_0x80_residual_context.md), [`opcode_0x80_residual_scan.json`](decomp/evidence/opcode_0x80_residual_scan.json), [`opcode_0x80_template_context.md`](decomp/evidence/opcode_0x80_template_context.md), [`opcode_0x80_template_scan.json`](decomp/evidence/opcode_0x80_template_scan.json), [`opcode_0x80_shared_stub_family_audit.md`](decomp/evidence/opcode_0x80_shared_stub_family_audit.md), [`opcode_0x80_copy_path_static.md`](decomp/evidence/opcode_0x80_copy_path_static.md), [`opcode_0x80_sound_cluster_static.md`](decomp/evidence/opcode_0x80_sound_cluster_static.md), [`opcode_0x80_runtime_dispatch_static.md`](decomp/evidence/opcode_0x80_runtime_dispatch_static.md), [`opcode_0x80_runtime_slot_access_static.md`](decomp/evidence/opcode_0x80_runtime_slot_access_static.md), [`opcode_0x80_runtime_reader_call_chain_static.md`](decomp/evidence/opcode_0x80_runtime_reader_call_chain_static.md), [`opcode_0x80_binary_address_scan.md`](decomp/evidence/opcode_0x80_binary_address_scan.md), [`opcode_0x80_runtime_capture_plan.md`](decomp/evidence/opcode_0x80_runtime_capture_plan.md), [`opcode_0x80_runtime_memcard_probe.md`](decomp/evidence/opcode_0x80_runtime_memcard_probe.md), [`opcode_0x80_runtime_bat_kill_negative.md`](decomp/evidence/opcode_0x80_runtime_bat_kill_negative.md), [`opcode_0x80_runtime_input_plan_bat_kill.json`](decomp/evidence/opcode_0x80_runtime_input_plan_bat_kill.json), [`opcode_0x80_runtime_input_plan_map001_listener.json`](decomp/evidence/opcode_0x80_runtime_input_plan_map001_listener.json), [`opcode_0x80_runtime_automation_summary.json`](decomp/evidence/opcode_0x80_runtime_automation_summary.json), [`opcode_0x80_runtime_observation.json`](decomp/evidence/opcode_0x80_runtime_observation.json), [`opcode_0x80_runtime_snapshot_compare.json`](decomp/evidence/opcode_0x80_runtime_snapshot_compare.json), [`opcode_0x80_runtime_support.md`](decomp/evidence/opcode_0x80_runtime_support.md) |
 
 ## Known Conflicts
 
@@ -207,10 +209,22 @@ Current phase: Pass 5 - Naming and decoder updates
   Only `2` residual files later grow complete neighboring pairs in the same
   file, and only `2` currently have same-title sibling variants in the same
   area that do stage complete pre-burst pairs.
-  What still stays open is therefore smaller and more structural:
-  why those shared template bursts still include the stubbed `0x80` opcode at
-  all, plus whether the same-title variant and later-rearm exceptions need
-  carry-over follow-up.
+  The new template-context pass narrows that structural story further instead
+  of reopening audio meaning.
+  Within the dominant `0x41/0x42` family, `34` of the `36` files contain no
+  sound-family opcode anywhere in the file, `26` reach the first burst through
+  the same `DialogHide` -> `Opcode14` -> `SetHeadsUpDisplayMode(1)` lead-in,
+  and `20` continue through the same
+  `Opcode45` -> `ModelControlViaScript` -> `Opcode45` -> `Opcode43` ->
+  `ModelControlViaScript` post-burst spine.
+  The smaller `0x1D/0x1E` family likewise lands in repeated dialog or
+  battle-mode control bundles, and the only residual outliers are now three
+  singleton or variant scenes:
+  `021`, `022`, and `025`.
+  What still stays open is therefore provenance, not sound semantics:
+  why those room-entry or cutscene scaffolds still carry inert `0x80` bursts
+  at all, plus whether the remaining singleton and variant cases reveal a
+  second structural producer or just looser template reuse.
 - Is runtime justified yet:
   Not for the copy/patch tie-breaker.
   Keep the validated `MAP001` listener route only as a regression path when
@@ -237,35 +251,40 @@ Use the artifact index for:
 
 ## Session Handoff
 
-- `last completed step`: the `Pass 5` residual-context packet for `0x80` is
+- `last completed step`: the `Pass 5` template-context packet for `0x80` is
   now checked in.
-  The earlier neighboring-consumer comparison already showed that `85` of the
-  `127` legacy-`0x80` files stage a complete neighboring sound pair before
-  the first `0x80`.
+  The earlier residual-context pass had already shown that the `42`-file
+  holdout set was mostly template reuse.
   The new packet
-  [`opcode_0x80_residual_context.md`](decomp/evidence/opcode_0x80_residual_context.md)
-  turns the remaining `42`-file holdout set into a narrower template result:
-  all `42` lack any pre-burst sound-family opcode, `38` lack any
-  `0x85-0x9E` sound-family opcode anywhere in the file, `36` share the same
-  duplicated `0x41/0x42` `0x80` opener bundle, `3` more share the
-  `0x1D/0x1E` microcluster, and only `2` later-rearm or same-title-variant
-  exceptions still look like carry-over candidates.
+  [`opcode_0x80_template_context.md`](decomp/evidence/opcode_0x80_template_context.md)
+  tightens that claim into two dominant scaffolds plus a tiny variant set:
+  `36` files use the paired `0x41/0x42` opener, `3` use the paired
+  `0x1D/0x1E` burst, and only `3` remain singleton or variant holdouts.
+  The dominant `0x41/0x42` family now looks even less sound-facing than
+  before: `34` of those `36` files contain no sound-family opcode anywhere,
+  `26` reuse the same `DialogHide` -> `Opcode14` -> HUD handoff lead-in, and
+  `20` reuse the same `Opcode45` -> `ModelControlViaScript` ->
+  `Opcode45` -> `Opcode43` -> `ModelControlViaScript` post-burst spine.
 - `next recommended step`: keep `0x80` as a `Pass 5` semantic cleanup target,
   not a runtime blocker. Preferred order for the next pass:
   1. use the shared-family audit plus the neighboring-context and
-     neighboring-consumer and residual-context packets as naming constraints:
+     neighboring-consumer and residual-context and template-context packets as
+     naming constraints:
      do not treat `0x800B66E4` table membership as standalone proof for
      `0x80`, `0x10`, `0x11`, `0x22`, `0x69`, `0x6D`, `0x92`, or any other
      member of the widened cluster, and do not treat script-side co-location
      alone as proof that `0x80` is itself the direct sound trigger
-  2. treat the residual set as mostly template reuse, not as a fresh direct
-     sound contradiction:
-     if you continue `0x80`, prioritize static understanding of the repeated
-     `0x41/0x42` opener bundle and the smaller `0x1D/0x1E` microcluster over
-     another broad search for neighboring sound pairs
-  3. keep carry-over follow-up tightly scoped to the minority exceptions:
+  2. treat the residual set as mostly room-entry or cutscene scaffolding, not
+     as a fresh direct sound contradiction:
+     the repeated `0x41/0x42` and `0x1D/0x1E` bursts now belong to stable
+     template families, so any further `0x80` pass should focus on how those
+     templates are produced or reused rather than on another broad search for
+     neighboring sound pairs
+  3. keep carry-over or variant follow-up tightly scoped to the minority
+     exceptions:
      same-title variants such as `022` versus `017` and `408` versus `026`,
-     plus later-rearm scenes such as `MAP290` and `MAP334`
+     singleton scenes such as `021` and `025`, plus later-rearm scenes such as
+     `MAP290` and `MAP334`
   4. within the already explained non-SFX scenes, compare how the `0x9D` plus
      `0x9E` queue path and the `0x90` plus `0x92` music path divide
      responsibility so `MAP415`-style cases do not get forced back into a
@@ -286,6 +305,30 @@ Use the artifact index for:
 
 ## Completed Milestones
 
+- `2026-05-01`: completed the `Pass 5` template-context packet for `0x80`.
+  The residual set is now better explained as repeated scaffolding than as a
+  generic leftover sound contradiction.
+  `36` of the `42` residual files use the paired `80 01 41 80 7F` then
+  `80 01 42 80 7F` opener, `3` use the paired `80 01 1D 80 7F` then
+  `80 01 1E 80 7F` microcluster, and only `3` remain singleton or variant
+  holdouts.
+  The dominant `0x41/0x42` family now clusters around HUD handoff, dialog
+  closure, model-script control, engine-mode changes, geometry suppression,
+  and room-state cleanup:
+  `34` of its `36` files contain no sound-family opcode anywhere, `26` reuse
+  the same `DialogHide` -> `Opcode14` -> `SetHeadsUpDisplayMode(1)` lead-in,
+  and `20` reuse the same
+  `Opcode45` -> `ModelControlViaScript` -> `Opcode45` -> `Opcode43` ->
+  `ModelControlViaScript` post-burst spine.
+  This shifts the open question again, from "what sound path explains these
+  files?" toward "why do these room-entry or cutscene templates still carry
+  inert `0x80` bursts at all?"
+  Links:
+  [`opcode_0x80_template_context.md`](decomp/evidence/opcode_0x80_template_context.md),
+  [`opcode_0x80_template_scan.json`](decomp/evidence/opcode_0x80_template_scan.json),
+  [`decoded_scripts/1-Wine Cellar/018-The Reckoning Room.txt`](decoded_scripts/1-Wine%20Cellar/018-The%20Reckoning%20Room.txt),
+  [`decoded_scripts/2-Catacombs/029-The Last Blessing.txt`](decoded_scripts/2-Catacombs/029-The%20Last%20Blessing.txt),
+  [`decoded_scripts/1-Wine Cellar/021-Room of Rotten Grapes.txt`](decoded_scripts/1-Wine%20Cellar/021-Room%20of%20Rotten%20Grapes.txt)
 - `2026-05-01`: completed the `Pass 5` residual-context packet for `0x80`.
   The old `42`-file holdout set now looks much less sound-facing than before:
   all `42` residual files reach their first `0x80` with no sound-family

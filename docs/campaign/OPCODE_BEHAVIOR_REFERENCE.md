@@ -60,7 +60,7 @@ evidence notes in
 | `0x79` | `RoomMechanismControl` | `action: u8, idMechanism: u8` | `0x03` | Trigger or toggle a room mechanism by id. |
 | `0x7A` | `SetRoomAmbientSoundSuspended` | `suspended: u8` | `0x02` | Suspend or restore room ambient playback on the proven persistent-ambient path. |
 | `0x7C` | `SetFirstPersonView` | `raw: u8` | `0x02` | Toggle or stage first-person camera/view mode. |
-| `0x80` | `Opcode80SharedStub` | `raw: u8[4]` | `0x05` | Structural shared-stub label. Verified runtime-table dispatch lands on return-zero stub `0x800B66E4`, and the widened family audit shows that same `INITBTL` slot is reused by `30` heterogeneous opcode IDs, so the table hit is structural evidence only, not direct audio proof. |
+| `0x80` | `Opcode80SharedStub` | `raw: u8[4]` | `0x05` | Structural shared-stub label. Verified runtime-table dispatch lands on return-zero stub `0x800B66E4`, the widened family audit shows that same `INITBTL` slot is reused by `30` heterogeneous opcode IDs, and the residual template packets now place the stubborn `0x41/0x42` and `0x1D/0x1E` bursts inside repeated room-entry or cutscene scaffolds rather than a direct audio path. |
 | `0x85` | `LoadSfxSlot` | `slot: u8, idSfx: u8` | `0x03` | Audio resource or playback control. |
 | `0x86` | `FreeSfxSlot` | `slot: u8` | `0x02` | Audio resource or playback control. |
 | `0x88` | `SetCurrentSfx` | `idSfx: u8` | `0x02` | Audio resource or playback control. |
