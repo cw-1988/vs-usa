@@ -1,0 +1,245 @@
+Category	SkillId	Name	RecoveryValue	Notes
+Default / normal action	1	Normal	weapon.unk10B + actor.unk956_2	Fallback path; skill table stores 0xFF here
+Spell	54	Degenerate	0	
+Spell	55	Psychodrain	0	
+Spell	56	Leadbones	0	
+Spell	57	Tarnish	0	
+Spell	58	Analyze	0	
+Spell	60	Herakles	0	
+Spell	61	Enlighten	0	
+Spell	62	Invigorate	0	
+Spell	63	Prostasia	0	
+Spell	65	Heal	0	
+Spell	66	Luft Fusion	0	
+Spell	67	Spark Fusion	0	
+Spell	68	Soil Fusion	0	
+Spell	69	Frost Fusion	0	
+Spell	70	Aero Guard	0	
+Spell	71	Pyro Guard	0	
+Spell	72	Terra Guard	0	
+Spell	73	Aqua Guard	0	
+Spell	74	Dark Chant	0	
+Spell	75	Silence	0	
+Spell	76	Magic Ward	0	
+Spell	77	Surging Balm	0	
+Spell	78	Lightning Bolt	0	
+Spell	79	Fixate	0	
+Spell	80	Dispel	0	
+Spell	81	Fireball	0	
+Spell	82	Stun Cloud	0	
+Spell	83	Poison Mist	0	
+Spell	84	Vulcan Lance	0	
+Spell	85	Curse	0	
+Spell	86	Aqua Blast	0	
+Spell	87	Restoration	0	
+Spell	88	Antidote	0	
+Spell	90	Blessing	0	
+Spell	91	Clearance	0	
+Spell	92	Unlock	0	
+Spell	93	Eureka	0	
+Spell	94	Drain Heart	0	
+Spell	95	Drain Mind	0	
+Spell	96	Heal	0	
+Spell	97	Solid Shock	0	
+Spell	98	Lightning Bolt	0	
+Spell	99	Fireball	0	
+Spell	100	Vulcan Lance	0	
+Spell	101	Aqua Blast	0	
+Spell	102	Spirit Surge	0	
+Spell	103	Dark Chant	0	
+Spell	104	Exorcism	0	
+Spell	105	Banish	0	
+Spell	106	Explosion Lv.1	0	
+Spell	107	Explosion Lv.2	0	
+Spell	108	Explosion Lv.3	0	
+Spell	109	Explosion Lv.4	0	
+Spell	110	Thunderburst Lv.1	0	
+Spell	111	Thunderburst Lv.2	0	
+Spell	112	Thunderburst Lv.3	0	
+Spell	113	Thunderburst Lv.4	0	
+Spell	114	Flame Sphere Lv.1	0	
+Spell	115	Flame Sphere Lv.2	0	
+Spell	116	Flame Sphere Lv.3	0	
+Spell	117	Flame Sphere Lv.4	0	
+Spell	118	Gaea Strike Lv.1	0	
+Spell	119	Gaea Strike Lv.2	0	
+Spell	120	Gaea Strike Lv.3	0	
+Spell	121	Gaea Strike Lv.4	0	
+Spell	122	Avalanche Lv.1	0	
+Spell	123	Avalanche Lv.2	0	
+Spell	124	Avalanche Lv.3	0	
+Spell	125	Avalanche Lv.4	0	
+Spell	126	Radial Surge Lv.1	0	
+Spell	127	Radial Surge Lv.2	0	
+Spell	128	Radial Surge Lv.3	0	
+Spell	129	Radial Surge Lv.4	0	
+Spell	130	Meteor Lv.1	0	
+Spell	131	Meteor Lv.2	0	
+Spell	132	Meteor Lv.3	0	
+Spell	133	Meteor Lv.4	0	
+Spell	134	Tornado	2	
+Spell	135	Thunderbolt	2	
+Spell	136	Fire Storm	2	
+Spell	137	Gravity	2	
+Spell	138	Acid Flow	2	
+Spell	139	Judgment	2	
+Spell	140	Apocalypse	2	
+Ability	22	Heavy Shot	0	
+Ability	23	Gain Life	0	
+Ability	24	Mind Assault	0	
+Ability	25	Gain Magic	0	
+Ability	26	Raging Ache	0	
+Ability	27	Mind Ache	0	
+Ability	28	Temper	0	
+Ability	29	Crimson Pain	0	
+Ability	30	Instill	0	
+Ability	31	Phantom Pain	0	
+Ability	32	Paralysis Pulse	0	
+Ability	34	Numbing Claw	0	
+Ability	35	Dulling Impact	0	
+Ability	37	Snake Venom	0	
+Ability	40	Ward	0	
+Ability	41	Siphon Soul	0	
+Ability	42	Reflect Magic	0	
+Ability	43	Reflect Damage	0	
+Ability	44	Absorb Magic	0	
+Ability	45	Absorb Damage	0	
+Ability	46	Impact Guard	0	
+Ability	47	Windbreak	0	
+Ability	48	Fireproof	0	
+Ability	49	Terra Ward	0	
+Ability	50	Aqua Ward	0	
+Ability	51	Shadow Guard	0	
+Ability	52	Demonscale	0	
+Ability	53	Phantom Shield	0	
+Ability	141	Stun Blast	1	
+Ability	143	Tidal Rush	1	
+Ability	144	Blasphemous Howl	0	
+Ability	145	Tail Attack	0	
+Ability	146	Tail Attack	0	
+Ability	147	Fire Breath	2	
+Ability	148	Fire Breath	1	
+Ability	149	Acid Breath	1	
+Ability	151	Acid Breath	2	
+Ability	152	Rot Breath	1	
+Ability	153	Caeser's Thrust	0	
+Ability	154	Thermal Breath	1	
+Ability	155	Thunder Breath	1	
+Ability	156	Heaven's Tear	0	
+Ability	157	Searing Breath	1	
+Ability	158	Tyrant's Mace	0	
+Ability	159	Frost Breath	1	
+Ability	160	Raven Eye	0	
+Ability	161	Divine Breath	1	
+Ability	162	Poison Breath	1	
+Ability	163	Mind Blast	1	
+Ability	164	Mind Blast	1	
+Ability	165	Numbing Hook	1	
+Ability	167	Numbing Needle	0	
+Ability	168	Bloodsuck	1	
+Ability	169	Acid Sneeze	1	
+Ability	170	Spiral Shell	1	
+Ability	171	Granite Punch	1	
+Ability	172	Devitalize	0	
+Ability	173	Poltergeist	1	
+Ability	174	Reaper's Scythe	1	
+Ability	177	Giga Rush	2	
+Ability	178	Aqua Bubble	1	
+Ability	179	Poison Sneeze	1	
+Ability	180	Acrid Ooze	1	
+Ability	181	Bloody Sin	1	
+Ability	182	Last Ascension	1	
+Break Art	184	Whistle Sting	0	
+Break Art	185	Shadoweave	0	
+Break Art	186	Double Fang	0	
+Break Art	187	Wyrm Scorn	0	
+Break Art	188	Rending Gale	0	
+Break Art	189	Vile Scar	0	
+Break Art	190	Cherry Ronde	0	
+Break Art	191	Papillon Reel	0	
+Break Art	192	Sunder	0	
+Break Art	193	Thunderwave	0	
+Break Art	194	Swallow Slash	0	
+Break Art	195	Advent Sign	0	
+Break Art	196	Mistral Edge	0	
+Break Art	197	Glacial Gale	0	
+Break Art	198	Killer Mantis	0	
+Break Art	199	Black Nebula	0	
+Break Art	200	Bear Claw	0	
+Break Art	201	Accursed Umbra	0	
+Break Art	202	Iron Ripper	0	
+Break Art	203	Emetic Bomb	0	
+Break Art	204	Sirocco	0	
+Break Art	205	Riskbreak	0	
+Break Art	206	Gravis Aether	0	
+Break Art	207	Trinity Pulse	0	
+Break Art	208	Bonecrusher	0	
+Break Art	209	Quickshock	0	
+Break Art	210	Ignis Wheel	0	
+Break Art	211	Hex Flux	0	
+Break Art	212	Ruination	0	
+Break Art	213	Scythe Wind	0	
+Break Art	214	Giga Tempest	0	
+Break Art	215	Spiral Scourge	0	
+Break Art	216	Brimstone Hail	0	
+Break Art	217	Heaven's Scorn	0	
+Break Art	218	Death Wail	0	
+Break Art	219	Sanctus Flare	0	
+Break Art	220	Lotus Palm	0	
+Break Art	221	Vertigo	0	
+Break Art	222	Vermillion Aura	0	
+Break Art	223	Retribution	0	
+Item	2	Pincer	0xFF	Below the ID >= 54 cooldown gate; table says fallback but this add path does not run here
+Item	3	Bite	0xFF	Below the ID >= 54 cooldown gate; table says fallback but this add path does not run here
+Item	4	Bite	0xFF	Below the ID >= 54 cooldown gate; table says fallback but this add path does not run here
+Item	5	Bite	0xFF	Below the ID >= 54 cooldown gate; table says fallback but this add path does not run here
+Item	150	untitled	0	
+Item	166	untitled	0	
+Item	175	untitled	0	
+Item	176	untitled	0	
+Item	183	untitled	0	
+Item	224	Recover 50 HP	0	
+Item	225	Recover 100 HP	0	
+Item	226	Recover 150 HP	0	
+Item	227	HP Full	0	
+Item	228	Recharge 25 MP	0	
+Item	229	Recharge 50 MP	0	
+Item	230	Recharge 100 MP	0	
+Item	231	MP Full	0	
+Item	232	HP & MP Recover 100	0	
+Item	233	HP & MP Full	0	
+Item	234	HP & RISK 25	0	
+Item	235	HP & RISK 50	0	
+Item	236	Cure Paralysis	0	
+Item	237	Cure Poison	0	
+Item	238	Cure Curse	0	
+Item	239	Cure Numbness	0	
+Item	240	Cureall	0	
+Item	241	Mark Trap	0	
+Item	242	Magic Cancel	0	
+Item	243	RISK -25	0	
+Item	244	RISK -50	0	
+Item	245	RISK -75	0	
+Item	246	No RISK	0	
+Item	247	Quicken	0	
+Item	248	STR-up	0	
+Item	249	INT-up	0	
+Item	250	AGL-up	0	
+Item	251	HP-up	0	
+Item	252	MP-up	0	
+Item	253	STR-down	0	
+Item	254	INT-down	0	
+Item	255	AGL-down	0	
+Trap	6	Death Vapor	0	
+Trap	7	Eruption	0	
+Trap	8	Freeze	0	
+Trap	9	Gust	0	
+Trap	10	Terra Thrust	0	
+Trap	11	Holy Light	0	
+Trap	12	Diabolos	0	
+Trap	13	Poison Panel	0	
+Trap	14	Paralysis Panel	0	
+Trap	17	Curse Panel	0	
+Trap	18	Heal Panel	0	
+Trap	19	Cure Panel	0	
+Trap	21	Trap Clear	0	

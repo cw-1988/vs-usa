@@ -1,0 +1,190 @@
+SkillId	Category	Name	Cost	RecoveryUnits	RecoveryMode
+22	Ability	Heavy Shot	1	0	Explicit
+23	Ability	Gain Life	2	0	Explicit
+24	Ability	Mind Assault	1	0	Explicit
+25	Ability	Gain Magic	2	0	Explicit
+26	Ability	Raging Ache	1	0	Explicit
+27	Ability	Mind Ache	1	0	Explicit
+28	Ability	Temper	2	0	Explicit
+29	Ability	Crimson Pain	2	0	Explicit
+30	Ability	Instill	1	0	Explicit
+31	Ability	Phantom Pain	3	0	Explicit
+32	Ability	Paralysis Pulse	3	0	Explicit
+34	Ability	Numbing Claw	3	0	Explicit
+35	Ability	Dulling Impact	3	0	Explicit
+37	Ability	Snake Venom	3	0	Explicit
+40	Ability	Ward	1	0	Explicit
+41	Ability	Siphon Soul	6	0	Explicit
+42	Ability	Reflect Magic	2	0	Explicit
+43	Ability	Reflect Damage	2	0	Explicit
+44	Ability	Absorb Magic	4	0	Explicit
+45	Ability	Absorb Damage	4	0	Explicit
+46	Ability	Impact Guard	4	0	Explicit
+47	Ability	Windbreak	4	0	Explicit
+48	Ability	Fireproof	4	0	Explicit
+49	Ability	Terra Ward	4	0	Explicit
+50	Ability	Aqua Ward	4	0	Explicit
+51	Ability	Shadow Guard	4	0	Explicit
+52	Ability	Demonscale	4	0	Explicit
+53	Ability	Phantom Shield	6	0	Explicit
+54	Spell	Degenerate	7	0	Explicit
+55	Spell	Psychodrain	7	0	Explicit
+56	Spell	Leadbones	7	0	Explicit
+57	Spell	Tarnish	7	0	Explicit
+58	Spell	Analyze	5	0	Explicit
+60	Spell	Herakles	12	0	Explicit
+61	Spell	Enlighten	12	0	Explicit
+62	Spell	Invigorate	12	0	Explicit
+63	Spell	Prostasia	15	0	Explicit
+65	Spell	Heal	5	0	Explicit
+66	Spell	Luft Fusion	10	0	Explicit
+67	Spell	Spark Fusion	10	0	Explicit
+68	Spell	Soil Fusion	10	0	Explicit
+69	Spell	Frost Fusion	10	0	Explicit
+70	Spell	Aero Guard	9	0	Explicit
+71	Spell	Pyro Guard	9	0	Explicit
+72	Spell	Terra Guard	9	0	Explicit
+73	Spell	Aqua Guard	9	0	Explicit
+74	Spell	Dark Chant	28	0	Explicit
+75	Spell	Silence	7	0	Explicit
+76	Spell	Magic Ward	21	0	Explicit
+77	Spell	Surging Balm	20	0	Explicit
+78	Spell	Lightning Bolt	25	0	Explicit
+79	Spell	Fixate	3	0	Explicit
+80	Spell	Dispel	10	0	Explicit
+81	Spell	Fireball	25	0	Explicit
+82	Spell	Stun Cloud	7	0	Explicit
+83	Spell	Poison Mist	11	0	Explicit
+84	Spell	Vulcan Lance	25	0	Explicit
+85	Spell	Curse	17	0	Explicit
+86	Spell	Aqua Blast	25	0	Explicit
+87	Spell	Restoration	3	0	Explicit
+88	Spell	Antidote	3	0	Explicit
+90	Spell	Blessing	17	0	Explicit
+91	Spell	Clearance	15	0	Explicit
+92	Spell	Unlock	3	0	Explicit
+93	Spell	Eureka	6	0	Explicit
+94	Spell	Drain Heart	12	0	Explicit
+95	Spell	Drain Mind	2	0	Explicit
+96	Spell	Heal	5	0	Explicit
+97	Spell	Solid Shock	25	0	Explicit
+98	Spell	Lightning Bolt	25	0	Explicit
+99	Spell	Fireball	25	0	Explicit
+100	Spell	Vulcan Lance	25	0	Explicit
+101	Spell	Aqua Blast	25	0	Explicit
+102	Spell	Spirit Surge	28	0	Explicit
+103	Spell	Dark Chant	28	0	Explicit
+104	Spell	Exorcism	22	0	Explicit
+105	Spell	Banish	25	0	Explicit
+106	Spell	Explosion Lv.1	36	0	Explicit
+107	Spell	Explosion Lv.2	44	0	Explicit
+108	Spell	Explosion Lv.3	52	0	Explicit
+109	Spell	Explosion Lv.4	60	0	Explicit
+110	Spell	Thunderburst Lv.1	36	0	Explicit
+111	Spell	Thunderburst Lv.2	44	0	Explicit
+112	Spell	Thunderburst Lv.3	52	0	Explicit
+113	Spell	Thunderburst Lv.4	60	0	Explicit
+114	Spell	Flame Sphere Lv.1	36	0	Explicit
+115	Spell	Flame Sphere Lv.2	44	0	Explicit
+116	Spell	Flame Sphere Lv.3	52	0	Explicit
+117	Spell	Flame Sphere Lv.4	60	0	Explicit
+118	Spell	Gaea Strike Lv.1	36	0	Explicit
+119	Spell	Gaea Strike Lv.2	44	0	Explicit
+120	Spell	Gaea Strike Lv.3	52	0	Explicit
+121	Spell	Gaea Strike Lv.4	60	0	Explicit
+122	Spell	Avalanche Lv.1	36	0	Explicit
+123	Spell	Avalanche Lv.2	44	0	Explicit
+124	Spell	Avalanche Lv.3	52	0	Explicit
+125	Spell	Avalanche Lv.4	60	0	Explicit
+126	Spell	Radial Surge Lv.1	38	0	Explicit
+127	Spell	Radial Surge Lv.2	46	0	Explicit
+128	Spell	Radial Surge Lv.3	54	0	Explicit
+129	Spell	Radial Surge Lv.4	62	0	Explicit
+130	Spell	Meteor Lv.1	38	0	Explicit
+131	Spell	Meteor Lv.2	46	0	Explicit
+132	Spell	Meteor Lv.3	54	0	Explicit
+133	Spell	Meteor Lv.4	62	0	Explicit
+134	Spell	Tornado	35	2	Explicit
+135	Spell	Thunderbolt	35	2	Explicit
+136	Spell	Fire Storm	35	2	Explicit
+137	Spell	Gravity	35	2	Explicit
+138	Spell	Acid Flow	35	2	Explicit
+139	Spell	Judgment	65	2	Explicit
+140	Spell	Apocalypse	65	2	Explicit
+141	Ability	Stun Blast	2	1	Explicit
+143	Ability	Tidal Rush	5	1	Explicit
+144	Ability	Blasphemous Howl	2	0	Explicit
+145	Ability	Tail Attack	5	0	Explicit
+146	Ability	Tail Attack	5	0	Explicit
+147	Ability	Fire Breath	3	2	Explicit
+148	Ability	Fire Breath	3	1	Explicit
+149	Ability	Acid Breath	3	1	Explicit
+151	Ability	Acid Breath	2	2	Explicit
+152	Ability	Rot Breath	3	1	Explicit
+153	Ability	Caeser's Thrust	1	0	Explicit
+154	Ability	Thermal Breath	3	1	Explicit
+155	Ability	Thunder Breath	3	1	Explicit
+156	Ability	Heaven's Tear	1	0	Explicit
+157	Ability	Searing Breath	3	1	Explicit
+158	Ability	Tyrant's Mace	1	0	Explicit
+159	Ability	Frost Breath	3	1	Explicit
+160	Ability	Raven Eye	1	0	Explicit
+161	Ability	Divine Breath	3	1	Explicit
+162	Ability	Poison Breath	3	1	Explicit
+163	Ability	Mind Blast	2	1	Explicit
+164	Ability	Mind Blast	2	1	Explicit
+165	Ability	Numbing Hook	4	1	Explicit
+167	Ability	Numbing Needle	4	0	Explicit
+168	Ability	Bloodsuck	4	1	Explicit
+169	Ability	Acid Sneeze	2	1	Explicit
+170	Ability	Spiral Shell	2	1	Explicit
+171	Ability	Granite Punch	5	1	Explicit
+172	Ability	Devitalize	2	0	Explicit
+173	Ability	Poltergeist	3	1	Explicit
+174	Ability	Reaper's Scythe	3	1	Explicit
+177	Ability	Giga Rush	5	2	Explicit
+178	Ability	Aqua Bubble	3	1	Explicit
+179	Ability	Poison Sneeze	2	1	Explicit
+180	Ability	Acrid Ooze	2	1	Explicit
+181	Ability	Bloody Sin	15	1	Explicit
+182	Ability	Last Ascension	5	1	Explicit
+184	Break Art	Whistle Sting	25	0	Explicit
+185	Break Art	Shadoweave	40	0	Explicit
+186	Break Art	Double Fang	55	0	Explicit
+187	Break Art	Wyrm Scorn	75	0	Explicit
+188	Break Art	Rending Gale	25	0	Explicit
+189	Break Art	Vile Scar	40	0	Explicit
+190	Break Art	Cherry Ronde	55	0	Explicit
+191	Break Art	Papillon Reel	75	0	Explicit
+192	Break Art	Sunder	25	0	Explicit
+193	Break Art	Thunderwave	40	0	Explicit
+194	Break Art	Swallow Slash	55	0	Explicit
+195	Break Art	Advent Sign	75	0	Explicit
+196	Break Art	Mistral Edge	25	0	Explicit
+197	Break Art	Glacial Gale	40	0	Explicit
+198	Break Art	Killer Mantis	55	0	Explicit
+199	Break Art	Black Nebula	75	0	Explicit
+200	Break Art	Bear Claw	25	0	Explicit
+201	Break Art	Accursed Umbra	40	0	Explicit
+202	Break Art	Iron Ripper	55	0	Explicit
+203	Break Art	Emetic Bomb	75	0	Explicit
+204	Break Art	Sirocco	25	0	Explicit
+205	Break Art	Riskbreak	40	0	Explicit
+206	Break Art	Gravis Aether	55	0	Explicit
+207	Break Art	Trinity Pulse	75	0	Explicit
+208	Break Art	Bonecrusher	25	0	Explicit
+209	Break Art	Quickshock	40	0	Explicit
+210	Break Art	Ignis Wheel	55	0	Explicit
+211	Break Art	Hex Flux	75	0	Explicit
+212	Break Art	Ruination	25	0	Explicit
+213	Break Art	Scythe Wind	40	0	Explicit
+214	Break Art	Giga Tempest	55	0	Explicit
+215	Break Art	Spiral Scourge	75	0	Explicit
+216	Break Art	Brimstone Hail	25	0	Explicit
+217	Break Art	Heaven's Scorn	40	0	Explicit
+218	Break Art	Death Wail	55	0	Explicit
+219	Break Art	Sanctus Flare	75	0	Explicit
+220	Break Art	Lotus Palm	25	0	Explicit
+221	Break Art	Vertigo	40	0	Explicit
+222	Break Art	Vermillion Aura	55	0	Explicit
+223	Break Art	Retribution	75	0	Explicit

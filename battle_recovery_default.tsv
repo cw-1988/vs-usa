@@ -1,0 +1,2 @@
+SkillId	Name	RecoveryValue	Notes
+1	Normal	weapon.unk10B + actor.unk956_2	Fallback path; skill table stores 0xFF here

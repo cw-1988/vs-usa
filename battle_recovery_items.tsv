@@ -1,0 +1,42 @@
+SkillId	Name	RecoveryValue	Notes
+2	Pincer	0xFF	Below the ID >= 54 cooldown gate; table says fallback but this add path does not run here
+3	Bite	0xFF	Below the ID >= 54 cooldown gate; table says fallback but this add path does not run here
+4	Bite	0xFF	Below the ID >= 54 cooldown gate; table says fallback but this add path does not run here
+5	Bite	0xFF	Below the ID >= 54 cooldown gate; table says fallback but this add path does not run here
+150	untitled	0	
+166	untitled	0	
+175	untitled	0	
+176	untitled	0	
+183	untitled	0	
+224	Recover 50 HP	0	
+225	Recover 100 HP	0	
+226	Recover 150 HP	0	
+227	HP Full	0	
+228	Recharge 25 MP	0	
+229	Recharge 50 MP	0	
+230	Recharge 100 MP	0	
+231	MP Full	0	
+232	HP & MP Recover 100	0	
+233	HP & MP Full	0	
+234	HP & RISK 25	0	
+235	HP & RISK 50	0	
+236	Cure Paralysis	0	
+237	Cure Poison	0	
+238	Cure Curse	0	
+239	Cure Numbness	0	
+240	Cureall	0	
+241	Mark Trap	0	
+242	Magic Cancel	0	
+243	RISK -25	0	
+244	RISK -50	0	
+245	RISK -75	0	
+246	No RISK	0	
+247	Quicken	0	
+248	STR-up	0	
+249	INT-up	0	
+250	AGL-up	0	
+251	HP-up	0	
+252	MP-up	0	
+253	STR-down	0	
+254	INT-down	0	
+255	AGL-down	0	
