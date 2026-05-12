@@ -32,6 +32,12 @@ Use the lightest tool that fits:
 
 ## Working Rules
 
+- GodHands `vstools` embedding:
+  `build-winforms.ps1` runs `bun run build` in `_refs/vstools` and then
+  embeds `_refs/vstools/index.html`, `css/**`, and `dist/**` into the
+  WinForms project as `EmbeddedVstools` resources.
+  Do not assume GodHands is serving `_refs/vstools` live at runtime when
+  reasoning about behavior in a built WinForms executable.
 - If `search_symbols` reports `negative_evidence`, treat that as "not found"
   instead of repeatedly re-searching with slight wording changes.
 - If `_meta` includes `budget_warning`, stop exploring and work with the
