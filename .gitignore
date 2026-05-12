@@ -20,3 +20,5 @@ offscreen.vert
 output.frag
 output.lua
 output.vert
+map-references/*
+!map-references/link.txt
